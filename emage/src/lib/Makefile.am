@@ -1,4 +1,4 @@
-SUBDIRS = object op 
+SUBDIRS = object op data 
 
 MAINTAINERCLEANFILES = \
 Makefile.in \
@@ -19,12 +19,15 @@ emage_context.c \
 emage_cpu.c
 
 libemage_la_LIBADD = \
+ -lm \
 object/libemage_object.la \
-op/libemage_op.la
+op/libemage_op.la \
+data/libemage_data.la
 
 libemage_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h \
 object/libemage_object.la \
-op/libemage_op.la
+op/libemage_op.la \
+data/libemage_data.la
 
 libemage_la_LDFLAGS      = -version-info 1:0:0

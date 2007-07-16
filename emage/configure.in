@@ -987,6 +987,7 @@ src/bin/Makefile
 src/lib/Makefile 
 src/lib/object/Makefile 
 src/lib/op/Makefile 
+src/lib/data/Makefile 
 ])
 
 echo "CPU Specific Extensions:"

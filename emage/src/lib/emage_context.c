@@ -67,7 +67,7 @@ evas_common_draw_init(void)
 
 
 EAPI RGBA_Draw_Context *
-evas_common_draw_context_new(void)
+emage_draw_context_new(void)
 {
    RGBA_Draw_Context *dc;
 

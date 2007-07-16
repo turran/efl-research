@@ -1,4 +1,7 @@
-#include "evas_common.h"
+#include <stdlib.h>
+
+#include "Emage.h"
+#include "emage_private.h"
 
 static RGBA_Gfx_Func     op_blend_span_funcs[SP_LAST][SM_LAST][SC_LAST][DP_LAST][CPU_LAST];
 static RGBA_Gfx_Pt_Func  op_blend_pt_funcs[SP_LAST][SM_LAST][SC_LAST][DP_LAST][CPU_LAST];
@@ -6,17 +9,17 @@ static RGBA_Gfx_Pt_Func  op_blend_pt_funcs[SP_LAST][SM_LAST][SC_LAST][DP_LAST][C
 static void op_blend_init(void);
 static void op_blend_shutdown(void);
 
-static RGBA_Gfx_Func op_blend_pixel_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_color_span_get(DATA32 col, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_pixel_color_span_get(RGBA_Image *src, DATA32 col, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_mask_color_span_get(DATA32 col, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_pixel_mask_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels);
+static RGBA_Gfx_Func op_blend_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
 
-static RGBA_Gfx_Pt_Func op_blend_pixel_pt_get(int src_flags, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_color_pt_get(DATA32 col, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_mask_color_pt_get(DATA32 col, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_pixel_mask_pt_get(int src_flags, RGBA_Image *dst);
+static RGBA_Gfx_Pt_Func op_blend_pixel_pt_get(int src_flags, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_color_pt_get(DATA32 col, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_mask_color_pt_get(DATA32 col, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst);
 
 static RGBA_Gfx_Compositor  _composite_blend = { "blend", 
  op_blend_init, op_blend_shutdown,
@@ -41,17 +44,17 @@ static RGBA_Gfx_Pt_Func  op_blend_rel_pt_funcs[SP_LAST][SM_LAST][SC_LAST][DP_LAS
 static void op_blend_rel_init(void);
 static void op_blend_rel_shutdown(void);
 
-static RGBA_Gfx_Func op_blend_rel_pixel_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_rel_color_span_get(DATA32 col, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_rel_pixel_color_span_get(RGBA_Image *src, DATA32 col, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_rel_mask_color_span_get(DATA32 col, RGBA_Image *dst, int pixels);
-static RGBA_Gfx_Func op_blend_rel_pixel_mask_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels);
+static RGBA_Gfx_Func op_blend_rel_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_rel_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_rel_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_rel_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_blend_rel_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
 
-static RGBA_Gfx_Pt_Func op_blend_rel_pixel_pt_get(int src_flags, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_rel_color_pt_get(DATA32 col, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_rel_mask_color_pt_get(DATA32 col, RGBA_Image *dst);
-static RGBA_Gfx_Pt_Func op_blend_rel_pixel_mask_pt_get(int src_flags, RGBA_Image *dst);
+static RGBA_Gfx_Pt_Func op_blend_rel_pixel_pt_get(int src_flags, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_rel_color_pt_get(DATA32 col, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_rel_mask_color_pt_get(DATA32 col, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_blend_rel_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst);
 
 static RGBA_Gfx_Compositor  _composite_blend_rel = { "blend_rel", 
  op_blend_rel_init, op_blend_rel_shutdown, 
@@ -70,18 +73,18 @@ evas_common_gfx_compositor_blend_rel_get(void)
 }
 
 
-# include "./evas_op_blend/op_blend_pixel_.c"
-# include "./evas_op_blend/op_blend_color_.c"
-# include "./evas_op_blend/op_blend_pixel_color_.c"
-# include "./evas_op_blend/op_blend_pixel_mask_.c"
-# include "./evas_op_blend/op_blend_mask_color_.c"
+# include "./emage_op_blend/op_blend_pixel_.c"
+# include "./emage_op_blend/op_blend_color_.c"
+# include "./emage_op_blend/op_blend_pixel_color_.c"
+# include "./emage_op_blend/op_blend_pixel_mask_.c"
+# include "./emage_op_blend/op_blend_mask_color_.c"
 //# include "./evas_op_blend/op_blend_pixel_mask_color_.c"
 
-# include "./evas_op_blend/op_blend_pixel_i386.c"
-# include "./evas_op_blend/op_blend_color_i386.c"
-# include "./evas_op_blend/op_blend_pixel_color_i386.c"
-# include "./evas_op_blend/op_blend_pixel_mask_i386.c"
-# include "./evas_op_blend/op_blend_mask_color_i386.c"
+# include "./emage_op_blend/op_blend_pixel_i386.c"
+# include "./emage_op_blend/op_blend_color_i386.c"
+# include "./emage_op_blend/op_blend_pixel_color_i386.c"
+# include "./emage_op_blend/op_blend_pixel_mask_i386.c"
+# include "./emage_op_blend/op_blend_mask_color_i386.c"
 //# include "./evas_op_blend/op_blend_pixel_mask_color_i386.c"
 
 static void
@@ -144,23 +147,23 @@ blend_gfx_span_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Func
-op_blend_pixel_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels)
+op_blend_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
-   if (src && (src->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (src && (src->flags & RGBA_SURFACE_HAS_ALPHA))
      {
 	s = SP;
-	if (src->flags & RGBA_IMAGE_ALPHA_SPARSE)
+	if (src->flags & RGBA_SURFACE_ALPHA_SPARSE)
 	    s = SP_AS;
      }
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
+op_blend_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -170,20 +173,20 @@ op_blend_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_pixel_color_span_get(RGBA_Image *src, DATA32 col, RGBA_Image *dst, int pixels)
+op_blend_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
-   if (src && (src->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (src && (src->flags & RGBA_SURFACE_HAS_ALPHA))
      {
 	s = SP;
-	if (src->flags & RGBA_IMAGE_ALPHA_SPARSE)
+	if (src->flags & RGBA_SURFACE_ALPHA_SPARSE)
 	    s = SP_AS;
      }
    if ((col >> 24) < 255)
@@ -192,13 +195,13 @@ op_blend_pixel_color_span_get(RGBA_Image *src, DATA32 col, RGBA_Image *dst, int 
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_mask_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
+op_blend_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -208,23 +211,23 @@ op_blend_mask_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_pixel_mask_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels)
+op_blend_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
-   if (src && (src->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (src && (src->flags & RGBA_SURFACE_HAS_ALPHA))
      {
 	s = SP;
-	if (src->flags & RGBA_IMAGE_ALPHA_SPARSE)
+	if (src->flags & RGBA_SURFACE_ALPHA_SPARSE)
 	    s = SP_AS;
      }
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_span_func_cpu(s, m, c, d);
 }
@@ -252,19 +255,19 @@ blend_gfx_pt_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_pixel_pt_get(int src_flags, RGBA_Image *dst)
+op_blend_pixel_pt_get(int src_flags, RGBA_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
-   if (src_flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src_flags & RGBA_SURFACE_HAS_ALPHA)
 	s = SP;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_color_pt_get(DATA32 col, RGBA_Image *dst)
+op_blend_color_pt_get(DATA32 col, RGBA_Surface *dst)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -274,17 +277,17 @@ op_blend_color_pt_get(DATA32 col, RGBA_Image *dst)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Image *dst)
+op_blend_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
-   if (src_flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src_flags & RGBA_SURFACE_HAS_ALPHA)
 	s = SP;
    if ((col >> 24) < 255)
 	c = SC;
@@ -292,13 +295,13 @@ op_blend_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Image *dst)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_mask_color_pt_get(DATA32 col, RGBA_Image *dst)
+op_blend_mask_color_pt_get(DATA32 col, RGBA_Surface *dst)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -308,19 +311,19 @@ op_blend_mask_color_pt_get(DATA32 col, RGBA_Image *dst)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_pixel_mask_pt_get(int src_flags, RGBA_Image *dst)
+op_blend_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
-   if (src_flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src_flags & RGBA_SURFACE_HAS_ALPHA)
 	s = SP;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_gfx_pt_func_cpu(s, m, c, d);
 }
@@ -386,23 +389,23 @@ blend_rel_gfx_span_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Func
-op_blend_rel_pixel_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels)
+op_blend_rel_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
-   if (src && (src->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (src && (src->flags & RGBA_SURFACE_HAS_ALPHA))
      {
 	s = SP;
-	if (src->flags & RGBA_IMAGE_ALPHA_SPARSE)
+	if (src->flags & RGBA_SURFACE_ALPHA_SPARSE)
 	    s = SP_AS;
      }
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_rel_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
+op_blend_rel_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -412,17 +415,17 @@ op_blend_rel_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_rel_pixel_color_span_get(RGBA_Image *src, DATA32 col, RGBA_Image *dst, int pixels)
+op_blend_rel_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
-   if (src && (src->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (src && (src->flags & RGBA_SURFACE_HAS_ALPHA))
 	s = SP;
    if ((col >> 24) < 255)
 	c = SC;
@@ -430,13 +433,13 @@ op_blend_rel_pixel_color_span_get(RGBA_Image *src, DATA32 col, RGBA_Image *dst, 
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_rel_mask_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
+op_blend_rel_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -446,23 +449,23 @@ op_blend_rel_mask_color_span_get(DATA32 col, RGBA_Image *dst, int pixels)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_span_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Func
-op_blend_rel_pixel_mask_span_get(RGBA_Image *src, RGBA_Image *dst, int pixels)
+op_blend_rel_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
-   if (src && (src->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (src && (src->flags & RGBA_SURFACE_HAS_ALPHA))
      {
 	s = SP;
-	if (src->flags & RGBA_IMAGE_ALPHA_SPARSE)
+	if (src->flags & RGBA_SURFACE_ALPHA_SPARSE)
 	    s = SP_AS;
      }
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_span_func_cpu(s, m, c, d);
 }
@@ -489,19 +492,19 @@ blend_rel_gfx_pt_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_rel_pixel_pt_get(int src_flags, RGBA_Image *dst)
+op_blend_rel_pixel_pt_get(int src_flags, RGBA_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
-   if (src_flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src_flags & RGBA_SURFACE_HAS_ALPHA)
 	s = SP;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_rel_color_pt_get(DATA32 col, RGBA_Image *dst)
+op_blend_rel_color_pt_get(DATA32 col, RGBA_Surface *dst)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -511,17 +514,17 @@ op_blend_rel_color_pt_get(DATA32 col, RGBA_Image *dst)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Image *dst)
+op_blend_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
-   if (src_flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src_flags & RGBA_SURFACE_HAS_ALPHA)
 	s = SP;
    if ((col >> 24) < 255)
 	c = SC;
@@ -529,13 +532,13 @@ op_blend_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Image *dst)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_rel_mask_color_pt_get(DATA32 col, RGBA_Image *dst)
+op_blend_rel_mask_color_pt_get(DATA32 col, RGBA_Surface *dst)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -545,19 +548,19 @@ op_blend_rel_mask_color_pt_get(DATA32 col, RGBA_Image *dst)
 	c = SC_AA;
    if (col == 0xffffffff)
 	c = SC_N;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_pt_func_cpu(s, m, c, d);
 }
 
 static RGBA_Gfx_Pt_Func
-op_blend_rel_pixel_mask_pt_get(int src_flags, RGBA_Image *dst)
+op_blend_rel_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
-   if (src_flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src_flags & RGBA_SURFACE_HAS_ALPHA)
 	s = SP;
-   if (dst && (dst->flags & RGBA_IMAGE_HAS_ALPHA))
+   if (dst && (dst->flags & RGBA_SURFACE_HAS_ALPHA))
 	d = DP;
    return blend_rel_gfx_pt_func_cpu(s, m, c, d);
 }

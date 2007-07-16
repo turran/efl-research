@@ -45,7 +45,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_emage_test_OBJECTS = emage_test.$(OBJEXT)
+am_emage_test_OBJECTS = emage_object.$(OBJEXT) emage_png.$(OBJEXT) \
+	emage_test.$(OBJEXT)
 emage_test_OBJECTS = $(am_emage_test_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src/lib@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -174,10 +175,13 @@ INCLUDES = -Wall -g \
 -I$(top_srcdir)/src/lib
 
 emage_test_SOURCES = \
+emage_object.c \
+emage_png.c \
 emage_test.c
 
 emage_test_LDADD = \
-$(top_builddir)/src/lib/libemage.la
+$(top_builddir)/src/lib/libemage.la \
+-lpng12
 
 emage_test_DEPENDENCIES = \
 $(top_builddir)/src/lib/libemage.la
@@ -253,6 +257,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emage_object.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emage_png.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emage_test.Po@am__quote@
 
 .c.o:
