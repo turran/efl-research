@@ -59,7 +59,8 @@ struct _Cutout_Rects
 struct _RGBA_Surface
 {
    int                w, h;
-   DATA32            *data;
+   void            *data;
+   void 		*alpha;
    /* TODO colorspace */
    int               flags;
 };
@@ -127,9 +128,13 @@ struct _RGBA_Polygon_Point
 
 
 /* possible API */
-/* context handling */
-EAPI RGBA_Draw_Context 	*evas_common_draw_context_new(void);
-/* surface handling */
-EAPI RGBA_Surface 	*emage_surface_new(int w, int h, int cs);
-EAPI void emage_surface_size_get(RGBA_Surface *s, int *w, int *h);
+EAPI int 		emage_init(void);
+EAPI void 		emage_shutdown(void);
+EAPI RGBA_Draw_Context 	*emage_draw_context_new(void);
+EAPI RGBA_Surface 	*emage_surface_new(void *data, int w, int h);
+
+/* Objects */
+EAPI void 		emage_line_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1);
+EAPI void 		emage_rectangle_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y, int w, int h);
+
 #endif

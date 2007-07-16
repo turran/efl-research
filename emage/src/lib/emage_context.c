@@ -77,18 +77,28 @@ evas_common_draw_context_new(void)
 }
 
 EAPI void
+evas_common_draw_context_apply_clean_cutouts(Cutout_Rects* rects)
+{
+   free(rects->rects);
+   rects->rects = NULL;
+   rects->active = 0;
+   rects->max = 0;
+}
+
+
+EAPI void
+evas_common_draw_context_clear_cutouts(RGBA_Draw_Context *dc)
+{
+   evas_common_draw_context_apply_clean_cutouts(&dc->cutout);
+}
+
+EAPI void
 evas_common_draw_context_free(RGBA_Draw_Context *dc)
 {
    if (!dc) return;
 
    evas_common_draw_context_apply_clean_cutouts(&dc->cutout);
    free(dc);
-}
-
-EAPI void
-evas_common_draw_context_clear_cutouts(RGBA_Draw_Context *dc)
-{
-   evas_common_draw_context_apply_clean_cutouts(&dc->cutout);
 }
 
 /* FIXME FONTS!!! */
@@ -498,14 +508,6 @@ evas_common_draw_context_apply_clear_cutouts(Cutout_Rects* rects)
    free(rects);
 }
 
-EAPI void
-evas_common_draw_context_apply_clean_cutouts(Cutout_Rects* rects)
-{
-   free(rects->rects);
-   rects->rects = NULL;
-   rects->active = 0;
-   rects->max = 0;
-}
 
 EAPI void
 evas_common_draw_context_set_anti_alias(RGBA_Draw_Context *dc , unsigned char aa)
@@ -532,30 +534,3 @@ evas_common_draw_context_set_sli(RGBA_Draw_Context *dc, int y, int h)
    dc->sli.h = h;
 }
 
-#if 0
-void
-evas_common_init(void)
-{
-   evas_common_cpu_init();
-
-   evas_common_blend_init();
-   evas_common_image_init();
-   evas_common_convert_init();
-   evas_common_scale_init();
-   evas_common_rectangle_init();
-   evas_common_gradient_init();
-   evas_common_polygon_init();
-   evas_common_line_init();
-   evas_common_font_init();
-   evas_common_draw_init();
-   evas_common_tilebuf_init();
-}
-
-void
-evas_common_shutdown(void)
-{
-   evas_font_dir_cache_free();
-   evas_common_image_cache_free();
-}
-
-#endif

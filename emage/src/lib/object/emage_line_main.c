@@ -591,14 +591,8 @@ _evas_draw_line_aa(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-
 EAPI void
-evas_common_line_init(void)
-{
-}
-
-EAPI void
-evas_common_line_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1)
+emage_line_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1)
 {
    int  x, y, w, h;
    int  clx, cly, clw, clh;
