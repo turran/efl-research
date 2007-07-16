@@ -1,0 +1,11 @@
+PORTED
+~~~~~~
+- cpu
+- blit
+- blend
+- object/line
+- object/polygon
+- object/rectangle
+
+WORKING
+~~~~~~~
