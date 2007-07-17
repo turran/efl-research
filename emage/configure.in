@@ -987,6 +987,8 @@ src/bin/Makefile
 src/lib/Makefile 
 src/lib/object/Makefile 
 src/lib/op/Makefile 
+src/lib/scale/Makefile 
+src/lib/convert/Makefile 
 src/lib/data/Makefile 
 ])
 

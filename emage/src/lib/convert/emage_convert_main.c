@@ -1,4 +1,7 @@
-#include "evas_common.h"
+#include <stdlib.h>
+
+#include "Emage.h"
+#include "emage_private.h"
 
 #ifdef USE_DITHER_44
 const DATA8 _evas_dither_44[4][4] =

@@ -1,4 +1,5 @@
-#include "evas_common.h"
+#include "Emage.h"
+#include "emage_private.h"
 
 static void
 evas_common_scale_rgba_span_(DATA32 *src, DATA8 *mask, int src_len, DATA32 mul_col, DATA32 *dst, int dst_len, int dir)

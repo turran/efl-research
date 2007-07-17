@@ -1,4 +1,4 @@
-SUBDIRS = object op data 
+SUBDIRS = object op data scale convert 
 
 MAINTAINERCLEANFILES = \
 Makefile.in \
@@ -7,8 +7,7 @@ config.h \
 stamp-h1
 
 INCLUDES = -I. \
--I$(top_srcdir)/src/lib \
--Werror
+-I$(top_srcdir)/src/lib
 
 lib_LTLIBRARIES = libemage.la
 
@@ -23,12 +22,16 @@ libemage_la_LIBADD = \
  -lm \
 object/libemage_object.la \
 op/libemage_op.la \
+scale/libemage_scale.la \
+convert/libemage_convert.la \
 data/libemage_data.la
 
 libemage_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h \
 object/libemage_object.la \
 op/libemage_op.la \
+convert/libemage_convert.la \
+scale/libemage_scale.la \
 data/libemage_data.la
 
 libemage_la_LDFLAGS      = -version-info 1:0:0

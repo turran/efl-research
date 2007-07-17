@@ -1,5 +1,7 @@
-#include "evas_common.h"
+#include <stdlib.h>
 
+#include "Emage.h"
+#include "emage_private.h"
 
 static DATA32 **scale_calc_y_points(DATA32 *src, int sw, int sh, int dh);
 static int     *scale_calc_x_points(int sw, int dw);
@@ -428,16 +430,16 @@ evas_common_scale_rgba_mipmap_down_1x2_mmx(DATA32 *src, DATA32 *dst, int src_w, 
 #  define SCALE_FUNC evas_common_scale_rgba_in_to_out_clip_smooth_mmx
 #  undef SCALE_USING_MMX
 #  define SCALE_USING_MMX
-#  include "evas_scale_smooth_scaler.c"
+#  include "emage_scale_smooth_scaler.c"
 # endif
 # ifdef BUILD_C
 #  undef SCALE_FUNC
 #  define SCALE_FUNC evas_common_scale_rgba_in_to_out_clip_smooth_c
 #  undef SCALE_USING_MMX
-#  include "evas_scale_smooth_scaler.c"
+#  include "emage_scale_smooth_scaler.c"
 # endif
 EAPI void
-evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Image *src, RGBA_Image *dst,
+evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Surface *src, RGBA_Surface *dst,
 				 RGBA_Draw_Context *dc,
 				 int src_region_x, int src_region_y,
 				 int src_region_w, int src_region_h,
@@ -454,7 +456,7 @@ evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Image *src, RGBA_Image *dst,
    /* handle cutouts here! */
 
    if ((dst_region_w <= 0) || (dst_region_h <= 0)) return;
-   if (!(RECTS_INTERSECT(dst_region_x, dst_region_y, dst_region_w, dst_region_h, 0, 0, dst->image->w, dst->image->h)))
+   if (!(RECTS_INTERSECT(dst_region_x, dst_region_y, dst_region_w, dst_region_h, 0, 0, dst->w, dst->h)))
      return;
 # ifdef BUILD_MMX
    evas_common_cpu_can_do(&mmx, &sse, &sse2);
@@ -482,7 +484,7 @@ evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Image *src, RGBA_Image *dst,
      }
    /* save out clip info */
    c = dc->clip.use; cx = dc->clip.x; cy = dc->clip.y; cw = dc->clip.w; ch = dc->clip.h;
-   evas_common_draw_context_clip_clip(dc, 0, 0, dst->image->w, dst->image->h);
+   evas_common_draw_context_clip_clip(dc, 0, 0, dst->w, dst->h);
    evas_common_draw_context_clip_clip(dc, dst_region_x, dst_region_y, dst_region_w, dst_region_h);
    /* our clip is 0 size.. abort */
    if ((dc->clip.w <= 0) || (dc->clip.h <= 0))

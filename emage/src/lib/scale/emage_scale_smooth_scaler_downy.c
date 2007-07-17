@@ -20,7 +20,7 @@
    yapp = yapoints + dyy;
    pbuf = buf;
 
-   if (src->flags & RGBA_IMAGE_HAS_ALPHA)
+   if (src->flags & RGBA_SURFACE_HAS_ALPHA)
      {
 	while (dst_clip_h--)
 	  {
@@ -102,8 +102,8 @@
    else
      {
 #ifdef DIRECT_SCALE
-        if ((!(src->flags & RGBA_IMAGE_HAS_ALPHA)) &&
-	    (!(dst->flags & RGBA_IMAGE_HAS_ALPHA)) &&
+        if ((!(src->flags & RGBA_SURFACE_HAS_ALPHA)) &&
+	    (!(dst->flags & RGBA_SURFACE_HAS_ALPHA)) &&
 	    (!dc->mul.use))
 	  {
 	     while (dst_clip_h--)
