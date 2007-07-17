@@ -5,11 +5,6 @@
 #include "Emage.h"
 #include "emage_private.h"
 
-#if defined BUILD_MMX || defined BUILD_SSE
-#include "evas_mmx.h"
-#endif
-
-
 #ifndef WIN32
 static sigjmp_buf detect_buf;
 #endif
@@ -116,39 +111,6 @@ evas_common_cpu_feature_test(void (*feature)(void))
 #endif
 }
 
-EAPI void
-evas_common_cpu_init(void)
-{
-   static int called = 0;
-
-   if (called) return;
-   called = 1;
-#ifdef BUILD_MMX
-   cpu_feature_mask |= CPU_FEATURE_MMX *
-     evas_common_cpu_feature_test(evas_common_cpu_mmx_test);
-   evas_common_cpu_end_opt();
-   cpu_feature_mask |= CPU_FEATURE_MMX2 *
-     evas_common_cpu_feature_test(evas_common_cpu_mmx2_test);
-   evas_common_cpu_end_opt();
-#ifdef BUILD_SSE
-   cpu_feature_mask |= CPU_FEATURE_SSE *
-     evas_common_cpu_feature_test(evas_common_cpu_sse_test);
-   evas_common_cpu_end_opt();
-#endif /* BUILD_SSE */
-#endif /* BUILD_MMX */
-#ifdef __POWERPC__
-#ifdef __VEC__
-   cpu_feature_mask |= CPU_FEATURE_ALTIVEC *
-     evas_common_cpu_feature_test(evas_common_cpu_altivec_test);
-   evas_common_cpu_end_opt();
-#endif /* __VEC__ */
-#endif /* __POWERPC__ */
-#ifdef __SPARC__
-   cpu_feature_mask |= CPU_FEATURE_VIS *
-     evas_common_cpu_feature_test(evas_common_cpu_vis_test);
-   evas_common_cpu_end_opt();
-#endif /* __SPARC__ */
-}
 
 int
 evas_common_cpu_has_feature(unsigned int feature)
@@ -236,3 +198,38 @@ evas_common_cpu_count(void)
    return 1;
 #endif   
 }
+
+EAPI void
+evas_common_cpu_init(void)
+{
+   static int called = 0;
+
+   if (called) return;
+   called = 1;
+#ifdef BUILD_MMX
+   cpu_feature_mask |= CPU_FEATURE_MMX *
+     evas_common_cpu_feature_test(evas_common_cpu_mmx_test);
+   evas_common_cpu_end_opt();
+   cpu_feature_mask |= CPU_FEATURE_MMX2 *
+     evas_common_cpu_feature_test(evas_common_cpu_mmx2_test);
+   evas_common_cpu_end_opt();
+#ifdef BUILD_SSE
+   cpu_feature_mask |= CPU_FEATURE_SSE *
+     evas_common_cpu_feature_test(evas_common_cpu_sse_test);
+   evas_common_cpu_end_opt();
+#endif /* BUILD_SSE */
+#endif /* BUILD_MMX */
+#ifdef __POWERPC__
+#ifdef __VEC__
+   cpu_feature_mask |= CPU_FEATURE_ALTIVEC *
+     evas_common_cpu_feature_test(evas_common_cpu_altivec_test);
+   evas_common_cpu_end_opt();
+#endif /* __VEC__ */
+#endif /* __POWERPC__ */
+#ifdef __SPARC__
+   cpu_feature_mask |= CPU_FEATURE_VIS *
+     evas_common_cpu_feature_test(evas_common_cpu_vis_test);
+   evas_common_cpu_end_opt();
+#endif /* __SPARC__ */
+}
+

@@ -7,7 +7,8 @@ config.h \
 stamp-h1
 
 INCLUDES = -I. \
--I$(top_srcdir)/src/lib
+-I$(top_srcdir)/src/lib \
+-Werror
 
 lib_LTLIBRARIES = libemage.la
 

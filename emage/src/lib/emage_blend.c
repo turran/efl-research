@@ -3,10 +3,6 @@
 #include "Emage.h"
 #include "emage_private.h"
 
-#if defined BUILD_MMX || defined BUILD_SSE
-#include "evas_mmx.h"
-#endif
-
 const DATA32 ALPHA_255 = 255;
 const DATA32 ALPHA_256 = 256;
 

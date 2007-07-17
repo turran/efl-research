@@ -3,10 +3,6 @@
 #include "Emage.h"
 #include "emage_private.h"
 
-#if defined BUILD_MMX || defined BUILD_SSE
-#include "evas_mmx.h"
-#endif
-
 #define ALIGN_FIX
 
 /*============================================================================*

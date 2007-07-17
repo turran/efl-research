@@ -84,6 +84,10 @@ typedef enum _Evas_Render_Op
    EVAS_RENDER_MUL = 11 /**< d = d*s */
 } Evas_Render_Op; /**<  */
 
+/* Context
+ * ~~~~~~~ 
+ */
+
 struct _RGBA_Draw_Context
 {
    struct {
@@ -117,6 +121,22 @@ struct _RGBA_Draw_Context
    int            render_op;
    unsigned char  anti_alias : 1;
 };
+
+EAPI void               evas_common_draw_context_clip_clip         (RGBA_Draw_Context *dc, int x, int y, int w, int h);
+EAPI void               evas_common_draw_context_set_clip          (RGBA_Draw_Context *dc, int x, int y, int w, int h);
+EAPI void               evas_common_draw_context_unset_clip        (RGBA_Draw_Context *dc);
+EAPI void               evas_common_draw_context_set_color         (RGBA_Draw_Context *dc, int r, int g, int b, int a);
+EAPI void               evas_common_draw_context_set_multiplier    (RGBA_Draw_Context *dc, int r, int g, int b, int a);
+EAPI void               evas_common_draw_context_unset_multiplier  (RGBA_Draw_Context *dc);
+EAPI void               evas_common_draw_context_add_cutout        (RGBA_Draw_Context *dc, int x, int y, int w, int h);
+EAPI void               evas_common_draw_context_clear_cutouts     (RGBA_Draw_Context *dc);
+EAPI Cutout_Rects      *evas_common_draw_context_apply_cutouts     (RGBA_Draw_Context *dc);
+EAPI void               evas_common_draw_context_apply_clear_cutouts(Cutout_Rects* rects);
+EAPI void               evas_common_draw_context_apply_clean_cutouts(Cutout_Rects* rects);
+EAPI void               evas_common_draw_context_set_anti_alias    (RGBA_Draw_Context *dc, unsigned char aa);
+EAPI void               evas_common_draw_context_set_color_interpolation(RGBA_Draw_Context *dc, int color_space);
+EAPI void               evas_common_draw_context_set_render_op     (RGBA_Draw_Context *dc, int op);
+EAPI void               evas_common_draw_context_set_sli           (RGBA_Draw_Context *dc, int y, int h);
 
 
 /* Polygon */

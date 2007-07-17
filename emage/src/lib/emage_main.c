@@ -6,13 +6,11 @@ EAPI int emage_init(void)
 {
 	if (++init != 1) return init;
 	evas_common_cpu_init();
-
 	evas_common_blend_init();
 	//evas_common_convert_init();
 	//evas_common_scale_init();
 	evas_common_polygon_init();
 	evas_common_draw_init();
-	//evas_common_tilebuf_init();
 
 	return init;
 }
@@ -35,4 +33,3 @@ emage_surface_new(void *data, int w, int h)
 
 	return s;
 }
-
