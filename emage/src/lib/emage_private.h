@@ -7,6 +7,15 @@
 #include "emage_mmx.h"
 #endif
 
+#if defined HAVE_ALTIVEC_H
+#include <altivec.h>
+#ifdef CONFIG_DARWIN
+	#define AVV(x...) (x)
+#else
+	#define AVV(x...) {x}
+#endif
+#endif
+
 typedef void (*RGBA_Gfx_Func)    (DATA32 *src, DATA8 *mask, DATA32 col, DATA32 *dst, int len);
 typedef void (*RGBA_Gfx_Pt_Func) (DATA32 src, DATA8 mask, DATA32 col, DATA32 *dst);
 
@@ -81,6 +90,23 @@ typedef enum _CPU_Features
    CPU_FEATURE_VIS2    = (1 << 5)
 } CPU_Features;
 
+typedef enum _Convert_Pal_Mode
+{
+   PAL_MODE_NONE,
+   PAL_MODE_MONO,
+   PAL_MODE_GRAY4,
+   PAL_MODE_GRAY16,
+   PAL_MODE_GRAY64,
+   PAL_MODE_GRAY256,
+   PAL_MODE_RGB111,
+   PAL_MODE_RGB121,
+   PAL_MODE_RGB221,
+   PAL_MODE_RGB222,
+   PAL_MODE_RGB232,
+   PAL_MODE_RGB332,
+   PAL_MODE_RGB666,
+   PAL_MODE_LAST
+} Convert_Pal_Mode;
 
 /*============================================================================*
  *                                 Global                                     * 
@@ -125,7 +151,257 @@ void *evas_object_list_remove           (void *in_list, void *in_item);
 void *evas_object_list_find             (void *in_list, void *in_item);
 
 /* Context */
+/* Convert */
+EAPI void             evas_common_convert_init          (void);
+EAPI Gfx_Func_Convert evas_common_convert_func_get      (DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Convert_Pal_Mode pal_mode, int rotation);
 
+void evas_common_convert_rgba2_to_16bpp_rgb_565_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_565_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_bgr_565_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_bgr_565_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_444_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_444_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_454645_dith         (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_454645_dith          (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_555_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_555_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba2_to_16bpp_rgb_565_dith_rot_180    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_565_dith_rot_180     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_bgr_565_dith_rot_180    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_bgr_565_dith_rot_180     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_444_dith_rot_180    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_444_dith_rot_180     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_454645_dith_rot_180 (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_454645_dith_rot_180  (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_555_dith_rot_180    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_555_dith_rot_180     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba2_to_16bpp_rgb_565_dith_rot_270    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_565_dith_rot_270     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_bgr_565_dith_rot_270    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_bgr_565_dith_rot_270     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_444_dith_rot_270    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_444_dith_rot_270     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_454645_dith_rot_270 (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_454645_dith_rot_270  (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_555_dith_rot_270    (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_555_dith_rot_270     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba2_to_16bpp_rgb_565_dith_rot_90     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_565_dith_rot_90      (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_bgr_565_dith_rot_90     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_bgr_565_dith_rot_90      (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_444_dith_rot_90     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_444_dith_rot_90      (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_454645_dith_rot_90  (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_454645_dith_rot_90   (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba2_to_16bpp_rgb_555_dith_rot_90     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_16bpp_rgb_555_dith_rot_90      (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba_to_24bpp_rgb_888                 (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_24bpp_bgr_888                 (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba_to_32bpp_rgb_8888                (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgb_8888_rot_180        (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgb_8888_rot_270        (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgb_8888_rot_90         (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgbx_8888               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgbx_8888_rot_180       (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgbx_8888_rot_270       (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_rgbx_8888_rot_90        (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgr_8888                (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgr_8888_rot_180        (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgr_8888_rot_270        (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgr_8888_rot_90         (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgrx_8888               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgrx_8888_rot_180       (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgrx_8888_rot_270       (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_32bpp_bgrx_8888_rot_90        (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba_to_8bpp_rgb_332_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_rgb_666_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_rgb_232_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_rgb_222_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_rgb_221_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_rgb_121_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_rgb_111_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_gry_256_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_gry_64_dith              (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_gry_16_dith              (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_gry_4_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_8bpp_gry_1_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba_to_4bpp_gry_4_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+void evas_common_convert_rgba_to_4bpp_gry_1_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_rgba_to_1bpp_gry_1_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+void evas_common_convert_yuv_420p_601_rgba                     (DATA8 **src, DATA8 *dst, int w, int h);
+
+EAPI void evas_common_convert_argb_premul                          (DATA32 *src, unsigned int len);
+EAPI void evas_common_convert_argb_unpremul                        (DATA32 *src, unsigned int len);
+EAPI void evas_common_convert_color_argb_premul                    (int a, int *r, int *g, int *b);
+EAPI void evas_common_convert_color_argb_unpremul                  (int a, int *r, int *g, int *b);
+
+EAPI void evas_common_convert_color_hsv_to_rgb                     (float h, float s, float v, int *r, int *g, int *b);
+EAPI void evas_common_convert_color_rgb_to_hsv                     (int r, int g, int b, float *h, float *s, float *v);
+EAPI void evas_common_convert_color_hsv_to_rgb_int                 (int h, int s, int v, int *r, int *g, int *b);
+EAPI void evas_common_convert_color_rgb_to_hsv_int                 (int r, int g, int b, int *h, int *s, int *v);
+
+#ifdef BUILD_SMALL_DITHER_MASK
+# define DM_TABLE     _evas_dither_44
+# define DM_SIZE      4
+# define DM_BITS      4
+# define DM_DIV       16
+# define USE_DITHER_44 1
+# define DM_MSK       (DM_SIZE - 1)
+# define DM_SHF(_b)   (DM_BITS - (8 - _b))
+#else
+# define DM_TABLE     _evas_dither_128128
+# define DM_SIZE      128
+# define DM_BITS      6
+# define DM_DIV       64
+# define USE_DITHER_128128 1
+# define DM_MSK       (DM_SIZE - 1)
+# define DM_SHF(_b)   (DM_BITS - (8 - _b))
+#endif
+
+#define CONVERT_LOOP_START_ROT_0() \
+   src_ptr = src; \
+   for (y = 0; y < h; y++) \
+     { \
+	for (x = 0; x < w; x++) \
+	  {
+
+#define CONVERT_LOOP_END_ROT_0() \
+             dst_ptr++; \
+             src_ptr++; \
+          } \
+        src_ptr += src_jump; \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP_START_ROT_180() \
+   src_ptr = src + (w - 1) + ((h - 1) * (w + src_jump)); \
+   for (y = 0; y < h; y++) \
+     { \
+        for (x = 0; x < w; x++) \
+          {
+
+#define CONVERT_LOOP_END_ROT_180() \
+             dst_ptr++; \
+             src_ptr--; \
+          } \
+        src_ptr = src + (w - 1) + ((h - y - 2) * (w + src_jump)); \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP_START_ROT_270() \
+   src_ptr = src + ((w - 1) * (h + src_jump)); \
+   for (y = 0; y < h; y++) \
+     { \
+	for (x = 0; x < w; x++) \
+	  {
+
+#define CONVERT_LOOP_END_ROT_270() \
+             dst_ptr++; \
+             src_ptr -= (h + src_jump); \
+          } \
+        src_ptr = src + ((w - 1) * (h + src_jump)) + (y + 1); \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP_START_ROT_90() \
+   src_ptr = src + (h - 1); \
+   for (y = 0; y < h; y++) \
+     { \
+	for (x = 0; x < w; x++) \
+	  {
+
+#define CONVERT_LOOP_END_ROT_90() \
+             dst_ptr++; \
+             src_ptr += (h + src_jump); \
+          } \
+        src_ptr = src + (h - 1) - y - 1; \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP2_START_ROT_0() \
+   src_ptr = src; \
+   for (y = 0; y < h; y++) \
+     { \
+	for (x = 0; x < w; x++) \
+	  {
+
+#define CONVERT_LOOP2_INC_ROT_0() \
+src_ptr++; \
+x++;
+
+#define CONVERT_LOOP2_END_ROT_0() \
+             dst_ptr+=2; \
+             src_ptr++; \
+          } \
+        src_ptr += src_jump; \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP2_START_ROT_180() \
+   src_ptr = src + (w - 1) + ((h - 1) * (w + src_jump)); \
+   for (y = 0; y < h; y++) \
+     { \
+        for (x = 0; x < w; x++) \
+          {
+
+#define CONVERT_LOOP2_INC_ROT_180() \
+src_ptr--; \
+x++;
+
+#define CONVERT_LOOP2_END_ROT_180() \
+             dst_ptr+=2; \
+             src_ptr--; \
+          } \
+        src_ptr = src + (w - 1) + ((h - y - 2) * (w + src_jump)); \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP2_START_ROT_270() \
+   src_ptr = src + ((w - 1) * (h + src_jump)); \
+   for (y = 0; y < h; y++) \
+     { \
+	for (x = 0; x < w; x++) \
+	  {
+
+#define CONVERT_LOOP2_INC_ROT_270() \
+src_ptr -= (h + src_jump); \
+x++;
+
+#define CONVERT_LOOP2_END_ROT_270() \
+             dst_ptr+=2; \
+             src_ptr -= (h + src_jump); \
+          } \
+        src_ptr = src + ((w - 1) * (h + src_jump)) + (y + 1); \
+        dst_ptr += dst_jump; \
+     }
+
+#define CONVERT_LOOP2_START_ROT_90() \
+   src_ptr = src + (h - 1); \
+   for (y = 0; y < h; y++) \
+     { \
+	for (x = 0; x < w; x++) \
+	  {
+
+#define CONVERT_LOOP2_INC_ROT_90() \
+src_ptr += (h + src_jump); \
+x++;
+
+#define CONVERT_LOOP2_END_ROT_90() \
+             dst_ptr+=2; \
+             src_ptr += (h + src_jump); \
+          } \
+        src_ptr = src + (h - 1) - y - 1; \
+        dst_ptr += dst_jump; \
+     }
 
 /*============================================================================*
  *                                 Macros                                     * 

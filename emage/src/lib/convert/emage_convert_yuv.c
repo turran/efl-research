@@ -1,18 +1,8 @@
-#include "evas_common.h"
+#include <stdlib.h>
 
-#if defined BUILD_MMX || defined BUILD_SSE
-# include "evas_mmx.h"
-#endif
+#include "Emage.h"
+#include "emage_private.h"
 
-#if defined HAVE_ALTIVEC_H
-# include <altivec.h>
-#ifdef CONFIG_DARWIN
-#define AVV(x...) (x)
-#else
-#define AVV(x...) {x}
-#endif
-
-#endif
 
 #ifdef BUILD_CONVERT_YUV
 

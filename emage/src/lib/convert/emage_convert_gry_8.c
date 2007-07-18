@@ -1,4 +1,7 @@
-#include "evas_common.h"
+#include <stdlib.h>
+
+#include "Emage.h"
+#include "emage_private.h"
 
 #ifdef BUILD_CONVERT_8_GRY_1
 void evas_common_convert_rgba_to_8bpp_gry_256_dith     (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal){}

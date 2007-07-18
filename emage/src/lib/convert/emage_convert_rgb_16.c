@@ -1,4 +1,9 @@
-#include "evas_common.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "Emage.h"
+#include "emage_private.h"
+
 
 #ifndef BUILD_NO_DITHER_MASK
 #ifdef USE_DITHER_44

@@ -1,4 +1,7 @@
-#include "evas_common.h"
+#include <stdlib.h>
+
+#include "Emage.h"
+#include "emage_private.h"
 
 #ifdef BUILD_CONVERT_24_RGB_888
 void

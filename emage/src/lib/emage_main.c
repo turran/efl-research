@@ -7,8 +7,8 @@ EAPI int emage_init(void)
 	if (++init != 1) return init;
 	evas_common_cpu_init();
 	evas_common_blend_init();
-	//evas_common_convert_init();
-	//evas_common_scale_init();
+	evas_common_convert_init();
+	evas_common_scale_init();
 	evas_common_polygon_init();
 	evas_common_draw_init();
 
@@ -30,6 +30,7 @@ emage_surface_new(void *data, int w, int h)
 	s->w = w;
 	s->h = h;
 	s->data = data;
+	s->flags = RGBA_SURFACE_HAS_ALPHA;
 
 	return s;
 }
