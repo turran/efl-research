@@ -3,6 +3,15 @@
 
 #include "config.h"
 
+/* check if we have at least one backend if not, there's an eror */
+#ifndef BUILD_MMX
+# ifndef BUILD_SSE
+#  ifndef BUILD_C
+#   error "Please Read the README"
+#  endif
+# endif
+#endif
+
 #if defined BUILD_MMX || defined BUILD_SSE
 #include "emage_mmx.h"
 #endif

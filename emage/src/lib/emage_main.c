@@ -19,18 +19,3 @@ EAPI void emage_shutdown(void)
 {
 	if (--init) return;
 }
-
-
-EAPI RGBA_Surface *
-emage_surface_new(void *data, int w, int h)
-{
-	RGBA_Surface *s;
-
-	s = malloc(sizeof(RGBA_Surface));
-	s->w = w;
-	s->h = h;
-	s->data = data;
-	s->flags = RGBA_SURFACE_HAS_ALPHA;
-
-	return s;
-}

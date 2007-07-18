@@ -4,8 +4,8 @@ INCLUDES = -Wall -g \
 bin_PROGRAMS = emage_test
 
 emage_test_SOURCES = \
-emage_object.c \
-emage_png.c \
+object.c \
+png.c \
 emage_test.c
 
 emage_test_LDADD = \

@@ -59,7 +59,7 @@ struct _Cutout_Rects
 struct _RGBA_Surface
 {
    int                w, h;
-   void            *data;
+   DATA32            *data; /* FIX THIS, doesnt has to be 32bpp */
    void 		*alpha;
    /* TODO colorspace */
    int               flags;
@@ -169,6 +169,7 @@ EAPI void 		emage_shutdown(void);
 EAPI RGBA_Draw_Context 	*emage_draw_context_new(void);
 EAPI RGBA_Surface 	*emage_surface_new(void *data, int w, int h);
 
+EAPI void 		emage_surface_size_get(RGBA_Surface *s, int *w, int *h);
 /* Objects */
 EAPI void 		emage_line_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1);
 EAPI void 		emage_rectangle_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y, int w, int h);
