@@ -4,8 +4,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 INCLUDES = \
 -I. \
--I$(top_srcdir)/src/lib \
--Werror
+-I$(top_srcdir)/src/lib 
 
 noinst_LTLIBRARIES      = libemage_op.la
 
