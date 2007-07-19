@@ -9,7 +9,6 @@ INCLUDES = \
 noinst_LTLIBRARIES      = libemage_scale.la
 
 libemage_scale_la_SOURCES  = \
-emage_scale_main.c \
 emage_scale_sample.c \
 emage_scale_smooth.c \
 emage_scale_span.c

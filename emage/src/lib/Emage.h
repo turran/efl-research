@@ -110,21 +110,6 @@ struct _RGBA_Draw_Context
    unsigned char  anti_alias : 1;
 };
 
-EAPI void               evas_common_draw_context_clip_clip         (RGBA_Draw_Context *dc, int x, int y, int w, int h);
-EAPI void               evas_common_draw_context_set_clip          (RGBA_Draw_Context *dc, int x, int y, int w, int h);
-EAPI void               evas_common_draw_context_unset_clip        (RGBA_Draw_Context *dc);
-EAPI void               evas_common_draw_context_set_color         (RGBA_Draw_Context *dc, int r, int g, int b, int a);
-EAPI void               evas_common_draw_context_set_multiplier    (RGBA_Draw_Context *dc, int r, int g, int b, int a);
-EAPI void               evas_common_draw_context_unset_multiplier  (RGBA_Draw_Context *dc);
-EAPI void               evas_common_draw_context_add_cutout        (RGBA_Draw_Context *dc, int x, int y, int w, int h);
-EAPI void               evas_common_draw_context_clear_cutouts     (RGBA_Draw_Context *dc);
-EAPI Cutout_Rects      *evas_common_draw_context_apply_cutouts     (RGBA_Draw_Context *dc);
-EAPI void               evas_common_draw_context_apply_clear_cutouts(Cutout_Rects* rects);
-EAPI void               evas_common_draw_context_apply_clean_cutouts(Cutout_Rects* rects);
-EAPI void               evas_common_draw_context_set_anti_alias    (RGBA_Draw_Context *dc, unsigned char aa);
-EAPI void               evas_common_draw_context_set_color_interpolation(RGBA_Draw_Context *dc, int color_space);
-EAPI void               evas_common_draw_context_set_render_op     (RGBA_Draw_Context *dc, int op);
-EAPI void               evas_common_draw_context_set_sli           (RGBA_Draw_Context *dc, int y, int h);
 
 
 /* Polygon */
@@ -155,11 +140,28 @@ evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Surface *src, RGBA_Surface *ds
 EAPI int 		emage_init(void);
 EAPI void 		emage_shutdown(void);
 /* Context */
+/* FIXME change the name of the above */
 EAPI RGBA_Draw_Context 	*emage_draw_context_new(void);
+EAPI void               emage_draw_context_clip_clip         (RGBA_Draw_Context *dc, int x, int y, int w, int h);
+EAPI void               emage_draw_context_set_clip          (RGBA_Draw_Context *dc, int x, int y, int w, int h);
+EAPI void               emage_draw_context_unset_clip        (RGBA_Draw_Context *dc);
+EAPI void               emage_draw_context_set_color         (RGBA_Draw_Context *dc, int r, int g, int b, int a);
+EAPI void               emage_draw_context_set_multiplier    (RGBA_Draw_Context *dc, int r, int g, int b, int a);
+EAPI void               emage_draw_context_unset_multiplier  (RGBA_Draw_Context *dc);
+EAPI void               emage_draw_context_add_cutout        (RGBA_Draw_Context *dc, int x, int y, int w, int h);
+EAPI Cutout_Rect*	emage_draw_context_cutouts_add(Cutout_Rects* rects, int x, int y, int w, int h);
+EAPI void               emage_draw_context_clear_cutouts     (RGBA_Draw_Context *dc);
+EAPI Cutout_Rects      *emage_draw_context_apply_cutouts     (RGBA_Draw_Context *dc);
+EAPI void               emage_draw_context_apply_clear_cutouts(Cutout_Rects* rects);
+EAPI void               emage_draw_context_apply_clean_cutouts(Cutout_Rects* rects);
+EAPI void               emage_draw_context_set_anti_alias    (RGBA_Draw_Context *dc, unsigned char aa);
+EAPI void               emage_draw_context_set_color_interpolation(RGBA_Draw_Context *dc, int color_space);
+EAPI void               emage_draw_context_set_render_op     (RGBA_Draw_Context *dc, int op);
+EAPI void               emage_draw_context_set_sli           (RGBA_Draw_Context *dc, int y, int h);
 /* Surface */
-EAPI RGBA_Surface 	*emage_surface_new(void *data, int w, int h);
+EAPI RGBA_Surface *	emage_surface_new(void *data, int w, int h);
 EAPI inline void	emage_surface_size_get(RGBA_Surface *s, int *w, int *h);
-EAPI inline void	*emage_surface_data_get(RGBA_Surface *s);
+EAPI inline void *	emage_surface_data_get(RGBA_Surface *s);
 EAPI inline void	emage_surface_data_set(RGBA_Surface *s, void *data);
 /* Objects */
 EAPI void 		emage_line_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1);

@@ -137,6 +137,14 @@ typedef enum _Convert_Pal_Mode
    PAL_MODE_LAST
 } Convert_Pal_Mode;
 
+
+/* TODO
+ * most of the code has a "save clip info and restore it after" put 
+ * those on a function!
+ * 
+ *
+ */
+
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/

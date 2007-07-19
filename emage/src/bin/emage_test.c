@@ -21,12 +21,12 @@ int main(void)
 	s2 = emage_surface_new(d2, WIDTH/2, HEIGHT/2);
 
 	/* common */
-	evas_common_draw_context_set_color(dc, 128, 128, 0, 255);
-	evas_common_draw_context_set_anti_alias(dc, 1);
-	//evas_common_draw_context_set_multiplier(dc, 14, 26, 50, 30);
+	emage_draw_context_set_color(dc, 128, 128, 0, 255);
+	emage_draw_context_set_anti_alias(dc, 1);
+	//emage_draw_context_set_multiplier(dc, 14, 26, 50, 30);
 	/* objects test */
 	object_test(s1, dc);
-	evas_common_draw_context_set_color(dc, 218, 0, 0, 255);
+	emage_draw_context_set_color(dc, 218, 0, 0, 255);
 	object_test(s2, dc);
 	
 	/* blt/blend */
