@@ -137,6 +137,7 @@ evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Surface *src, RGBA_Surface *ds
 /* possible API
  * ~~~~~~~~~~~~
  */
+
 EAPI int 		emage_init(void);
 EAPI void 		emage_shutdown(void);
 /* Context */
@@ -169,6 +170,7 @@ EAPI void 		emage_rectangle_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x
 EAPI void 		emage_polygon_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, RGBA_Polygon_Point *points);
 /* Scale */
 
+/* Convert */
 typedef enum _Emage_Colorspace
 {
 	EMAGE_COLORSPACE_RGBA

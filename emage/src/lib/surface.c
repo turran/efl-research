@@ -13,7 +13,7 @@ emage_surface_new(void *data, int w, int h)
 {
 	RGBA_Surface *s;
 
-	s = malloc(sizeof(RGBA_Surface));
+	s = calloc(sizeof(RGBA_Surface));
 	s->w = w;
 	s->h = h;
 	s->data = data;

@@ -25,6 +25,7 @@ int main(void)
 	emage_draw_context_set_anti_alias(dc, 1);
 	//emage_draw_context_set_multiplier(dc, 14, 26, 50, 30);
 	/* objects test */
+	emage_draw_context_set_render_op(dc, 0);
 	object_test(s1, dc);
 	emage_draw_context_set_color(dc, 218, 0, 0, 255);
 	object_test(s2, dc);

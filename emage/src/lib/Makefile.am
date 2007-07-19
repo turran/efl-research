@@ -13,10 +13,10 @@ lib_LTLIBRARIES = libemage.la
 
 libemage_la_SOURCES = \
 surface.c \
+context.c \
 emage_main.c \
 emage_blend.c \
 emage_blit.c \
-emage_context.c \
 emage_cpu.c
 
 libemage_la_LIBADD = \
