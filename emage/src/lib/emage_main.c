@@ -9,7 +9,6 @@ EAPI int emage_init(void)
 	evas_common_blend_init();
 	evas_common_convert_init();
 	evas_common_scale_init();
-	evas_common_polygon_init();
 	evas_common_draw_init();
 
 	return init;

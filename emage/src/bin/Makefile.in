@@ -45,7 +45,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_emage_test_OBJECTS = object.$(OBJEXT) png.$(OBJEXT) \
+am_emage_test_OBJECTS = time.$(OBJEXT) object.$(OBJEXT) png.$(OBJEXT) \
 	emage_test.$(OBJEXT)
 emage_test_OBJECTS = $(am_emage_test_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src/lib@am__isrc@
@@ -175,6 +175,7 @@ INCLUDES = -Wall -g \
 -I$(top_srcdir)/src/lib
 
 emage_test_SOURCES = \
+time.c \
 object.c \
 png.c \
 emage_test.c
@@ -260,6 +261,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emage_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/png.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/time.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

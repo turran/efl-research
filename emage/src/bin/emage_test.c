@@ -1,7 +1,4 @@
-#include <stdlib.h>
-#include <string.h>
-
-#include "Emage.h"
+#include "emage_test.h"
 
 #define WIDTH 256
 #define HEIGHT 512 

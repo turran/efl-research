@@ -9,8 +9,9 @@ void png_save(RGBA_Surface *s, char *file, int compress)
 	FILE *f;
 	int num_passes = 1, pass;
 	int x, y, j;
+	int w, h;
 
-	DATA32 *ptr, *data;
+	DATA32 *ptr, *data, *sdata;
 
 	png_structp         png_ptr;
 	png_infop           info_ptr;
@@ -31,9 +32,11 @@ void png_save(RGBA_Surface *s, char *file, int compress)
 	if (setjmp(png_ptr->jmpbuf))
 		goto error_jmp;
 
-	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
+//	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
 	{
-		data = malloc(s->w * s->h * sizeof(DATA32));
+		sdata = emage_surface_data_get(s);
+		emage_surface_size_get(s, &w, &h);
+		data = malloc(w * h * sizeof(DATA32));
         if (!data)
           {
             fclose(f);
@@ -41,10 +44,10 @@ void png_save(RGBA_Surface *s, char *file, int compress)
             png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
             return;
           }
-        memcpy(data, s->data, s->w * s->h * sizeof(DATA32));
+        memcpy(data, sdata, w * h * sizeof(DATA32));
         //evas_common_convert_argb_unpremul(data, s->w * s->h);
         png_init_io(png_ptr, f);
-        png_set_IHDR(png_ptr, info_ptr, s->w, s->h, 8,
+        png_set_IHDR(png_ptr, info_ptr, w, h, 8,
                      PNG_COLOR_TYPE_RGB_ALPHA, png_ptr->interlaced,
                      PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
@@ -54,6 +57,7 @@ void png_save(RGBA_Surface *s, char *file, int compress)
 		png_set_bgr(png_ptr);
 #endif
 	}
+#if 0
 	else
 	{
         data = s->data;
@@ -64,6 +68,7 @@ void png_save(RGBA_Surface *s, char *file, int compress)
         png_data = alloca(s->w * 3 * sizeof(char));
 
 	}
+#endif
 	sig_bit.red = 8;
 	sig_bit.green = 8;
 	sig_bit.blue = 8;
@@ -78,10 +83,11 @@ void png_save(RGBA_Surface *s, char *file, int compress)
 	{
 ptr = data;
 
-        for (y = 0; y < s->h; y++)
+        for (y = 0; y < h; y++)
           {
-             if (s->flags & RGBA_SURFACE_HAS_ALPHA)
+            // if (s->flags & RGBA_SURFACE_HAS_ALPHA)
                row_ptr = (png_bytep) ptr;
+	     #if 0
              else
                {
                   for (j = 0, x = 0; x < s->w; x++)
@@ -92,8 +98,9 @@ ptr = data;
                     }
                   row_ptr = (png_bytep) png_data;
                }
+	       #endif
              png_write_rows(png_ptr, &row_ptr, 1);
-             ptr += s->w;
+             ptr += w;
           }
 
 
@@ -101,7 +108,7 @@ ptr = data;
 	png_write_end(png_ptr, info_ptr);
 	png_destroy_write_struct(&png_ptr, (png_infopp) & info_ptr);
 	png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
-	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
+	//if (s->flags & RGBA_SURFACE_HAS_ALPHA)
 	free(data);
 	fclose(f);
 	return;

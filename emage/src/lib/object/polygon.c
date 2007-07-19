@@ -96,11 +96,6 @@ polygon_edge_sorter(const void *a, const void *b)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-EAPI void
-evas_common_polygon_init(void)
-{
-}
-
 EAPI RGBA_Polygon_Point *
 evas_common_polygon_point_add(RGBA_Polygon_Point *points, int x, int y)
 {
@@ -131,7 +126,7 @@ evas_common_polygon_points_clear(RGBA_Polygon_Point *points)
    return NULL;
 }
 EAPI void
-evas_common_polygon_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, RGBA_Polygon_Point *points)
+emage_polygon_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, RGBA_Polygon_Point *points)
 {
    RGBA_Gfx_Func      func;
    RGBA_Polygon_Point *pt;

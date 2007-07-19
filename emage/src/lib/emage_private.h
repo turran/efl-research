@@ -1,7 +1,10 @@
 #ifndef _EMAGE_PRIVATE_H
 #define _EMAGE_PRIVATE_H
 
+#include <assert.h>
+
 #include "config.h"
+
 
 /* check if we have at least one backend if not, there's an eror */
 #ifndef BUILD_MMX
@@ -24,6 +27,23 @@
 	#define AVV(x...) {x}
 #endif
 #endif
+
+
+/* to clean */
+/* FIXME check the above flags!! */
+struct _RGBA_Surface
+{
+   int                w, h;
+   DATA32            *data; /* FIX THIS, doesnt has to be 32bpp */
+   void 		*alpha; /* What about this ? */
+   /* TODO colorspace */
+   int               flags;
+};
+   
+#define RGBA_SURFACE_HAS_ALPHA 1
+#define RGBA_SURFACE_ALPHA_SPARSE 2
+
+
 
 typedef void (*RGBA_Gfx_Func)    (DATA32 *src, DATA8 *mask, DATA32 col, DATA32 *dst, int len);
 typedef void (*RGBA_Gfx_Pt_Func) (DATA32 src, DATA8 mask, DATA32 col, DATA32 *dst);
