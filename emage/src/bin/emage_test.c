@@ -6,8 +6,8 @@
 int main(void)
 {
 	DATA32 *d1, *d2;
-	RGBA_Surface *s1, *s2;
-	RGBA_Draw_Context *dc;
+	Emage_Surface *s1, *s2;
+	Emage_Draw_Context *dc;
 
 	/* create a new surface */
 	if (!emage_init()) return -1;

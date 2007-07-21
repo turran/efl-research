@@ -126,7 +126,7 @@ evas_common_polygon_points_clear(RGBA_Polygon_Point *points)
    return NULL;
 }
 EAPI void
-emage_polygon_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, RGBA_Polygon_Point *points)
+emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points)
 {
    RGBA_Gfx_Func      func;
    RGBA_Polygon_Point *pt;

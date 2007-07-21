@@ -3,13 +3,13 @@
 #include "Emage.h"
 #include "emage_private.h"
 
-void scale_rgba_in_to_out_clip_sample_internal(RGBA_Surface *src, RGBA_Surface *dst, RGBA_Draw_Context *dc, int src_region_x, int src_region_y, int src_region_w, int src_region_h, int dst_region_x, int dst_region_y, int dst_region_w, int dst_region_h);
+void scale_rgba_in_to_out_clip_sample_internal(Emage_Surface *src, Emage_Surface *dst, Emage_Draw_Context *dc, int src_region_x, int src_region_y, int src_region_w, int src_region_h, int dst_region_x, int dst_region_y, int dst_region_w, int dst_region_h);
 
 #ifndef BUILD_SCALE_SMOOTH
 #ifdef BUILD_SCALE_SAMPLE
 EAPI void
-evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Surface *src, RGBA_Surface *dst,
-				 RGBA_Draw_Context *dc,
+evas_common_scale_rgba_in_to_out_clip_smooth(Emage_Surface *src, Emage_Surface *dst,
+				 Emage_Draw_Context *dc,
 				 int src_region_x, int src_region_y,
 				 int src_region_w, int src_region_h,
 				 int dst_region_x, int dst_region_y,
@@ -26,8 +26,8 @@ evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Surface *src, RGBA_Surface *ds
 
 #ifdef BUILD_SCALE_SAMPLE
 EAPI void
-evas_common_scale_rgba_in_to_out_clip_sample(RGBA_Surface *src, RGBA_Surface *dst,
-				 RGBA_Draw_Context *dc,
+evas_common_scale_rgba_in_to_out_clip_sample(Emage_Surface *src, Emage_Surface *dst,
+				 Emage_Draw_Context *dc,
 				 int src_region_x, int src_region_y,
 				 int src_region_w, int src_region_h,
 				 int dst_region_x, int dst_region_y,
@@ -80,8 +80,8 @@ evas_common_scale_rgba_in_to_out_clip_sample(RGBA_Surface *src, RGBA_Surface *ds
 }
 
 void
-scale_rgba_in_to_out_clip_sample_internal(RGBA_Surface *src, RGBA_Surface *dst,
-					  RGBA_Draw_Context *dc,
+scale_rgba_in_to_out_clip_sample_internal(Emage_Surface *src, Emage_Surface *dst,
+					  Emage_Draw_Context *dc,
 					  int src_region_x, int src_region_y,
 					  int src_region_w, int src_region_h,
 					  int dst_region_x, int dst_region_y,
@@ -319,8 +319,8 @@ scale_rgba_in_to_out_clip_sample_internal(RGBA_Surface *src, RGBA_Surface *dst,
 #else
 #ifdef BUILD_SCALE_SMOOTH
 EAPI void
-evas_common_scale_rgba_in_to_out_clip_sample(RGBA_Surface *src, RGBA_Surface *dst,
-				 RGBA_Draw_Context *dc,
+evas_common_scale_rgba_in_to_out_clip_sample(Emage_Surface *src, Emage_Surface *dst,
+				 Emage_Draw_Context *dc,
 				 int src_region_x, int src_region_y,
 				 int src_region_w, int src_region_h,
 				 int dst_region_x, int dst_region_y,

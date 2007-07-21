@@ -4,8 +4,8 @@
 #include "emage_private.h"
 
 void
-SCALE_FUNC(RGBA_Surface *src, RGBA_Surface *dst,
-	   RGBA_Draw_Context *dc,
+SCALE_FUNC(Emage_Surface *src, Emage_Surface *dst,
+	   Emage_Draw_Context *dc,
 	   int src_region_x, int src_region_y,
 	   int src_region_w, int src_region_h,
 	   int dst_region_x, int dst_region_y,

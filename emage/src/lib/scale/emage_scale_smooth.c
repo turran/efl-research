@@ -439,8 +439,8 @@ evas_common_scale_rgba_mipmap_down_1x2_mmx(DATA32 *src, DATA32 *dst, int src_w, 
 #  include "emage_scale_smooth_scaler.c"
 # endif
 EAPI void
-evas_common_scale_rgba_in_to_out_clip_smooth(RGBA_Surface *src, RGBA_Surface *dst,
-				 RGBA_Draw_Context *dc,
+evas_common_scale_rgba_in_to_out_clip_smooth(Emage_Surface *src, Emage_Surface *dst,
+				 Emage_Draw_Context *dc,
 				 int src_region_x, int src_region_y,
 				 int src_region_w, int src_region_h,
 				 int dst_region_x, int dst_region_y,

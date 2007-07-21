@@ -316,12 +316,12 @@ emage_draw_context_cutout_split(Cutout_Rects* res, int index, Cutout_Rect *split
 /**
  *
  */
-EAPI RGBA_Draw_Context *
+EAPI Emage_Draw_Context *
 emage_draw_context_new(void)
 {
-   RGBA_Draw_Context *dc;
+   Emage_Draw_Context *dc;
 
-   dc = calloc(1, sizeof(RGBA_Draw_Context));
+   dc = calloc(1, sizeof(Emage_Draw_Context));
    dc->sli.h = 1;
    return dc;
 }
@@ -404,7 +404,7 @@ emage_draw_context_apply_clean_cutouts(Cutout_Rects* rects)
 
 
 EAPI void
-emage_draw_context_clear_cutouts(RGBA_Draw_Context *dc)
+emage_draw_context_clear_cutouts(Emage_Draw_Context *dc)
 {
    emage_draw_context_apply_clean_cutouts(&dc->cutout);
 }
@@ -413,7 +413,7 @@ emage_draw_context_clear_cutouts(RGBA_Draw_Context *dc)
  *
  */
 EAPI void
-emage_draw_context_free(RGBA_Draw_Context *dc)
+emage_draw_context_free(Emage_Draw_Context *dc)
 {
    if (!dc) return;
 
@@ -426,7 +426,7 @@ emage_draw_context_free(RGBA_Draw_Context *dc)
  *
  */
 EAPI void
-emage_draw_context_set_clip(RGBA_Draw_Context *dc, int x, int y, int w, int h)
+emage_draw_context_set_clip(Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    dc->clip.use = 1;
    dc->clip.x = x;
@@ -439,7 +439,7 @@ emage_draw_context_set_clip(RGBA_Draw_Context *dc, int x, int y, int w, int h)
  *
  */
 EAPI void
-emage_draw_context_clip_clip(RGBA_Draw_Context *dc, int x, int y, int w, int h)
+emage_draw_context_clip_clip(Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    if (dc->clip.use)
      {
@@ -454,7 +454,7 @@ emage_draw_context_clip_clip(RGBA_Draw_Context *dc, int x, int y, int w, int h)
  *
  */
 EAPI void
-emage_draw_context_unset_clip(RGBA_Draw_Context *dc)
+emage_draw_context_unset_clip(Emage_Draw_Context *dc)
 {
    dc->clip.use = 0;
 }
@@ -463,7 +463,7 @@ emage_draw_context_unset_clip(RGBA_Draw_Context *dc)
  *
  */
 EAPI void
-emage_draw_context_set_color(RGBA_Draw_Context *dc, int r, int g, int b, int a)
+emage_draw_context_set_color(Emage_Draw_Context *dc, int r, int g, int b, int a)
 {
    R_VAL(&(dc->col.col)) = (DATA8)r;
    G_VAL(&(dc->col.col)) = (DATA8)g;
@@ -475,7 +475,7 @@ emage_draw_context_set_color(RGBA_Draw_Context *dc, int r, int g, int b, int a)
  *
  */
 EAPI void
-emage_draw_context_set_multiplier(RGBA_Draw_Context *dc, int r, int g, int b, int a)
+emage_draw_context_set_multiplier(Emage_Draw_Context *dc, int r, int g, int b, int a)
 {
    dc->mul.use = 1;
    R_VAL(&(dc->mul.col)) = (DATA8)r;
@@ -488,7 +488,7 @@ emage_draw_context_set_multiplier(RGBA_Draw_Context *dc, int r, int g, int b, in
  *
  */
 EAPI void
-emage_draw_context_unset_multiplier(RGBA_Draw_Context *dc)
+emage_draw_context_unset_multiplier(Emage_Draw_Context *dc)
 {
    dc->mul.use = 0;
 }
@@ -498,7 +498,7 @@ emage_draw_context_unset_multiplier(RGBA_Draw_Context *dc)
  *
  */
 EAPI void
-emage_draw_context_add_cutout(RGBA_Draw_Context *dc, int x, int y, int w, int h)
+emage_draw_context_add_cutout(Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    emage_draw_context_cutouts_add(&dc->cutout, x, y, w, h);
 }
@@ -518,7 +518,7 @@ emage_draw_context_apply_clear_cutouts(Cutout_Rects* rects)
  *
  */
 EAPI void
-emage_draw_context_set_anti_alias(RGBA_Draw_Context *dc , unsigned char aa)
+emage_draw_context_set_anti_alias(Emage_Draw_Context *dc , unsigned char aa)
 {
    dc->anti_alias = !!aa;
 }
@@ -527,7 +527,7 @@ emage_draw_context_set_anti_alias(RGBA_Draw_Context *dc , unsigned char aa)
  *
  */
 EAPI void
-emage_draw_context_set_color_interpolation(RGBA_Draw_Context *dc, int color_space)
+emage_draw_context_set_color_interpolation(Emage_Draw_Context *dc, int color_space)
 {
    dc->interpolation.color_space = color_space;
 }
@@ -536,7 +536,7 @@ emage_draw_context_set_color_interpolation(RGBA_Draw_Context *dc, int color_spac
  *
  */
 EAPI void
-emage_draw_context_set_render_op(RGBA_Draw_Context *dc , int op)
+emage_draw_context_set_render_op(Emage_Draw_Context *dc , int op)
 {
    dc->render_op = op;
 }
@@ -545,7 +545,7 @@ emage_draw_context_set_render_op(RGBA_Draw_Context *dc , int op)
  *
  */
 EAPI void
-emage_draw_context_set_sli(RGBA_Draw_Context *dc, int y, int h)
+emage_draw_context_set_sli(Emage_Draw_Context *dc, int y, int h)
 {
    dc->sli.y = y;
    dc->sli.h = h;
@@ -555,7 +555,7 @@ emage_draw_context_set_sli(RGBA_Draw_Context *dc, int y, int h)
  *
  */
 EAPI Cutout_Rects*
-emage_draw_context_apply_cutouts(RGBA_Draw_Context *dc)
+emage_draw_context_apply_cutouts(Emage_Draw_Context *dc)
 {
    Cutout_Rects*        res;
    int                  i;

@@ -23,36 +23,36 @@ evas_gfx_compositor_get(unsigned char op)
 
    switch (op)
       {
-	case _EVAS_RENDER_BLEND:
+	case EMAGE_RENDER_BLEND:
 	   comp = evas_common_gfx_compositor_blend_get();
 	   break;
-	case _EVAS_RENDER_BLEND_REL:
+	case EMAGE_RENDER_BLEND_REL:
 	   comp = evas_common_gfx_compositor_blend_rel_get();
 	   break;
-	case _EVAS_RENDER_COPY:
+	case EMAGE_RENDER_COPY:
 	   comp = evas_common_gfx_compositor_copy_get();
 	   break;
-	case _EVAS_RENDER_COPY_REL:
+	case EMAGE_RENDER_COPY_REL:
 	   comp = evas_common_gfx_compositor_copy_rel_get();
 	   break;
 /*
-	case _EVAS_RENDER_ADD:
+	case EMAGE_RENDER_ADD:
 	   comp = evas_common_gfx_compositor_add_get();
 	   break;
-	case _EVAS_RENDER_ADD_REL:
+	case EMAGE_RENDER_ADD_REL:
 	   comp = evas_common_gfx_compositor_add_rel_get();
 	   break;
-	case _EVAS_RENDER_SUB:
+	case EMAGE_RENDER_SUB:
 	   comp = evas_common_gfx_compositor_sub_get();
 	   break;
-	case _EVAS_RENDER_SUB_REL:
+	case EMAGE_RENDER_SUB_REL:
 	   comp = evas_common_gfx_compositor_sub_rel_get();
 	   break;
 */
-	case _EVAS_RENDER_MASK:
+	case EMAGE_RENDER_MASK:
 	   comp = evas_common_gfx_compositor_mask_get();
 	   break;
-	case _EVAS_RENDER_MUL:
+	case EMAGE_RENDER_MUL:
 	   comp = evas_common_gfx_compositor_mul_get();
 	   break;
 	default:
@@ -137,17 +137,17 @@ evas_common_blend_shutdown(void)
 
 
 RGBA_Gfx_Func
-evas_common_gfx_func_composite_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels, int op)
+evas_common_gfx_func_composite_pixel_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Func        func = NULL;
 
    if (src && (!(src->flags & RGBA_SURFACE_HAS_ALPHA)))
      {
-	if (op == _EVAS_RENDER_BLEND)
-	   op = _EVAS_RENDER_COPY;
-	if (op == _EVAS_RENDER_BLEND_REL)
-	   op = _EVAS_RENDER_COPY_REL;
+	if (op == EMAGE_RENDER_BLEND)
+	   op = EMAGE_RENDER_COPY;
+	if (op == EMAGE_RENDER_BLEND_REL)
+	   op = EMAGE_RENDER_COPY_REL;
      }
    comp = evas_gfx_compositor_get(op);
    if (comp)
@@ -158,17 +158,17 @@ evas_common_gfx_func_composite_pixel_span_get(RGBA_Surface *src, RGBA_Surface *d
 }
 
 RGBA_Gfx_Func
-evas_common_gfx_func_composite_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels, int op)
+evas_common_gfx_func_composite_color_span_get(DATA32 col, Emage_Surface *dst, int pixels, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Func        func = NULL;
 
    if ((col & 0xff000000) == 0xff000000)
      {
-	if (op == _EVAS_RENDER_BLEND)
-	   op = _EVAS_RENDER_COPY;
-	if (op == EVAS_RENDER_BLEND_REL)
-	   op = _EVAS_RENDER_COPY_REL;
+	if (op == EMAGE_RENDER_BLEND)
+	   op = EMAGE_RENDER_COPY;
+	if (op == EMAGE_RENDER_BLEND_REL)
+	   op = EMAGE_RENDER_COPY_REL;
      }
 
    comp = evas_gfx_compositor_get(op);
@@ -180,17 +180,17 @@ evas_common_gfx_func_composite_color_span_get(DATA32 col, RGBA_Surface *dst, int
 }
 
 RGBA_Gfx_Func
-evas_common_gfx_func_composite_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels, int op)
+evas_common_gfx_func_composite_pixel_color_span_get(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Func        func = NULL;
 
    if ((src && (!(src->flags & RGBA_SURFACE_HAS_ALPHA))) && ((col & 0xff000000) == 0xff000000))
      {
-	if (op == _EVAS_RENDER_BLEND)
-	   op = _EVAS_RENDER_COPY;
-	if (op == _EVAS_RENDER_BLEND_REL)
-	   op = _EVAS_RENDER_COPY_REL;
+	if (op == EMAGE_RENDER_BLEND)
+	   op = EMAGE_RENDER_COPY;
+	if (op == EMAGE_RENDER_BLEND_REL)
+	   op = EMAGE_RENDER_COPY_REL;
      }
 
    comp = evas_gfx_compositor_get(op);
@@ -202,7 +202,7 @@ evas_common_gfx_func_composite_pixel_color_span_get(RGBA_Surface *src, DATA32 co
 }
 
 RGBA_Gfx_Func
-evas_common_gfx_func_composite_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels, int op)
+evas_common_gfx_func_composite_mask_color_span_get(DATA32 col, Emage_Surface *dst, int pixels, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Func        func = NULL;
@@ -216,7 +216,7 @@ evas_common_gfx_func_composite_mask_color_span_get(DATA32 col, RGBA_Surface *dst
 }
 
 RGBA_Gfx_Func
-evas_common_gfx_func_composite_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels, int op)
+evas_common_gfx_func_composite_pixel_mask_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Func        func = NULL;
@@ -230,17 +230,17 @@ evas_common_gfx_func_composite_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surfa
 }
 
 RGBA_Gfx_Pt_Func
-evas_common_gfx_func_composite_pixel_pt_get(int src_flags, RGBA_Surface *dst, int op)
+evas_common_gfx_func_composite_pixel_pt_get(int src_flags, Emage_Surface *dst, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Pt_Func     func = NULL;
 
    if (!(src_flags & RGBA_SURFACE_HAS_ALPHA))
      {
-	if (op == _EVAS_RENDER_BLEND)
-	   op = _EVAS_RENDER_COPY;
-	if (op == _EVAS_RENDER_BLEND_REL)
-	   op = _EVAS_RENDER_COPY_REL;
+	if (op == EMAGE_RENDER_BLEND)
+	   op = EMAGE_RENDER_COPY;
+	if (op == EMAGE_RENDER_BLEND_REL)
+	   op = EMAGE_RENDER_COPY_REL;
      }
    comp = evas_gfx_compositor_get(op);
    if (comp)
@@ -251,17 +251,17 @@ evas_common_gfx_func_composite_pixel_pt_get(int src_flags, RGBA_Surface *dst, in
 }
 
 RGBA_Gfx_Pt_Func
-evas_common_gfx_func_composite_color_pt_get(DATA32 col, RGBA_Surface *dst, int op)
+evas_common_gfx_func_composite_color_pt_get(DATA32 col, Emage_Surface *dst, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Pt_Func     func = NULL;
 
    if ((col & 0xff000000) == 0xff000000)
      {
-	if (op == _EVAS_RENDER_BLEND)
-	   op = _EVAS_RENDER_COPY;
-	if (op == EVAS_RENDER_BLEND_REL)
-	   op = _EVAS_RENDER_COPY_REL;
+	if (op == EMAGE_RENDER_BLEND)
+	   op = EMAGE_RENDER_COPY;
+	if (op == EMAGE_RENDER_BLEND_REL)
+	   op = EMAGE_RENDER_COPY_REL;
      }
 
    comp = evas_gfx_compositor_get(op);
@@ -273,17 +273,17 @@ evas_common_gfx_func_composite_color_pt_get(DATA32 col, RGBA_Surface *dst, int o
 }
 
 RGBA_Gfx_Pt_Func
-evas_common_gfx_func_composite_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst, int op)
+evas_common_gfx_func_composite_pixel_color_pt_get(int src_flags, DATA32 col, Emage_Surface *dst, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Pt_Func     func = NULL;
 
    if ((!(src_flags & RGBA_SURFACE_HAS_ALPHA)) && ((col & 0xff000000) == 0xff000000))
      {
-	if (op == _EVAS_RENDER_BLEND)
-	   op = _EVAS_RENDER_COPY;
-	if (op == _EVAS_RENDER_BLEND_REL)
-	   op = _EVAS_RENDER_COPY_REL;
+	if (op == EMAGE_RENDER_BLEND)
+	   op = EMAGE_RENDER_COPY;
+	if (op == EMAGE_RENDER_BLEND_REL)
+	   op = EMAGE_RENDER_COPY_REL;
      }
 
    comp = evas_gfx_compositor_get(op);
@@ -295,7 +295,7 @@ evas_common_gfx_func_composite_pixel_color_pt_get(int src_flags, DATA32 col, RGB
 }
 
 RGBA_Gfx_Pt_Func
-evas_common_gfx_func_composite_mask_color_pt_get(DATA32 col, RGBA_Surface *dst, int op)
+evas_common_gfx_func_composite_mask_color_pt_get(DATA32 col, Emage_Surface *dst, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Pt_Func     func = NULL;
@@ -309,7 +309,7 @@ evas_common_gfx_func_composite_mask_color_pt_get(DATA32 col, RGBA_Surface *dst, 
 }
 
 RGBA_Gfx_Pt_Func
-evas_common_gfx_func_composite_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst, int op)
+evas_common_gfx_func_composite_pixel_mask_pt_get(int src_flags, Emage_Surface *dst, int op)
 {
    RGBA_Gfx_Compositor  *comp;
    RGBA_Gfx_Pt_Func     func = NULL;

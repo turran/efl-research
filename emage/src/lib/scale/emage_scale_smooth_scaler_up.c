@@ -17,9 +17,9 @@
    pdst_end = pdst + (dst_clip_h * dst_w);
    if (!dc->mul.use)
      {
-	if ((dc->render_op == _EVAS_RENDER_BLEND) && !(src->flags & RGBA_SURFACE_HAS_ALPHA))
+	if ((dc->render_op == EMAGE_RENDER_BLEND) && !(src->flags & RGBA_SURFACE_HAS_ALPHA))
 	  { direct_scale = 1;  buf_step = dst->w; }
-	else if (dc->render_op == _EVAS_RENDER_COPY)
+	else if (dc->render_op == EMAGE_RENDER_COPY)
 	  {
 	    direct_scale = 1;  buf_step = dst->w;
 	    if (src->flags & RGBA_SURFACE_HAS_ALPHA)

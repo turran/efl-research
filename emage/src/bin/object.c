@@ -2,7 +2,7 @@
 
 int w, h;
 
-static void line_test(RGBA_Surface *s, RGBA_Draw_Context *dc)
+static void line_test(Emage_Surface *s, Emage_Draw_Context *dc)
 {
 	int i;
 
@@ -12,7 +12,7 @@ static void line_test(RGBA_Surface *s, RGBA_Draw_Context *dc)
 	}
 }
 
-static void rectangle_test(RGBA_Surface *s, RGBA_Draw_Context *dc)
+static void rectangle_test(Emage_Surface *s, Emage_Draw_Context *dc)
 {
 	int i;
 	
@@ -22,12 +22,12 @@ static void rectangle_test(RGBA_Surface *s, RGBA_Draw_Context *dc)
 	}
 }
 
-static void polygon_test(RGBA_Surface *s, RGBA_Draw_Context *dc)
+static void polygon_test(Emage_Surface *s, Emage_Draw_Context *dc)
 {
-	//emage_polygon_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, RGBA_Polygon_Point *points);
+	//emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points);
 }
 
-void object_test(RGBA_Surface *s, RGBA_Draw_Context *dc)
+void object_test(Emage_Surface *s, Emage_Draw_Context *dc)
 {
 	double t1, t2;
 

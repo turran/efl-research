@@ -4,7 +4,7 @@
 
 #include "Emage.h"
 
-void png_save(RGBA_Surface *s, char *file, int compress)
+void png_save(Emage_Surface *s, char *file, int compress)
 {
 	FILE *f;
 	int num_passes = 1, pass;

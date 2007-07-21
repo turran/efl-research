@@ -7,7 +7,7 @@
  *                                  Local                                     * 
  *============================================================================*/
 static void
-rectangle_draw_internal(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y, int w, int h)
+rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    RGBA_Gfx_Func func;
    int yy;
@@ -41,7 +41,7 @@ rectangle_draw_internal(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y, 
  *                                   API                                      * 
  *============================================================================*/
 EAPI void
-emage_rectangle_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y, int w, int h)
+emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    Cutout_Rects *rects;
    Cutout_Rect  *r;

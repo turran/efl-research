@@ -178,7 +178,7 @@
  *============================================================================*/
 
 static void
-_evas_draw_point(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y)
+_evas_draw_point(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y)
 {
    RGBA_Gfx_Pt_Func pfunc;
 
@@ -198,7 +198,7 @@ _evas_draw_point(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x, int y)
    (line) bounding rect.
 */
 static void
-_evas_draw_simple_line(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1)
+_evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
 {
    int     dx, dy, len, lx, ty, rx, by;
    int     clx, cly, clw, clh;
@@ -374,7 +374,7 @@ _evas_draw_simple_line(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0,
 
 
 static void
-_evas_draw_line(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1)
+_evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
 {
    int     px, py, x, y, prev_x, prev_y;
    int     dx, dy, rx, by, p0_in, p1_in, dh, a_a = 0;
@@ -479,7 +479,7 @@ _evas_draw_line(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1
 
 
 static void
-_evas_draw_line_aa(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1)
+_evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
 {
    int     px, py, x, y, prev_x, prev_y;
    int     dx, dy, rx, by, p0_in, p1_in, dh, a_a = 1;
@@ -592,7 +592,7 @@ _evas_draw_line_aa(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int
  *                                   API                                      * 
  *============================================================================*/
 EAPI void
-emage_line_draw(RGBA_Surface *dst, RGBA_Draw_Context *dc, int x0, int y0, int x1, int y1)
+emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
 {
    int  x, y, w, h;
    int  clx, cly, clw, clh;

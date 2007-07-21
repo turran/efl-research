@@ -8,12 +8,12 @@
  *
  */
 
-EAPI RGBA_Surface *
+EAPI Emage_Surface *
 emage_surface_new(void *data, int w, int h)
 {
-	RGBA_Surface *s;
+	Emage_Surface *s;
 
-	s = calloc(sizeof(RGBA_Surface));
+	s = calloc(1, sizeof(Emage_Surface));
 	s->w = w;
 	s->h = h;
 	s->data = data;
@@ -23,7 +23,7 @@ emage_surface_new(void *data, int w, int h)
 }
 
 EAPI inline void
-emage_surface_size_get(RGBA_Surface *s, int *w, int *h)
+emage_surface_size_get(Emage_Surface *s, int *w, int *h)
 {
 	assert(s);
 	if (w) *w = s->w;
@@ -31,14 +31,14 @@ emage_surface_size_get(RGBA_Surface *s, int *w, int *h)
 }
 
 EAPI inline void *
-emage_surface_data_get(RGBA_Surface *s)
+emage_surface_data_get(Emage_Surface *s)
 {
 	assert(s);
 	return s->data;
 }
 
 EAPI inline void 
-emage_surface_data_set(RGBA_Surface *s, void *data)
+emage_surface_data_set(Emage_Surface *s, void *data)
 {
 	assert(s);
 	s->data = data;

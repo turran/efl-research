@@ -9,17 +9,17 @@ static RGBA_Gfx_Pt_Func  op_add_pt_funcs[SP_LAST][SM_LAST][SC_LAST][DP_LAST][CPU
 static void op_add_init(void);
 static void op_add_shutdown(void);
 
-static RGBA_Gfx_Func op_add_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_pixel_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_color_span_get(DATA32 col, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_pixel_color_span_get(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_mask_color_span_get(DATA32 col, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_pixel_mask_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels);
 
-static RGBA_Gfx_Pt_Func op_add_pixel_pt_get(int src_flags, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_color_pt_get(DATA32 col, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_mask_color_pt_get(DATA32 col, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_pixel_pt_get(int src_flags, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_color_pt_get(DATA32 col, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_pixel_color_pt_get(int src_flags, DATA32 col, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_mask_color_pt_get(DATA32 col, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_pixel_mask_pt_get(int src_flags, Emage_Surface *dst);
 
 static RGBA_Gfx_Compositor  _composite_add = { "add", 
  op_add_init, op_add_shutdown,
@@ -43,17 +43,17 @@ static RGBA_Gfx_Pt_Func  op_add_rel_pt_funcs[SP_LAST][SM_LAST][SC_LAST][DP_LAST]
 static void op_add_rel_init(void);
 static void op_add_rel_shutdown(void);
 
-static RGBA_Gfx_Func op_add_rel_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_rel_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_rel_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_rel_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels);
-static RGBA_Gfx_Func op_add_rel_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_rel_pixel_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_rel_color_span_get(DATA32 col, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_rel_pixel_color_span_get(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_rel_mask_color_span_get(DATA32 col, Emage_Surface *dst, int pixels);
+static RGBA_Gfx_Func op_add_rel_pixel_mask_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels);
 
-static RGBA_Gfx_Pt_Func op_add_rel_pixel_pt_get(int src_flags, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_rel_color_pt_get(DATA32 col, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_rel_mask_color_pt_get(DATA32 col, RGBA_Surface *dst);
-static RGBA_Gfx_Pt_Func op_add_rel_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_rel_pixel_pt_get(int src_flags, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_rel_color_pt_get(DATA32 col, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_rel_pixel_color_pt_get(int src_flags, DATA32 col, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_rel_mask_color_pt_get(DATA32 col, Emage_Surface *dst);
+static RGBA_Gfx_Pt_Func op_add_rel_pixel_mask_pt_get(int src_flags, Emage_Surface *dst);
 
 static RGBA_Gfx_Compositor  _composite_add_rel = { "add_rel", 
  op_add_rel_init, op_add_rel_shutdown,
@@ -146,7 +146,7 @@ add_gfx_span_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Func
-op_add_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
+op_add_pixel_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
@@ -158,7 +158,7 @@ op_add_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
 }
 
 static RGBA_Gfx_Func
-op_add_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
+op_add_color_span_get(DATA32 col, Emage_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -174,7 +174,7 @@ op_add_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 }
 
 static RGBA_Gfx_Func
-op_add_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels)
+op_add_pixel_color_span_get(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -192,7 +192,7 @@ op_add_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, in
 }
 
 static RGBA_Gfx_Func
-op_add_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
+op_add_mask_color_span_get(DATA32 col, Emage_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -208,7 +208,7 @@ op_add_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 }
 
 static RGBA_Gfx_Func
-op_add_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
+op_add_pixel_mask_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
@@ -241,7 +241,7 @@ add_gfx_pt_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_pixel_pt_get(int src_flags, RGBA_Surface *dst)
+op_add_pixel_pt_get(int src_flags, Emage_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
@@ -253,7 +253,7 @@ op_add_pixel_pt_get(int src_flags, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_color_pt_get(DATA32 col, RGBA_Surface *dst)
+op_add_color_pt_get(DATA32 col, Emage_Surface *dst)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -269,7 +269,7 @@ op_add_color_pt_get(DATA32 col, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst)
+op_add_pixel_color_pt_get(int src_flags, DATA32 col, Emage_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -287,7 +287,7 @@ op_add_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_mask_color_pt_get(DATA32 col, RGBA_Surface *dst)
+op_add_mask_color_pt_get(DATA32 col, Emage_Surface *dst)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -303,7 +303,7 @@ op_add_mask_color_pt_get(DATA32 col, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst)
+op_add_pixel_mask_pt_get(int src_flags, Emage_Surface *dst)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
@@ -376,7 +376,7 @@ add_rel_gfx_span_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Func
-op_add_rel_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
+op_add_rel_pixel_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
@@ -388,7 +388,7 @@ op_add_rel_pixel_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
 }
 
 static RGBA_Gfx_Func
-op_add_rel_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
+op_add_rel_color_span_get(DATA32 col, Emage_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -404,7 +404,7 @@ op_add_rel_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 }
 
 static RGBA_Gfx_Func
-op_add_rel_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels)
+op_add_rel_pixel_color_span_get(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -422,7 +422,7 @@ op_add_rel_pixel_color_span_get(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst
 }
 
 static RGBA_Gfx_Func
-op_add_rel_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
+op_add_rel_mask_color_span_get(DATA32 col, Emage_Surface *dst, int pixels)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -438,7 +438,7 @@ op_add_rel_mask_color_span_get(DATA32 col, RGBA_Surface *dst, int pixels)
 }
 
 static RGBA_Gfx_Func
-op_add_rel_pixel_mask_span_get(RGBA_Surface *src, RGBA_Surface *dst, int pixels)
+op_add_rel_pixel_mask_span_get(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 
@@ -471,7 +471,7 @@ add_rel_gfx_pt_func_cpu(int s, int m, int c, int d)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_rel_pixel_pt_get(int src_flags, RGBA_Surface *dst)
+op_add_rel_pixel_pt_get(int src_flags, Emage_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_N, d = DP_AN;
 
@@ -483,7 +483,7 @@ op_add_rel_pixel_pt_get(int src_flags, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_rel_color_pt_get(DATA32 col, RGBA_Surface *dst)
+op_add_rel_color_pt_get(DATA32 col, Emage_Surface *dst)
 {
    int  s = SP_N, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -499,7 +499,7 @@ op_add_rel_color_pt_get(DATA32 col, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst)
+op_add_rel_pixel_color_pt_get(int src_flags, DATA32 col, Emage_Surface *dst)
 {
    int  s = SP_AN, m = SM_N, c = SC_AN, d = DP_AN;
 
@@ -517,7 +517,7 @@ op_add_rel_pixel_color_pt_get(int src_flags, DATA32 col, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_rel_mask_color_pt_get(DATA32 col, RGBA_Surface *dst)
+op_add_rel_mask_color_pt_get(DATA32 col, Emage_Surface *dst)
 {
    int  s = SP_N, m = SM_AS, c = SC_AN, d = DP_AN;
 
@@ -533,7 +533,7 @@ op_add_rel_mask_color_pt_get(DATA32 col, RGBA_Surface *dst)
 }
 
 static RGBA_Gfx_Pt_Func
-op_add_rel_pixel_mask_pt_get(int src_flags, RGBA_Surface *dst)
+op_add_rel_pixel_mask_pt_get(int src_flags, Emage_Surface *dst)
 {
    int  s = SP_AN, m = SM_AS, c = SC_N, d = DP_AN;
 

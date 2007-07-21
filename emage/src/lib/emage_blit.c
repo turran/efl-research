@@ -390,7 +390,7 @@ evas_common_blit_init(void)
 }
 
 EAPI void
-evas_common_blit_rectangle(RGBA_Surface *src, RGBA_Surface *dst, int src_x, int src_y, int w, int h, int dst_x, int dst_y)
+evas_common_blit_rectangle(Emage_Surface *src, Emage_Surface *dst, int src_x, int src_y, int w, int h, int dst_x, int dst_y)
 {
    int y;
    Gfx_Func_Copy func;

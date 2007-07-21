@@ -28,10 +28,12 @@
 #endif
 #endif
 
+/* FIXME things above this */
+/***************************/
 
 /* to clean */
 /* FIXME check the above flags!! */
-struct _RGBA_Surface
+struct _Emage_Surface
 {
    int                w, h;
    DATA32            *data; /* FIX THIS, doesnt has to be 32bpp */
@@ -61,33 +63,20 @@ struct _RGBA_Gfx_Compositor
    void              (*init)(void);
    void              (*shutdown)(void);
 
-   RGBA_Gfx_Func  (*composite_pixel_span_get)(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
-   RGBA_Gfx_Func  (*composite_color_span_get)(DATA32 col, RGBA_Surface *dst, int pixels);
-   RGBA_Gfx_Func  (*composite_pixel_color_span_get)(RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels);
-   RGBA_Gfx_Func  (*composite_mask_color_span_get)(DATA32 col, RGBA_Surface *dst, int pixels);
-   RGBA_Gfx_Func  (*composite_pixel_mask_span_get)(RGBA_Surface *src, RGBA_Surface *dst, int pixels);
+   RGBA_Gfx_Func  (*composite_pixel_span_get)(Emage_Surface *src, Emage_Surface *dst, int pixels);
+   RGBA_Gfx_Func  (*composite_color_span_get)(DATA32 col, Emage_Surface *dst, int pixels);
+   RGBA_Gfx_Func  (*composite_pixel_color_span_get)(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels);
+   RGBA_Gfx_Func  (*composite_mask_color_span_get)(DATA32 col, Emage_Surface *dst, int pixels);
+   RGBA_Gfx_Func  (*composite_pixel_mask_span_get)(Emage_Surface *src, Emage_Surface *dst, int pixels);
 
-   RGBA_Gfx_Pt_Func  (*composite_pixel_pt_get)(int src_flags, RGBA_Surface *dst);
-   RGBA_Gfx_Pt_Func  (*composite_color_pt_get)(DATA32 col, RGBA_Surface *dst);
-   RGBA_Gfx_Pt_Func  (*composite_pixel_color_pt_get)(int src_flags, DATA32 col, RGBA_Surface *dst);
-   RGBA_Gfx_Pt_Func  (*composite_mask_color_pt_get)(DATA32 col, RGBA_Surface *dst);
-   RGBA_Gfx_Pt_Func  (*composite_pixel_mask_pt_get)(int src_flags, RGBA_Surface *dst);
+   RGBA_Gfx_Pt_Func  (*composite_pixel_pt_get)(int src_flags, Emage_Surface *dst);
+   RGBA_Gfx_Pt_Func  (*composite_color_pt_get)(DATA32 col, Emage_Surface *dst);
+   RGBA_Gfx_Pt_Func  (*composite_pixel_color_pt_get)(int src_flags, DATA32 col, Emage_Surface *dst);
+   RGBA_Gfx_Pt_Func  (*composite_mask_color_pt_get)(DATA32 col, Emage_Surface *dst);
+   RGBA_Gfx_Pt_Func  (*composite_pixel_mask_pt_get)(int src_flags, Emage_Surface *dst);
 };
 
 #define _EVAS_RENDER_FILL        -1
-#define _EVAS_RENDER_BLEND        0
-#define _EVAS_RENDER_BLEND_REL    1
-#define _EVAS_RENDER_COPY         2
-#define _EVAS_RENDER_COPY_REL     3
-#define _EVAS_RENDER_ADD          4
-#define _EVAS_RENDER_ADD_REL      5
-#define _EVAS_RENDER_SUB          6
-#define _EVAS_RENDER_SUB_REL      7
-#define _EVAS_RENDER_TINT         8
-#define _EVAS_RENDER_TINT_REL     9
-#define _EVAS_RENDER_MASK         10
-#define _EVAS_RENDER_MUL          11
-#define _EVAS_RENDER_CLIP         12
 
 #ifndef WORDS_BIGENDIAN
 /* x86 */
@@ -108,16 +97,16 @@ struct _RGBA_Gfx_Compositor
 #endif
 
 
-typedef enum _CPU_Features
+typedef enum _CPU_Feature
 {
    CPU_FEATURE_C       = 0,
    CPU_FEATURE_MMX     = (1 << 0),
    CPU_FEATURE_MMX2    = (1 << 1),
-   CPU_FEATURE_SSE     = (1 << 2),
+   CPU_FEATURE_SSE     = (1 << 2), /* what about SSE2 ?? */
    CPU_FEATURE_ALTIVEC = (1 << 3),
    CPU_FEATURE_VIS     = (1 << 4),
    CPU_FEATURE_VIS2    = (1 << 5)
-} CPU_Features;
+} CPU_Feature;
 
 typedef enum _Convert_Pal_Mode
 {
@@ -165,17 +154,17 @@ RGBA_Gfx_Compositor   *evas_common_gfx_compositor_sub_rel_get(void);
 RGBA_Gfx_Compositor   *evas_common_gfx_compositor_mask_get(void);
 RGBA_Gfx_Compositor   *evas_common_gfx_compositor_mul_get(void);
 
-RGBA_Gfx_Func     evas_common_gfx_func_composite_pixel_span_get   (RGBA_Surface *src, RGBA_Surface *dst, int pixels, int op);
-RGBA_Gfx_Func     evas_common_gfx_func_composite_color_span_get   (DATA32 col, RGBA_Surface *dst, int pixels, int op);
-RGBA_Gfx_Func     evas_common_gfx_func_composite_pixel_color_span_get (RGBA_Surface *src, DATA32 col, RGBA_Surface *dst, int pixels, int op);
-RGBA_Gfx_Func     evas_common_gfx_func_composite_mask_color_span_get  (DATA32 col, RGBA_Surface *dst, int pixels, int op);
-RGBA_Gfx_Func     evas_common_gfx_func_composite_pixel_mask_span_get  (RGBA_Surface *src, RGBA_Surface *dst, int pixels, int op);
+RGBA_Gfx_Func     evas_common_gfx_func_composite_pixel_span_get   (Emage_Surface *src, Emage_Surface *dst, int pixels, int op);
+RGBA_Gfx_Func     evas_common_gfx_func_composite_color_span_get   (DATA32 col, Emage_Surface *dst, int pixels, int op);
+RGBA_Gfx_Func     evas_common_gfx_func_composite_pixel_color_span_get (Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels, int op);
+RGBA_Gfx_Func     evas_common_gfx_func_composite_mask_color_span_get  (DATA32 col, Emage_Surface *dst, int pixels, int op);
+RGBA_Gfx_Func     evas_common_gfx_func_composite_pixel_mask_span_get  (Emage_Surface *src, Emage_Surface *dst, int pixels, int op);
 
-RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_pixel_pt_get   (int src_flags, RGBA_Surface *dst, int op);
-RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_color_pt_get   (DATA32 col, RGBA_Surface *dst, int op);
-RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_pixel_color_pt_get (int src_flags, DATA32 col, RGBA_Surface *dst, int op);
-RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_mask_color_pt_get  (DATA32 col, RGBA_Surface *dst, int op);
-RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_pixel_mask_pt_get  (int src_flags, RGBA_Surface *dst, int op);
+RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_pixel_pt_get   (int src_flags, Emage_Surface *dst, int op);
+RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_color_pt_get   (DATA32 col, Emage_Surface *dst, int op);
+RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_pixel_color_pt_get (int src_flags, DATA32 col, Emage_Surface *dst, int op);
+RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_mask_color_pt_get  (DATA32 col, Emage_Surface *dst, int op);
+RGBA_Gfx_Pt_Func     evas_common_gfx_func_composite_pixel_mask_pt_get  (int src_flags, Emage_Surface *dst, int op);
 
 EAPI Gfx_Func_Copy        evas_common_draw_func_copy_get        (int pixels, int reverse);
 
@@ -658,5 +647,15 @@ extern const DATA32 ALPHA_256;
 	pand_r2r(mm255, mmy);
 
 #endif
+
+
+/*============================================================================*
+ *                                Global                                      * 
+ *============================================================================*/
+
+/* runtime cpu flags */
+extern CPU_Feature Emage_CPU_Features; 
+/* default compositors for each rendering operation */
+extern RGBA_Gfx_Compositor Emage_Gfx_Compositors[EMAGE_RENDER_OPS];
 
 #endif
