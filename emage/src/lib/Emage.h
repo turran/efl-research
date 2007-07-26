@@ -74,16 +74,6 @@ struct _Emage_Draw_Context
       char   use : 1;
    } clip;
    Cutout_Rects cutout;
-#if 0
-   struct {
-      struct {
-	 void *(*gl_new)  (void *data, RGBA_Font_Glyph *fg);
-	 void  (*gl_free) (void *ext_dat);
-	 void  (*gl_draw) (void *data, void *dest, void *context, RGBA_Font_Glyph *fg, int x, int y);
-      } func;
-      void *data;
-   } font_ext;
-#endif
    struct {
       int color_space;
    } interpolation;
@@ -164,20 +154,38 @@ EAPI void               emage_draw_context_set_render_op     (Emage_Draw_Context
 EAPI void               emage_draw_context_set_sli           (Emage_Draw_Context *dc, int y, int h);
 /* Surface */
 EAPI Emage_Surface *	emage_surface_new(void *data, int w, int h);
-EAPI inline void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
-EAPI inline void *	emage_surface_data_get(Emage_Surface *s);
-EAPI inline void	emage_surface_data_set(Emage_Surface *s, void *data);
+EAPI void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
+EAPI void 	*emage_surface_data_get(Emage_Surface *s);
+EAPI void	emage_surface_data_set(Emage_Surface *s, void *data);
 /* Objects */
 EAPI void 		emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
 EAPI void 		emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h);
 EAPI void 		emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points);
 /* Scale */
 
-/* Convert */
-typedef enum _Emage_Colorspace
-{
-	EMAGE_COLORSPACE_RGBA
-} Emage_Colorspace;
+/* Surface */
 
+typedef struct _Emage_Data_ARGB8888
+{
+	DATA32 *data;
+} Emage_Data_ARGB888;
+
+typedef struct _Emage_Data_RGB565_A5
+{
+	DATA16 	*data;
+	DATA8 	*alpha;
+} Emage_Data_RGB565_A5;
+
+typedef enum _Emage_Data_Format
+{
+	EMAGE_DATA_ARGB8888,
+	EMAGE_DATA_RGB565_A5,
+	EMAGE_DATA_FORMATS
+} Emage_Data_Format;
+
+typedef struct _Emage_Rectangle
+{
+	int x, y, w, h;
+} Emage_Rectangle;
 
 #endif

@@ -22,7 +22,7 @@ emage_surface_new(void *data, int w, int h)
 	return s;
 }
 
-EAPI inline void
+EAPI void
 emage_surface_size_get(Emage_Surface *s, int *w, int *h)
 {
 	assert(s);
@@ -30,14 +30,14 @@ emage_surface_size_get(Emage_Surface *s, int *w, int *h)
 	if (h) *h = s->h;
 }
 
-EAPI inline void *
+EAPI void *
 emage_surface_data_get(Emage_Surface *s)
 {
 	assert(s);
 	return s->data;
 }
 
-EAPI inline void 
+EAPI void 
 emage_surface_data_set(Emage_Surface *s, void *data)
 {
 	assert(s);
