@@ -9,11 +9,15 @@ void emage_compositor_init(void)
 	//emage_compositor_copy_init();
 }
 
+
 /* Scanlines */
 Emage_Sl_Func  *
 emage_compositor_sl_pixel_get(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
-
+	if (src && dst)
+	{
+		assert(src->format == dst->format);
+	}
 }
 
 Emage_Sl_Func *
@@ -25,6 +29,10 @@ emage_compositor_sl_color_get(DATA32 col, Emage_Surface *dst, int pixels)
 Emage_Sl_Func *
 emage_compositor_sl_pixel_color(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels)
 {
+	if (src && dst)
+	{
+		assert(src->format == dst->format);
+	}
 
 }
 
@@ -37,15 +45,22 @@ emage_compositor_sl_mask_color(DATA32 col, Emage_Surface *dst, int pixels)
 Emage_Sl_Func *
 emage_compositor_sl_pixel_mask(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
+	if (src && dst)
+	{
+		assert(src->format == dst->format);
+	}
 
 }
 
 /* Points */
-
 Emage_Pt_Func *
 emage_compositor_pt_pixel_get(int src_flags, Emage_Surface *dst)
 {
+	Emage_Compositor *cp;
+	assert(dst);
 
+	cp = Emage_Compositors[dst->format][dc->op];
+	return cp->pt_pixel_get;
 }
 
 Emage_Pt_Func *

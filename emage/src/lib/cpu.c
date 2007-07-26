@@ -5,6 +5,8 @@
 #include "Emage.h"
 #include "emage_private.h"
 
+CPU_Feature Emage_CPU_Features;
+
 #ifndef WIN32
 static sigjmp_buf detect_buf;
 #endif

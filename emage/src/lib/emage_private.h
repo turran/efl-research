@@ -149,7 +149,7 @@ void *evas_object_list_find             (void *in_list, void *in_item);
 
 /* Convert */
 EAPI void             evas_common_convert_init          (void);
-EAPI Gfx_Func_Convert evas_common_convert_func_get      (DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Convert_Pal_Mode pal_mode, int rotation);
+//EAPI Gfx_Func_Convert evas_common_convert_func_get      (DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Convert_Pal_Mode pal_mode, int rotation);
 
 void evas_common_convert_rgba2_to_16bpp_rgb_565_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
 void evas_common_convert_rgba_to_16bpp_rgb_565_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
@@ -558,7 +558,7 @@ extern const DATA32 ALPHA_256;
 /*============================================================================*
  *                                Global                                      * 
  *============================================================================*/
-extern CPU_Feature Emage_CPU_Features; 
+extern CPU_Feature Emage_CPU_Features;
 extern Emage_Compositor Emage_Compositors[EMAGE_DATA_FORMATS][EMAGE_RENDER_OPS];
 
 #endif
