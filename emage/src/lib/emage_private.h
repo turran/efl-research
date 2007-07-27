@@ -51,26 +51,29 @@ void emage_compositor_copy_init(void);
  * to get the current color
  */
 
-typedef void (*Emage_Sl_Func) (void *src, void *mask, DATA32 col, void *dst, int len);
-typedef void (*Emage_Pt_Func) (void *src, void *mask, DATA32 col, void *dst);
+typedef void (Emage_Sl_Func) (void *src, void *mask, DATA32 col, void *dst, int len);
+typedef void (Emage_Pt_Func) (void *src, void *mask, DATA32 col, void *dst);
 
 /* TODO document why it was choosen only one level of _get instead of two as 
  * evas_common had
+ * FIXME
+ * The above functions should be of type Sl_Func and Pt_Func only the compositor
+ * wrapper should have different types for each function
  */
 typedef struct _Emage_Compositor
 {
 	/* Scanlines */
-	Emage_Sl_Func  (*sl_pixel)(Emage_Surface *src, Emage_Surface *dst, int pixels);
-	Emage_Sl_Func  (*sl_color)(DATA32 col, Emage_Surface *dst, int pixels);
-	Emage_Sl_Func  (*sl_pixel_color)(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels);
-	Emage_Sl_Func  (*sl_mask_color)(DATA32 col, Emage_Surface *dst, int pixels);
-	Emage_Sl_Func  (*sl_pixel_mask)(Emage_Surface *src, Emage_Surface *dst, int pixels);
+	Emage_Sl_Func *sl_pixel;
+	Emage_Sl_Func *sl_color;
+	Emage_Sl_Func *sl_pixel_color;
+	Emage_Sl_Func *sl_mask_color;
+	Emage_Sl_Func *sl_pixel_mask;
 	/* Points */
-	Emage_Pt_Func  (*pt_pixel)(int src_flags, Emage_Surface *dst);
-	Emage_Pt_Func  (*pt_color)(DATA32 col, Emage_Surface *dst);
-	Emage_Pt_Func  (*pt_pixel_color)(int src_flags, DATA32 col, Emage_Surface *dst);
-	Emage_Pt_Func  (*pt_mask_color)(DATA32 col, Emage_Surface *dst);
-	Emage_Pt_Func  (*pt_pixel_mask)(int src_flags, Emage_Surface *dst);
+	Emage_Pt_Func *pt_pixel;
+	Emage_Pt_Func *pt_color;
+	Emage_Pt_Func *pt_pixel_color;
+	Emage_Pt_Func *pt_mask_color;
+	Emage_Pt_Func *pt_pixel_mask;
 } Emage_Compositor;
 
 

@@ -12,7 +12,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-int
+static int
 emage_draw_context_cutout_split(Cutout_Rects* res, int index, Cutout_Rect *split)
 {
    /* 1 input rect, multiple out */
