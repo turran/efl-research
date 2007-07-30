@@ -4,6 +4,17 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+static void default_sl(void *src, void *mask, DATA32 col, void *dst, int len)
+{
+
+}
+
+static void default_pt(void *src, void *mask, DATA32 col, void *dst)
+{
+
+}
+
+#if 0
 static void 
 default_sl_pixel(Emage_Surface *src, Emage_Surface *dst, int pixels)
 {
@@ -70,6 +81,7 @@ default_pt_pixel_mask(int src_flags, Emage_Surface *dst)
 {
 
 }
+#endif
 
 static Emage_Compositor comp_default = {
 	.sl_pixel 	= default_sl_pixel,
@@ -88,11 +100,11 @@ static Emage_Compositor comp_default = {
  *                                 Global                                     * 
  *============================================================================*/
 
-/* Set every compositor to use the default empty functions */
 Emage_Compositor Emage_Compositors[EMAGE_DATA_FORMATS][EMAGE_RENDER_OP];
 
 void emage_compositor_init(void)
 {
+	/* Set every compositor to use the default empty functions */
 	emage_compositor_blend_init();
 	//emage_compositor_copy_init();
 }
