@@ -13,7 +13,7 @@ EAPI int emage_init(void)
 	emage_compositor_init();
 	/* FIXME */
 	evas_common_cpu_init();
-	evas_common_convert_init();
+	//evas_common_convert_init();
 
 	return init;
 }

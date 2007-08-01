@@ -35,6 +35,7 @@ EAPI void *
 emage_surface_data_get(Emage_Surface *s)
 {
 	assert(s);
+
 	return s->data;
 }
 

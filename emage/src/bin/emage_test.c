@@ -6,19 +6,23 @@
 int main(void)
 {
 	DATA32 *d1, *d2;
+	Emage_Data_ARGB8888 *data;
+	
 	Emage_Surface *s1, *s2;
 	Emage_Draw_Context *dc;
 
 	/* create a new surface */
 	if (!emage_init()) return -1;
 
+	data = calloc(1, sizeof(Emage_Data_ARGB8888));
 	d1 = calloc(1, sizeof(DATA32) * WIDTH * HEIGHT);
-	d2 = calloc(1, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
+	data->data = d1;
+	//d2 = calloc(1, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	memset(d1, 0xff, sizeof(DATA32) * WIDTH * HEIGHT);
-	memset(d2, 0xf0, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
+	//memset(d2, 0xf0, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	dc = emage_draw_context_new();
-	s1 = emage_surface_new(d1, EMAGE_DATA_ARGB8888, WIDTH, HEIGHT);
-	s2 = emage_surface_new(d2, EMAGE_DATA_ARGB8888, WIDTH/2, HEIGHT/2);
+	s1 = emage_surface_new(data, EMAGE_DATA_ARGB8888, WIDTH, HEIGHT);
+	//s2 = emage_surface_new(d2, EMAGE_DATA_ARGB8888, WIDTH/2, HEIGHT/2);
 
 	/* common */
 	emage_draw_context_set_color(dc, 128, 128, 0, 255);
@@ -27,8 +31,8 @@ int main(void)
 	/* objects test */
 	emage_draw_context_set_render_op(dc, 0);
 	object_test(s1, dc);
-	emage_draw_context_set_color(dc, 218, 0, 0, 255);
-	object_test(s2, dc);
+	//emage_draw_context_set_color(dc, 218, 0, 0, 255);
+	//object_test(s2, dc);
 	
 	/* blt/blend */
 	//evas_common_scale_rgba_in_to_out_clip_smooth(s2, s1, dc, 0, 0, 127, 127, 0, 0, 255, 255);

@@ -28,6 +28,15 @@
 #endif
 #endif
 
+/* FIXME to debug */
+//#define DEBUG
+#ifdef DEBUG
+#define PRINTF(fmt, args...)  printf("[emage:%s]  " fmt, __FUNCTION__ , ## args)
+#else
+#define PRINTF(fmt, args...)
+#endif
+
+
 /* FIXME things above this */
 /***************************/
 /* FIXME check the above flags!! */

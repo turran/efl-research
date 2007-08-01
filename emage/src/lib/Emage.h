@@ -40,7 +40,7 @@ struct _Evas_Object_List
 typedef struct _Emage_Data_ARGB8888
 {
 	DATA32 *data;
-} Emage_Data_ARGB888;
+} Emage_Data_ARGB8888;
 
 typedef struct _Emage_Data_RGB565_A5
 {
@@ -139,7 +139,9 @@ evas_common_scale_rgba_in_to_out_clip_smooth(Emage_Surface *src, Emage_Surface *
 EAPI int 		emage_init(void);
 EAPI void 		emage_shutdown(void);
 /* Context */
-/* FIXME the above is duplicated internally in _private.h */
+/* FIXME the above is duplicated internally in _private.h
+ * remove the =
+ */
 typedef enum _Emage_Render_Op
 {
 	EMAGE_RENDER_BLEND = 0, /**< default op: d = d*(1-sa) + s */
