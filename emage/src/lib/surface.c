@@ -9,7 +9,7 @@
  */
 
 EAPI Emage_Surface *
-emage_surface_new(void *data, int w, int h)
+emage_surface_new(void *data, Emage_Data_Format f, int w, int h)
 {
 	Emage_Surface *s;
 
@@ -17,6 +17,7 @@ emage_surface_new(void *data, int w, int h)
 	s->w = w;
 	s->h = h;
 	s->data = data;
+	s->format = f;
 	s->flags = RGBA_SURFACE_HAS_ALPHA;
 
 	return s;

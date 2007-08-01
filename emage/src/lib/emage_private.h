@@ -33,9 +33,10 @@
 /* FIXME check the above flags!! */
 struct _Emage_Surface
 {
-	int                w, h;
-	void 		*format;
-	int               flags;
+	int                	w, h;
+	void 			*data;
+	Emage_Data_Format	format;
+	int               	flags; // ??
 };
    
 #define RGBA_SURFACE_HAS_ALPHA 1
@@ -51,8 +52,8 @@ void emage_compositor_copy_init(void);
  * to get the current color
  */
 
-typedef void (Emage_Sl_Func) (void *src, void *mask, DATA32 col, void *dst, int len);
-typedef void (Emage_Pt_Func) (void *src, void *mask, DATA32 col, void *dst);
+typedef void (*Emage_Sl_Func) (void *src, void *mask, DATA32 col, void *dst, int offset, int len);
+typedef void (*Emage_Pt_Func) (void *src, void *mask, DATA32 col, void *dst, int offset);
 
 /* TODO document why it was choosen only one level of _get instead of two as 
  * evas_common had
@@ -63,17 +64,17 @@ typedef void (Emage_Pt_Func) (void *src, void *mask, DATA32 col, void *dst);
 typedef struct _Emage_Compositor
 {
 	/* Scanlines */
-	Emage_Sl_Func *sl_pixel;
-	Emage_Sl_Func *sl_color;
-	Emage_Sl_Func *sl_pixel_color;
-	Emage_Sl_Func *sl_mask_color;
-	Emage_Sl_Func *sl_pixel_mask;
+	Emage_Sl_Func sl_pixel;
+	Emage_Sl_Func sl_color;
+	Emage_Sl_Func sl_pixel_color;
+	Emage_Sl_Func sl_mask_color;
+	Emage_Sl_Func sl_pixel_mask;
 	/* Points */
-	Emage_Pt_Func *pt_pixel;
-	Emage_Pt_Func *pt_color;
-	Emage_Pt_Func *pt_pixel_color;
-	Emage_Pt_Func *pt_mask_color;
-	Emage_Pt_Func *pt_pixel_mask;
+	Emage_Pt_Func pt_pixel;
+	Emage_Pt_Func pt_color;
+	Emage_Pt_Func pt_pixel_color;
+	Emage_Pt_Func pt_mask_color;
+	Emage_Pt_Func pt_pixel_mask;
 } Emage_Compositor;
 
 

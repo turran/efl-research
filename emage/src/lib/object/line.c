@@ -90,7 +90,8 @@
 		 return;							\
 	  }									\
 										\
-	p = data + (dstw * py) + px;					\
+	/* p = data + (dstw * py) + px;	*/			 	\
+	offset = (dstw * py) + px;					\
 										\
 	x = px - x0;							\
 	yy = x * dyy;							\
@@ -162,7 +163,8 @@
 	   return;								\
      }									\
 										\
-   p = data + (dstw * py) + px;					\
+   /* p = data + (dstw * py) + px; */					\
+   offset = (dstw * py) + px;					\
 										\
    y = py - y0;								\
    xx = y * dxx;								\
@@ -180,15 +182,18 @@
 static void
 _evas_draw_point(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y)
 {
-   RGBA_Gfx_Pt_Func pfunc;
+   Emage_Pt_Func pfunc;
+   //RGBA_Gfx_Pt_Func pfunc;
 
    if (!IN_RANGE(x, y, dst->w, dst->h))
 	return;
    if ((dc->clip.use) && (!IN_RECT(x, y, dc->clip.x, dc->clip.y, dc->clip.w, dc->clip.h)))
 	return;
-   pfunc = evas_common_gfx_func_composite_color_pt_get(dc->col.col, dst, dc->render_op);
-   if (pfunc)
-	pfunc(0, 255, dc->col.col, dst->data + (dst->w * y) + x);
+	pfunc = emage_compositor_pt_color_get(dc, dst);
+   //pfunc = evas_common_gfx_func_composite_color_pt_get(dc->col.col, dst, dc->render_op);
+   //if (pfunc)
+	//pfunc(0, 255, dc->col.col, dst->data + (dst->w * y) + x);
+	pfunc(0, 255, dc->col.col, dst, (dst->w * y) + x);
 }
 
 /*
@@ -203,12 +208,17 @@ _evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y
    int     dx, dy, len, lx, ty, rx, by;
    int     clx, cly, clw, clh;
    int     dstw;
-   DATA32  *p, color;
-   RGBA_Gfx_Pt_Func pfunc;
-   RGBA_Gfx_Func    sfunc;
+   int 	offset;
+   DATA32  *p; //, color; no need for this color
+   
+   Emage_Pt_Func pfunc;
+   Emage_Sl_Func sfunc;
+
+   //RGBA_Gfx_Pt_Func pfunc;
+   //RGBA_Gfx_Func    sfunc;
 
    dstw = dst->w;
-   color = dc->col.col;
+   //color = dc->col.col; no need for this color
 
    if (y0 > y1)
       EXCHANGE_POINTS(x0, y0, x1, y1)
@@ -248,17 +258,20 @@ _evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y
 		  if (x1 > rx) x1 = rx;
 		  
 		  len = x1 - x0 + 1;
-		  p = dst->data + (dstw * y0) + x0;
-		  sfunc = evas_common_gfx_func_composite_color_span_get(color, dst, len, dc->render_op);
-		  if (sfunc)
-		    sfunc(NULL, NULL, color, p, len);
+		  //p = dst->data + (dstw * y0) + x0;
+		  offset = (dstw * y0) + x0;
+		  //sfunc = evas_common_gfx_func_composite_color_span_get(color, dst, len, dc->render_op);
+		  sfunc = emage_compositor_sl_color_get(dc, dst);
+		  //if (sfunc)
+		    sfunc(NULL, NULL, dc->col.col, dst, offset, len);
 	       }
 	  }
 	return;
      }
 
-   pfunc = evas_common_gfx_func_composite_color_pt_get(color, dst, dc->render_op);
-   if (!pfunc) return;
+   pfunc = emage_compositor_pt_color_get(dc, dst);
+   //pfunc = evas_common_gfx_func_composite_color_pt_get(color, dst, dc->render_op);
+   //if (!pfunc) return;
 
    if (dx == 0)
      {
@@ -268,16 +281,19 @@ _evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y
 	     if (y1 > by) y1 = by;
 	     
 	     len = y1 - y0 + 1;
-	     p = dst->data + (dstw * y0) + x0;
+	     //p = dst->data + (dstw * y0) + x0;
+	     offset = (dstw * y0) + x0;
 	     while (len--)
 	       {
 #ifdef EVAS_SLI
 		  if (((y1 + 1 - len) % dc->sli.h) == dc->sli.y)
 #endif
 		    {
-		       pfunc(0, 255, color, p);
+		       //pfunc(0, 255, color, p);
+		       pfunc(0, 255, dc->col.col, dst, offset);
 		    }
-		  p += dstw;
+		  //p += dstw;
+		  offset += dstw;
 	       }
 	  }
 	return;
@@ -346,7 +362,8 @@ _evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y
 	  }
 	if (y1 > y0)
 	  {
-	     p = dst->data + (dstw * y0) + x0;
+	     //p = dst->data + (dstw * y0) + x0;
+	     offset = (dstw * y0) + x0;
 	     len = y1 - y0 + 1;
 	     if (dx > 0)  dstw++;
 	     else  dstw--;
@@ -354,7 +371,8 @@ _evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y
 	else
 	  {
 	     len = y0 - y1 + 1;
-	     p = dst->data + (dstw * y1) + x1;
+	     //p = dst->data + (dstw * y1) + x1;
+	     offset = (dstw * y1) + x1;
 	     if (dx > 0)  dstw--;
 	     else  dstw++;
 	  }
@@ -365,9 +383,11 @@ _evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y
 	     if (((y1 + 1 - len) % dc->sli.h) == dc->sli.y)
 #endif
 	       {
-		  pfunc(0, 255, color, p);
+		  //pfunc(0, 255, color, p);
+		  pfunc(0, 255, dc->col.col, dst, offset);
 	       }
-	    p += dstw;
+	    //p += dstw;
+	    offset += dstw;
 	  }
      }
 }
@@ -381,8 +401,11 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
    int     delx, dely, xx, yy, dxx, dyy;
    int     clx, cly, clw, clh;
    int     dstw;
-   DATA32  *p, *data, color;
-   RGBA_Gfx_Pt_Func pfunc;
+   int 	offset;
+   //DATA32  *p, *data, color;
+   DATA32  color;
+   Emage_Pt_Func pfunc;
+   //RGBA_Gfx_Pt_Func pfunc;
 
    dx = x1 - x0;
    dy = y1 - y0;
@@ -394,18 +417,20 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
      }
 
    color = dc->col.col;
-   pfunc = evas_common_gfx_func_composite_color_pt_get(color, dst, dc->render_op);
-   if (!pfunc) return;
+   //pfunc = evas_common_gfx_func_composite_color_pt_get(color, dst, dc->render_op);
+   pfunc = emage_compositor_pt_color_get(dc, dst);
+   //if (!pfunc) return;
 
    clx = dc->clip.x;
    cly = dc->clip.y;
    clw = dc->clip.w;
    clh = dc->clip.h;
 
-   data = dst->data;
+   //data = dst->data;
    dstw = dst->w;
 
-   data += (dstw * cly) + clx;
+   //data += (dstw * cly) + clx;
+   offset = (dstw * cly) + clx;
    x0 -= clx;
    y0 -= cly;
    x1 -= clx;
@@ -423,7 +448,8 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 	    if (prev_y != y)
 	      {
 		prev_y = y;
-		p += dh;
+		//p += dh;
+		offset += dh;
 		py += dely;
 	      }
 	    if (!p1_in)
@@ -436,11 +462,12 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 #endif
 	       {
 		  if (IN_RANGE(px, py, clw, clh))
-		    pfunc(0, 255, color, p);
+		    pfunc(0, 255, color, dst, offset);
 	       }
 	    yy += dyy;
 	    px++;
-	    p++;
+	    //p++;
+	    offset++;
 	  }
 	return;
      }
@@ -457,7 +484,8 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 	  {
 	    prev_x = x;
 	    px += delx;
-	    p += delx;
+	    //p += delx;
+	    offset += delx;
 	  }
 	if (!p1_in)
 	  {
@@ -469,11 +497,13 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 #endif
 	  {
 	     if (IN_RANGE(px, py, clw, clh))
-	       pfunc(0, 255, color, p);
+	       //pfunc(0, 255, color, p);
+	       pfunc(0, 255, color, dst, offset);
 	  }
 	xx += dxx;
 	py++;
-	p += dstw;
+	//p += dstw;
+	offset += dstw;
      }
 }
 
@@ -486,8 +516,11 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
    int     delx, dely, xx, yy, dxx, dyy;
    int     clx, cly, clw, clh;
    int     dstw;
-   DATA32  *p, *data, color;
-   RGBA_Gfx_Pt_Func pfunc;
+   DATA32  color;
+   int offset;
+   //RGBA_Gfx_Pt_Func pfunc;
+   //DATA32  *p, *data, color;
+   Emage_Pt_Func pfunc;
 
    if (y0 > y1)
       EXCHANGE_POINTS(x0, y0, x1, y1)
@@ -501,18 +534,20 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
      }
 
    color = dc->col.col;
-   pfunc = evas_common_gfx_func_composite_mask_color_pt_get(color, dst, dc->render_op);
-   if (!pfunc) return;
+   pfunc = emage_compositor_pt_mask_color_get(dc, dst);
+   //pfunc = evas_common_gfx_func_composite_mask_color_pt_get(color, dst, dc->render_op);
+   //if (!pfunc) return;
 
    clx = dc->clip.x;
    cly = dc->clip.y;
    clw = dc->clip.w;
    clh = dc->clip.h;
 
-   data = dst->data;
+   //data = dst->data;
    dstw = dst->w;
 
-   data += (dstw * cly) + clx;
+   //data += (dstw * cly) + clx;
+   offset = (dstw * cly) + clx;
    x0 -= clx;
    y0 -= cly;
    x1 -= clx;
@@ -531,7 +566,8 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
 	    if (prev_y != y)
 	      {
 		prev_y = y;
-		p += dh;
+		//p += dh;
+		offset += dh;
 		py += dely;
 	      }
 	    if (!p1_in)
@@ -543,13 +579,16 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
 	      {
 		aa = ((yy - (y << 16)) >> 8);
 	   	if ((unsigned)(py) < clh)
-		   pfunc(0, 255 - aa, color, p);
+		   //pfunc(0, 255 - aa, color, p);
+		   pfunc(0, 255 - aa, color, dst, offset);
 	   	if ((unsigned)(py + 1) < clh)
-		   pfunc(0, aa, color, p + dstw);
+		   pfunc(0, aa, color, dst, offset + dstw);
+		   //pfunc(0, aa, color, p + dstw);
 	      }
 	    yy += dyy;
 	    px++;
-	    p++;
+	    //p++;
+	    offset++;
 	  }
 	return;
      }
@@ -567,7 +606,8 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
 	  {
 	    prev_x = x;
 	    px += delx;
-	    p += delx;
+	    //p += delx;
+	    offset += delx;
 	  }
 	if (!p1_in)
 	  {
@@ -578,13 +618,16 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
 	  {
 	    aa = ((xx - (x << 16)) >> 8);
 	    if ((unsigned)(px) < clw)
-		pfunc(0, 255 - aa, color, p);
+		//pfunc(0, 255 - aa, color, p);
+		pfunc(0, 255 - aa, color, dst, offset);
 	    if ((unsigned)(px + 1) < clw)
-		pfunc(0, aa, color, p + 1);
+		//pfunc(0, aa, color, p + 1);
+		pfunc(0, aa, color, dst, offset + 1);
 	  }
 	xx += dxx;
 	py++;
-	p += dstw;
+	//p += dstw;
+	offset += dstw;
      }
 }
 

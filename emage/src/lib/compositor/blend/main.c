@@ -1,5 +1,5 @@
-#include <Emage.h>
-#include <emage_private.h>
+#include "Emage.h"
+#include "emage_private.h"
 /*
 #include "argb8888_c.h"
 #include "argb8888_mmx.h"
@@ -22,7 +22,7 @@ static Emage_Compositor rgb565_a5_blend;
 void emage_compositor_blend_init(void)
 {
 	/* set the correct compositor based on the cpu properties */
-	if (Emage_CPU_Features & (EMAGE_CPU_MMX | EMAGE_CPU_MMX2 | EMAGE_CPU_SSE))
+	if (Emage_CPU_Features & (CPU_FEATURE_MMX | CPU_FEATURE_MMX2 | CPU_FEATURE_SSE))
 	{
 
 	}

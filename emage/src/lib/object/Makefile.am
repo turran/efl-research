@@ -4,15 +4,14 @@ MAINTAINERCLEANFILES = Makefile.in
 
 INCLUDES = \
 -I. \
--I$(top_srcdir)/src/lib \
--Werror
+-I$(top_srcdir)/src/lib
 
 noinst_LTLIBRARIES      = libemage_object.la
 
 libemage_object_la_SOURCES  = \
-line.c \
-polygon.c \
-rectangle.c 
+line.c 
+# polygon.c 
+# rectangle.c 
 
 libemage_object_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h

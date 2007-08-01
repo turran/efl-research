@@ -17,8 +17,8 @@ int main(void)
 	memset(d1, 0xff, sizeof(DATA32) * WIDTH * HEIGHT);
 	memset(d2, 0xf0, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	dc = emage_draw_context_new();
-	s1 = emage_surface_new(d1, WIDTH, HEIGHT);
-	s2 = emage_surface_new(d2, WIDTH/2, HEIGHT/2);
+	s1 = emage_surface_new(d1, EMAGE_DATA_ARGB8888, WIDTH, HEIGHT);
+	s2 = emage_surface_new(d2, EMAGE_DATA_ARGB8888, WIDTH/2, HEIGHT/2);
 
 	/* common */
 	emage_draw_context_set_color(dc, 128, 128, 0, 255);
@@ -31,7 +31,7 @@ int main(void)
 	object_test(s2, dc);
 	
 	/* blt/blend */
-	evas_common_scale_rgba_in_to_out_clip_smooth(s2, s1, dc, 0, 0, 127, 127, 0, 0, 255, 255);
+	//evas_common_scale_rgba_in_to_out_clip_smooth(s2, s1, dc, 0, 0, 127, 127, 0, 0, 255, 255);
 	#if 0
 	{
 		DATA32 *p;
