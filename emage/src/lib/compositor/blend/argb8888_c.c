@@ -1,3 +1,8 @@
+#include "Emage.h"
+#include "emage_private.h"
+
+#include "main.h"
+
 #ifdef BUILD_C
 /*============================================================================*
  *                                  Local                                     * 
@@ -275,7 +280,7 @@ _sl_pixel_mask_rgb_salpha(DATA32 *s, DATA8 *m, DATA32 *d, int l)
  *============================================================================*/
 
 static void
-blend_c_sl_pixel(Emage_Surface *src, void *mask, DATA32 col, Emage_Surface *dst, int offset, int len)
+blend_c_sl_pixel(Emage_Surface *src, int soffset, void *mask, int moffset, DATA32 col, Emage_Surface *dst, int offset, int len)
 {
 	DATA32 *s, *d;
 	Emage_Data_ARGB8888 *f;
@@ -488,14 +493,14 @@ blend_c_pt_pixel_mask(Emage_Surface *src, DATA32 m, DATA32 c, Emage_Surface *dst
 
 #else
 
-#define blend_c_sl_pixel 	dummy_sl
-#define blend_c_sl_color 	dummy_sl
-#define blend_c_sl_pixel_color 	dummy_sl
-#define blend_c_sl_mask_color 	dummy_sl
-#define blend_c_sl_pixel_mask 	dummy_sl
-#define blend_c_pt_color 	dummy_pt
-#define blend_c_pt_pixel_color 	dummy_pt
-#define blend_c_pt_mask_color 	dummy_pt
-#define blend_c_pt_pixel_mask 	dummy_pt
+#define argb8888_c_sl_pixel 		dummy_sl
+#define argb8888_c_sl_color 		dummy_sl
+#define argb8888_c_sl_pixel_color 	dummy_sl
+#define argb8888_c_sl_mask_color 	dummy_sl
+#define argb8888_c_sl_pixel_mask 	dummy_sl
+#define argb8888_c_pt_color 		dummy_pt
+#define argb8888_c_pt_pixel_color 	dummy_pt
+#define argb8888_c_pt_mask_color 	dummy_pt
+#define argb8888_c_pt_pixel_mask 	dummy_pt
 
 #endif

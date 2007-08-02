@@ -1,15 +1,11 @@
 #include "Emage.h"
 #include "emage_private.h"
 
+#include "main.h"
+
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-
-#include "argb8888_c.c"
-/*
-#include "argb8888_mmx.h"
-#include "rgb565_a5_c.h"
-*/
 
 /*
 CPU_FEATURE_C
@@ -41,16 +37,17 @@ void emage_compositor_blend_init(void)
 	}
 #endif
 	c = &Emage_Compositors[EMAGE_DATA_ARGB8888][EMAGE_RENDER_BLEND];
-	c->sl_pixel = blend_c_sl_pixel;
-	c->sl_color = blend_c_sl_color;
-	c->sl_pixel_color = blend_c_sl_pixel_color;
-	c->sl_mask_color = blend_c_sl_mask_color;
-	c->sl_pixel_mask = blend_c_sl_pixel_mask;
-	c->pt_pixel = blend_c_pt_pixel;
-	c->pt_color = blend_c_pt_color;
-	c->pt_pixel_color = blend_c_pt_pixel_color;
-	c->pt_mask_color = blend_c_pt_mask_color;
-	c->sl_pixel_mask = blend_c_sl_pixel_mask;
-	
+#if 0
+	c->sl_pixel = argb8888_c_sl_pixel;
+	c->sl_color = argb8888_c_sl_color;
+	c->sl_pixel_color = argb8888_c_sl_pixel_color;
+	c->sl_mask_color = argb8888_c_sl_mask_color;
+	c->sl_pixel_mask = argb8888_c_sl_pixel_mask;
+	c->pt_pixel = argb8888_c_pt_pixel;
+	c->pt_color = argb8888_c_pt_color;
+	c->pt_pixel_color = argb8888_c_pt_pixel_color;
+	c->pt_mask_color = argb8888_c_pt_mask_color;
+	c->sl_pixel_mask = argb8888_c_sl_pixel_mask;
+#endif	
 	//Emage_Compositors[EMAGE_DATA_RGB565_A5][EMAGE_RENDER_BLEND] = rgb565_a5_blend;
 }

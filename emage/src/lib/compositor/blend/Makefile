@@ -43,7 +43,8 @@ CONFIG_HEADER = $(top_builddir)/src/lib/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libemage_compositor_blend_la_LIBADD =
-am_libemage_compositor_blend_la_OBJECTS = main.lo
+am_libemage_compositor_blend_la_OBJECTS = main.lo argb8888_c.lo \
+	rgb565_a5_c.lo
 libemage_compositor_blend_la_OBJECTS =  \
 	$(am_libemage_compositor_blend_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/src/lib
@@ -177,7 +178,9 @@ INCLUDES = \
 
 noinst_LTLIBRARIES = libemage_compositor_blend.la
 libemage_compositor_blend_la_SOURCES = \
-main.c
+main.c \
+argb8888_c.c \
+rgb565_a5_c.c
 
 libemage_compositor_blend_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h
@@ -233,7 +236,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/argb8888_c.Plo
 include ./$(DEPDIR)/main.Plo
+include ./$(DEPDIR)/rgb565_a5_c.Plo
 
 .c.o:
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

@@ -59,6 +59,8 @@ typedef enum _Emage_Surface_Flag
 #define RGBA_SURFACE_ALPHA_SPARSE 2
 
 /* Compositors */
+
+
 void emage_compositor_init(void);
 void emage_compositor_blend_init(void);
 void emage_compositor_blend_rel_init(void);
@@ -72,6 +74,31 @@ void emage_compositor_copy_init(void);
 
 typedef void (*Emage_Sl_Func) (Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len);
 typedef void (*Emage_Pt_Func) (Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset);
+
+#define SL_NAME(op, cs, cpu, name) op ## _ ## cs ## cpu ## _sl_ ## name
+#define PT_NAME(op, cs, cpu, name) op ## _ ## cs ## cpu ## _pt_ ## name
+
+#define COMPOSITOR_OVERRIDE_ALL(c, op, cs, cpu) 			\
+	c->sl_pixel 		= SL_NAME(op, cs, cpu); 		\
+	c->sl_color 		= SL_NAME(op, cs, cpu); 		\
+	c->sl_pixel_color 	= SL_NAME(op, cs, cpu); 		\
+	c->sl_mask_color 	= SL_NAME(op, cs, cpu); 		\
+	c->sl_pixel_mask 	= SL_NAME(op, cs, cpu); 		\
+	c->pt_pixel 		= PT_NAME(op, cs, cpu); 		\
+	c->pt_color 		= PT_NAME(op, cs, cpu); 		\
+	c->pt_pixel_color 	= PT_NAME(op, cs, cpu); 		\
+	c->pt_mask_color 	= PT_NAME(op, cs, cpu); 		\
+	c->sl_pixel_mask 	= PT_NAME(op, cs, cpu);
+
+
+#define SL_FUNC(op, cs, cpu, name) 					\
+SL_NAME(op, cs, cpu, name)(Emage_Surface *src, int soffset, 		\
+	DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, 	\
+	int doffset, int len)
+
+#define PT_FUNC(op, cs, cpu, name) 					\
+PT_NAME(op, cs, cpu, name)(Emage_Surface *src, int soffset, 		\
+	DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset)
 
 /* our dummy functions in case the compositor doesnt implements them */
 void dummy_sl(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len);
