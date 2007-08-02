@@ -64,16 +64,18 @@ void emage_compositor_blend_init(void);
 void emage_compositor_blend_rel_init(void);
 void emage_compositor_copy_init(void);
 
-/* FIXME instead of 32 b color, why not some functions for each data format
+/* FIXME 
+ * - instead of 32 b color, why not some functions for each data format
  * to get the current color
+ * - what about the src offset?
  */
 
-typedef void (*Emage_Sl_Func) (Emage_Surface *src, DATA32 *mask, DATA32 col, Emage_Surface *dst, int offset, int len);
-typedef void (*Emage_Pt_Func) (Emage_Surface *src, DATA32 mask, DATA32 col, Emage_Surface *dst, int offset);
+typedef void (*Emage_Sl_Func) (Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len);
+typedef void (*Emage_Pt_Func) (Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset);
 
 /* our dummy functions in case the compositor doesnt implements them */
-void dummy_sl(void *src, void *mask, DATA32 col, void *dst, int offset, int len);
-void dummy_pt(void *src, void *mask, DATA32 col, void *dst, int offset);
+void dummy_sl(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len);
+void dummy_pt(Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset);
 
 /* TODO document why it was choosen only one level of _get instead of two as 
  * evas_common had

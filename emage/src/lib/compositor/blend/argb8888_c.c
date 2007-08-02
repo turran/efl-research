@@ -294,7 +294,7 @@ blend_c_sl_pixel(Emage_Surface *src, void *mask, DATA32 col, Emage_Surface *dst,
 }
 
 static void
-blend_c_sl_color(Emage_Surface *src, void *mask, DATA32 c, Emage_Surface *dst, int offset, int l)
+blend_c_sl_color(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 c, Emage_Surface *dst, int offset, int l)
 {
 	DATA32 *s, *d;
 	DATA32 *e, a;

@@ -296,7 +296,7 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
 		  //ptr = dst->data + (span->y * (dst->w)) + span->x;
 		  offset = (span->y * (dst->w)) + span->x;
 		  //func(NULL, NULL, dc->col.col, ptr, span->w);
-		  func(NULL, NULL, dc->col.col, dst, offset, span->w);
+		  func(NULL, 0, NULL, 0, dc->col.col, dst, offset, span->w);
 	       }
 	  }
 	while (spans)

@@ -35,7 +35,7 @@ rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y
 	if (((yy + y) % dc->sli.h) == dc->sli.y)
 #endif
 	  {
-	     func(NULL, NULL, dc->col.col, dst, offset, w);
+	     func(NULL, 0, NULL, 0, dc->col.col, dst, offset, w);
 	  }
 	//ptr += dst->w;
 	offset += dst->w;

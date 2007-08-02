@@ -82,6 +82,7 @@ struct _Cutout_Rects
 
 /* Context
  * ~~~~~~~ 
+ * FIXME move this to private.h
  */
 
 struct _Emage_Draw_Context

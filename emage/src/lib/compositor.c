@@ -32,76 +32,6 @@ DUMMY_PT_FN(mask_color)
 DUMMY_PT_FN(pixel_mask)
 
 
-#if 0
-
-static void 
-default_sl_pixel(Emage_Surface *src, Emage_Surface *dst, int pixels)
-{
-
-}
-
-static void 
-default_sl_pixel(Emage_Surface *src, Emage_Surface *dst, int pixels)
-{
-
-}
-
-static void 
-default_sl_color(DATA32 col, Emage_Surface *dst, int pixels)
-{
-
-}
-
-static void 
-default_sl_pixel_color(Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels)
-{
-
-}
-
-static void 
-default_sl_mask_color(DATA32 col, Emage_Surface *dst, int pixels)
-{
-
-}
-
-static void 
-default_sl_pixel_mask(Emage_Surface *src, Emage_Surface *dst, int pixels)
-{
-
-}
-
-/* Points */
-static void
-default_pt_pixel(int src_flags, Emage_Surface *dst)
-{
-
-}
-
-static void
-default_pt_color(DATA32 col, Emage_Surface *dst)
-{
-
-}
-
-static void
-default_pt_pixel_color(int src_flags, DATA32 col, Emage_Surface *dst)
-{
-
-}
-
-static void
-default_pt_mask_color(DATA32 col, Emage_Surface *dst)
-{
-
-}
-
-static void
-default_pt_pixel_mask(int src_flags, Emage_Surface *dst)
-{
-
-}
-#endif
-
 static Emage_Compositor comp_default = {
 	.sl_pixel 	= dummy_sl_pixel,
 	.sl_color 	= dummy_sl_color,
@@ -140,7 +70,7 @@ void emage_compositor_init(void)
 
 /* Scanlines */
 Emage_Sl_Func 
-emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_Surface *dst, int pixels)
+emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_Surface *dst)
 {
 	if (src && dst)
 	{
@@ -150,7 +80,7 @@ emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_
 }
 
 Emage_Sl_Func
-emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst, int pixels)
+emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
 	return Emage_Compositors[dst->format][dc->render_op].sl_color;
@@ -158,7 +88,7 @@ emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst, int pi
 
 Emage_Sl_Func
 emage_compositor_sl_pixel_color(Emage_Draw_Context *dc,
-	Emage_Surface *src, DATA32 col, Emage_Surface *dst, int pixels)
+	Emage_Surface *src, Emage_Surface *dst)
 {
 	if (src && dst)
 	{
@@ -168,8 +98,7 @@ emage_compositor_sl_pixel_color(Emage_Draw_Context *dc,
 }
 
 Emage_Sl_Func
-emage_compositor_sl_mask_color_get(Emage_Draw_Context *dc, 
-	DATA32 col, Emage_Surface *dst, int pixels)
+emage_compositor_sl_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 
 	return Emage_Compositors[dst->format][dc->render_op].sl_mask_color;
@@ -177,7 +106,7 @@ emage_compositor_sl_mask_color_get(Emage_Draw_Context *dc,
 
 Emage_Sl_Func
 emage_compositor_sl_pixel_mask_get(Emage_Draw_Context *dc, 
-	Emage_Surface *src, Emage_Surface *dst, int pixels)
+	Emage_Surface *src, Emage_Surface *dst)
 {
 	if (src && dst)
 	{
@@ -188,8 +117,7 @@ emage_compositor_sl_pixel_mask_get(Emage_Draw_Context *dc,
 
 /* Points */
 Emage_Pt_Func
-emage_compositor_pt_pixel_get(Emage_Draw_Context *dc, int src_flags, 
-	Emage_Surface *dst)
+emage_compositor_pt_pixel_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel;
@@ -203,8 +131,8 @@ emage_compositor_pt_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 }
 
 Emage_Pt_Func
-emage_compositor_pt_pixel_color_get(Emage_Draw_Context *dc, int src_flags, 
-	DATA32 col, Emage_Surface *dst)
+emage_compositor_pt_pixel_color_get(Emage_Draw_Context *dc, Emage_Surface *src, 
+	Emage_Surface *dst)
 {
 	
 	assert(dst);
@@ -219,24 +147,20 @@ emage_compositor_pt_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 }
 
 Emage_Pt_Func
-emage_compositor_pt_pixel_mask_get(Emage_Draw_Context *dc, int src_flags, 
+emage_compositor_pt_pixel_mask_get(Emage_Draw_Context *dc, Emage_Surface *src,
 	Emage_Surface *dst)
 {
 	assert(dst);
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel_mask;
 }
 
-void
-dummy_sl(void *src, void *mask, DATA32 col, void *dst, int offset, int len)
+void dummy_sl(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len)
+{
+	PRINTF("not implemented\n");
+
+}
+
+void dummy_pt(Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset)
 {
 	PRINTF("not implemented\n");
 }
-
-void
-dummy_pt(void *src, void *mask, DATA32 col, void *dst, int offset)
-{
-	PRINTF("not implemented\n");
-}
-
-
-
