@@ -31,17 +31,8 @@ DUMMY_PT_FN(pixel_color)
 DUMMY_PT_FN(mask_color)
 DUMMY_PT_FN(pixel_mask)
 
+
 #if 0
-
-static void default_sl(void *src, void *mask, DATA32 col, void *dst, int offset, int len)
-{
-	printf("NOT IMPLEMENTED\n");
-}
-
-static void default_pt(void *src, void *mask, DATA32 col, void *dst, int offset)
-{
-	printf("NOT IMPLEMENTED\n");
-}
 
 static void 
 default_sl_pixel(Emage_Surface *src, Emage_Surface *dst, int pixels)
@@ -134,7 +125,10 @@ void emage_compositor_init(void)
 {
 	int df, rop;
 	
-	/* Set every compositor to use the default empty functions */
+	/* Set every compositor to use the default empty functions
+	 * this should go away in case we have _all_ compositors
+	 * implemented
+	 */
 	for (df = 0; df < EMAGE_DATA_FORMATS; df++)
 		for (rop = 0; rop < EMAGE_RENDER_OPS; rop++)
 			Emage_Compositors[df][rop] = comp_default;
@@ -231,3 +225,18 @@ emage_compositor_pt_pixel_mask_get(Emage_Draw_Context *dc, int src_flags,
 	assert(dst);
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel_mask;
 }
+
+void
+dummy_sl(void *src, void *mask, DATA32 col, void *dst, int offset, int len)
+{
+	PRINTF("not implemented\n");
+}
+
+void
+dummy_pt(void *src, void *mask, DATA32 col, void *dst, int offset)
+{
+	PRINTF("not implemented\n");
+}
+
+
+

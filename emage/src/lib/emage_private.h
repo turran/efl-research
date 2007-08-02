@@ -47,7 +47,13 @@ struct _Emage_Surface
 	Emage_Data_Format	format;
 	int               	flags; // ??
 };
-   
+
+typedef enum Emage_Surface_Flags
+{
+	SURFACE_HAS_ALPHA 		= (1 << 0),
+	SURFACE_HAS_SPARSE_ALPHA 	= (1 << 1)
+};
+
 #define RGBA_SURFACE_HAS_ALPHA 1
 #define RGBA_SURFACE_ALPHA_SPARSE 2
 
@@ -61,8 +67,12 @@ void emage_compositor_copy_init(void);
  * to get the current color
  */
 
-typedef void (*Emage_Sl_Func) (void *src, void *mask, DATA32 col, void *dst, int offset, int len);
-typedef void (*Emage_Pt_Func) (void *src, void *mask, DATA32 col, void *dst, int offset);
+typedef void (*Emage_Sl_Func) (Emage_Surface *src, DATA32 *mask, DATA32 col, Emage_Surface *dst, int offset, int len);
+typedef void (*Emage_Pt_Func) (Emage_Surface *src, DATA32 mask, DATA32 col, Emage_Surface *dst, int offset);
+
+/* our dummy functions in case the compositor doesnt implements them */
+void dummy_sl(void *src, void *mask, DATA32 col, void *dst, int offset, int len);
+void dummy_pt(void *src, void *mask, DATA32 col, void *dst, int offset);
 
 /* TODO document why it was choosen only one level of _get instead of two as 
  * evas_common had

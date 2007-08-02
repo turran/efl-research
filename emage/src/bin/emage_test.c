@@ -16,9 +16,9 @@ int main(void)
 
 	data = calloc(1, sizeof(Emage_Data_ARGB8888));
 	d1 = calloc(1, sizeof(DATA32) * WIDTH * HEIGHT);
-	data->data = d1;
 	//d2 = calloc(1, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	memset(d1, 0xff, sizeof(DATA32) * WIDTH * HEIGHT);
+	data->data = d1;
 	//memset(d2, 0xf0, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	dc = emage_draw_context_new();
 	s1 = emage_surface_new(data, EMAGE_DATA_ARGB8888, WIDTH, HEIGHT);
@@ -36,7 +36,7 @@ int main(void)
 	
 	/* blt/blend */
 	//evas_common_scale_rgba_in_to_out_clip_smooth(s2, s1, dc, 0, 0, 127, 127, 0, 0, 255, 255);
-	#if 0
+	#if 0 
 	{
 		DATA32 *p;
 		int y = 25;
@@ -52,13 +52,14 @@ int main(void)
 	#endif
 	
 	png_save(s1, "/tmp/emage1.png", 0);
-	png_save(s2, "/tmp/emage2.png", 0);
+	//png_save(s2, "/tmp/emage2.png", 0);
 
 	free(d1);
-	free(d2);
+	free(data);
+	//free(d2);
 	free(dc);
 	free(s1);
-	free(s2);
+	//free(s2);
 
 	emage_shutdown();
 	return 0;

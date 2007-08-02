@@ -4,12 +4,16 @@
 
 #include "Emage.h"
 
+/* TODO
+ * fix all this mess */
+
 void png_save(Emage_Surface *s, char *file, int compress)
 {
 	FILE *f;
 	int num_passes = 1, pass;
 	int x, y, j;
 	int w, h;
+	Emage_Data_ARGB8888 *df;
 
 	DATA32 *ptr, *data, *sdata;
 
@@ -34,7 +38,9 @@ void png_save(Emage_Surface *s, char *file, int compress)
 
 //	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
 	{
-		sdata = emage_surface_data_get(s);
+		df = emage_surface_data_get(s);
+		//printf("%p\n", f->data);
+		sdata = df->data;
 		emage_surface_size_get(s, &w, &h);
 		data = malloc(w * h * sizeof(DATA32));
         if (!data)
