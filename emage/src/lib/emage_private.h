@@ -48,11 +48,12 @@ struct _Emage_Surface
 	int               	flags; // ??
 };
 
-typedef enum Emage_Surface_Flags
+typedef enum _Emage_Surface_Flag
 {
-	SURFACE_HAS_ALPHA 		= (1 << 0),
-	SURFACE_HAS_SPARSE_ALPHA 	= (1 << 1)
-};
+	SURFACE_FLAG_HAS_ALPHA 		= (1 << 0),
+	SURFACE_FLAG_HAS_SPARSE_ALPHA 	= (1 << 1),
+	SURFACE_FLAGS 			= (1 << 2)
+} Emage_Surface_Flag;
 
 #define RGBA_SURFACE_HAS_ALPHA 1
 #define RGBA_SURFACE_ALPHA_SPARSE 2

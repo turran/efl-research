@@ -128,7 +128,8 @@ evas_common_polygon_points_clear(RGBA_Polygon_Point *points)
 EAPI void
 emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points)
 {
-   RGBA_Gfx_Func      func;
+   
+   //RGBA_Gfx_Func      func;
    RGBA_Polygon_Point *pt;
    RGBA_Vertex       *point;
    RGBA_Edge         *edges;
@@ -139,6 +140,9 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
    int                y0, y1, y;
    int                ext_x, ext_y, ext_w, ext_h;
    int               *sorted_index;
+
+   int offset;
+   Emage_Sl_Func func;
 
    ext_x = 0;
    ext_y = 0;
@@ -275,21 +279,24 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
    free(point);
    free(sorted_index);
 
-   func = evas_common_gfx_func_composite_color_span_get(dc->col.col, dst, 1, dc->render_op);
+   //func = evas_common_gfx_func_composite_color_span_get(dc->col.col, dst, 1, dc->render_op);
+   func = emage_compositor_sl_color_get(dc, dst);
    if (spans)
      {
 	for (l = spans; l; l = l->next)
 	  {
 	     RGBA_Span *span;
-	     DATA32 *ptr;
+	     //DATA32 *ptr;
 
 	     span = (RGBA_Span *)l;
 #ifdef EVAS_SLI
 	     if (((span->y) % dc->sli.h) == dc->sli.y)
 #endif
 	       {
-		  ptr = dst->data + (span->y * (dst->w)) + span->x;
-		  func(NULL, NULL, dc->col.col, ptr, span->w);
+		  //ptr = dst->data + (span->y * (dst->w)) + span->x;
+		  offset = (span->y * (dst->w)) + span->x;
+		  //func(NULL, NULL, dc->col.col, ptr, span->w);
+		  func(NULL, NULL, dc->col.col, dst, offset, span->w);
 	       }
 	  }
 	while (spans)

@@ -9,8 +9,10 @@
 static void
 rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
-   RGBA_Gfx_Func func;
+   //RGBA_Gfx_Func func;
+   Emage_Sl_Func func;
    int yy;
+   int offset;
    DATA32 *ptr;
 
    if ((w <= 0) || (h <= 0)) return;
@@ -23,17 +25,20 @@ rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y
      }
    if ((w <= 0) || (h <= 0)) return;
 
-   func = evas_common_gfx_func_composite_color_span_get(dc->col.col, dst, w, dc->render_op);
-   ptr = dst->data + (y * dst->w) + x;
+   //func = evas_common_gfx_func_composite_color_span_get(dc->col.col, dst, w, dc->render_op);
+   func = emage_compositor_sl_color_get(dc, dst);
+   //ptr = dst->data + (y * dst->w) + x;
+   offset = (y * dst->w) + x;
    for (yy = 0; yy < h; yy++)
      {
 #ifdef EVAS_SLI
 	if (((yy + y) % dc->sli.h) == dc->sli.y)
 #endif
 	  {
-	     func(NULL, NULL, dc->col.col, ptr, w);
+	     func(NULL, NULL, dc->col.col, dst, offset, w);
 	  }
-	ptr += dst->w;
+	//ptr += dst->w;
+	offset += dst->w;
      }
 }
 
