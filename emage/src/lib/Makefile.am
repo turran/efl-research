@@ -1,4 +1,4 @@
-SUBDIRS = object compositor data scale 
+SUBDIRS = object compositor data scaler 
 #scale convert op
 
 MAINTAINERCLEANFILES = \
