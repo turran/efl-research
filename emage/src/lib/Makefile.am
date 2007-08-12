@@ -1,4 +1,4 @@
-SUBDIRS = object compositor data 
+SUBDIRS = object compositor data scale 
 #scale convert op
 
 MAINTAINERCLEANFILES = \
@@ -17,6 +17,7 @@ surface.c \
 context.c \
 compositor.c \
 main.c \
+scaler.c \
 cpu.c
 #emage_blend.c
 #emage_blit.c

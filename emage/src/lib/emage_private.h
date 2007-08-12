@@ -1,164 +1,22 @@
 #ifndef _EMAGE_PRIVATE_H
 #define _EMAGE_PRIVATE_H
 
-#include <assert.h>
 
 #include "config.h"
-
-
-/* check if we have at least one backend if not, there's an eror */
-#ifndef BUILD_MMX
-# ifndef BUILD_SSE
-#  ifndef BUILD_C
-#   error "Please Read the README"
-#  endif
-# endif
-#endif
-
-#if defined BUILD_MMX || defined BUILD_SSE
-#include "emage_mmx.h"
-#endif
-
-#if defined HAVE_ALTIVEC_H
-#include <altivec.h>
-#ifdef CONFIG_DARWIN
-	#define AVV(x...) (x)
-#else
-	#define AVV(x...) {x}
-#endif
-#endif
-
-/* FIXME to debug */
-//#define DEBUG
-#ifdef DEBUG
-#define PRINTF(fmt, args...)  printf("[emage:%s]  " fmt, __FUNCTION__ , ## args)
-#else
-#define PRINTF(fmt, args...)
-#endif
-
+#include "debug.h"
+#include "cpu.h"
+#include "surface.h"
+#include "context.h"
+#include "compositor.h"
+#include "scaler.h"
+#include "data.h"
 
 /* FIXME things above this */
 /***************************/
-/* FIXME check the above flags!! */
-struct _Emage_Surface
-{
-	int                	w, h;
-	void 			*data;
-	Emage_Data_Format	format;
-	int               	flags; // ??
-};
+/* some useful constants */
 
-typedef enum _Emage_Surface_Flag
-{
-	SURFACE_FLAG_HAS_ALPHA 		= (1 << 0),
-	SURFACE_FLAG_HAS_SPARSE_ALPHA 	= (1 << 1),
-	SURFACE_FLAGS 			= (1 << 2)
-} Emage_Surface_Flag;
-
-#define RGBA_SURFACE_HAS_ALPHA 1
-#define RGBA_SURFACE_ALPHA_SPARSE 2
-
-/* Compositors */
-
-
-void emage_compositor_init(void);
-void emage_compositor_blend_init(void);
-void emage_compositor_blend_rel_init(void);
-void emage_compositor_copy_init(void);
-
-/* FIXME 
- * - instead of 32 b color, why not some functions for each data format
- * to get the current color
- * - what about the src offset?
- */
-
-typedef void (*Emage_Sl_Func) (Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len);
-typedef void (*Emage_Pt_Func) (Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset);
-
-#define SL_NAME(op, cs, cpu, name) op ## _ ## cs ## cpu ## _sl_ ## name
-#define PT_NAME(op, cs, cpu, name) op ## _ ## cs ## cpu ## _pt_ ## name
-
-#define COMPOSITOR_OVERRIDE_ALL(c, op, cs, cpu) 			\
-	c->sl_pixel 		= SL_NAME(op, cs, cpu); 		\
-	c->sl_color 		= SL_NAME(op, cs, cpu); 		\
-	c->sl_pixel_color 	= SL_NAME(op, cs, cpu); 		\
-	c->sl_mask_color 	= SL_NAME(op, cs, cpu); 		\
-	c->sl_pixel_mask 	= SL_NAME(op, cs, cpu); 		\
-	c->pt_pixel 		= PT_NAME(op, cs, cpu); 		\
-	c->pt_color 		= PT_NAME(op, cs, cpu); 		\
-	c->pt_pixel_color 	= PT_NAME(op, cs, cpu); 		\
-	c->pt_mask_color 	= PT_NAME(op, cs, cpu); 		\
-	c->sl_pixel_mask 	= PT_NAME(op, cs, cpu);
-
-
-#define SL_FUNC(op, cs, cpu, name) 					\
-SL_NAME(op, cs, cpu, name)(Emage_Surface *src, int soffset, 		\
-	DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, 	\
-	int doffset, int len)
-
-#define PT_FUNC(op, cs, cpu, name) 					\
-PT_NAME(op, cs, cpu, name)(Emage_Surface *src, int soffset, 		\
-	DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset)
-
-/* our dummy functions in case the compositor doesnt implements them */
-void dummy_sl(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len);
-void dummy_pt(Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset);
-
-/* TODO document why it was choosen only one level of _get instead of two as 
- * evas_common had
- * FIXME
- * The above functions should be of type Sl_Func and Pt_Func only the compositor
- * wrapper should have different types for each function
- */
-typedef struct _Emage_Compositor
-{
-	/* Scanlines */
-	Emage_Sl_Func sl_pixel;
-	Emage_Sl_Func sl_color;
-	Emage_Sl_Func sl_pixel_color;
-	Emage_Sl_Func sl_mask_color;
-	Emage_Sl_Func sl_pixel_mask;
-	/* Points */
-	Emage_Pt_Func pt_pixel;
-	Emage_Pt_Func pt_color;
-	Emage_Pt_Func pt_pixel_color;
-	Emage_Pt_Func pt_mask_color;
-	Emage_Pt_Func pt_pixel_mask;
-} Emage_Compositor;
-
-
-
-#define _EVAS_RENDER_FILL        -1
-
-#ifndef WORDS_BIGENDIAN
-/* x86 */
-#define A_VAL(p) ((DATA8 *)(p))[3]
-#define R_VAL(p) ((DATA8 *)(p))[2]
-#define G_VAL(p) ((DATA8 *)(p))[1]
-#define B_VAL(p) ((DATA8 *)(p))[0]
-#define AR_VAL(p) ((DATA16 *)(p)[1])
-#define GB_VAL(p) ((DATA16 *)(p)[0])
-#else
-/* ppc */
-#define A_VAL(p) ((DATA8 *)(p))[0]
-#define R_VAL(p) ((DATA8 *)(p))[1]
-#define G_VAL(p) ((DATA8 *)(p))[2]
-#define B_VAL(p) ((DATA8 *)(p))[3]
-#define AR_VAL(p) ((DATA16 *)(p)[0])
-#define GB_VAL(p) ((DATA16 *)(p)[1])
-#endif
-
-
-typedef enum _CPU_Feature
-{
-   CPU_FEATURE_C       = 0,
-   CPU_FEATURE_MMX     = (1 << 0),
-   CPU_FEATURE_MMX2    = (1 << 1),
-   CPU_FEATURE_SSE     = (1 << 2), /* what about SSE2 ?? */
-   CPU_FEATURE_ALTIVEC = (1 << 3),
-   CPU_FEATURE_VIS     = (1 << 4),
-   CPU_FEATURE_VIS2    = (1 << 5)
-} CPU_Feature;
+extern const DATA32 ALPHA_255;
+extern const DATA32 ALPHA_256;
 
 typedef enum _Convert_Pal_Mode
 {
@@ -178,6 +36,15 @@ typedef enum _Convert_Pal_Mode
    PAL_MODE_LAST
 } Convert_Pal_Mode;
 
+/* SOME COMMON CODE FOUND EVERYWHERE */
+
+/* if the destination rectangle doesnt cut a surface, return */
+#define HANDLE_CUTOUTS(r, s) 						\
+if ((r.w <= 0) || (r.h <= 0)) return;					\
+if (!(RECTS_INTERSECT(r.x, r.y, r.w, r.h, 0, 0, s->w, s->h)))		\
+	return;
+
+
 
 /* TODO
  * most of the code has a "save clip info and restore it after" put 
@@ -189,16 +56,6 @@ typedef enum _Convert_Pal_Mode
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-
-/* Composite */
-
-/* Object List */
-void *evas_object_list_append           (void *in_list, void *in_item);
-void *evas_object_list_prepend          (void *in_list, void *in_item);
-void *evas_object_list_append_relative  (void *in_list, void *in_item, void *in_relative);
-void *evas_object_list_prepend_relative (void *in_list, void *in_item, void *in_relative);
-void *evas_object_list_remove           (void *in_list, void *in_item);
-void *evas_object_list_find             (void *in_list, void *in_item);
 
 /* Convert */
 EAPI void             evas_common_convert_init          (void);
@@ -502,10 +359,6 @@ x++;
 
 
 
-/* some useful constants */
-
-extern const DATA32 ALPHA_255;
-extern const DATA32 ALPHA_256;
 
 /* some useful C macros */
 
@@ -606,12 +459,5 @@ extern const DATA32 ALPHA_256;
 	pand_r2r(mm255, mmy);
 
 #endif
-
-
-/*============================================================================*
- *                                Global                                      * 
- *============================================================================*/
-extern CPU_Feature Emage_CPU_Features;
-extern Emage_Compositor Emage_Compositors[EMAGE_DATA_FORMATS][EMAGE_RENDER_OPS];
 
 #endif

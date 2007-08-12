@@ -429,10 +429,10 @@ EAPI void
 emage_draw_context_set_clip(Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    dc->clip.use = 1;
-   dc->clip.x = x;
-   dc->clip.y = y;
-   dc->clip.w = w;
-   dc->clip.h = h;
+   dc->clip.r.x = x;
+   dc->clip.r.y = y;
+   dc->clip.r.w = w;
+   dc->clip.r.h = h;
 }
 
 /**
@@ -443,7 +443,7 @@ emage_draw_context_clip_clip(Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
    if (dc->clip.use)
      {
-	RECTS_CLIP_TO_RECT(dc->clip.x, dc->clip.y, dc->clip.w, dc->clip.h,
+	RECTS_CLIP_TO_RECT(dc->clip.r.x, dc->clip.r.y, dc->clip.r.w, dc->clip.r.h,
 			   x, y, w, h);
      }
    else
@@ -562,10 +562,10 @@ emage_draw_context_apply_cutouts(Emage_Draw_Context *dc)
    int                  j;
 
    if (!dc->clip.use) return NULL;
-   if ((dc->clip.w <= 0) || (dc->clip.h <= 0)) return NULL;
+   if ((dc->clip.r.w <= 0) || (dc->clip.r.h <= 0)) return NULL;
 
    res = emage_draw_context_cutouts_new();
-   emage_draw_context_cutouts_add(res, dc->clip.x, dc->clip.y, dc->clip.w, dc->clip.h);
+   emage_draw_context_cutouts_add(res, dc->clip.r.x, dc->clip.r.y, dc->clip.r.w, dc->clip.r.h);
 
    for (i = 0; i < dc->cutout.active; ++i)
      {

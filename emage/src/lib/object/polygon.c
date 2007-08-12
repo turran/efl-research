@@ -150,23 +150,23 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
    ext_h = dst->h;
    if (dc->clip.use)
      {
-	if (dc->clip.x > ext_x)
+	if (dc->clip.r.x > ext_x)
 	  {
-	     ext_w += ext_x - dc->clip.x;
-	     ext_x = dc->clip.x;
+	     ext_w += ext_x - dc->clip.r.x;
+	     ext_x = dc->clip.r.x;
 	  }
-	if ((ext_x + ext_w) > (dc->clip.x + dc->clip.w))
+	if ((ext_x + ext_w) > (dc->clip.r.x + dc->clip.r.w))
 	  {
-	     ext_w = (dc->clip.x + dc->clip.w) - ext_x;
+	     ext_w = (dc->clip.r.x + dc->clip.r.w) - ext_x;
 	  }
-	if (dc->clip.y > ext_y)
+	if (dc->clip.r.y > ext_y)
 	  {
-	     ext_h += ext_y - dc->clip.y;
-	     ext_y = dc->clip.y;
+	     ext_h += ext_y - dc->clip.r.y;
+	     ext_y = dc->clip.r.y;
 	  }
-	if ((ext_y + ext_h) > (dc->clip.y + dc->clip.h))
+	if ((ext_y + ext_h) > (dc->clip.r.y + dc->clip.r.h))
 	  {
-	     ext_h = (dc->clip.y + dc->clip.h) - ext_y;
+	     ext_h = (dc->clip.r.y + dc->clip.r.h) - ext_y;
 	  }
      }
    if ((ext_w <= 0) || (ext_h <= 0)) return;

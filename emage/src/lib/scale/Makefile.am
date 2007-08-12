@@ -1,6 +1,4 @@
-AUTOMAKE_OPTIONS     = 1.4 foreign
-
-MAINTAINERCLEANFILES = Makefile.in
+SUBDIRS = sampled
 
 INCLUDES = \
 -I. \
@@ -8,10 +6,11 @@ INCLUDES = \
 
 noinst_LTLIBRARIES      = libemage_scale.la
 
-libemage_scale_la_SOURCES  = \
-emage_scale_sample.c \
-emage_scale_smooth.c \
-emage_scale_span.c
+libemage_scale_la_SOURCES = 
 
 libemage_scale_la_DEPENDENCIES = \
-$(top_builddir)/src/lib/config.h
+$(top_builddir)/src/lib/config.h \
+sampled/libemage_scaler_sampled.la
+
+libemage_scale_la_LIBADD = \
+sampled/libemage_scaler_sampled.la

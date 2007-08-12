@@ -21,7 +21,7 @@ rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y
 
    if (dc->clip.use)
      {
-	RECTS_CLIP_TO_RECT(x, y, w, h, dc->clip.x, dc->clip.y, dc->clip.w, dc->clip.h);
+	RECTS_CLIP_TO_RECT(x, y, w, h, dc->clip.r.x, dc->clip.r.y, dc->clip.r.w, dc->clip.r.h);
      }
    if ((w <= 0) || (h <= 0)) return;
 
@@ -64,13 +64,13 @@ emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, i
 	return;
      }
    /* save out clip info */
-   c = dc->clip.use; cx = dc->clip.x; cy = dc->clip.y; cw = dc->clip.w; ch = dc->clip.h;
+   c = dc->clip.use; cx = dc->clip.r.x; cy = dc->clip.r.y; cw = dc->clip.r.w; ch = dc->clip.r.h;
    emage_draw_context_clip_clip(dc, 0, 0, dst->w, dst->h);
    emage_draw_context_clip_clip(dc, x, y, w, h);
    /* our clip is 0 size.. abort */
-   if ((dc->clip.w <= 0) || (dc->clip.h <= 0))
+   if ((dc->clip.r.w <= 0) || (dc->clip.r.h <= 0))
      {
-	dc->clip.use = c; dc->clip.x = cx; dc->clip.y = cy; dc->clip.w = cw; dc->clip.h = ch;
+	dc->clip.use = c; dc->clip.r.x = cx; dc->clip.r.y = cy; dc->clip.r.w = cw; dc->clip.r.h = ch;
 	return;
      }
    rects = emage_draw_context_apply_cutouts(dc);
@@ -82,5 +82,5 @@ emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, i
      }
    emage_draw_context_apply_clear_cutouts(rects);
    /* restore clip info */
-   dc->clip.use = c; dc->clip.x = cx; dc->clip.y = cy; dc->clip.w = cw; dc->clip.h = ch;
+   dc->clip.use = c; dc->clip.r.x = cx; dc->clip.r.y = cy; dc->clip.r.w = cw; dc->clip.r.h = ch;
 }

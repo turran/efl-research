@@ -278,17 +278,12 @@ _sl_pixel_mask_rgb_salpha(DATA32 *s, DATA8 *m, DATA32 *d, int l)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-
-static void
-blend_c_sl_pixel(Emage_Surface *src, int soffset, void *mask, int moffset, DATA32 col, Emage_Surface *dst, int offset, int len)
+SL_FUNC(blend, argb8888, c, pixel)
 {
 	DATA32 *s, *d;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = f->data;
-	f = dst->data;
-	d = f->data + offset;
+	s = src->data.argb8888.data + soffset;
+	d = dst->data.argb8888.data + doffset;
 
 	if (src->flags & SURFACE_FLAG_HAS_SPARSE_ALPHA)
 	{
@@ -298,38 +293,29 @@ blend_c_sl_pixel(Emage_Surface *src, int soffset, void *mask, int moffset, DATA3
 		_sl_pixel_argb(s, d, len);
 }
 
-static void
-blend_c_sl_color(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 c, Emage_Surface *dst, int offset, int l)
+SL_FUNC(blend, argb8888, c, color)
 {
-	DATA32 *s, *d;
+	DATA32 *d;
 	DATA32 *e, a;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = f->data;
-	f = dst->data;
-	d = f->data + offset;
-	e = d + l;
-	a = 256 - (c >> 24);
+	d = dst->data.argb8888.data + doffset;
+	e = d + len;
+	a = 256 - (col >> 24);
 	
 	while (d < e)
 	{
-		*d = c + MUL_256(a, *d);
+		*d = col + MUL_256(a, *d);
 		d++;
 	}
 }
 
-static void
-blend_c_sl_pixel_color(Emage_Surface *src, void *mask, DATA32 col, Emage_Surface *dst, int offset, int len)
+SL_FUNC(blend, argb8888, c, pixel_color)
 {
 	DATA8 alpha;
 	DATA32 *s, *d;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = f->data;
-	f = dst->data;
-	d = f->data + offset;
+	s = src->data.argb8888.data + soffset;
+	d = dst->data.argb8888.data + doffset;
 	alpha = col >> 24;
 
 	if (src->flags & SURFACE_FLAG_HAS_ALPHA)
@@ -350,36 +336,27 @@ blend_c_sl_pixel_color(Emage_Surface *src, void *mask, DATA32 col, Emage_Surface
 	}
 }
 
-static void
-blend_c_sl_mask_color(Emage_Surface *src, void *m, DATA32 col, Emage_Surface *dst, int offset, int len)
+SL_FUNC(blend, argb8888, c, mask_color)
 {
 	DATA8 alpha;
-	DATA32 *s, *d;
-	Emage_Data_ARGB8888 *f;
+	DATA32 *d;
 
-	f = src->data;
-	s = f->data;
-	f = dst->data;
-	d = f->data + offset;
+	d = dst->data.argb8888.data + doffset;
 	alpha = col >> 24;
 
 	if (alpha < 255)
-		_sl_mask_color_salpha_argb(m, d, col, len);
+		_sl_mask_color_salpha_argb(mask, col, d, len);
 	else
-		_sl_mask_color_salpha_rgb(m, d, col, len);
+		_sl_mask_color_salpha_rgb(mask, col, d, len);
 }
 
-static void
-blend_c_sl_pixel_mask(Emage_Surface *src, void *mask, DATA32 col, Emage_Surface *dst, int offset, int len)
+SL_FUNC(blend, argb8888, c, pixel_mask)
 {
 	DATA32 *s, *d;
 	DATA8 alpha = col >> 24;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = f->data;
-	f = dst->data;
-	d = f->data + offset;
+	s = src->data.argb8888.data + soffset;
+	d = dst->data.argb8888.data + doffset;
 
 	if (src->flags & SURFACE_FLAG_HAS_SPARSE_ALPHA)
 	{
@@ -393,114 +370,97 @@ blend_c_sl_pixel_mask(Emage_Surface *src, void *mask, DATA32 col, Emage_Surface 
 		_sl_pixel_mask_argb_salpha(s, mask, d, len);
 }
 
-static void
-blend_c_pt_pixel(Emage_Surface *src, DATA32 m, DATA32 c, Emage_Surface *dst, int offset)
+PT_FUNC(blend, argb8888, c, pixel)
 {
 	DATA32 s, *d;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = *f->data;
-	f = dst->data;
-	d = f->data + offset;
+	s = *(src->data.argb8888.data + soffset);
+	d = dst->data.argb8888.data + doffset;
 
-	c = 256 - (s >> 24);
-	*d = s + MUL_256(c, *d);
+	col = 256 - (s >> 24);
+	*d = s + MUL_256(col, *d);
 }
 
-static void
-blend_c_pt_color(Emage_Surface *src, DATA32 m, DATA32 c, Emage_Surface *dst, int offset)
+PT_FUNC(blend, argb8888, c, color)
 {
 	DATA32 s, *d;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = *f->data;
-	f = dst->data;
-	d = f->data + offset;
+	s = *(src->data.argb8888.data + soffset);
+	d = dst->data.argb8888.data + doffset;
 
-	s = 256 - (c >> 24);
-	*d = c + MUL_256(s, *d);
+	s = 256 - (col >> 24);
+	*d = col + MUL_256(s, *d);
 }
 
-static void
-blend_c_pt_pixel_color(Emage_Surface *src, DATA32 mask, DATA32 c, Emage_Surface *dst, int offset)
+PT_FUNC(blend, argb8888, c, pixel_color)
 {
 	DATA32 s, *d;
-	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = *f->data;
-	f = dst->data;
-	d = f->data + offset;
-
-	s = MUL4_SYM(c, s);
-	c = 256 - (s >> 24);
-	*d = s + MUL_256(c, *d);
+	s = *(src->data.argb8888.data + soffset);
+	d = dst->data.argb8888.data + doffset;
+	
+	s = MUL4_SYM(col, s);
+	col = 256 - (s >> 24);
+	*d = s + MUL_256(col, *d);
 }
 
-static void
-blend_c_pt_mask_color(Emage_Surface *src, DATA32 m, DATA32 c, Emage_Surface *dst, int offset)
+PT_FUNC(blend, argb8888, c, mask_color)
 {
 	DATA32 s, *d;
-	DATA8 alpha = c >> 24;
-	Emage_Data_ARGB8888 *f;
+	DATA8 alpha = col >> 24;
 
-	f = src->data;
-	s = *f->data;
-	f = dst->data;
-	d = f->data + offset;
+	d = dst->data.argb8888.data + doffset;
 
 	if (alpha < 255)
 	{
 		/* mas_c_dp */
-		s = MUL_SYM(m, c);
-		m = 256 - (s >> 24);
-		*d = s + MUL_256(m, *d);
+		s = MUL_SYM(mask, col);
+		mask = 256 - (s >> 24);
+		*d = s + MUL_256(mask, *d);
 	}
 	else
 	{
 		/* mas_can_dp */
-		*d = INTERP_256(m + 1, c, *d);
+		*d = INTERP_256(mask + 1, col, *d);
 	}
 
 }
 
-static void
-blend_c_pt_pixel_mask(Emage_Surface *src, DATA32 m, DATA32 c, Emage_Surface *dst, int offset)
+PT_FUNC(blend, argb8888, c, pixel_mask)
 {
 	DATA32 s, *d;
 	Emage_Data_ARGB8888 *f;
 
-	f = src->data;
-	s = *f->data;
-	f = dst->data;
-	d = f->data + offset;
-
+	s = *(src->data.argb8888.data + soffset);
+	d = dst->data.argb8888.data + doffset;
+	
 	if (src->flags & SURFACE_FLAG_HAS_SPARSE_ALPHA)
 	{
 		/* p_mas_dp */
-		s = MUL_SYM(m, s);
-		c = 256 - (s >> 24);
-		*d = s + MUL_256(c, *d);
+		s = MUL_SYM(mask, s);
+		col = 256 - (s >> 24);
+		*d = s + MUL_256(col, *d);
 	}
 	else
 	{
 		/* pan_mas_dp */
-		*d = INTERP_256(m + 1, s, *d);
+		*d = INTERP_256(mask + 1, s, *d);
 	}
 }
 
 #else
 
-#define argb8888_c_sl_pixel 		dummy_sl
-#define argb8888_c_sl_color 		dummy_sl
-#define argb8888_c_sl_pixel_color 	dummy_sl
-#define argb8888_c_sl_mask_color 	dummy_sl
-#define argb8888_c_sl_pixel_mask 	dummy_sl
-#define argb8888_c_pt_color 		dummy_pt
-#define argb8888_c_pt_pixel_color 	dummy_pt
-#define argb8888_c_pt_mask_color 	dummy_pt
-#define argb8888_c_pt_pixel_mask 	dummy_pt
+/*
+#define SL_NAME(blend, argb8888, c, pixel) dummy_sl
+#define SL_NAME(blend, argb8888, c, color) dummy_sl
+#define SL_NAME(blend, argb8888, c, pixel_color) dummy_sl
+#define SL_NAME(blend, argb8888, c, mask_color) dummy_sl
+#define SL_NAME(blend, argb8888, c, pixel_mask) dummy_sl
 
+#define PT_NAME(blend, argb8888, c, pixel) dummy_pt
+#define PT_NAME(blend, argb8888, c, color) dummy_pt
+#define PT_NAME(blend, argb8888, c, pixel_color) dummy_pt
+#define PT_NAME(blend, argb8888, c, mask_color) dummy_pt
+#define PT_NAME(blend, argb8888, c, pixel_mask) dummy_pt
+*/
 #endif

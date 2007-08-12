@@ -6,7 +6,6 @@
 int main(void)
 {
 	DATA32 *d1, *d2;
-	Emage_Data_ARGB8888 *data;
 	
 	Emage_Surface *s1, *s2;
 	Emage_Draw_Context *dc;
@@ -14,15 +13,13 @@ int main(void)
 	/* create a new surface */
 	if (!emage_init()) return -1;
 
-	data = calloc(1, sizeof(Emage_Data_ARGB8888));
 	d1 = calloc(1, sizeof(DATA32) * WIDTH * HEIGHT);
-	//d2 = calloc(1, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	memset(d1, 0xff, sizeof(DATA32) * WIDTH * HEIGHT);
-	data->data = d1;
+	//d2 = calloc(1, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	//memset(d2, 0xf0, sizeof(DATA32) * (WIDTH/2) * (HEIGHT/2));
 	dc = emage_draw_context_new();
-	s1 = emage_surface_new(data, EMAGE_DATA_ARGB8888, WIDTH, HEIGHT);
-	//s2 = emage_surface_new(d2, EMAGE_DATA_ARGB8888, WIDTH/2, HEIGHT/2);
+	s1 = emage_surface_new(EMAGE_DATA_ARGB8888, WIDTH, HEIGHT, d1);
+	//s2 = emage_surface_new(EMAGE_DATA_ARGB8888, WIDTH/2, HEIGHT/2, d2);
 
 	/* common */
 	emage_draw_context_set_color(dc, 128, 128, 0, 255);
@@ -52,10 +49,10 @@ int main(void)
 	#endif
 	
 	png_save(s1, "/tmp/emage1.png", 0);
+	printf("exit\n");
 	//png_save(s2, "/tmp/emage2.png", 0);
 
 	free(d1);
-	free(data);
 	//free(d2);
 	free(dc);
 	free(s1);

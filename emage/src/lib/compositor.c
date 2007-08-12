@@ -1,48 +1,31 @@
 #include "Emage.h"
 #include "emage_private.h"
 
+/* TODO
+ * + use another render operation based on different parameters:
+ * if render op = blend and use color span with color 0xffxxxxxxxx then
+ * the render op should be a copy not a blend, etc
+ * + Merge pixel_color and pixel into one, the second is just an special
+ * case where the drawing context uses the mul color
+ *
+ *
+ */
+
+
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-#define DUMMY_SL_FN(name) 					\
-static void 							\
-dummy_sl_##name(void *src, void *mask, DATA32 col, void *dst, 	\
-	int offset, int len) 					\
-{								\
-	PRINTF(#name " not implemented\n"); 			\
-}
-
-#define DUMMY_PT_FN(name) 					\
-static void 							\
-dummy_pt_##name(void *src, void *mask, DATA32 col, void *dst, 	\
-	int offset) 						\
-{								\
-	PRINTF(#name " not implemented\n"); 			\
-}
-
-DUMMY_SL_FN(pixel)
-DUMMY_SL_FN(color)
-DUMMY_SL_FN(pixel_color)
-DUMMY_SL_FN(mask_color)
-DUMMY_SL_FN(pixel_mask)
-DUMMY_PT_FN(pixel)
-DUMMY_PT_FN(color)
-DUMMY_PT_FN(pixel_color)
-DUMMY_PT_FN(mask_color)
-DUMMY_PT_FN(pixel_mask)
-
-
 static Emage_Compositor comp_default = {
-	.sl_pixel 	= dummy_sl_pixel,
-	.sl_color 	= dummy_sl_color,
-	.sl_pixel_color = dummy_sl_pixel_color,
-	.sl_mask_color 	= dummy_sl_mask_color,
-	.sl_pixel_mask 	= dummy_sl_pixel_mask,
-	.pt_pixel 	= dummy_pt_pixel,
-	.pt_color 	= dummy_pt_color,
-	.pt_pixel_color = dummy_pt_pixel_color,
-	.pt_mask_color 	= dummy_pt_mask_color,
-	.pt_pixel_mask 	= dummy_pt_pixel_mask,
+	.sl_pixel 	= dummy_sl,
+	.sl_color 	= dummy_sl,
+	.sl_pixel_color = dummy_sl,
+	.sl_mask_color 	= dummy_sl,
+	.sl_pixel_mask 	= dummy_sl,
+	.pt_pixel 	= dummy_pt,
+	.pt_color 	= dummy_pt,
+	.pt_pixel_color = dummy_pt,
+	.pt_mask_color 	= dummy_pt,
+	.pt_pixel_mask 	= dummy_pt,
 };
 
 /*============================================================================*
@@ -83,6 +66,7 @@ Emage_Sl_Func
 emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].sl_color;
 }
 
@@ -94,6 +78,7 @@ emage_compositor_sl_pixel_color(Emage_Draw_Context *dc,
 	{
 		assert(src->format == dst->format);
 	}
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].sl_pixel_color;
 }
 
@@ -101,6 +86,7 @@ Emage_Sl_Func
 emage_compositor_sl_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].sl_mask_color;
 }
 
@@ -127,6 +113,7 @@ Emage_Pt_Func
 emage_compositor_pt_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].pt_color;
 }
 
@@ -136,6 +123,7 @@ emage_compositor_pt_pixel_color_get(Emage_Draw_Context *dc, Emage_Surface *src,
 {
 	
 	assert(dst);
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel_color;
 }
 
@@ -143,6 +131,7 @@ Emage_Pt_Func
 emage_compositor_pt_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].pt_mask_color;
 }
 
@@ -157,7 +146,6 @@ emage_compositor_pt_pixel_mask_get(Emage_Draw_Context *dc, Emage_Surface *src,
 void dummy_sl(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len)
 {
 	PRINTF("not implemented\n");
-
 }
 
 void dummy_pt(Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset)
