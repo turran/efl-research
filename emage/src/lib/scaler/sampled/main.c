@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 
-#if 0
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
@@ -53,6 +52,7 @@ if ((dcc + dcl) > dl) 						\
 } 								\
 if (dcl <= 0) return;
 
+#if 0
 #ifdef BUILD_SCALE_SAMPLE
 static void _sampled_func(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc)
 {
@@ -233,15 +233,16 @@ static void _sampled_func(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangl
      }
 }
 #endif
+#endif
 
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
 void emage_scaler_sampled_init(void)
 {
+#if 0
 #ifdef BUILD_SCALE_SAMPLE
 	Emage_Scalers[EMAGE_SCALER_SAMPLED].func = _sampled_func;
 #endif
-}
-
 #endif
+}
