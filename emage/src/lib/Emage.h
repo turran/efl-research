@@ -79,6 +79,8 @@ struct _RGBA_Polygon_Point
 /* Scale 
  * ~~~~~
  */
+
+/* FIXME what about unscaled? */
 typedef enum _Emage_Scaler_Type
 {
 	EMAGE_SCALER_SMOOTH,
@@ -88,15 +90,6 @@ typedef enum _Emage_Scaler_Type
 
 EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc);
 
-/*EAPI void
-evas_common_scale_rgba_in_to_out_clip_smooth(Emage_Surface *src, Emage_Surface *dst,
-				 Emage_Draw_Context *dc,
-				 int src_region_x, int src_region_y,
-				 int src_region_w, int src_region_h,
-				 int dst_region_x, int dst_region_y,
-				 int dst_region_w, int dst_region_h);
-
-*/
 /* possible API
  * ~~~~~~~~~~~~
  */
@@ -110,6 +103,7 @@ EAPI void 		emage_shutdown(void);
 typedef enum _Emage_Render_Op
 {
 	EMAGE_RENDER_BLEND = 0, /**< default op: d = d*(1-sa) + s */
+#if 0
 	EMAGE_RENDER_BLEND_REL = 1, /**< d = d*(1 - sa) + s*da */
 	EMAGE_RENDER_COPY = 2, /**< d = s */
 	EMAGE_RENDER_COPY_REL = 3, /**< d = s*da */
@@ -122,6 +116,7 @@ typedef enum _Emage_Render_Op
 	EMAGE_RENDER_MASK = 10, /**< d = d*sa */
 	EMAGE_RENDER_MUL = 11, /**< d = d*s */
 	//EMAGE_RENDER_CLIP
+#endif
 	EMAGE_RENDER_OPS
 } Emage_Render_Op; /**<  */
 

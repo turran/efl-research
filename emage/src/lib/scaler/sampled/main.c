@@ -7,50 +7,6 @@
  *                                  Local                                     * 
  *============================================================================*/
 
-/* source rect coordinate: src
- * source rect length: srl
- * dest rect coordinate: drc
- * dest rect length: drl
- * dest clip coordinate: dcc
- * dest clip length: dcl
- * source surface coordinate: sc
- * source surface length: sl
- * dest surface coordinate: dc
- * dest surface length: dl
- */
-#define SANITISE(src, srl, drc, drl, dcc, dcl, sc, sl, dc, dl) 	\
-if (src < 0) 							\
-{ 								\
-	drc -= (src * drl) / srl; 				\
-	drl += (src * drl) / srl; 				\
-	srl += src; 						\
-	src = 0; 						\
-} 								\
-if (src >= sl) return; 						\
-if ((src + srl) > sl) 						\
-{ 								\
-	drl = (drl * (sl - src)) /  (srl); 			\
-	srl = sl - src; 					\
-} 								\
-if (drl <= 0) return; 						\
-if (srl <= 0) return; 						\
-if (dcc < 0) 							\
-{ 								\
-	dcl += dcc; 						\
-	dcc = 0; 						\
-} 								\
-if (dcl <= 0) return; 						\
-if (dcc >= dl) return; 						\
-if (dcc < drc) 							\
-{ 								\
-	dcl += (dcc - drc); 					\
-	dcc = drc; 						\
-} 								\
-if ((dcc + dcl) > dl) 						\
-{ 								\
-	dcl = dl - dcc; 					\
-} 								\
-if (dcl <= 0) return;
 
 #if 0
 #ifdef BUILD_SCALE_SAMPLE
@@ -144,16 +100,13 @@ static void _sampled_func(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangl
    /* figure out dest start ptr */
    dst_ptr = dst_data + dst_clip_x + (dst_clip_y * dst_w);
 
-/* HOW TO FIX THIS??? put on the compositor the switch between pixel_color or 
- * pixel only based on the drawing context?
- */
 #if 0
    if (dc->mul.use)
-     func = emage_compositor_sl_pixel_color_get(dc, src, dst);
      //func = evas_common_gfx_func_composite_pixel_color_span_get(src, dc->mul.col, dst, dst_clip_w, dc->render_op);
    else
      func = evas_common_gfx_func_composite_pixel_span_get(src, dst, dst_clip_w, dc->render_op);
 #endif
+     func = emage_compositor_sl_pixel_get(dc, src, dst);
 
 	/* both surface have the same size */
    if ((drect.w == srect.w) && (drect.h == srect.h))

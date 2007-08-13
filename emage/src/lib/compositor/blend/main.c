@@ -38,4 +38,6 @@ void emage_compositor_blend_init(void)
 #endif
 	c = &Emage_Compositors[EMAGE_DATA_ARGB8888][EMAGE_RENDER_BLEND];
 	COMPOSITOR_OVERRIDE_ALL(c, blend, argb8888, c)
+	c = &Emage_Compositors[EMAGE_DATA_RGB565_A5][EMAGE_RENDER_BLEND];
+	COMPOSITOR_OVERRIDE_ALL(c, blend, rgb565_a5, c)
 }

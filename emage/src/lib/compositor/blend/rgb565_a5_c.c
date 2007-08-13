@@ -1,13 +1,127 @@
+#include "Emage.h"
+#include "emage_private.h"
+
+#include "main.h"
+
+/* FIXME, place the above macros in other place */
+#define RGB_565_UNPACKED_MASK 0x07e0f81f
+#define RGB_565_UNPACK(rgb)                                             \
+   (((rgb) | ((rgb) << 16)) & RGB_565_UNPACKED_MASK)
+#define RGB_565_PACK(rgb)                                               \
+  ((((rgb) & RGB_565_UNPACKED_MASK) |                                   \
+   ((rgb) & RGB_565_UNPACKED_MASK) >> 16) & 0xffff)
+#define RGB_565_UNPACKED_BLEND(a, b, alpha)                             \
+   ((b) + ((((a) - (b)) * (alpha)) >> 5))
+
+#define RGB_565_FROM_COMPONENTS(r, g, b)                                \
+  (((((r) >> 3) & 0x1f) << 11) |                                        \
+   ((((g) >> 2) & 0x3f) << 5) |                                         \
+   (((b) >> 3) & 0x1f))
+
+
+
 #ifdef BUILD_C
+static inline void
+_pt_pixel_argb_rgb(DATA16 *p_dst, DATA16 src, DATA8 alpha)
+{
+	if (alpha == 31) *p_dst = src;
+	else if (alpha != 0)
+	{
+		DATA32 a, b;
+		a = RGB_565_UNPACK(src);
+		b = RGB_565_UNPACK(*p_dst);
+		b = RGB_565_UNPACKED_BLEND(a, b, alpha);
+		*p_dst = RGB_565_PACK(b);
+	}
+}
+
+static inline void
+_sl_pixel_rgb_rgb(DATA16 *src, DATA16 *dst, int size)
+{
+	memcpy(dst, src, size * sizeof(DATA16));
+}
+
+static inline void
+_sl_pixel_argb_rgb(DATA16 *src, DATA8 *alpha, DATA16 *dst, int size)
+{
+	DATA16 *start, *end;
+
+	start = dst;
+	end = start + (size & ~7);
+
+	pld(alpha, 0);
+	pld(src, 0);
+
+	/* work on 8 pixels per time, do data preload */
+	while (start < end)
+	{
+		DATA8 alpha1, alpha2;
+
+		alpha1 = alpha[0];
+		alpha += 8;
+
+		/* empirical tests show these give the best performance */
+		pld(alpha, 8);
+		pld(src, 32);
+
+		src += 8;
+		start += 8;
+
+		alpha2 = alpha[-7];
+		_pt_pixel_argb_rgb(start - 8, src[-8], alpha1);
+
+		alpha1 = alpha[-6];
+		_pt_pixel_argb_rgb(start - 7, src[-7], alpha2);
+
+		alpha2 = alpha[-5];
+		_pt_pixel_argb_rgb(start - 6, src[-6], alpha1);
+
+		alpha1 = alpha[-4];
+		_pt_pixel_argb_rgb(start - 5, src[-5], alpha2);
+
+		alpha2 = alpha[-3];
+		_pt_pixel_argb_rgb(start - 4, src[-4], alpha1);
+
+		alpha1 = alpha[-2];
+		_pt_pixel_argb_rgb(start - 3, src[-3], alpha2);
+
+		alpha2 = alpha[-1];
+		_pt_pixel_argb_rgb(start - 2, src[-2], alpha1);
+
+		_pt_pixel_argb_rgb(start - 1, src[-1], alpha2);
+	}
+
+	/* remaining pixels (up to 7) */
+	end = start + (size & 7);
+	for (; start < end; start++, src++, alpha++)
+		_pt_pixel_argb_rgb(start, *src, *alpha);
+}
 
 SL_FUNC(blend, rgb565_a5, c, pixel)
 {
+	DATA16 *s, *d;
+	DATA8 *sa, *da;
 
+	d = dst->data.rgb565_a5.data + doffset;
+	da = dst->data.rgb565_a5.alpha + doffset;
+	s = src->data.rgb565_a5.data + soffset;
+	sa = src->data.rgb565_a5.alpha + soffset;
+	
+	if ((src->flags & SURFACE_FLAG_HAS_ALPHA) && 
+		(!(dst->flags & SURFACE_FLAG_HAS_ALPHA)))
+		_sl_pixel_argb_rgb(s, sa, d, len);
+
+	else if (!(src->flags & SURFACE_FLAG_HAS_ALPHA) && 
+		(!(dst->flags & SURFACE_FLAG_HAS_ALPHA)))
+		_sl_pixel_rgb_rgb(s, d, len);
+	else
+	{
+		PRINTF("Not Implemented\n");
+	}
 }
 
 SL_FUNC(blend, rgb565_a5, c, color)
 {
-
 }
 
 SL_FUNC(blend, rgb565_a5, c, pixel_color)
@@ -25,9 +139,24 @@ SL_FUNC(blend, rgb565_a5, c, pixel_mask)
 
 }
 
-SL_FUNC(blend, rgb565_a5, c, pixel_mask)
+PT_FUNC(blend, rgb565_a5, c, pixel)
 {
+}
 
+PT_FUNC(blend, rgb565_a5, c, color)
+{
+}
+
+PT_FUNC(blend, rgb565_a5, c, pixel_color)
+{
+}
+
+PT_FUNC(blend, rgb565_a5, c, mask_color)
+{
+}
+
+PT_FUNC(blend, rgb565_a5, c, pixel_mask)
+{
 }
 
 #else
@@ -45,6 +174,7 @@ SL_FUNC(blend, rgb565_a5, c, pixel_mask)
 */
 
 #endif
+
 #if 0
 /** NOTE: This file is meant to be included by users **/
 
@@ -62,15 +192,7 @@ SL_FUNC(blend, rgb565_a5, c, pixel_mask)
 static inline void
 _soft16_pt_blend_transp_solid(DATA16 *p_dst, DATA16 src, DATA8 alpha)
 {
-   if (alpha == 31) *p_dst = src;
-   else if (alpha != 0)
-     {
-        DATA32 a, b;
-        a = RGB_565_UNPACK(src);
-        b = RGB_565_UNPACK(*p_dst);
-        b = RGB_565_UNPACKED_BLEND(a, b, alpha);
-        *p_dst = RGB_565_PACK(b);
-     }
+	/* DONE */
 }
 
 /***********************************************************************
@@ -79,57 +201,7 @@ _soft16_pt_blend_transp_solid(DATA16 *p_dst, DATA16 src, DATA8 alpha)
 static inline void
 _soft16_scanline_blend_transp_solid(DATA16 *src, DATA8 *alpha, DATA16 *dst, int size)
 {
-   DATA16 *start, *end;
-
-   start = dst;
-   end = start + (size & ~7);
-
-   pld(alpha, 0);
-   pld(src, 0);
-
-   /* work on 8 pixels per time, do data preload */
-   while (start < end)
-     {
-	DATA8 alpha1, alpha2;
-
-	alpha1 = alpha[0];
-	alpha += 8;
-
-	/* empirical tests show these give the best performance */
-	pld(alpha, 8);
-	pld(src, 32);
-
-	src += 8;
-	start += 8;
-
-	alpha2 = alpha[-7];
-        _soft16_pt_blend_transp_solid(start - 8, src[-8], alpha1);
-
-	alpha1 = alpha[-6];
-        _soft16_pt_blend_transp_solid(start - 7, src[-7], alpha2);
-
-	alpha2 = alpha[-5];
-	_soft16_pt_blend_transp_solid(start - 6, src[-6], alpha1);
-
-	alpha1 = alpha[-4];
-	_soft16_pt_blend_transp_solid(start - 5, src[-5], alpha2);
-
-	alpha2 = alpha[-3];
-	_soft16_pt_blend_transp_solid(start - 4, src[-4], alpha1);
-
-	alpha1 = alpha[-2];
-	_soft16_pt_blend_transp_solid(start - 3, src[-3], alpha2);
-
-	alpha2 = alpha[-1];
-	_soft16_pt_blend_transp_solid(start - 2, src[-2], alpha1);
-
-	_soft16_pt_blend_transp_solid(start - 1, src[-1], alpha2);
-     }
-
-   /* remaining pixels (up to 7) */
-   end = start + (size & 7);
-   for (; start < end; start++, src++, alpha++)
-      _soft16_pt_blend_transp_solid(start, *src, *alpha);
+/* DONE */
 }
 
 static inline void
@@ -141,7 +213,7 @@ _soft16_pt_blend_solid_solid(DATA16 *p_dst, DATA16 src)
 static inline void
 _soft16_scanline_blend_solid_solid(DATA16 *src, DATA16 *dst, int size)
 {
-   memcpy(dst, src, size * sizeof(DATA16));
+/* DONE */
 }
 
 /***********************************************************************

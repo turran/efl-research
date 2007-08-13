@@ -7,7 +7,9 @@
  * the render op should be a copy not a blend, etc
  * + Merge pixel_color and pixel into one, the second is just an special
  * case where the drawing context uses the mul color
- *
+ * + Remove pixel_color in compositor.c, it's a special case for pixel
+ * with mul.use, the compositor still need to provide a function for it
+ * + The above also matches the mask case? if so the dc needs a mask
  *
  */
 
@@ -59,17 +61,21 @@ emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_
 	{
 		assert(src->format == dst->format);
 	}
-	return Emage_Compositors[dst->format][dc->render_op].sl_pixel;
+	if (dc->mul.use)
+		return Emage_Compositors[dst->format][dc->render_op].sl_pixel;
+	else
+		return Emage_Compositors[dst->format][dc->render_op].sl_pixel_color;
 }
 
 Emage_Sl_Func
 emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
-	// TODO use the color to setup the correct render op
+		// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].sl_color;
 }
 
+/* TODO remove this */
 Emage_Sl_Func
 emage_compositor_sl_pixel_color(Emage_Draw_Context *dc,
 	Emage_Surface *src, Emage_Surface *dst)

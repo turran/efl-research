@@ -312,6 +312,12 @@ x++;
 /*============================================================================*
  *                                 Macros                                     * 
  *============================================================================*/
+#define UNROLL2(op...) op op
+#define UNROLL4(op...) UNROLL2(op) UNROLL2(op)
+#define UNROLL8(op...) UNROLL4(op) UNROLL4(op)
+#define UNROLL16(op...) UNROLL8(op) UNROLL8(op)
+
+
 #define RGB_JOIN(r,g,b) \
         (((r) << 16) + ((g) << 8) + (b))
 
@@ -356,9 +362,6 @@ x++;
 	_w = 0; _h = 0; \
      } \
 }
-
-
-
 
 /* some useful C macros */
 
@@ -413,7 +416,6 @@ x++;
 #define INTERP_A_256(a, c0, c1) \
  ( (((((((c0) >> 8) & 0xff0000) - (((c1) >> 8) & 0xff0000)) * (a)) \
    + ((c1) & 0xff000000)) & 0xff000000) )
-
 
 /* some useful MMX macros */
 
