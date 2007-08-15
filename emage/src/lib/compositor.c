@@ -71,7 +71,7 @@ Emage_Sl_Func
 emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
 	assert(dst);
-		// TODO use the color to setup the correct render op
+	// TODO use the color to setup the correct render op
 	return Emage_Compositors[dst->format][dc->render_op].sl_color;
 }
 

@@ -26,18 +26,19 @@ libemage_la_LIBADD = \
  -lm \
 object/libemage_object.la \
 data/libemage_data.la \
-compositor/libemage_compositor.la
+compositor/libemage_compositor.la \
+scaler/libemage_scaler.la
+
 #op/libemage_op.la
-#scale/libemage_scale.la
 #convert/libemage_convert.la
 
 libemage_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h \
 object/libemage_object.la \
 data/libemage_data.la \
-compositor/libemage_compositor.la
+compositor/libemage_compositor.la \
+scaler/libemage_scaler.la
 # op/libemage_op.la
 # convert/libemage_convert.la
-# scale/libemage_scale.la
 
 libemage_la_LDFLAGS      = -version-info 1:0:0

@@ -1,9 +1,9 @@
 #ifndef _CONTEXT_H
 #define _CONTEXT_H
 
-/* Context
- * ~~~~~~~ 
- * FIXME move this to private.h
+/**
+ * @file
+ * @brief Draw Context
  */
 
 typedef struct _Emage_Draw_Context_Clip

@@ -22,12 +22,20 @@
 # endif
 #endif
 
-/* Data Types */
+/**
+ * @file
+ * @brief Emage API
+ * @defgroup Emage API
+ * @{
+ */
+
+/**
+ * @defgroup DataTypes
+ */
 typedef unsigned int 	DATA32;
 typedef unsigned short 	DATA16;
 typedef unsigned char	DATA8;
 
-/* Data */
 typedef struct _Evas_Object_List      Evas_Object_List;
 struct _Evas_Object_List
 {
@@ -35,7 +43,9 @@ struct _Evas_Object_List
    Evas_Object_List  *last;
 };
 
-/* Surface */
+/**
+ * @defgroup Surface
+ */
 typedef enum _Emage_Data_Format
 {
 	EMAGE_DATA_ARGB8888,
@@ -48,7 +58,14 @@ typedef struct _Emage_Rectangle
 	int x, y, w, h;
 } Emage_Rectangle;
 
-/* Draw */
+EAPI Emage_Surface * 	emage_surface_new(Emage_Data_Format f, int w, int h, ...);
+EAPI void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
+EAPI void 	emage_surface_data_get(Emage_Surface *s, ...);
+EAPI void 	emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...);
+
+/**
+ * @defgroup Draw
+ */
 typedef struct _Emage_Draw_Context Emage_Draw_Context;
 typedef struct _Emage_Surface          Emage_Surface;
 typedef struct _Cutout_Rects            Cutout_Rects;
@@ -66,8 +83,10 @@ struct _Cutout_Rects
    int               max;
 };
 
-
-/* Polygon */
+/**
+ * @defgroup Objects
+ * @{
+ */
 typedef struct _RGBA_Polygon_Point    RGBA_Polygon_Point;
 struct _RGBA_Polygon_Point
 {
@@ -75,9 +94,14 @@ struct _RGBA_Polygon_Point
    int               x, y;
 };
 
+EAPI void 		emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
+EAPI void 		emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h);
+EAPI void 		emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points);
 
-/* Scale 
- * ~~~~~
+/** @} */
+
+/**
+ * @defgroup Scaler
  */
 
 /* FIXME what about unscaled? */
@@ -139,15 +163,7 @@ EAPI void               emage_draw_context_set_color_interpolation(Emage_Draw_Co
 EAPI void               emage_draw_context_set_render_op     (Emage_Draw_Context *dc, int op);
 EAPI void               emage_draw_context_set_sli           (Emage_Draw_Context *dc, int y, int h);
 EAPI void 		emage_draw_context_cutouts_del(Cutout_Rects* rects, int index);
-/* Surface */
-EAPI Emage_Surface * 	emage_surface_new(Emage_Data_Format f, int w, int h, ...);
-EAPI void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
-EAPI void 	emage_surface_data_get(Emage_Surface *s, ...);
-EAPI void 	emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...);
-/* Objects */
-EAPI void 		emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
-EAPI void 		emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h);
-EAPI void 		emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points);
 
+/** @} */
 
 #endif

@@ -3,23 +3,6 @@
 
 #include "main.h"
 
-/* FIXME, place the above macros in other place */
-#define RGB_565_UNPACKED_MASK 0x07e0f81f
-#define RGB_565_UNPACK(rgb)                                             \
-   (((rgb) | ((rgb) << 16)) & RGB_565_UNPACKED_MASK)
-#define RGB_565_PACK(rgb)                                               \
-  ((((rgb) & RGB_565_UNPACKED_MASK) |                                   \
-   ((rgb) & RGB_565_UNPACKED_MASK) >> 16) & 0xffff)
-#define RGB_565_UNPACKED_BLEND(a, b, alpha)                             \
-   ((b) + ((((a) - (b)) * (alpha)) >> 5))
-
-#define RGB_565_FROM_COMPONENTS(r, g, b)                                \
-  (((((r) >> 3) & 0x1f) << 11) |                                        \
-   ((((g) >> 2) & 0x3f) << 5) |                                         \
-   (((b) >> 3) & 0x1f))
-
-
-
 #ifdef BUILD_C
 static inline void
 _pt_pixel_argb_rgb(DATA16 *p_dst, DATA16 src, DATA8 alpha)
@@ -581,4 +564,73 @@ _soft16_scanline_blend_solid_solid_mul_color_solid(DATA16 *src, DATA16 *dst, int
    for (; start < end; start++, src++)
      _soft16_pt_blend_solid_solid_mul_color_solid(start, *src, r, g, b);
 }
+
+static inline void
+_soft16_pt_fill_solid_solid(DATA16 *dst, DATA16 rgb565)
+{
+   *dst = rgb565;
+}
+
+static inline void
+_soft16_scanline_fill_solid_solid(DATA16 *dst, int size, DATA16 rgb565)
+{
+   DATA16 *start, *end;
+   DATA32 rgb565_double;
+
+   start = dst;
+   end = start + (size & ~7);
+
+   rgb565_double = (rgb565 << 16) | rgb565;
+
+   while (start < end)
+     {
+        DATA32 *p = (DATA32 *)start;
+
+        p[0] = rgb565_double;
+        p[1] = rgb565_double;
+        p[2] = rgb565_double;
+        p[3] = rgb565_double;
+
+        start += 8;
+     }
+
+   end = start + (size & 7);
+   for (; start < end; start++)
+      *start = rgb565;
+}
+
+static inline void
+_soft16_pt_fill_transp_solid(DATA16 *dst, DATA32 rgb565_unpack, DATA8 alpha)
+{
+   DATA32 d;
+
+   d = RGB_565_UNPACK(*dst);
+   d = RGB_565_UNPACKED_BLEND(rgb565_unpack, d, alpha);
+   *dst = RGB_565_PACK(d);
+}
+
+static inline void
+_soft16_scanline_fill_transp_solid(DATA16 *dst, int size, DATA32 rgb565_unpack, DATA8 alpha)
+{
+   DATA16 *start, *end;
+   DATA32 a;
+
+   start = dst;
+   pld(start, 0);
+   end = start + (size & ~7);
+
+   while (start < end)
+     {
+        pld(start, 32);
+        UNROLL8({
+           _soft16_pt_fill_transp_solid(start, rgb565_unpack, alpha);
+           start++;
+        });
+     }
+
+   end = start + (size & 7);
+   for (; start < end; start++)
+     _soft16_pt_fill_transp_solid(start, rgb565_unpack, alpha);
+}
+
 #endif

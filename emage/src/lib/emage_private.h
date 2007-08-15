@@ -312,6 +312,23 @@ x++;
 /*============================================================================*
  *                                 Macros                                     * 
  *============================================================================*/
+/* FIXME, place the above macros in other place */
+#define RGB_565_UNPACKED_MASK 0x07e0f81f
+#define RGB_565_UNPACK(rgb)                                             \
+   (((rgb) | ((rgb) << 16)) & RGB_565_UNPACKED_MASK)
+#define RGB_565_PACK(rgb)                                               \
+  ((((rgb) & RGB_565_UNPACKED_MASK) |                                   \
+   ((rgb) & RGB_565_UNPACKED_MASK) >> 16) & 0xffff)
+#define RGB_565_UNPACKED_BLEND(a, b, alpha)                             \
+   ((b) + ((((a) - (b)) * (alpha)) >> 5))
+
+#define RGB_565_FROM_COMPONENTS(r, g, b)                                \
+  (((((r) >> 3) & 0x1f) << 11) |                                        \
+   ((((g) >> 2) & 0x3f) << 5) |                                         \
+   (((b) >> 3) & 0x1f))
+
+
+
 #define UNROLL2(op...) op op
 #define UNROLL4(op...) UNROLL2(op) UNROLL2(op)
 #define UNROLL8(op...) UNROLL4(op) UNROLL4(op)

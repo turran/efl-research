@@ -20,7 +20,10 @@ static void _sampled_func(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangl
    int      dst_jump;
    int      dst_clip_x, dst_clip_y, dst_clip_w, dst_clip_h;
    int      src_w, src_h, dst_w, dst_h;
-   Emage_Sl_Func func;
+   
+   
+	Emage_Rect drect_clip;
+	Emage_Sl_Func func;
 
    if (!(RECTS_INTERSECT(drect.x, drect.y, drect.w, drect.h, 0, 0, dst->w, dst->h)))
      return;

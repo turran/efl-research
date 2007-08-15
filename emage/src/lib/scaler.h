@@ -65,4 +65,57 @@ if ((dcc + dcl) > dl) 						\
 } 								\
 if (dcl <= 0) return;
 
+/* source rect: sr
+ * dest rect: dr
+ * draw context: dc
+ * dest clip rect: dstc
+ */
+#if 0
+#define CLIPISE(sr, dr, dc, dstcr) 				\
+if (dc->clip.use)
+{
+	dstcr = dc->clip.r;
+	if (dstcr.x < 0)
+	  {
+	     dstcr.w += dstcr.x;
+	     dstcr.x = 0;
+	  }
+	if (dstcr.y < 0)
+	  {
+	     dstcr.h += dstcr.y;
+	     dstct.y = 0;
+	  }
+	if ((dstcr.x + dstcr.w) > dst_w)
+	  dst_clip_w = dst_w - dst_clip_x;
+	if ((dst_clip_y + dst_clip_h) > dst_h)
+	  dst_clip_h = dst_h - dst_clip_y;
+     }
+   else
+     {
+	dst_clip_x = 0;
+	dst_clip_y = 0;
+	dst_clip_w = dst_w;
+	dst_clip_h = dst_h;
+     }
+
+   if (dst_clip_x < drect.x)
+     {
+	dst_clip_w += dst_clip_x - drect.x;
+	dst_clip_x = drect.x;
+     }
+   if ((dst_clip_x + dst_clip_w) > (drect.x + drect.w))
+     dst_clip_w = drect.x + drect.w - dst_clip_x;
+   if (dst_clip_y < drect.y)
+     {
+	dst_clip_h += dst_clip_y - drect.y;
+	dst_clip_y = drect.y;
+     }
+   if ((dst_clip_y + dst_clip_h) > (drect.y + drect.h))
+     dst_clip_h = drect.y + drect.h - dst_clip_y;
+
+   if ((srect.w <= 0) || (srect.h <= 0) ||
+       (drect.w <= 0) || (drect.h <= 0) ||
+       (dst_clip_w <= 0) || (dst_clip_h <= 0))
+     return;
+#endif
 #endif
