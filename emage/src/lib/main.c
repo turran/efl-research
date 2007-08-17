@@ -7,6 +7,9 @@ static int init = 0;
  *                                   API                                      * 
  *============================================================================*/
 
+/**
+ * TODO
+ */
 EAPI int emage_init(void)
 {
 	if (++init != 1) return init;
@@ -18,6 +21,9 @@ EAPI int emage_init(void)
 	return init;
 }
 
+/**
+ * TODO
+ */
 EAPI void emage_shutdown(void)
 {
 	if (--init) return;

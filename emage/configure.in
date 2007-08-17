@@ -991,10 +991,10 @@ src/lib/compositor/Makefile
 src/lib/compositor/blend/Makefile 
 src/lib/scaler/Makefile 
 src/lib/scaler/sampled/Makefile 
+src/lib/convert/Makefile 
 ])
 
 #src/lib/op/Makefile 
-#src/lib/convert/Makefile 
 
 echo "CPU Specific Extensions:"
 echo "  Fallback C Code.........: $build_cpu_c"

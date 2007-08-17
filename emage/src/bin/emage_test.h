@@ -6,5 +6,5 @@
 
 #include "Emage.h"
 
-void object_test(Emage_Surface *s, Emage_Draw_Context *dc);
+void png_save(Emage_Surface *s, char *file, int compress);
 double time_get(void);

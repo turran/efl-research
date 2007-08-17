@@ -1,4 +1,4 @@
-SUBDIRS = object compositor data scaler 
+SUBDIRS = object compositor data scaler convert
 #scale convert op
 
 MAINTAINERCLEANFILES = \
@@ -18,6 +18,7 @@ context.c \
 compositor.c \
 main.c \
 scaler.c \
+color.c \
 cpu.c
 #emage_blend.c
 #emage_blit.c
@@ -27,18 +28,18 @@ libemage_la_LIBADD = \
 object/libemage_object.la \
 data/libemage_data.la \
 compositor/libemage_compositor.la \
-scaler/libemage_scaler.la
+scaler/libemage_scaler.la \
+convert/libemage_convert.la
 
 #op/libemage_op.la
-#convert/libemage_convert.la
 
 libemage_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h \
 object/libemage_object.la \
 data/libemage_data.la \
 compositor/libemage_compositor.la \
-scaler/libemage_scaler.la
+scaler/libemage_scaler.la \
+convert/libemage_convert.la
 # op/libemage_op.la
-# convert/libemage_convert.la
 
 libemage_la_LDFLAGS      = -version-info 1:0:0

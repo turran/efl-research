@@ -4,13 +4,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-/* Surface
- * ~~~~~~~
- * Alls this _set and _get are needed? or better export the whole struct through
- * the public header.
- *
+/**
+ * TODO
  */
-
 EAPI Emage_Surface *
 emage_surface_new(Emage_Data_Format f, int w, int h, ...)
 {
@@ -42,6 +38,10 @@ emage_surface_new(Emage_Data_Format f, int w, int h, ...)
 	return s;
 }
 
+/**
+ * TODO
+ *
+ */
 EAPI void
 emage_surface_size_get(Emage_Surface *s, int *w, int *h)
 {
@@ -50,6 +50,10 @@ emage_surface_size_get(Emage_Surface *s, int *w, int *h)
 	if (h) *h = s->h;
 }
 
+/**
+ * TODO
+ *
+ */
 EAPI void
 emage_surface_data_get(Emage_Surface *s, ...)
 {
@@ -80,6 +84,10 @@ emage_surface_data_get(Emage_Surface *s, ...)
 	va_end(va);
 }
 
+/**
+ * TODO
+ *
+ */
 EAPI void 
 emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...)
 {
@@ -90,6 +98,10 @@ emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...)
 	va_end(va);
 }
 
+/**
+ * TODO
+ *
+ */
 EAPI void
 emage_surface_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc)
 {

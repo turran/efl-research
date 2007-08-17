@@ -1,6 +1,18 @@
 #ifndef _CPU_H
 #define _CPU_H
 
+/** 
+ * @file
+ * @brief CPU
+ * @defgroup CPU_Internal CPU
+ * @ingroup Internal_Group Internal
+ *
+ * @todo
+ * - Fix the functions and clean them
+ *
+ * @{
+ */
+
 /* check if we have at least one backend if not, there's an eror */
 #ifndef BUILD_MMX
 # ifndef BUILD_SSE
@@ -86,5 +98,7 @@ typedef enum _CPU_Feature
 } CPU_Feature;
 
 extern CPU_Feature Emage_CPU_Features;
+
+/** @} */
 
 #endif

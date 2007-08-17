@@ -137,6 +137,9 @@ evas_common_cpu_have_cpuid(void)
  */
 }
 
+/**
+ * TODO
+ */
 EAPI void
 evas_common_cpu_can_do(int *mmx, int *sse, int *sse2)
 {
@@ -234,4 +237,3 @@ evas_common_cpu_init(void)
    evas_common_cpu_end_opt();
 #endif /* __SPARC__ */
 }
-

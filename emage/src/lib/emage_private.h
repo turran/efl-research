@@ -1,6 +1,12 @@
 #ifndef _EMAGE_PRIVATE_H
 #define _EMAGE_PRIVATE_H
 
+/**
+ * @file
+ * @brief Internal Implementation
+ * @defgroup Internal_Group Internal Implementation
+ * @{
+ */
 
 #include "config.h"
 #include "debug.h"
@@ -11,8 +17,6 @@
 #include "scaler.h"
 #include "data.h"
 
-/* FIXME things above this */
-/***************************/
 /* some useful constants */
 
 extern const DATA32 ALPHA_255;
@@ -478,5 +482,7 @@ x++;
 	pand_r2r(mm255, mmy);
 
 #endif
+
+/** @} */
 
 #endif

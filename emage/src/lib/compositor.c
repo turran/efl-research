@@ -1,17 +1,6 @@
 #include "Emage.h"
 #include "emage_private.h"
 
-/* TODO
- * + use another render operation based on different parameters:
- * if render op = blend and use color span with color 0xffxxxxxxxx then
- * the render op should be a copy not a blend, etc
- * + Merge pixel_color and pixel into one, the second is just an special
- * case where the drawing context uses the mul color
- * + Remove pixel_color in compositor.c, it's a special case for pixel
- * with mul.use, the compositor still need to provide a function for it
- * + The above also matches the mask case? if so the dc needs a mask
- *
- */
 
 
 /*============================================================================*
@@ -36,6 +25,9 @@ static Emage_Compositor comp_default = {
 
 Emage_Compositor Emage_Compositors[EMAGE_DATA_FORMATS][EMAGE_RENDER_OPS];
 
+/**
+ * TODO
+ */
 void emage_compositor_init(void)
 {
 	int df, rop;
@@ -54,6 +46,9 @@ void emage_compositor_init(void)
 
 
 /* Scanlines */
+/**
+ * TODO
+ */
 Emage_Sl_Func 
 emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_Surface *dst)
 {
@@ -67,6 +62,9 @@ emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_
 		return Emage_Compositors[dst->format][dc->render_op].sl_pixel_color;
 }
 
+/**
+ * TODO
+ */
 Emage_Sl_Func
 emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
@@ -76,6 +74,9 @@ emage_compositor_sl_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 }
 
 /* TODO remove this */
+/**
+ * TODO
+ */
 Emage_Sl_Func
 emage_compositor_sl_pixel_color(Emage_Draw_Context *dc,
 	Emage_Surface *src, Emage_Surface *dst)
@@ -88,6 +89,9 @@ emage_compositor_sl_pixel_color(Emage_Draw_Context *dc,
 	return Emage_Compositors[dst->format][dc->render_op].sl_pixel_color;
 }
 
+/**
+ * TODO
+ */
 Emage_Sl_Func
 emage_compositor_sl_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
@@ -96,6 +100,9 @@ emage_compositor_sl_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 	return Emage_Compositors[dst->format][dc->render_op].sl_mask_color;
 }
 
+/**
+ * TODO
+ */
 Emage_Sl_Func
 emage_compositor_sl_pixel_mask_get(Emage_Draw_Context *dc, 
 	Emage_Surface *src, Emage_Surface *dst)
@@ -108,6 +115,9 @@ emage_compositor_sl_pixel_mask_get(Emage_Draw_Context *dc,
 }
 
 /* Points */
+/**
+ * TODO
+ */
 Emage_Pt_Func
 emage_compositor_pt_pixel_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
@@ -115,6 +125,9 @@ emage_compositor_pt_pixel_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel;
 }
 
+/**
+ * TODO
+ */
 Emage_Pt_Func
 emage_compositor_pt_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
@@ -123,6 +136,9 @@ emage_compositor_pt_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 	return Emage_Compositors[dst->format][dc->render_op].pt_color;
 }
 
+/**
+ * TODO
+ */
 Emage_Pt_Func
 emage_compositor_pt_pixel_color_get(Emage_Draw_Context *dc, Emage_Surface *src, 
 	Emage_Surface *dst)
@@ -133,6 +149,9 @@ emage_compositor_pt_pixel_color_get(Emage_Draw_Context *dc, Emage_Surface *src,
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel_color;
 }
 
+/**
+ * TODO
+ */
 Emage_Pt_Func
 emage_compositor_pt_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 {
@@ -141,6 +160,9 @@ emage_compositor_pt_mask_color_get(Emage_Draw_Context *dc, Emage_Surface *dst)
 	return Emage_Compositors[dst->format][dc->render_op].pt_mask_color;
 }
 
+/**
+ * TODO
+ */
 Emage_Pt_Func
 emage_compositor_pt_pixel_mask_get(Emage_Draw_Context *dc, Emage_Surface *src,
 	Emage_Surface *dst)
@@ -149,11 +171,17 @@ emage_compositor_pt_pixel_mask_get(Emage_Draw_Context *dc, Emage_Surface *src,
 	return Emage_Compositors[dst->format][dc->render_op].pt_pixel_mask;
 }
 
+/**
+ * TODO
+ */
 void dummy_sl(Emage_Surface *src, int soffset, DATA8 *mask, int moffset, DATA32 col, Emage_Surface *dst, int doffset, int len)
 {
 	PRINTF("not implemented\n");
 }
 
+/**
+ * TODO
+ */
 void dummy_pt(Emage_Surface *src, int soffset, DATA8 mask, DATA32 col, Emage_Surface *dst, int doffset)
 {
 	PRINTF("not implemented\n");

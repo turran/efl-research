@@ -5,7 +5,6 @@ bin_PROGRAMS = emage_test
 
 emage_test_SOURCES = \
 time.c \
-object.c \
 png.c \
 emage_test.c
 

@@ -4,6 +4,16 @@
 /**
  * @file
  * @brief Draw Context
+ * @defgroup Draw_Context_Internal Draw Context
+ * @ingroup Internal_Group Internal
+ * 
+ * @todo
+ * - Add a fill abstraction into the context, solid color, mul, etc
+ * - What about using another surface as the context src pixel, that
+ *   will allow to fill an object (rectangle, polygon) with it
+ *
+ * @{
+ *
  */
 
 typedef struct _Emage_Draw_Context_Clip
@@ -37,5 +47,7 @@ struct _Emage_Draw_Context
 	Emage_Scaler_Type 	stype;
 	Emage_Draw_Context_Clip clip;
 };
+
+/** @} */
 
 #endif

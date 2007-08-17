@@ -2,7 +2,16 @@
 #define _SCALER_H
 
 /** 
- * Scaler
+ * @file
+ * @brief Scaler
+ * @defgroup Scaler_Internal Scaler
+ * @ingroup Internal_Group Internal
+ *
+ * @todo
+ * - Make the scaler functions to actually work for every surface
+ *   format
+ *
+ * @{
  */
 void emage_scaler_init(void);
 void emage_scaler_sampled_init(void);
@@ -118,4 +127,6 @@ if (dc->clip.use)
        (dst_clip_w <= 0) || (dst_clip_h <= 0))
      return;
 #endif
+
+/** @} */
 #endif

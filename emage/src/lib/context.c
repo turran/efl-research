@@ -314,7 +314,7 @@ emage_draw_context_cutout_split(Cutout_Rects* res, int index, Cutout_Rect *split
 
 
 /**
- *
+ * TODO
  */
 EAPI Emage_Draw_Context *
 emage_draw_context_new(void)
@@ -327,7 +327,7 @@ emage_draw_context_new(void)
 }
 
 /**
- *
+ * TODO
  */
 EAPI Cutout_Rects*
 emage_draw_context_cutouts_new()
@@ -343,6 +343,7 @@ emage_draw_context_cutouts_new()
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -352,6 +353,7 @@ emage_draw_context_cutouts_free(Cutout_Rects* rects)
 }
 
 /**
+ * TODO
  *
  */
 EAPI Cutout_Rect*
@@ -375,6 +377,7 @@ emage_draw_context_cutouts_add(Cutout_Rects* rects,
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -391,6 +394,7 @@ emage_draw_context_cutouts_del(Cutout_Rects* rects,
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -403,6 +407,10 @@ emage_draw_context_apply_clean_cutouts(Cutout_Rects* rects)
 }
 
 
+/**
+ * TODO
+ *
+ */
 EAPI void
 emage_draw_context_clear_cutouts(Emage_Draw_Context *dc)
 {
@@ -410,6 +418,7 @@ emage_draw_context_clear_cutouts(Emage_Draw_Context *dc)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -423,6 +432,7 @@ emage_draw_context_free(Emage_Draw_Context *dc)
 
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -436,6 +446,7 @@ emage_draw_context_set_clip(Emage_Draw_Context *dc, int x, int y, int w, int h)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -451,6 +462,7 @@ emage_draw_context_clip_clip(Emage_Draw_Context *dc, int x, int y, int w, int h)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -460,6 +472,7 @@ emage_draw_context_unset_clip(Emage_Draw_Context *dc)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -472,6 +485,7 @@ emage_draw_context_set_color(Emage_Draw_Context *dc, int r, int g, int b, int a)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -485,6 +499,7 @@ emage_draw_context_set_multiplier(Emage_Draw_Context *dc, int r, int g, int b, i
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -495,6 +510,7 @@ emage_draw_context_unset_multiplier(Emage_Draw_Context *dc)
 
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -504,6 +520,7 @@ emage_draw_context_add_cutout(Emage_Draw_Context *dc, int x, int y, int w, int h
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -515,6 +532,7 @@ emage_draw_context_apply_clear_cutouts(Cutout_Rects* rects)
 
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -524,6 +542,7 @@ emage_draw_context_set_anti_alias(Emage_Draw_Context *dc , unsigned char aa)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -533,6 +552,7 @@ emage_draw_context_set_color_interpolation(Emage_Draw_Context *dc, int color_spa
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -542,6 +562,7 @@ emage_draw_context_set_render_op(Emage_Draw_Context *dc , int op)
 }
 
 /**
+ * TODO
  *
  */
 EAPI void
@@ -552,6 +573,7 @@ emage_draw_context_set_sli(Emage_Draw_Context *dc, int y, int h)
 }
 
 /**
+ * TODO
  *
  */
 EAPI Cutout_Rects*

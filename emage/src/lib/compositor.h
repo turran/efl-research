@@ -2,12 +2,28 @@
 #define _COMPOSITOR_H
 
 /** 
- * Compositors
- * FIXME 
+ * @file
+ * @brief Compositors
+ * @defgroup Compositors_Internal Compositor
+ * @ingroup Internal_Group Internal
+ *
+ * @todo
  * - instead of 32 b color, why not some functions for each data format
- * to get the current color
+ *   to get the current color
  * - what about the src offset?
+ * - use another render operation based on different parameters:
+ *   if render op = blend and use color span with color 0xffxxxxxxxx then 
+ *   the render op should be a copy not a blend, etc
+ * - Merge pixel_color and pixel into one, the second is just an special 
+ *   case where the drawing context uses the mul color
+ * - Remove pixel_color in compositor.c, it's a special case for pixel 
+ *   with mul.use, the compositor still need to provide a function for it
+ * - The above also matches the mask case? if so the dc needs a mask
+ * 
+ * @{
+ *
  */
+
 void emage_compositor_init(void);
 void emage_compositor_blend_init(void);
 void emage_compositor_blend_rel_init(void);
@@ -82,6 +98,8 @@ typedef struct _Emage_Compositor
 #define _EVAS_RENDER_FILL        -1
 
 extern Emage_Compositor Emage_Compositors[EMAGE_DATA_FORMATS][EMAGE_RENDER_OPS];
+
+/** @} */
 
 #endif
 

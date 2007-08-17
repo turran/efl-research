@@ -49,8 +49,9 @@ void png_save(Emage_Surface *s, char *file, int compress)
             png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
             return;
           }
-        memcpy(data, sdata, w * h * sizeof(DATA32));
-        //evas_common_convert_argb_unpremul(data, s->w * s->h);
+        printf("%p %p\n", data, sdata);
+	memcpy(data, sdata, w * h * sizeof(DATA32));
+        //evas_common_convert_argb_unpremul(data, w * h);
         png_init_io(png_ptr, f);
         png_set_IHDR(png_ptr, info_ptr, w, h, 8,
                      PNG_COLOR_TYPE_RGB_ALPHA, png_ptr->interlaced,

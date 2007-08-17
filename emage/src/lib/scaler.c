@@ -12,6 +12,9 @@ static Emage_Scaler scaler_default = {
  *============================================================================*/
 Emage_Scaler Emage_Scalers[EMAGE_SCALER_TYPES];
 
+/**
+ * TODO
+ */
 void emage_scaler_init(void)
 {
 	int i;
@@ -21,9 +24,12 @@ void emage_scaler_init(void)
 		Emage_Scalers[i] = scaler_default;
 	}
 	emage_scaler_sampled_init();
-	emage_scaler_smooth_init();
+	//emage_scaler_smooth_init();
 }
 
+/**
+ * TODO
+ */
 void dummy_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc)
 {
 	PRINTF("not implemented\n");
