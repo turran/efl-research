@@ -88,6 +88,17 @@ emage_surface_data_get(Emage_Surface *s, ...)
  * TODO
  *
  */
+EAPI Emage_Data_Format
+emage_surface_format_get(Emage_Surface *s)
+{
+	assert(s);
+	return s->format;
+}
+
+/**
+ * TODO
+ *
+ */
 EAPI void 
 emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...)
 {

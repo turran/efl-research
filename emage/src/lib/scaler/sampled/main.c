@@ -111,10 +111,8 @@ static void _sampled_func(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangl
 #endif
      func = emage_compositor_sl_pixel_get(dc, src, dst);
 
-	/* both surface have the same size */
+	/* both surfaces have the same size */
    if ((drect.w == srect.w) && (drect.h == srect.h))
-	//_sampled_same_size
-	
      {
 	ptr = src_data + ((dst_clip_y - drect.y + srect.y) * src_w) + (dst_clip_x - drect.x) + srect.x;
 	for (y = 0; y < dst_clip_h; y++)

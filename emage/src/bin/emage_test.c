@@ -1,8 +1,7 @@
 #include "emage_test.h"
 
-#define WIDTH 256
-#define HEIGHT 512 
-
+#define TEST_START(name, desc) 
+#define TEST_END(name, desc) 
 
 /* parameters */
 
@@ -29,22 +28,44 @@ Emage_Surface * surface_new(int w, int h, Emage_Data_Format fmt)
 
 void surface_free(Emage_Surface *s)
 {
-	// TODO surface_format_get
-	#if 0
+	Emage_Data_Format fmt;
+	fmt = emage_surface_format_get(s);
 	switch(fmt)
 	{
 		case EMAGE_DATA_ARGB8888:
 		{
-		#endif
 			DATA32 *d;
 
 			emage_surface_data_get(s, &d);
 			free(d);
-		#if 0
 		}
 	}
-	#endif
 	free(s);
+}
+
+/* creates a 64x64 surface used for scalers and fills */
+Emage_Surface * surface_blocks(void)
+{
+	Emage_Draw_Context *dc;
+	Emage_Surface *s;
+	int i, j;
+
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 1);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+	
+	s = surface_new(64, 64, EMAGE_DATA_ARGB8888);
+
+	for (i = 0; i < 63; i += 8)
+	{
+		for (j = 0; j < 63; j += 8)
+		{
+			emage_draw_context_set_color(dc, i * 4, j * 4, 0, i * 4);
+			emage_rectangle_draw(s, dc, i, j, 8, 8);
+		}
+	}
+	free(dc);
+	return s;
 }
 
 /* tests */
@@ -57,15 +78,14 @@ void test1(void)
 	emage_draw_context_set_anti_alias(dc, 1);
 	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
 
-	s = surface_new(256, 256, EMAGE_DATA_ARGB8888);
-		
+	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
+
 	emage_draw_context_set_color(dc, 255, 255, 255, 255);
-	emage_rectangle_draw(s, dc, 0, 0, 255, 255);
+	emage_rectangle_draw(s, dc, 0, 0, 128, 128);
 	emage_draw_context_set_color(dc, 255, 0, 0, 255);
-	emage_rectangle_draw(s, dc, 64, 64, 80, 80);
-	printf("blending\n");
+	emage_rectangle_draw(s, dc, 0, 0, 80, 80);
 	emage_draw_context_set_color(dc, 0, 240, 0, 240);
-	emage_rectangle_draw(s, dc, 100, 100, 80, 80);
+	emage_rectangle_draw(s, dc, 47, 47, 80, 80);
 	png_save(s, "/tmp/emage_test1.png", 0);
 	
 	surface_free(s);

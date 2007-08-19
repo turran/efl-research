@@ -31,10 +31,6 @@ struct _Emage_Draw_Context
 	struct {
 		DATA32 col;
 	} col;
-	/*struct Emage_Draw_Context_clip {
-		int    x, y, w, h;
-		char   use : 1;
-	} clip;*/
 	Cutout_Rects cutout;
 	struct {
 		int color_space;
@@ -46,6 +42,19 @@ struct _Emage_Draw_Context
 	unsigned char  anti_alias : 1;
 	Emage_Scaler_Type 	stype;
 	Emage_Draw_Context_Clip clip;
+	/* struct
+	 * {
+	 * 	COLOR | SURFACE | GRADIENT ?
+	 * 	int type;
+	 * 	union
+	 * 	{
+	 * 		Emage_Surface *s;
+	 * 		Emage_Gradient *g;
+	 * 		DATA32 color;
+	 * 	} data;
+	 *
+	 * } fill;
+	 */
 };
 
 /** @} */

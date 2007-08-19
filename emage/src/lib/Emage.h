@@ -98,8 +98,8 @@ typedef struct _Emage_Surface 		Emage_Surface; /**< A Surface Handler */
  */
 typedef enum _Emage_Data_Format
 {
-	EMAGE_DATA_ARGB8888,
-	EMAGE_DATA_RGB565_A5,
+	EMAGE_DATA_ARGB8888, 	/**< ARGB8888 */
+	EMAGE_DATA_RGB565_A5, 	/**< RGB5656 A5 */
 	EMAGE_DATA_FORMATS
 } Emage_Data_Format;
 
@@ -108,6 +108,7 @@ EAPI Emage_Surface * 	emage_surface_new(Emage_Data_Format f, int w, int h, ...);
 EAPI void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
 EAPI void 	emage_surface_data_get(Emage_Surface *s, ...);
 EAPI void 	emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...);
+EAPI Emage_Data_Format emage_surface_format_get(Emage_Surface *s);
 
 /** @} */
 

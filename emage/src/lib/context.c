@@ -472,7 +472,9 @@ emage_draw_context_unset_clip(Emage_Draw_Context *dc)
 }
 
 /**
- * TODO
+ * @todo
+ * - the components have to be premultiplied even if it is not quite easy
+ * to do so. Why not pass the non-premultiplied and then multiply
  *
  */
 EAPI void
