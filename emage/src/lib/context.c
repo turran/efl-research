@@ -643,6 +643,7 @@ emage_draw_context_fill_surface_set(Emage_Draw_Context *dc, Emage_Surface *s, Em
 	else
 	{
 		/* TODO only use the intersection */
+		/* clip the src surface with the src rect */ 
 		dc->fill.surface.srect = *srect;
 	}
 	if (!drect)

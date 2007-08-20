@@ -290,7 +290,9 @@ SL_FUNC(blend, argb8888, c, pixel)
 		_sl_pixel_salpha(s, d, len);
 	}
 	else
+	{
 		_sl_pixel_argb(s, d, len);
+	}
 }
 
 SL_FUNC(blend, argb8888, c, color)

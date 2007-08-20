@@ -10,9 +10,6 @@
 #define IN_RANGE(x, y, w, h) \
 ( ((unsigned)(x) < (w)) && ((unsigned)(y) < (h)) )
 
-#define IN_RECT(x, y, rx, ry, rw, rh) \
-( ((unsigned)((x) - (rx)) < (rw)) && ((unsigned)((y) - (ry)) < (rh)) )
-
 #define EXCHANGE_POINTS(x0, y0, x1, y1) \
 { \
 	int _tmp = y0; \

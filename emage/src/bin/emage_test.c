@@ -71,7 +71,7 @@ Emage_Surface * surface_blocks(void)
 		}
 	}
 	free(dc);
-	//png_save(s, "/tmp/emage_pattern.png", 0);
+	png_save(s, "/tmp/emage_pattern.png", 0);
 	return s;
 }
 
@@ -140,14 +140,17 @@ void test2(void)
 	emage_draw_context_set_color(dc, 255, 255, 255, 255);
 	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
 	emage_rectangle_draw(&r, s, dc);
-	emage_draw_context_set_color(dc, 255, 0, 0, 255);
+	emage_draw_context_set_color(dc, 255, 0, 255, 255);
 
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_SURFACE);
+	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
 	emage_draw_context_fill_surface_set(dc, pattern, NULL, NULL);
-	pts = emage_polygon_point_add(pts, 10, 10);
-	pts = emage_polygon_point_add(pts, 50, 15);
-	pts = emage_polygon_point_add(pts, 120, 100);
-	pts = emage_polygon_point_add(pts, 10, 10);
+	pts = emage_polygon_point_add(pts, 92, 1);
+	pts = emage_polygon_point_add(pts, 1, 92);
+	pts = emage_polygon_point_add(pts, 80, 80);
+	pts = emage_polygon_point_add(pts, 100, 100);
+	pts = emage_polygon_point_add(pts, 120, 5);
+	pts = emage_polygon_point_add(pts, 108, 30);
 	emage_polygon_draw(s, dc, pts);
 	emage_polygon_points_clear(pts);
 

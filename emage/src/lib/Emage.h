@@ -203,10 +203,9 @@ typedef enum _Emage_Fill_Type
  */
 typedef enum _Emage_Fill_Surface_Type
 {
-	EMAGE_FILL_SURFACE_REPEAT_NONE, /**< TODO */
-	EMAGE_FILL_SURFACE_REPEAT_X, /**< TODO */
-	EMAGE_FILL_SURFACE_REPEAT_Y, /**< TODO */
-	EMAGE_FILL_SURFACE_REPEAT_ALL, /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_NONE 	= 0, /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_X	= (1 << 0), /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_Y 	= (1 << 1), /**< TODO */
 	EMAGE_FILL_SURFACE_TYPES
 } Emage_Fill_Surface_Type;
 

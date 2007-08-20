@@ -19,6 +19,7 @@ emage_scanline_draw_color(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Con
 	span = sl->spans;
 	offset = ((sl->y * dst->w)) + sl->x;
 
+	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
 	for (i = 0; i < sl->num_spans; i++)
 	{
 
@@ -31,26 +32,45 @@ emage_scanline_draw_color(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Con
 static inline void
 emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc)
 {
+#if 0
 	Emage_Sl_Func func;
 	Emage_Span *span;
+
+	Emage_Rectangle *drect = &dc->fill.surface.drect;
+	Emage_Rectangle *srect = &dc->fill.surface.srect;
+
 	int i;
 	int offset;
-	int roffset;
+	int doffset;
+	int sx_offset;
+	int sy_offset;
 
 	/* TODO
 	 * Split this function in three: _color (mul), _mask, and this 
 	 * (only _pixel)
 	 */
+	
+	/* TODO drect includes dst->w,h => always pixel */
+	/* TODO srect = drect => always pixel */
+	/* TODO if scanline (x+w, y) isnt inside drect just use the color */
+	/* TODO if we dont have a bounding box use the color */
+	if (!(dc->fill.surface.type & EMAGE_FILL_SURFACE_REPEAT_Y))
+	{	
+	}
+
 	func = emage_compositor_sl_pixel_get(dc, dc->fill.surface.s, dst);
 	span = sl->spans;
 	offset = ((sl->y * dst->w)) + sl->x;
+
+	sx_offset = dc->fill.surface.srect.x % dc->fill.surface.drect. 
 	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
 	for (i = 0; i < sl->num_spans; i++)
 	{
 		roffset = offset + span->x;
-		func(dc->fill.surface.s, 10, NULL, 0, dc->col.col, dst, offset, span->w);
+		func(dc->fill.surface.s, 10, NULL, 0, 0, dst, offset, span->w);
 		span++;
 	}
+#endif
 }
 
 /*============================================================================*

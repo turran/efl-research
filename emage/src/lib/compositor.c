@@ -57,9 +57,9 @@ emage_compositor_sl_pixel_get(Emage_Draw_Context *dc, Emage_Surface *src, Emage_
 		assert(src->format == dst->format);
 	}
 	if (dc->mul.use)
-		return Emage_Compositors[dst->format][dc->render_op].sl_pixel;
-	else
 		return Emage_Compositors[dst->format][dc->render_op].sl_pixel_color;
+	else
+		return Emage_Compositors[dst->format][dc->render_op].sl_pixel;
 }
 
 /**
