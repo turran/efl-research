@@ -5,15 +5,8 @@
 #include "Emage.h"
 #include "emage_private.h"
 
-typedef struct _RGBA_Span RGBA_Span;
 typedef struct _RGBA_Edge RGBA_Edge;
 typedef struct _RGBA_Vertex RGBA_Vertex;
-
-struct _RGBA_Span
-{
-   Evas_Object_List _list_data;
-   int x, y, w;
-};
 
 struct _RGBA_Edge
 {
@@ -96,12 +89,12 @@ polygon_edge_sorter(const void *a, const void *b)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-EAPI RGBA_Polygon_Point *
-evas_common_polygon_point_add(RGBA_Polygon_Point *points, int x, int y)
+EAPI Emage_Polygon_Point *
+emage_polygon_point_add(Emage_Polygon_Point *points, int x, int y)
 {
-   RGBA_Polygon_Point *pt;
+   Emage_Polygon_Point *pt;
 
-   pt = malloc(sizeof(RGBA_Polygon_Point));
+   pt = malloc(sizeof(Emage_Polygon_Point));
    if (!pt) return points;
    pt->x = x;
    pt->y = y;
@@ -109,14 +102,14 @@ evas_common_polygon_point_add(RGBA_Polygon_Point *points, int x, int y)
    return points;
 }
 
-EAPI RGBA_Polygon_Point *
-evas_common_polygon_points_clear(RGBA_Polygon_Point *points)
+EAPI Emage_Polygon_Point *
+emage_polygon_points_clear(Emage_Polygon_Point *points)
 {
    if (points)
      {
 	while (points)
 	  {
-	     RGBA_Polygon_Point *old_p;
+	     Emage_Polygon_Point *old_p;
 
 	     old_p = points;
 	     points = evas_object_list_remove(points, points);
@@ -126,11 +119,11 @@ evas_common_polygon_points_clear(RGBA_Polygon_Point *points)
    return NULL;
 }
 EAPI void
-emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points)
+emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Point *points)
 {
    
    //RGBA_Gfx_Func      func;
-   RGBA_Polygon_Point *pt;
+   Emage_Polygon_Point *pt;
    RGBA_Vertex       *point;
    RGBA_Edge         *edges;
    Evas_Object_List  *spans, *l;
@@ -194,7 +187,7 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
    k = 0;
    for (l = (Evas_Object_List *)points; l; l = l->next)
      {
-	pt = (RGBA_Polygon_Point *)l;
+	pt = (Emage_Polygon_Point *)l;
 	point[k].x = pt->x;
 	point[k].y = pt->y;
 	point[k].i = k;
@@ -205,7 +198,7 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
    k = 0;
    for (l = (Evas_Object_List *)points; l; l = l->next)
      {
-	pt = (RGBA_Polygon_Point *)l;
+	pt = (Emage_Polygon_Point *)l;
 	point[k].x = pt->x;
 	point[k].y = pt->y;
 	point[k].i = k;
@@ -260,11 +253,11 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
 	       x1 = x0;
 	     if ((x1 >= ext_x) && (x0 < (ext_x + ext_w)) && (x0 <= x1))
 	       {
-		  RGBA_Span *span;
+		  Emage_Scanline *span;
 
 		  if (x0 < ext_x) x0 = ext_x;
 		  if (x1 >= (ext_x + ext_w)) x1 = ext_x + ext_w - 1;
-		  span = malloc(sizeof(RGBA_Span));
+		  span = malloc(sizeof(Emage_Scanline));
 		  spans = evas_object_list_append(spans, span);
 		  span->y = y;
 		  span->x = x0;
@@ -285,10 +278,10 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
      {
 	for (l = spans; l; l = l->next)
 	  {
-	     RGBA_Span *span;
+	     Emage_Scanline *span;
 	     //DATA32 *ptr;
 
-	     span = (RGBA_Span *)l;
+	     span = (Emage_Scanline *)l;
 #ifdef EVAS_SLI
 	     if (((span->y) % dc->sli.h) == dc->sli.y)
 #endif
@@ -301,9 +294,9 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Poin
 	  }
 	while (spans)
 	  {
-	     RGBA_Span *span;
+	     Emage_Scanline *span;
 
-	     span = (RGBA_Span *)spans;
+	     span = (Emage_Scanline *)spans;
 	     spans = evas_object_list_remove(spans, spans);
 	     free(span);
 	  }

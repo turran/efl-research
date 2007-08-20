@@ -177,11 +177,11 @@ EAPI void 		emage_draw_context_cutouts_del(Cutout_Rects* rects, int index);
 /** @} */
 
 /**
- * @defgroup Objects_Group Objects
+ * @defgroup Geometry_Group Geometry
  * @{
  */
-typedef struct _RGBA_Polygon_Point    RGBA_Polygon_Point;
-struct _RGBA_Polygon_Point
+typedef struct _Emage_Polygon_Point    Emage_Polygon_Point;
+struct _Emage_Polygon_Point
 {
    Evas_Object_List  _list_data;
    int               x, y;
@@ -189,7 +189,9 @@ struct _RGBA_Polygon_Point
 
 EAPI void 		emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
 EAPI void 		emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h);
-EAPI void 		emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, RGBA_Polygon_Point *points);
+EAPI void 		emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Point *points);
+EAPI Emage_Polygon_Point *emage_polygon_point_add(Emage_Polygon_Point *points, int x, int y);
+EAPI Emage_Polygon_Point *emage_polygon_points_clear(Emage_Polygon_Point *points);
 
 /** @} */
 
@@ -210,6 +212,14 @@ typedef enum _Emage_Scaler_Type
 } Emage_Scaler_Type;
 
 EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc);
+
+/** @} */
+
+/**
+ * @defgroup Scanlines_Group Scanlines
+ * @{
+ */
+typedef struct _Emage_Scanline    Emage_Scanline;
 
 /** @} */
 

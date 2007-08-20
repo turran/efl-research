@@ -155,3 +155,13 @@ emage_surface_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srec
 restore_clip:
 	dc->clip = bc;
 }
+
+/**
+ * TODO
+ *
+ */
+EAPI void
+emage_surface_scanlines_draw(Emage_Surface *src, Emage_Draw_Context *dc, Emage_Scanline *sl)
+{
+
+}

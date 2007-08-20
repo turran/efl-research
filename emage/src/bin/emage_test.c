@@ -39,6 +39,8 @@ void surface_free(Emage_Surface *s)
 			emage_surface_data_get(s, &d);
 			free(d);
 		}
+		default:
+		break;
 	}
 	free(s);
 }
@@ -69,6 +71,11 @@ Emage_Surface * surface_blocks(void)
 }
 
 /* tests */
+
+/* Test 1
+ * ======
+ * Render two transparent boxes with all compositors 
+ */
 void test1(void)
 {
 	Emage_Draw_Context *dc;
@@ -87,6 +94,37 @@ void test1(void)
 	emage_draw_context_set_color(dc, 0, 240, 0, 240);
 	emage_rectangle_draw(s, dc, 47, 47, 80, 80);
 	png_save(s, "/tmp/emage_test1.png", 0);
+	
+	surface_free(s);
+	free(dc);
+}
+
+/* Test 2
+ * ======
+ */
+void test2(void)
+{
+	Emage_Draw_Context *dc;
+	Emage_Surface *s;
+	Emage_Polygon_Point *pts = NULL;
+
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 1);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+
+	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
+
+	emage_draw_context_set_color(dc, 255, 255, 255, 255);
+	emage_rectangle_draw(s, dc, 0, 0, 128, 128);
+	emage_draw_context_set_color(dc, 255, 0, 0, 255);
+
+	pts = emage_polygon_point_add(pts, 10, 10);
+	pts = emage_polygon_point_add(pts, 50, 15);
+	pts = emage_polygon_point_add(pts, 120, 100);
+	pts = emage_polygon_point_add(pts, 10, 10);
+	emage_polygon_draw(s, dc, pts);
+
+	png_save(s, "/tmp/emage_test2.png", 0);
 	
 	surface_free(s);
 	free(dc);
@@ -153,6 +191,7 @@ int main(void)
 	if (!emage_init()) return -1;
 
 	test1();
+	test2();
 
 	emage_shutdown();
 	return 0;

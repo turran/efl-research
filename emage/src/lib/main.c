@@ -10,7 +10,8 @@ static int init = 0;
 /**
  * TODO
  */
-EAPI int emage_init(void)
+EAPI int
+emage_init(void)
 {
 	if (++init != 1) return init;
 	emage_compositor_init();
@@ -24,7 +25,8 @@ EAPI int emage_init(void)
 /**
  * TODO
  */
-EAPI void emage_shutdown(void)
+EAPI void
+emage_shutdown(void)
 {
 	if (--init) return;
 }

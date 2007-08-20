@@ -16,6 +16,7 @@
 #include "compositor.h"
 #include "scaler.h"
 #include "data.h"
+#include "scanline.h"
 
 /* some useful constants */
 
