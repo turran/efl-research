@@ -121,8 +121,6 @@ emage_polygon_points_clear(Emage_Polygon_Point *points)
 EAPI void
 emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Point *points)
 {
-   
-   //RGBA_Gfx_Func      func;
    Emage_Polygon_Point *pt;
    RGBA_Vertex       *point;
    RGBA_Edge         *edges;
@@ -253,15 +251,22 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Poi
 	       x1 = x0;
 	     if ((x1 >= ext_x) && (x0 < (ext_x + ext_w)) && (x0 <= x1))
 	       {
-		  Emage_Scanline *span;
+	
+		  Emage_Scanline sl;
+		  Emage_Span sp;
 
 		  if (x0 < ext_x) x0 = ext_x;
 		  if (x1 >= (ext_x + ext_w)) x1 = ext_x + ext_w - 1;
-		  span = malloc(sizeof(Emage_Scanline));
-		  spans = evas_object_list_append(spans, span);
-		  span->y = y;
-		  span->x = x0;
-		  span->w = (x1 - x0) + 1;
+		  sl.y = y;
+		  sl.x = x0;
+		  sl.w = (x1 - x0) + 1;
+		  
+		  sp.x = 0;
+		  sp.w = sl.w;
+		  sp.coverage = 32; // FIXME
+		  sl.num_spans = 1;
+		  sl.spans = &sp;
+			emage_scanline_draw(&sl, dst, dc);
 	       }
 	     edges[j].x += edges[j].dx;
 	     edges[j + 1].x += edges[j + 1].dx;
@@ -271,34 +276,4 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Poi
    free(edges);
    free(point);
    free(sorted_index);
-
-   //func = evas_common_gfx_func_composite_color_span_get(dc->col.col, dst, 1, dc->render_op);
-   func = emage_compositor_sl_color_get(dc, dst);
-   if (spans)
-     {
-	for (l = spans; l; l = l->next)
-	  {
-	     Emage_Scanline *span;
-	     //DATA32 *ptr;
-
-	     span = (Emage_Scanline *)l;
-#ifdef EVAS_SLI
-	     if (((span->y) % dc->sli.h) == dc->sli.y)
-#endif
-	       {
-		  //ptr = dst->data + (span->y * (dst->w)) + span->x;
-		  offset = (span->y * (dst->w)) + span->x;
-		  //func(NULL, NULL, dc->col.col, ptr, span->w);
-		  func(NULL, 0, NULL, 0, dc->col.col, dst, offset, span->w);
-	       }
-	  }
-	while (spans)
-	  {
-	     Emage_Scanline *span;
-
-	     span = (Emage_Scanline *)spans;
-	     spans = evas_object_list_remove(spans, spans);
-	     free(span);
-	  }
-     }
 }

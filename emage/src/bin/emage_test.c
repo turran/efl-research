@@ -50,6 +50,7 @@ Emage_Surface * surface_blocks(void)
 {
 	Emage_Draw_Context *dc;
 	Emage_Surface *s;
+	Emage_Rectangle r;
 	int i, j;
 
 	dc = emage_draw_context_new();
@@ -57,13 +58,16 @@ Emage_Surface * surface_blocks(void)
 	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
 	
 	s = surface_new(64, 64, EMAGE_DATA_ARGB8888);
-
+	r.w = 8;
+	r.h = 8;
 	for (i = 0; i < 63; i += 8)
 	{
 		for (j = 0; j < 63; j += 8)
 		{
+			r.x = i;
+			r.y = j;
 			emage_draw_context_set_color(dc, i * 4, j * 4, 0, i * 4);
-			emage_rectangle_draw(s, dc, i, j, 8, 8);
+			emage_rectangle_draw(&r, s, dc);
 		}
 	}
 	free(dc);
@@ -80,6 +84,7 @@ void test1(void)
 {
 	Emage_Draw_Context *dc;
 	Emage_Surface *s;
+	Emage_Rectangle r;
 
 	dc = emage_draw_context_new();
 	emage_draw_context_set_anti_alias(dc, 1);
@@ -88,11 +93,14 @@ void test1(void)
 	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
 
 	emage_draw_context_set_color(dc, 255, 255, 255, 255);
-	emage_rectangle_draw(s, dc, 0, 0, 128, 128);
+	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
+	emage_rectangle_draw(&r, s, dc);
 	emage_draw_context_set_color(dc, 255, 0, 0, 255);
-	emage_rectangle_draw(s, dc, 0, 0, 80, 80);
+	r.x = 0, r.y = 0, r.w = 80, r.h = 80;
+	emage_rectangle_draw(&r, s, dc);
 	emage_draw_context_set_color(dc, 0, 240, 0, 240);
-	emage_rectangle_draw(s, dc, 47, 47, 80, 80);
+	r.x = 47, r.y = 47, r.w = 80, r.h = 80;
+	emage_rectangle_draw(&r, s, dc);
 	png_save(s, "/tmp/emage_test1.png", 0);
 	
 	surface_free(s);
@@ -106,6 +114,7 @@ void test2(void)
 {
 	Emage_Draw_Context *dc;
 	Emage_Surface *s;
+	Emage_Rectangle r;
 	Emage_Polygon_Point *pts = NULL;
 
 	dc = emage_draw_context_new();
@@ -115,7 +124,8 @@ void test2(void)
 	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
 
 	emage_draw_context_set_color(dc, 255, 255, 255, 255);
-	emage_rectangle_draw(s, dc, 0, 0, 128, 128);
+	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
+	emage_rectangle_draw(&r, s, dc);
 	emage_draw_context_set_color(dc, 255, 0, 0, 255);
 
 	pts = emage_polygon_point_add(pts, 10, 10);
@@ -123,6 +133,7 @@ void test2(void)
 	pts = emage_polygon_point_add(pts, 120, 100);
 	pts = emage_polygon_point_add(pts, 10, 10);
 	emage_polygon_draw(s, dc, pts);
+	emage_polygon_points_clear(pts);
 
 	png_save(s, "/tmp/emage_test2.png", 0);
 	

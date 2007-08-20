@@ -13,13 +13,14 @@ INCLUDES = -I. \
 lib_LTLIBRARIES = libemage.la
 
 libemage_la_SOURCES = \
-surface.c \
-context.c \
+color.c \
 compositor.c \
+context.c \
+cpu.c \
 main.c \
 scaler.c \
-color.c \
-cpu.c
+scanline.c \
+surface.c
 #emage_blend.c
 #emage_blit.c
 

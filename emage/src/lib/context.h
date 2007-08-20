@@ -11,7 +11,8 @@
  * - Add a fill abstraction into the context, solid color, mul, etc
  * - What about using another surface as the context src pixel, that
  *   will allow to fill an object (rectangle, polygon) with it
- *
+ * - replace the Sl_Func with Sp_Func, makes more sense, as it draws
+ *   spans no scanlines
  * @{
  *
  */

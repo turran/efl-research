@@ -9,78 +9,75 @@
 static void
 rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
-   //RGBA_Gfx_Func func;
-   Emage_Sl_Func func;
-   int yy;
-   int offset;
-   DATA32 *ptr;
+	Emage_Scanline 	sl;
+	Emage_Span 	sp;
+	int 		hh;
 
-   if ((w <= 0) || (h <= 0)) return;
-   RECTS_CLIP_TO_RECT(x, y, w, h, 0, 0, dst->w, dst->h);
-   if ((w <= 0) || (h <= 0)) return;
+	if ((w <= 0) || (h <= 0)) return;
+	RECTS_CLIP_TO_RECT(x, y, w, h, 0, 0, dst->w, dst->h);
+	if ((w <= 0) || (h <= 0)) return;
 
-   if (dc->clip.use)
-     {
-	RECTS_CLIP_TO_RECT(x, y, w, h, dc->clip.r.x, dc->clip.r.y, dc->clip.r.w, dc->clip.r.h);
-     }
-   if ((w <= 0) || (h <= 0)) return;
+	if (dc->clip.use)
+	{
+		RECTS_CLIP_TO_RECT(x, y, w, h, dc->clip.r.x, dc->clip.r.y, dc->clip.r.w, dc->clip.r.h);
+	}
+	if ((w <= 0) || (h <= 0)) return;
 
-   //func = evas_common_gfx_func_composite_color_span_get(dc->col.col, dst, w, dc->render_op);
-   func = emage_compositor_sl_color_get(dc, dst);
-   //ptr = dst->data + (y * dst->w) + x;
-   offset = (y * dst->w) + x;
-   for (yy = 0; yy < h; yy++)
-     {
-#ifdef EVAS_SLI
-	if (((yy + y) % dc->sli.h) == dc->sli.y)
-#endif
-	  {
-	     func(NULL, 0, NULL, 0, dc->col.col, dst, offset, w);
-	  }
-	//ptr += dst->w;
-	offset += dst->w;
-     }
+	sp.x = 0;
+	sp.w = w;
+	sp.coverage = 32; // FIXME
+	
+	sl.x = x;
+	sl.w = sp.w;
+	sl.num_spans = 1;
+	sl.spans = &sp;
+
+	hh = y + h;
+	for (sl.y = y; sl.y < hh; sl.y++)
+	{
+		emage_scanline_draw(&sl, dst, dc);
+	}
 }
 
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 EAPI void
-emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h)
+emage_rectangle_draw(Emage_Rectangle *r, Emage_Surface *dst, Emage_Draw_Context *dc)
 {
-   Cutout_Rects *rects;
-   Cutout_Rect  *r;
-   int          c, cx, cy, cw, ch;
-   int          i;
-   /* handle cutouts here! */
-
-   if ((w <= 0) || (h <= 0)) return;
-   if (!(RECTS_INTERSECT(x, y, w, h, 0, 0, dst->w, dst->h)))
-     return;
-   /* no cutouts - cut right to the chase */
-   if (!dc->cutout.rects)
-     {
-	rectangle_draw_internal(dst, dc, x, y, w, h);
-	return;
-     }
-   /* save out clip info */
-   c = dc->clip.use; cx = dc->clip.r.x; cy = dc->clip.r.y; cw = dc->clip.r.w; ch = dc->clip.r.h;
-   emage_draw_context_clip_clip(dc, 0, 0, dst->w, dst->h);
-   emage_draw_context_clip_clip(dc, x, y, w, h);
-   /* our clip is 0 size.. abort */
-   if ((dc->clip.r.w <= 0) || (dc->clip.r.h <= 0))
-     {
-	dc->clip.use = c; dc->clip.r.x = cx; dc->clip.r.y = cy; dc->clip.r.w = cw; dc->clip.r.h = ch;
-	return;
-     }
-   rects = emage_draw_context_apply_cutouts(dc);
-   for (i = 0; i < rects->active; ++i)
-     {
-	r = rects->rects + i;
-	emage_draw_context_set_clip(dc, r->x, r->y, r->w, r->h);
-	rectangle_draw_internal(dst, dc, x, y, w, h);
-     }
-   emage_draw_context_apply_clear_cutouts(rects);
-   /* restore clip info */
-   dc->clip.use = c; dc->clip.r.x = cx; dc->clip.r.y = cy; dc->clip.r.w = cw; dc->clip.r.h = ch;
+	Cutout_Rects 			*crects;
+	Cutout_Rect  			*cr;
+	Emage_Draw_Context_Clip 	bc;
+	int          			i;
+	
+	/* handle cutouts here! */
+	if ((r->w <= 0) || (r->h <= 0)) return;
+	if (!(RECTS_INTERSECT(r->x, r->y, r->w, r->h, 0, 0, dst->w, dst->h)))
+		return;
+	/* no cutouts - cut right to the chase */
+	if (!dc->cutout.rects)
+	{
+		rectangle_draw_internal(dst, dc, r->x, r->y, r->w, r->h);
+		return;
+	}
+	/* save out clip info */
+	bc = dc->clip;
+	emage_draw_context_clip_clip(dc, 0, 0, dst->w, dst->h);
+	emage_draw_context_clip_clip(dc, r->x, r->y, r->w, r->h);
+	/* our clip is 0 size.. abort */
+	if ((dc->clip.r.w <= 0) || (dc->clip.r.h <= 0))
+	{
+		dc->clip = bc;
+		return;
+	}
+	crects = emage_draw_context_apply_cutouts(dc);
+	for (i = 0; i < crects->active; ++i)
+	{
+		cr = crects->rects + i;
+		emage_draw_context_set_clip(dc, cr->x, cr->y, cr->w, cr->h);
+		rectangle_draw_internal(dst, dc, r->x, r->y, r->w, r->h);
+	}
+	emage_draw_context_apply_clear_cutouts(crects);
+	/* restore clip info */
+	dc->clip = bc;
 }

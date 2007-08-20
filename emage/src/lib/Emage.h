@@ -187,9 +187,8 @@ struct _Emage_Polygon_Point
    int               x, y;
 };
 
-EAPI void 		emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
-EAPI void 		emage_rectangle_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h);
-EAPI void 		emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Point *points);
+EAPI void emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
+EAPI void emage_rectangle_draw(Emage_Rectangle *r, Emage_Surface *dst, Emage_Draw_Context *dc);
 EAPI Emage_Polygon_Point *emage_polygon_point_add(Emage_Polygon_Point *points, int x, int y);
 EAPI Emage_Polygon_Point *emage_polygon_points_clear(Emage_Polygon_Point *points);
 
@@ -219,7 +218,26 @@ EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle sr
  * @defgroup Scanlines_Group Scanlines
  * @{
  */
-typedef struct _Emage_Scanline    Emage_Scanline;
+typedef struct _Emage_Span 	Emage_Span;
+typedef struct _Emage_Scanline 	Emage_Scanline;
+
+struct _Emage_Span
+{
+	int 	x;
+	int 	w;
+	unsigned int coverage;
+};
+
+struct _Emage_Scanline
+{
+	int 		x;
+	int 		y;
+	int 		w;
+	int 		num_spans;
+	Emage_Span *spans;
+};
+
+EAPI void emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc);
 
 /** @} */
 
