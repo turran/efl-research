@@ -132,9 +132,6 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Poi
    int                ext_x, ext_y, ext_w, ext_h;
    int               *sorted_index;
 
-   int offset;
-   Emage_Sl_Func func;
-
    ext_x = 0;
    ext_y = 0;
    ext_w = dst->w;

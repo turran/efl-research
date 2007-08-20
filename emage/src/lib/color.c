@@ -265,7 +265,7 @@ emage_color_rgb_to_hsv_int(int r, int g, int b, int *h, int *s, int *v)
 EAPI void
 emage_color_argb_from_components(Emage_Color *ec, int r, int g, int b, int a)
 {
-	assert(ec && *ec);
+	assert(ec);
 	
 	ec->a = a;
 	ec->r = r;

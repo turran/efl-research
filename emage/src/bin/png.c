@@ -39,7 +39,6 @@ void png_save(Emage_Surface *s, char *file, int compress)
 //	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
 	{
 		emage_surface_data_get(s, &sdata);
-		printf("%p\n", sdata);
 		emage_surface_size_get(s, &w, &h);
 		data = malloc(w * h * sizeof(DATA32));
         if (!data)
@@ -49,7 +48,6 @@ void png_save(Emage_Surface *s, char *file, int compress)
             png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
             return;
           }
-        printf("%p %p\n", data, sdata);
 	memcpy(data, sdata, w * h * sizeof(DATA32));
         //evas_common_convert_argb_unpremul(data, w * h);
         png_init_io(png_ptr, f);

@@ -2,7 +2,7 @@
 #define _DEBUG_H
 
 /* FIXME place the DEBUG define in config.h.in */
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define PRINTF(fmt, args...)  printf("[emage:%s]  " fmt, __FUNCTION__ , ## args)
 #else

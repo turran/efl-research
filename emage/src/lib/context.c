@@ -606,3 +606,50 @@ emage_draw_context_apply_cutouts(Emage_Draw_Context *dc)
      }
    return res;
 }
+
+/**
+ * TODO
+ */
+EAPI void
+emage_draw_context_fill_type_set(Emage_Draw_Context *dc, Emage_Fill_Type t)
+{
+	assert(dc);
+	dc->fill.type = t;
+}
+
+/**
+ * TODO
+ */
+EAPI void
+emage_draw_context_fill_surface_type_set(Emage_Draw_Context *dc, Emage_Fill_Surface_Type t)
+{
+	assert(dc);
+	dc->fill.surface.type = t;
+}
+
+/**
+ * TODO
+ *
+ */
+EAPI void
+emage_draw_context_fill_surface_set(Emage_Draw_Context *dc, Emage_Surface *s, Emage_Rectangle *srect, Emage_Rectangle *drect)
+{
+	assert(s);
+
+	if (!srect)
+	{
+		EMAGE_RECT_FROM_COORDS(dc->fill.surface.srect, 0, 0, s->w, s->h);
+	}
+	else
+	{
+		/* TODO only use the intersection */
+		dc->fill.surface.srect = *srect;
+	}
+	if (!drect)
+	{
+		EMAGE_RECT_FROM_COORDS(dc->fill.surface.drect, 0, 0, 0, 0);
+	}
+	else
+		dc->fill.surface.srect = *drect;
+	dc->fill.surface.s = s;
+}

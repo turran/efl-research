@@ -43,19 +43,16 @@ struct _Emage_Draw_Context
 	unsigned char  anti_alias : 1;
 	Emage_Scaler_Type 	stype;
 	Emage_Draw_Context_Clip clip;
-	/* struct
-	 * {
-	 * 	COLOR | SURFACE | GRADIENT ?
-	 * 	int type;
-	 * 	union
-	 * 	{
-	 * 		Emage_Surface *s;
-	 * 		Emage_Gradient *g;
-	 * 		DATA32 color;
-	 * 	} data;
-	 *
-	 * } fill;
-	 */
+	struct {
+		Emage_Fill_Type type;
+	  	DATA32 color;
+		struct {
+			Emage_Fill_Surface_Type type;
+			Emage_Rectangle srect;
+			Emage_Rectangle drect;
+			Emage_Surface *s;
+		} surface;
+	} fill;
 };
 
 /** @} */

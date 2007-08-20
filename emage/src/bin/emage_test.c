@@ -66,11 +66,12 @@ Emage_Surface * surface_blocks(void)
 		{
 			r.x = i;
 			r.y = j;
-			emage_draw_context_set_color(dc, i * 4, j * 4, 0, i * 4);
+			emage_draw_context_set_color(dc, i * 5, j * 5, 0, i * 5);
 			emage_rectangle_draw(&r, s, dc);
 		}
 	}
 	free(dc);
+	//png_save(s, "/tmp/emage_pattern.png", 0);
 	return s;
 }
 
@@ -85,49 +86,64 @@ void test1(void)
 	Emage_Draw_Context *dc;
 	Emage_Surface *s;
 	Emage_Rectangle r;
+	int rop;
 
 	dc = emage_draw_context_new();
 	emage_draw_context_set_anti_alias(dc, 1);
-	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
 
 	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
 
-	emage_draw_context_set_color(dc, 255, 255, 255, 255);
-	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
-	emage_rectangle_draw(&r, s, dc);
-	emage_draw_context_set_color(dc, 255, 0, 0, 255);
-	r.x = 0, r.y = 0, r.w = 80, r.h = 80;
-	emage_rectangle_draw(&r, s, dc);
-	emage_draw_context_set_color(dc, 0, 240, 0, 240);
-	r.x = 47, r.y = 47, r.w = 80, r.h = 80;
-	emage_rectangle_draw(&r, s, dc);
-	png_save(s, "/tmp/emage_test1.png", 0);
+	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
+	for (rop = EMAGE_RENDER_BLEND; rop < EMAGE_RENDER_OPS; rop++)
+	{
+		char file[PATH_MAX];
+		/* clear the surface */
+		emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+		emage_draw_context_set_color(dc, 255, 255, 255, 255);
 	
+		emage_draw_context_set_render_op(dc, rop);
+		r.x = 0, r.y = 0, r.w = 128, r.h = 128;
+		emage_rectangle_draw(&r, s, dc);
+		emage_draw_context_set_color(dc, 255, 0, 0, 255);
+		r.x = 0, r.y = 0, r.w = 80, r.h = 80;
+		emage_rectangle_draw(&r, s, dc);
+		emage_draw_context_set_color(dc, 0, 240, 0, 240);
+		r.x = 47, r.y = 47, r.w = 80, r.h = 80;
+		emage_rectangle_draw(&r, s, dc);
+
+		snprintf(file, PATH_MAX, "/tmp/emage_rop%d.png", rop);
+		png_save(s, file, 0);
+	}
 	surface_free(s);
 	free(dc);
 }
 
 /* Test 2
  * ======
+ * Fill a polygon with an image
  */
 void test2(void)
 {
 	Emage_Draw_Context *dc;
 	Emage_Surface *s;
+	Emage_Surface *pattern;
 	Emage_Rectangle r;
 	Emage_Polygon_Point *pts = NULL;
 
+	pattern = surface_blocks();
+	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
+	
 	dc = emage_draw_context_new();
 	emage_draw_context_set_anti_alias(dc, 1);
 	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
-
-	s = surface_new(128, 128, EMAGE_DATA_ARGB8888);
 
 	emage_draw_context_set_color(dc, 255, 255, 255, 255);
 	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
 	emage_rectangle_draw(&r, s, dc);
 	emage_draw_context_set_color(dc, 255, 0, 0, 255);
 
+	emage_draw_context_fill_type_set(dc, EMAGE_FILL_SURFACE);
+	emage_draw_context_fill_surface_set(dc, pattern, NULL, NULL);
 	pts = emage_polygon_point_add(pts, 10, 10);
 	pts = emage_polygon_point_add(pts, 50, 15);
 	pts = emage_polygon_point_add(pts, 120, 100);
@@ -138,6 +154,7 @@ void test2(void)
 	png_save(s, "/tmp/emage_test2.png", 0);
 	
 	surface_free(s);
+	surface_free(pattern);
 	free(dc);
 }
 

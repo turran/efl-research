@@ -47,6 +47,8 @@ typedef unsigned int 	DATA32; /**< 32 bits */
 typedef unsigned short 	DATA16; /**< 16 bits */
 typedef unsigned char	DATA8;	/**< 8 bits */
 
+/* FIXME remove this
+ */
 typedef struct _Evas_Object_List      Evas_Object_List;
 struct _Evas_Object_List
 {
@@ -61,6 +63,12 @@ typedef struct _Emage_Rectangle
 {
 	int x, y, w, h;
 } Emage_Rectangle;
+
+#define EMAGE_RECT_FROM_COORDS(r, xc, yc, wc, hc) 			\
+r.x = xc;								\
+r.y = yc;								\
+r.w = wc;								\
+r.h = hc;								
 
 /** @} */
 
@@ -134,11 +142,16 @@ struct _Cutout_Rects
 };
  
 /**
+ * d = Destination
+ * s = Source
+ * sa = Source Alpha
+ * da = Destination Alpha
  * TODO remove the =
  */
 typedef enum _Emage_Render_Op
 {
-	EMAGE_RENDER_BLEND = 0, /**< default op: d = d*(1-sa) + s */
+	EMAGE_RENDER_BLEND = 0, /**< Default op: d = d*(1-sa) + s */
+#if 0
 	EMAGE_RENDER_BLEND_REL = 1, /**< d = d*(1 - sa) + s*da */
 	EMAGE_RENDER_COPY = 2, /**< d = s */
 	EMAGE_RENDER_COPY_REL = 3, /**< d = s*da */
@@ -151,7 +164,8 @@ typedef enum _Emage_Render_Op
 	EMAGE_RENDER_MASK = 10, /**< d = d*sa */
 	EMAGE_RENDER_MUL = 11, /**< d = d*s */
 	//EMAGE_RENDER_CLIP
-	EMAGE_RENDER_OPS
+#endif
+	EMAGE_RENDER_OPS /**< Total number of rendering operations */
 } Emage_Render_Op;
 
 /* FIXME normalize the name of the above */
@@ -173,6 +187,33 @@ EAPI void               emage_draw_context_set_color_interpolation(Emage_Draw_Co
 EAPI void               emage_draw_context_set_render_op     (Emage_Draw_Context *dc, int op);
 EAPI void               emage_draw_context_set_sli           (Emage_Draw_Context *dc, int y, int h);
 EAPI void 		emage_draw_context_cutouts_del(Cutout_Rects* rects, int index);
+
+/**
+ * @todo and fill with a gradient?
+ */
+typedef enum _Emage_Fill_Type
+{
+	EMAGE_FILL_COLOR, /**< TODO */
+	EMAGE_FILL_SURFACE, /**< TODO */
+	EMAGE_FILL_TYPES
+} Emage_Fill_Type;
+
+/**
+ * TODO
+ */
+typedef enum _Emage_Fill_Surface_Type
+{
+	EMAGE_FILL_SURFACE_REPEAT_NONE, /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_X, /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_Y, /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_ALL, /**< TODO */
+	EMAGE_FILL_SURFACE_TYPES
+} Emage_Fill_Surface_Type;
+
+EAPI void emage_draw_context_fill_type_set(Emage_Draw_Context *dc, Emage_Fill_Type t);
+EAPI void emage_draw_context_fill_surface_type_set(Emage_Draw_Context *dc, Emage_Fill_Surface_Type t);
+EAPI void emage_draw_context_fill_surface_set(Emage_Draw_Context *dc, Emage_Surface *s, Emage_Rectangle *srect, Emage_Rectangle *drect);
+
 
 /** @} */
 
@@ -205,9 +246,9 @@ EAPI Emage_Polygon_Point *emage_polygon_points_clear(Emage_Polygon_Point *points
  */
 typedef enum _Emage_Scaler_Type
 {
-	EMAGE_SCALER_SMOOTH, 	/**< */
-	EMAGE_SCALER_SAMPLED, 	/**< */
-	EMAGE_SCALER_TYPES 	/**< */
+	EMAGE_SCALER_SMOOTH, 	/**< TODO */
+	EMAGE_SCALER_SAMPLED, 	/**< TODO */
+	EMAGE_SCALER_TYPES 	/**< TODO */
 } Emage_Scaler_Type;
 
 EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc);
@@ -218,9 +259,12 @@ EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle sr
  * @defgroup Scanlines_Group Scanlines
  * @{
  */
-typedef struct _Emage_Span 	Emage_Span;
-typedef struct _Emage_Scanline 	Emage_Scanline;
+typedef struct _Emage_Span 	Emage_Span; /**< TODO */
+typedef struct _Emage_Scanline 	Emage_Scanline; /**< TODO */
 
+/**
+ * TODO
+ */
 struct _Emage_Span
 {
 	int 	x;
@@ -228,12 +272,16 @@ struct _Emage_Span
 	unsigned int coverage;
 };
 
+/**
+ * TODO
+ */
 struct _Emage_Scanline
 {
-	int 		x;
-	int 		y;
-	int 		w;
-	int 		num_spans;
+	int 		x; /**< TODO */
+	int 		y; /**< TODO */
+	int 		w; /**< TODO */
+	Emage_Rectangle bbox; /**< TODO */
+	int 		num_spans; /**< TODO */
 	Emage_Span *spans;
 };
 
