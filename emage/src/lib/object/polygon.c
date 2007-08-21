@@ -250,20 +250,15 @@ emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Poi
 	       {
 	
 		  Emage_Scanline sl;
-		  Emage_Span sp;
 
 		  if (x0 < ext_x) x0 = ext_x;
 		  if (x1 >= (ext_x + ext_w)) x1 = ext_x + ext_w - 1;
+		  
 		  sl.y = y;
 		  sl.x = x0;
 		  sl.w = (x1 - x0) + 1;
-		  
-		  sp.x = 0;
-		  sp.w = sl.w;
-		  sp.coverage = 32; // FIXME
-		  sl.num_spans = 1;
-		  sl.spans = &sp;
-			emage_scanline_draw(&sl, dst, dc);
+		  sl.coverage = 32; // FIXME
+		  emage_scanline_draw(&sl, dst, dc);
 	       }
 	     edges[j].x += edges[j].dx;
 	     edges[j + 1].x += edges[j + 1].dx;

@@ -264,24 +264,12 @@ typedef struct _Emage_Scanline 	Emage_Scanline; /**< TODO */
 /**
  * TODO
  */
-struct _Emage_Span
-{
-	int 	x;
-	int 	w;
-	unsigned int coverage;
-};
-
-/**
- * TODO
- */
 struct _Emage_Scanline
 {
 	int 		x; /**< TODO */
 	int 		y; /**< TODO */
 	int 		w; /**< TODO */
-	Emage_Rectangle bbox; /**< TODO */
-	int 		num_spans; /**< TODO */
-	Emage_Span *spans;
+	unsigned int coverage; /**< TODO */
 };
 
 EAPI void emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc);

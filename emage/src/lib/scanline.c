@@ -10,31 +10,31 @@ static inline void
 emage_scanline_draw_color(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc)
 {
 	Emage_Sl_Func func;
-	Emage_Span *span;
-	int i;
 	int offset;
-	int roffset;
 	
 	func = emage_compositor_sl_color_get(dc, dst);
-	span = sl->spans;
 	offset = ((sl->y * dst->w)) + sl->x;
+	//printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
+	func(NULL, 0, NULL, 0, dc->col.col, dst, offset, sl->w);
+}
 
+static inline void
+emage_scanline_draw_pixel(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc, int soffset)
+{
+	Emage_Sl_Func func;
+	int offset;
+	
+	func = emage_compositor_sl_pixel_get(dc, dc->fill.surface.s, dst);
+	offset = ((sl->y * dst->w)) + sl->x;
 	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
-	for (i = 0; i < sl->num_spans; i++)
-	{
-
-		roffset = offset + span->x;
-		func(NULL, 0, NULL, 0, dc->col.col, dst, offset, span->w);
-		span++;
-	}
+	//printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
+	func(dc->fill.surface.s, soffset, NULL, 0, 0, dst, offset, sl->w);
 }
 
 static inline void
 emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc)
 {
-#if 0
 	Emage_Sl_Func func;
-	Emage_Span *span;
 
 	Emage_Rectangle *drect = &dc->fill.surface.drect;
 	Emage_Rectangle *srect = &dc->fill.surface.srect;
@@ -42,35 +42,156 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 	int i;
 	int offset;
 	int doffset;
-	int sx_offset;
-	int sy_offset;
+	int soffset;
 
 	/* TODO
 	 * Split this function in three: _color (mul), _mask, and this 
 	 * (only _pixel)
 	 */
 	
-	/* TODO drect includes dst->w,h => always pixel */
-	/* TODO srect = drect => always pixel */
-	/* TODO if scanline (x+w, y) isnt inside drect just use the color */
-	/* TODO if we dont have a bounding box use the color */
-	if (!(dc->fill.surface.type & EMAGE_FILL_SURFACE_REPEAT_Y))
-	{	
-	}
-
-	func = emage_compositor_sl_pixel_get(dc, dc->fill.surface.s, dst);
-	span = sl->spans;
-	offset = ((sl->y * dst->w)) + sl->x;
-
-	sx_offset = dc->fill.surface.srect.x % dc->fill.surface.drect. 
-	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
-	for (i = 0; i < sl->num_spans; i++)
+	/* check if the scanline is inside the dst rect
+	 * +---+          +---+      +---+     +---+
+	 * | --|---s  s---|-- |    s-|---|-    |s- |
+	 * +---+          +----      +---+     +---+
+	 */
+	if (!(RECTS_INTERSECT(sl->x, sl->y, sl->w, 1, drect->x,
+		drect->y, drect->w, drect->h)))
 	{
-		roffset = offset + span->x;
-		func(dc->fill.surface.s, 10, NULL, 0, 0, dst, offset, span->w);
-		span++;
+		emage_scanline_draw_color(sl, dst, dc);
+		return;
 	}
+#if 0
+	printf("no\n");
+	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
+	printf("rect %d,%d x %d,%d\n", drect->x, drect->y, drect->w, drect->h);
 #endif
+	/* the span (or part) is inside the drect. if we dont repeat on y 
+	 * and the span isnt inside the drect + srect use the color
+	 */
+	if (!(dc->fill.surface.type & EMAGE_FILL_SURFACE_REPEAT_Y))
+	{
+		/*
+		 * +---+---+
+		 * | S | S |
+		 * +---+---+
+		 * |  s----|----
+		 * +-------+
+		 */
+		if (sl->y > drect->y + srect->h - 1)
+		{
+			emage_scanline_draw_color(sl, dst, dc);
+			return;
+		}
+		/*
+		 * +---+---+
+		 * |Ss-|-S-|----
+		 * +---+---+
+		 * |       |
+		 * +-------+
+		 */
+		soffset = (sl->y - drect->y) * dc->fill.surface.s->w;
+	}
+	/*
+	 * +---+---+
+	 * | S |   |
+	 * +---+   +
+	 * | S-|---|----s
+	 * +-------+
+	 */
+	else
+	{
+		soffset = ((sl->y - drect->y) % srect->h )* dc->fill.surface.s->w;
+	}
+	/* TODO get the src surface and coordinate */
+	/*
+	 * +---+---+       +---+---+
+	 * |Ss-|---|---    | S | s-|----
+	 * +---+   +       +---+   |
+	 * |   D   |       |   D   |
+	 * +-------+       +-------+
+	 */
+	if (!(dc->fill.surface.type & EMAGE_FILL_SURFACE_REPEAT_X))
+	{
+		Emage_Scanline sl_tmp;
+		int w;
+			
+		/* scanline outside srect just use color
+		 *     +---+  +---+
+		 * s---|   |  |   |s---
+		 *     +---+  +---+
+		 */
+		if ((sl->x > drect->x + srect->w) ||
+			(sl->x + sl->w < drect->x))
+		{
+			emage_scanline_draw_color(sl, dst, dc);
+			return;
+		}
+		w = MIN(srect->w, drect->w);
+		/* part of scanline inside srect
+		 * +---+
+		 * |Ss-|---
+		 * +---+
+		 */
+		if (sl->x >= drect->x)
+		{
+			/* left */
+			sl_tmp = *sl;
+			sl_tmp.w = MIN(w, sl_tmp.w);
+			soffset += sl->x - drect->x;
+			emage_scanline_draw_pixel(&sl_tmp, dst, dc, soffset);
+			printf("L\n");
+			/* right */
+			if (sl_tmp.w < sl->w)
+			{
+				sl_tmp.x += sl_tmp.w;
+				sl_tmp.w = sl->w - sl_tmp.w;
+				emage_scanline_draw_color(&sl_tmp, dst, dc);
+			}
+		}
+		/*
+		 *     +---+
+		 * s---|-S |
+		 *     +---+
+		 */
+		else
+		{
+			/* left */
+			sl_tmp = *sl;
+			sl_tmp.w = drect->x - sl_tmp.x;
+			emage_scanline_draw_color(&sl_tmp, dst, dc);
+
+			sl_tmp.w = sl->w - sl_tmp.w;
+			sl_tmp.x = drect->x;
+			if (sl_tmp.w <= w)
+			{
+				/* middle */
+				emage_scanline_draw_pixel(&sl_tmp, dst, dc, soffset);
+				printf("M1\n");
+			}
+			else
+			{
+				/* middle */
+				sl_tmp.w = w;
+				emage_scanline_draw_pixel(&sl_tmp, dst, dc, soffset);
+				printf("M2\n");
+				/* right */
+				sl_tmp.x += sl_tmp.w;
+				sl_tmp.w = sl->x + sl->w - sl_tmp.x;
+				emage_scanline_draw_color(&sl_tmp, dst, dc);
+			}
+		}
+	}
+	/*
+	 * +---+---+       +---+---+
+	 * | S-|-S-|----s  | S-|-S-|----s
+	 * +---+---+       +---+---|
+	 * |       |       | S | S |
+	 * +-------+       +-------+
+	 */
+	else
+	{
+		printf("TODO\n");
+	}
 }
 
 /*============================================================================*
@@ -138,5 +259,4 @@ emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *
 		PRINTF("other fill types are not supported yet\n");
 		return;
 	}
-	
 }

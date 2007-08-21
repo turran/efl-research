@@ -10,7 +10,6 @@ static void
 rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y, int w, int h)
 {
 	Emage_Scanline 	sl;
-	Emage_Span 	sp;
 	int 		hh;
 
 	if ((w <= 0) || (h <= 0)) return;
@@ -23,14 +22,9 @@ rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y
 	}
 	if ((w <= 0) || (h <= 0)) return;
 
-	sp.x = 0;
-	sp.w = w;
-	sp.coverage = 32; // FIXME
-	
 	sl.x = x;
-	sl.w = sp.w;
-	sl.num_spans = 1;
-	sl.spans = &sp;
+	sl.w = w;
+	sl.coverage = 32; // FIXME
 
 	hh = y + h;
 	for (sl.y = y; sl.y < hh; sl.y++)

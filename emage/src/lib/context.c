@@ -651,6 +651,6 @@ emage_draw_context_fill_surface_set(Emage_Draw_Context *dc, Emage_Surface *s, Em
 		EMAGE_RECT_FROM_COORDS(dc->fill.surface.drect, 0, 0, 0, 0);
 	}
 	else
-		dc->fill.surface.srect = *drect;
+		dc->fill.surface.drect = *drect;
 	dc->fill.surface.s = s;
 }
