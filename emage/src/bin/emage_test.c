@@ -145,12 +145,12 @@ void test2(void)
 	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
 	emage_rectangle_draw(&r, s, dc);
 
-#if 0 
+#if 1 
 	/* drect */
 	emage_draw_context_set_color(dc, 0, 0, 80, 80);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
-	EMAGE_RECT_FROM_COORDS(r, 110, 0, 128, 128);
-#if 0
+	EMAGE_RECT_FROM_COORDS(r, 50, 0, 50, 128);
+#if 1
 	emage_rectangle_draw(&r, s, dc);
 #endif
 
@@ -176,8 +176,8 @@ void test2(void)
 	/* drect */
 	emage_draw_context_set_color(dc, 0, 0, 80, 80);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
-	EMAGE_RECT_FROM_COORDS(r, 34, 10, 80, 118);
-#if 0
+	EMAGE_RECT_FROM_COORDS(r, 34, 10, 40, 118);
+#if 0 
 	emage_rectangle_draw(&r, s, dc);
 #endif
 	/* srect */
