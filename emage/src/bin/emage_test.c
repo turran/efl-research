@@ -64,9 +64,13 @@ Emage_Surface * surface_blocks(void)
 	{
 		for (j = 0; j < 63; j += 8)
 		{
+			int a;
+
 			r.x = i;
 			r.y = j;
-			emage_draw_context_set_color(dc, i * 5, j * 5, 0, i * 5);
+
+			a = i > j ? i : j;
+			emage_draw_context_set_color(dc, i * 4, j * 4, 0, a * 4);
 			emage_rectangle_draw(&r, s, dc);
 		}
 	}
@@ -146,7 +150,9 @@ void test2(void)
 	emage_draw_context_set_color(dc, 0, 0, 80, 80);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
 	EMAGE_RECT_FROM_COORDS(r, 110, 0, 128, 128);
+#if 0
 	emage_rectangle_draw(&r, s, dc);
+#endif
 
 	/* srect */
 	emage_draw_context_set_color(dc, 0, 80, 0, 80);
@@ -170,9 +176,10 @@ void test2(void)
 	/* drect */
 	emage_draw_context_set_color(dc, 0, 0, 80, 80);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
-	EMAGE_RECT_FROM_COORDS(r, 34, 10, 20, 118);
+	EMAGE_RECT_FROM_COORDS(r, 34, 10, 80, 118);
+#if 0
 	emage_rectangle_draw(&r, s, dc);
-
+#endif
 	/* srect */
 	emage_draw_context_set_color(dc, 0, 80, 0, 80);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
@@ -180,7 +187,7 @@ void test2(void)
 	emage_rectangle_draw(&r2, s, dc);
 
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_SURFACE);
-	emage_draw_context_fill_surface_type_set(dc, EMAGE_FILL_SURFACE_REPEAT_Y);
+	emage_draw_context_fill_surface_type_set(dc, EMAGE_FILL_SURFACE_REPEAT_Y); //| EMAGE_FILL_SURFACE_REPEAT_X);
 	EMAGE_RECT_FROM_COORDS(r2, 32, 32, 32, 32);
 	emage_draw_context_fill_surface_set(dc, pattern, &r2, &r);
 	EMAGE_RECT_FROM_COORDS(r, 10, 10, 118, 118);

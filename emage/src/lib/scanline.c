@@ -24,6 +24,10 @@ emage_scanline_draw_pixel(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Con
 	Emage_Sl_Func func;
 	int offset;
 	
+	/* TODO
+	 * Split this function in three: _color (mul), _mask, and this 
+	 * (only _pixel)
+	 */
 	func = emage_compositor_sl_pixel_get(dc, dc->fill.surface.s, dst);
 	offset = ((sl->y * dst->w)) + sl->x;
 	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
@@ -44,14 +48,10 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 	int doffset;
 	int soffset;
 
-	/* TODO
-	 * Split this function in three: _color (mul), _mask, and this 
-	 * (only _pixel)
-	 */
 	
 	/* check if the scanline is inside the dst rect
 	 * +---+          +---+      +---+     +---+
-	 * | --|---s  s---|-- |    s-|---|-    |s- |
+	 * | Ds|---   s---|-D |    s-|-D-|-    |sD |
 	 * +---+          +----      +---+     +---+
 	 */
 	if (!(RECTS_INTERSECT(sl->x, sl->y, sl->w, 1, drect->x,
@@ -60,14 +60,37 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 		emage_scanline_draw_color(sl, dst, dc);
 		return;
 	}
+	/* check all possibilities between the scanline and the dest rect 
+	 *     +---+   +---+
+	 * s---|-D | s-|-D-|-
+	 *     +---+   +---+
+	 */
+	if (sl->x < drect->x)
+	{
+		/*   +---+
+		 * s-|-D-|-
+		 *   +---+
+		 */
+		if (sl->x + sl->w > drect->x + drect->w)
+		{
+
+		}
+	}
+	/*
+	 * +---+      +---+
+	 * | Ds|---   |sD |
+	 * +---+      +---+
+	 */
+	else
+	{
+		/* right */
+	}
+	/* end of dest clipping */
 #if 0
 	printf("no\n");
 	printf("from %d,%d width %d\n", sl->y, sl->x, sl->w);
 	printf("rect %d,%d x %d,%d\n", drect->x, drect->y, drect->w, drect->h);
 #endif
-	/* the span (or part) is inside the drect. if we dont repeat on y 
-	 * and the span isnt inside the drect + srect use the color
-	 */
 	if (!(dc->fill.surface.type & EMAGE_FILL_SURFACE_REPEAT_Y))
 	{
 		/*
@@ -89,7 +112,8 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 		 * |       |
 		 * +-------+
 		 */
-		soffset = (sl->y - drect->y) * dc->fill.surface.s->w;
+		soffset = ((sl->y - drect->y) + srect->y) 
+			* dc->fill.surface.s->w + srect->x;
 	}
 	/*
 	 * +---+---+
@@ -100,9 +124,10 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 	 */
 	else
 	{
-		soffset = ((sl->y - drect->y) % srect->h )* dc->fill.surface.s->w;
+		soffset = (((sl->y - drect->y) % srect->h)  + srect->y)
+			* dc->fill.surface.s->w + srect->x;
 	}
-	/* TODO get the src surface and coordinate */
+
 	/*
 	 * +---+---+       +---+---+
 	 * |Ss-|---|---    | S | s-|----
@@ -190,53 +215,26 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 	 */
 	else
 	{
-		printf("TODO\n");
+		Emage_Scanline sl_tmp;
+		int w = sl->w;
+		int min_w = MIN(sl->w, srect->w);
+		
+		sl_tmp = *sl;
+		sl_tmp.w = min_w - sl_tmp.x;
+		/* split the scanline in lines of maximum srect->w length */
+		while (w > 0)
+		{
+			emage_scanline_draw_pixel(&sl_tmp, dst, dc, soffset);
+			sl_tmp.x += sl_tmp.w;
+			w -= sl_tmp.w;
+			sl_tmp.w += MIN(w, srect->w);
+		}
 	}
 }
 
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-#if 0
-void emage_scanline_sls_draw(Emage_Scanline *sls, Emage_Surface *dst, Emage_Draw_Context *dc)
-{
-	while (sls->w != 0)
-	{
-		sls++;
-	}
-}
-
-EAPI Emage_Scanline *
-emage_scanline_add(Emage_Scanline *sls, int x, int y, int w)
-{
-	Emage_Scanline *sl;
-
-	sl = malloc(sizeof(Emage_Scanline));
-	if (!sl) return sls;
-	sl->x = x;
-	sl->y = y;
-	sl->w = w;
-	sls = evas_object_list_append(sls, sl);
-	return sls;
-
-}
-
-EAPI Emage_Scanline *
-emage_scanline_delete(Emage_Scanline *sls)
-{
-	if (!sls) return NULL;
-
-	while (sls)
-	{
-		Emage_Scanline *old;
-		old = sls;
-		sls = evas_object_list_remove(sls, sls);
-		free(old);
-	}
-	return NULL;
-}
-#endif
-
 /**
  * TODO
  */
