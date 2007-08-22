@@ -991,7 +991,7 @@ src/lib/compositor/Makefile
 src/lib/compositor/blend/Makefile 
 src/lib/scaler/Makefile 
 src/lib/scaler/sampled/Makefile 
-src/lib/convert/Makefile 
+src/lib/converter/Makefile 
 ])
 
 #src/lib/op/Makefile 

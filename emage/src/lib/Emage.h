@@ -262,6 +262,51 @@ EAPI void emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw
 
 /** @} */
 
+/**
+ * @defgroup Converter_Group Converter
+ * @{
+ */
+
+typedef enum _Emage_Rotatation
+{
+	EMAGE_ROTATION_0,
+	EMAGE_ROTATION_90,
+	EMAGE_ROTATION_180,
+	EMAGE_ROTATION_270,
+	EMAGE_ROTATIONS
+} Emage_Rotations;
+
+/**
+ * TODO
+ */
+typedef enum _Emage_Converter_Pal_Mode
+{
+	EMAGE_PAL_MODE_NONE,
+	EMAGE_PAL_MODE_MONO,
+	EMAGE_PAL_MODE_GRAY4,
+	EMAGE_PAL_MODE_GRAY16,
+	EMAGE_PAL_MODE_GRAY64,
+	EMAGE_PAL_MODE_GRAY256,
+	EMAGE_PAL_MODE_RGB111,
+	EMAGE_PAL_MODE_RGB121,
+	EMAGE_PAL_MODE_RGB221,
+	EMAGE_PAL_MODE_RGB222,
+	EMAGE_PAL_MODE_RGB232,
+	EMAGE_PAL_MODE_RGB332,
+	EMAGE_PAL_MODE_RGB666,
+	EMAGE_PAL_MODES
+} Emage_Converter_Pal_Mode;
+
+/**
+ * TODO
+ */
+typedef void (*Emage_Converter_Func) (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
+
+EAPI Emage_Converter_Func emage_converter_get(DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Emage_Converter_Pal_Mode pal_mode, int rotation);
+
+
+/** @} */
+
 /** @} */
 
 #endif
