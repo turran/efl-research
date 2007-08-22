@@ -106,13 +106,13 @@ void test1(void)
 		emage_draw_context_set_color(dc, 255, 255, 255, 255);
 	
 		emage_draw_context_set_render_op(dc, rop);
-		r.x = 0, r.y = 0, r.w = 128, r.h = 128;
+		EMAGE_RECT_FROM_COORDS(r, 0, 0, 128, 128);
 		emage_rectangle_draw(&r, s, dc);
 		emage_draw_context_set_color(dc, 255, 0, 0, 255);
-		r.x = 0, r.y = 0, r.w = 80, r.h = 80;
+		EMAGE_RECT_FROM_COORDS(r, 0, 0, 80, 80);
 		emage_rectangle_draw(&r, s, dc);
 		emage_draw_context_set_color(dc, 0, 240, 0, 240);
-		r.x = 47, r.y = 47, r.w = 80, r.h = 80;
+		EMAGE_RECT_FROM_COORDS(r, 47, 47, 80, 80);
 		emage_rectangle_draw(&r, s, dc);
 
 		snprintf(file, PATH_MAX, "/tmp/emage_rop%d.png", rop);
@@ -142,10 +142,9 @@ void test2(void)
 	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
 
 	emage_draw_context_set_color(dc, 255, 255, 255, 255);
-	r.x = 0, r.y = 0, r.w = 128, r.h = 128;
+	EMAGE_RECT_FROM_COORDS(r, 0, 0, 128, 128);
 	emage_rectangle_draw(&r, s, dc);
 
-#if  0
 	/* drect */
 	emage_draw_context_set_color(dc, 0, 0, 80, 80);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
@@ -160,7 +159,7 @@ void test2(void)
 
 	emage_draw_context_set_color(dc, 255, 0, 255, 255);
 	emage_draw_context_fill_type_set(dc, EMAGE_FILL_SURFACE);
-	emage_draw_context_fill_surface_type_set(dc, EMAGE_FILL_SURFACE_REPEAT_NONE); //| EMAGE_FILL_SURFACE_REPEAT_X);
+	emage_draw_context_fill_surface_type_set(dc, EMAGE_FILL_SURFACE_REPEAT_X);
 	EMAGE_RECT_FROM_COORDS(r2, 32, 32, 32, 32);
 	emage_draw_context_fill_surface_set(dc, pattern, &r2, &r);
 	pts = emage_polygon_point_add(pts, 92, 1);
@@ -171,26 +170,6 @@ void test2(void)
 	pts = emage_polygon_point_add(pts, 108, 30);
 	emage_polygon_draw(s, dc, pts);
 	emage_polygon_points_clear(pts);
-#else
-	/* drect */
-	emage_draw_context_set_color(dc, 0, 0, 80, 80);
-	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
-	EMAGE_RECT_FROM_COORDS(r, 34, 10, 40, 118);
-	emage_rectangle_draw(&r, s, dc);
-	/* srect */
-	emage_draw_context_set_color(dc, 0, 80, 0, 80);
-	emage_draw_context_fill_type_set(dc, EMAGE_FILL_COLOR);
-	EMAGE_RECT_FROM_COORDS(r2, 54, 10, 32, 32);
-	emage_rectangle_draw(&r2, s, dc);
-
-	emage_draw_context_fill_type_set(dc, EMAGE_FILL_SURFACE);
-	emage_draw_context_fill_surface_type_set(dc, EMAGE_FILL_SURFACE_REPEAT_Y | EMAGE_FILL_SURFACE_REPEAT_X);
-	EMAGE_RECT_FROM_COORDS(r2, 32, 32, 32, 32);
-	emage_draw_context_fill_surface_set(dc, pattern, &r2, &r);
-	EMAGE_RECT_FROM_COORDS(r, 10, 10, 118, 118);
-	emage_rectangle_draw(&r, s, dc);
-	
-#endif
 	png_save(s, "/tmp/emage_test2.png", 0);
 	
 	surface_free(s);

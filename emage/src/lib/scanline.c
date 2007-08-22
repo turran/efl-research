@@ -4,8 +4,61 @@
 #include "Emage.h"
 #include "emage_private.h"
 
+/*============================================================================*
+ *                                 Macros                                     * 
+ *============================================================================*/
+
 #define SRECT dc->fill.surface.srect
 #define DRECT dc->fill.surface.drect
+
+/* this macro assumes that the scanline sl intersects at least with one
+ * of the vertical sides of the rectangle
+ */
+#define CALL_SCANLINES(rect, fn_inside, fn_outside)		 	\
+/* backup the scanline */ 						\
+sl_out = *sl; 								\
+sl_in = sl_out; 						\
+/* get the sub scanlines from left to right 				\
+ *     +---+   +---+ 							\
+ * s---|-D | s-|-D-|- 							\
+ *     +---+   +---+ 							\
+ */ 									\
+if (_sl_split(&sl_out, &sl_in, rect.x)) 				\
+{									\
+	/*   +---+ 							\
+	 * s-|-D-|- 							\
+	 *   +---+  							\
+	 * left								\
+	 */ 								\
+	fn_outside; 							\
+	if (_sl_split(&sl_in, &sl_out, rect.x + rect.w)) 		\
+	{ 								\
+		/* 							\
+		 * +---+      +---+ 					\
+		 * | Ds|---   |sD | 					\
+		 * +---+      +---+ 					\
+		 * right						\
+		 */ 							\
+		fn_outside; 						\
+	} 								\
+	fn_inside; 							\
+} 									\
+/* 									\
+ * +---+    								\
+ * | Ds|---	 							\
+ * +---+ 								\
+ */ 									\
+else 									\
+{ 									\
+	if (_sl_split(&sl_in, &sl_out, rect.x + rect.w))	 	\
+	{								\
+		/* right */						\
+		fn_outside; 						\
+	} 								\
+	/* left */ 							\
+	fn_inside; 							\
+} 									
+
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -85,55 +138,6 @@ _surface_repeat_x(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc
 		w -= tmp.w;
 	}
 }
-
-
-/* this macro assumes that the scanline sl intersects at least with one
- * of the vertical sides of the rectangle
- */
-#define CALL_SCANLINES(rect, fn_inside, fn_outside)		 	\
-/* backup the scanline */ 						\
-sl_out = *sl; 								\
-sl_in = sl_out; 						\
-/* get the sub scanlines from left to right 				\
- *     +---+   +---+ 							\
- * s---|-D | s-|-D-|- 							\
- *     +---+   +---+ 							\
- */ 									\
-if (_sl_split(&sl_out, &sl_in, rect.x)) 				\
-{									\
-	/*   +---+ 							\
-	 * s-|-D-|- 							\
-	 *   +---+  							\
-	 * left								\
-	 */ 								\
-	fn_outside; 							\
-	if (_sl_split(&sl_in, &sl_out, rect.x + rect.w)) 		\
-	{ 								\
-		/* 							\
-		 * +---+      +---+ 					\
-		 * | Ds|---   |sD | 					\
-		 * +---+      +---+ 					\
-		 * right						\
-		 */ 							\
-		fn_outside; 						\
-	} 								\
-	fn_inside; 							\
-} 									\
-/* 									\
- * +---+    								\
- * | Ds|---	 							\
- * +---+ 								\
- */ 									\
-else 									\
-{ 									\
-	if (_sl_split(&sl_in, &sl_out, rect.x + rect.w))	 	\
-	{								\
-		/* right */						\
-		fn_outside; 						\
-	} 								\
-	/* left */ 							\
-	fn_inside; 							\
-} 									
 
 
 

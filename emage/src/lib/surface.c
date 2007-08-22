@@ -109,6 +109,20 @@ emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...)
 	
 	assert(s);
 	va_start(va, f);
+	switch (s->format)
+	{
+		case EMAGE_DATA_ARGB8888:
+		s->data.argb8888.data = va_arg(va, DATA32 *);
+		break;
+
+		case EMAGE_DATA_RGB565_A5:
+		s->data.rgb565_a5.data = va_arg(va, DATA16 *);
+		s->data.rgb565_a5.alpha = va_arg(va, DATA8 *);
+		break;
+
+		default:
+		break;
+	}
 	va_end(va);
 }
 

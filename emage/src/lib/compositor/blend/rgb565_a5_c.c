@@ -80,6 +80,13 @@ _sl_pixel_argb_rgb(DATA16 *src, DATA8 *alpha, DATA16 *dst, int size)
 		_pt_pixel_argb_rgb(start, *src, *alpha);
 }
 
+static inline void
+_pt_pixel_rgb_rgb(DATA16 *p_dst, DATA16 src)
+{
+	*p_dst = src;
+}
+
+
 SL_FUNC(blend, rgb565_a5, c, pixel)
 {
 	DATA16 *s, *d;
@@ -105,6 +112,7 @@ SL_FUNC(blend, rgb565_a5, c, pixel)
 
 SL_FUNC(blend, rgb565_a5, c, color)
 {
+
 }
 
 SL_FUNC(blend, rgb565_a5, c, pixel_color)
@@ -124,6 +132,18 @@ SL_FUNC(blend, rgb565_a5, c, pixel_mask)
 
 PT_FUNC(blend, rgb565_a5, c, pixel)
 {
+	DATA16 *s, *d;
+	
+	d = dst->data.rgb565_a5.data + doffset;
+	s = src->data.rgb565_a5.data + soffset;
+
+	if (!(src->flags & SURFACE_FLAG_HAS_ALPHA) && 
+		(!(dst->flags & SURFACE_FLAG_HAS_ALPHA)))
+		_pt_pixel_rgb_rgb(s, d);
+	else
+	{
+		PRINTF("Not Implemented\n");
+	}
 }
 
 PT_FUNC(blend, rgb565_a5, c, color)
@@ -172,31 +192,32 @@ PT_FUNC(blend, rgb565_a5, c, pixel_mask)
  *
  ****************************************************************************/
 
+/* DONE */
 static inline void
 _soft16_pt_blend_transp_solid(DATA16 *p_dst, DATA16 src, DATA8 alpha)
 {
-	/* DONE */
 }
 
 /***********************************************************************
  * Regular blend operations
  */
+/* DONE */
 static inline void
 _soft16_scanline_blend_transp_solid(DATA16 *src, DATA8 *alpha, DATA16 *dst, int size)
 {
-/* DONE */
 }
 
+/* DONE */
 static inline void
 _soft16_pt_blend_solid_solid(DATA16 *p_dst, DATA16 src)
 {
    *p_dst = src;
 }
 
+/* DONE */
 static inline void
 _soft16_scanline_blend_solid_solid(DATA16 *src, DATA16 *dst, int size)
 {
-/* DONE */
 }
 
 /***********************************************************************

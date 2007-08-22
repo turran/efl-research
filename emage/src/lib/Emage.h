@@ -47,14 +47,6 @@ typedef unsigned int 	DATA32; /**< 32 bits */
 typedef unsigned short 	DATA16; /**< 16 bits */
 typedef unsigned char	DATA8;	/**< 8 bits */
 
-/* FIXME remove this
- */
-typedef struct _Evas_Object_List      Evas_Object_List;
-struct _Evas_Object_List
-{
-   Evas_Object_List  *next, *prev;
-   Evas_Object_List  *last;
-};
 
 /**
  * TODO
@@ -220,12 +212,7 @@ EAPI void emage_draw_context_fill_surface_set(Emage_Draw_Context *dc, Emage_Surf
  * @defgroup Geometry_Group Geometry
  * @{
  */
-typedef struct _Emage_Polygon_Point    Emage_Polygon_Point;
-struct _Emage_Polygon_Point
-{
-   Evas_Object_List  _list_data;
-   int               x, y;
-};
+typedef struct _Emage_Polygon_Point    Emage_Polygon_Point; /**< A polygon point handler */
 
 EAPI void emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1);
 EAPI void emage_rectangle_draw(Emage_Rectangle *r, Emage_Surface *dst, Emage_Draw_Context *dc);

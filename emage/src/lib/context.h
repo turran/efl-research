@@ -7,31 +7,28 @@
  * @defgroup Draw_Context_Internal Draw Context
  * @ingroup Internal_Group Internal
  * 
- * @todo
- * - Add a fill abstraction into the context, solid color, mul, etc
- * - What about using another surface as the context src pixel, that
- *   will allow to fill an object (rectangle, polygon) with it
- * - replace the Sl_Func with Sp_Func, makes more sense, as it draws
- *   spans no scanlines
  * @{
  *
  */
 
+/**
+ * TODO
+ */
 typedef struct _Emage_Draw_Context_Clip
 {
 	Emage_Rectangle r;
 	char 		use : 1;
 } Emage_Draw_Context_Clip;
 
+/**
+ * TODO
+ */
 struct _Emage_Draw_Context
 {
 	struct {
 		char   use : 1;
 		DATA32 col;
 	} mul;
-	/*struct {
-		DATA32 col;
-	} col;*/
 	Cutout_Rects cutout;
 	struct {
 		int color_space;

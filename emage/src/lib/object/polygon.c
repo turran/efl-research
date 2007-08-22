@@ -5,6 +5,12 @@
 #include "Emage.h"
 #include "emage_private.h"
 
+struct _Emage_Polygon_Point
+{
+   Evas_Object_List  _list_data;
+   int               x, y;
+};
+
 typedef struct _RGBA_Edge RGBA_Edge;
 typedef struct _RGBA_Vertex RGBA_Vertex;
 
@@ -89,6 +95,9 @@ polygon_edge_sorter(const void *a, const void *b)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * TODO
+ */
 EAPI Emage_Polygon_Point *
 emage_polygon_point_add(Emage_Polygon_Point *points, int x, int y)
 {
@@ -102,6 +111,9 @@ emage_polygon_point_add(Emage_Polygon_Point *points, int x, int y)
    return points;
 }
 
+/**
+ * TODO
+ */
 EAPI Emage_Polygon_Point *
 emage_polygon_points_clear(Emage_Polygon_Point *points)
 {
@@ -118,6 +130,10 @@ emage_polygon_points_clear(Emage_Polygon_Point *points)
      }
    return NULL;
 }
+
+/**
+ * TODO
+ */
 EAPI void
 emage_polygon_draw(Emage_Surface *dst, Emage_Draw_Context *dc, Emage_Polygon_Point *points)
 {

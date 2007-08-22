@@ -36,6 +36,9 @@ rectangle_draw_internal(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * TODO
+ */
 EAPI void
 emage_rectangle_draw(Emage_Rectangle *r, Emage_Surface *dst, Emage_Draw_Context *dc)
 {

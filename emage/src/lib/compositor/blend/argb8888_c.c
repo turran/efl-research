@@ -452,7 +452,6 @@ PT_FUNC(blend, argb8888, c, pixel_mask)
 
 #else
 
-/*
 #define SL_NAME(blend, argb8888, c, pixel) dummy_sl
 #define SL_NAME(blend, argb8888, c, color) dummy_sl
 #define SL_NAME(blend, argb8888, c, pixel_color) dummy_sl
@@ -464,5 +463,5 @@ PT_FUNC(blend, argb8888, c, pixel_mask)
 #define PT_NAME(blend, argb8888, c, pixel_color) dummy_pt
 #define PT_NAME(blend, argb8888, c, mask_color) dummy_pt
 #define PT_NAME(blend, argb8888, c, pixel_mask) dummy_pt
-*/
+
 #endif
