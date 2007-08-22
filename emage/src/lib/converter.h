@@ -4,7 +4,22 @@
 #include "converter/dither_44.h"
 #include "converter/dither_128.h"
 
-//EAPI Gfx_Func_Convert evas_common_convert_func_get      (DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Convert_Pal_Mode pal_mode, int rotation);
+
+typedef  _Emage_Converter
+
+typedef struct _Emage_Converter
+{
+	Emage_Converter_Func f;
+	//(void *)(get)(DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Emage_Converter_Pal_Mode pal_mode, int rotation);
+} Emage_Converter;
+
+
+#define CONVERTER_DUMMY(name, config)					\
+void * converter_ ## name(DATA32 *src, DATA8 *dst, int src_jump,	\
+	int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal) \
+{									\
+	PRINTF("Emage wasn't compiled with ## config"); 		\
+}
 
 void evas_common_convert_rgba2_to_16bpp_rgb_565_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
 void evas_common_convert_rgba_to_16bpp_rgb_565_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
