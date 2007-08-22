@@ -29,9 +29,9 @@ struct _Emage_Draw_Context
 		char   use : 1;
 		DATA32 col;
 	} mul;
-	struct {
+	/*struct {
 		DATA32 col;
-	} col;
+	} col;*/
 	Cutout_Rects cutout;
 	struct {
 		int color_space;

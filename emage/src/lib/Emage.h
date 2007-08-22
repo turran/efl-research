@@ -258,7 +258,6 @@ EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle sr
  * @defgroup Scanlines_Group Scanlines
  * @{
  */
-typedef struct _Emage_Span 	Emage_Span; /**< TODO */
 typedef struct _Emage_Scanline 	Emage_Scanline; /**< TODO */
 
 /**

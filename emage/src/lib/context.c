@@ -480,10 +480,10 @@ emage_draw_context_unset_clip(Emage_Draw_Context *dc)
 EAPI void
 emage_draw_context_set_color(Emage_Draw_Context *dc, int r, int g, int b, int a)
 {
-   R_VAL(&(dc->col.col)) = (DATA8)r;
-   G_VAL(&(dc->col.col)) = (DATA8)g;
-   B_VAL(&(dc->col.col)) = (DATA8)b;
-   A_VAL(&(dc->col.col)) = (DATA8)a;
+   R_VAL(&(dc->fill.color)) = (DATA8)r;
+   G_VAL(&(dc->fill.color)) = (DATA8)g;
+   B_VAL(&(dc->fill.color)) = (DATA8)b;
+   A_VAL(&(dc->fill.color)) = (DATA8)a;
 }
 
 /**
