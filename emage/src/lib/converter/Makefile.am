@@ -8,17 +8,14 @@ INCLUDES = \
 
 noinst_LTLIBRARIES      = libemage_converter.la
 
-libemage_converter_la_SOURCES  = 
-
-#emage_convert_main.c \
-#emage_convert_rgb_8.c \
-#emage_convert_gry_1.c \
-#emage_convert_rgb_16.c \
-#emage_convert_yuv.c \
-#emage_convert_gry_4.c \
-#emage_convert_rgb_24.c \
-#emage_convert_gry_8.c \
-#emage_convert_rgb_32.c
+libemage_converter_la_SOURCES  = \
+gray_1.c \
+gray_4.c \
+gray_8.c \
+rgb_8.c \
+rgb_16.c \
+rgb_24.c \
+rgb_32.c
 
 libemage_converter_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h

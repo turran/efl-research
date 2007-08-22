@@ -23,6 +23,13 @@
 #endif
 
 /**
+ * @mainpage Emage
+ * @section intro Introduction
+ * @section diff Changes to the Evas Common Engine
+ * - blah
+ * - foo
+ *
+ *
  * @file
  * @brief Emage API
  * @defgroup Emage API
@@ -267,14 +274,14 @@ EAPI void emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw
  * @{
  */
 
-typedef enum _Emage_Rotatation
+typedef enum _Emage_Rotation
 {
-	EMAGE_ROTATION_0,
-	EMAGE_ROTATION_90,
-	EMAGE_ROTATION_180,
-	EMAGE_ROTATION_270,
+	EMAGE_ROTATION_0 	= 0,
+	EMAGE_ROTATION_90 	= 90,
+	EMAGE_ROTATION_180 	= 180,
+	EMAGE_ROTATION_270 	= 270,
 	EMAGE_ROTATIONS
-} Emage_Rotations;
+} Emage_Rotation;
 
 /**
  * TODO
@@ -302,7 +309,7 @@ typedef enum _Emage_Converter_Pal_Mode
  */
 typedef void (*Emage_Converter_Func) (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
 
-EAPI Emage_Converter_Func emage_converter_get(DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Emage_Converter_Pal_Mode pal_mode, int rotation);
+EAPI Emage_Converter_Func emage_converter_get(DATA8 *dest, int w, int h, int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, Emage_Converter_Pal_Mode pal_mode, Emage_Rotation rotation);
 
 
 /** @} */

@@ -17,16 +17,16 @@
 #define CALL_SCANLINES(rect, fn_inside, fn_outside)		 	\
 /* backup the scanline */ 						\
 sl_out = *sl; 								\
-sl_in = sl_out; 						\
+sl_in = sl_out; 							\
 /* get the sub scanlines from left to right 				\
  *     +---+   +---+ 							\
- * s---|-D | s-|-D-|- 							\
+ * s---|-R | s-|-R-|- 							\
  *     +---+   +---+ 							\
  */ 									\
 if (_sl_split(&sl_out, &sl_in, rect.x)) 				\
 {									\
 	/*   +---+ 							\
-	 * s-|-D-|- 							\
+	 * s-|-R-|- 							\
 	 *   +---+  							\
 	 * left								\
 	 */ 								\
@@ -35,7 +35,7 @@ if (_sl_split(&sl_out, &sl_in, rect.x)) 				\
 	{ 								\
 		/* 							\
 		 * +---+      +---+ 					\
-		 * | Ds|---   |sD | 					\
+		 * | Rs|---   |sR | 					\
 		 * +---+      +---+ 					\
 		 * right						\
 		 */ 							\
@@ -45,7 +45,7 @@ if (_sl_split(&sl_out, &sl_in, rect.x)) 				\
 } 									\
 /* 									\
  * +---+    								\
- * | Ds|---	 							\
+ * | Rs|---	 							\
  * +---+ 								\
  */ 									\
 else 									\
@@ -241,7 +241,6 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 EAPI void
 emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc)
 {
-	
 	/* Check the fill type */
 	switch (dc->fill.type)
 	{

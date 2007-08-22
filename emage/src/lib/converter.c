@@ -1,13 +1,46 @@
+#include <stdlib.h>
+
 #include "Emage.h"
 #include "emage_private.h"
 
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * TODO
+ */
+EAPI Emage_Converter_Func emage_converter_get(DATA8 *dest, int w, int h, 
+	int depth, DATA32 rmask, DATA32 gmask, DATA32 bmask, 
+	Emage_Converter_Pal_Mode pal_mode, Emage_Rotation rotation)
+{
+	switch (depth)
+	{
+		case 8:
+		return emage_converter_rgb8_get(pal_mode);
+		break;
+
+		case 16:
+		return emage_converter_rgb16_get(dest, w, rmask, gmask, 
+			bmask, rotation);
+		break;
+
+		case 24:
+		return emage_converter_rgb24_get(rmask, gmask, bmask, rotation);
+		break;
+		
+		case 32:
+		return emage_converter_rgb32_get(rmask, gmask, bmask, rotation);
+		break;
+	
+		default:
+		PRINTF("depth = %d\n", depth);
+		break;
+	}
+}
+
 
 #if 0
 EAPI Gfx_Func_Convert
