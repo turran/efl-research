@@ -5,5 +5,5 @@ doxygen
 #cp doc/img/*.png doc/html/
 rm -f emage_docs.tar ecore_docs.tar.gz
 tar -cvf emage_docs.tar doc/html doc/man doc/latex
-gzip -9 emage_docs.tar
+gzip -9f emage_docs.tar
 exit 0

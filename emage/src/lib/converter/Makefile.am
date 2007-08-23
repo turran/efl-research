@@ -9,9 +9,6 @@ INCLUDES = \
 noinst_LTLIBRARIES      = libemage_converter.la
 
 libemage_converter_la_SOURCES  = \
-gray_1.c \
-gray_4.c \
-gray_8.c \
 rgb_8.c \
 rgb_16.c \
 rgb_24.c \

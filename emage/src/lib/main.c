@@ -19,6 +19,7 @@ emage_init(void)
 {
 	if (++init != 1) return init;
 	emage_compositor_init();
+	emage_scaler_init();
 	/* FIXME */
 	evas_common_cpu_init();
 

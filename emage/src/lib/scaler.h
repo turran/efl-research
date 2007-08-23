@@ -17,17 +17,19 @@ void emage_scaler_init(void);
 void emage_scaler_sampled_init(void);
 void emage_scaler_smooth_init(void);
 
+typedef void (*Emage_Scaler_Func)(Emage_Surface *src, Emage_Rectangle *sr, Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc, Emage_Rectangle *cr);
 
-void dummy_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc);
-
-typedef void (*Emage_Scaler_Func)(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc);
-
+/* TODO
+ * replace this with an array of functions */
 typedef struct _Emage_Scaler
 {
 	Emage_Scaler_Func func;
 } Emage_Scaler;
 
 extern Emage_Scaler Emage_Scalers[EMAGE_SCALER_TYPES];
+
+void dummy_scaler(Emage_Surface *src, Emage_Rectangle *sr, Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc, Emage_Rectangle *cr);
+void emage_scaler_scale(Emage_Surface *src, Emage_Rectangle *sr, Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc);
 
 /* source rect coordinate: src
  * source rect length: srl

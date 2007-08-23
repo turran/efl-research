@@ -1,14 +1,11 @@
 #ifndef _CONVERTER_H
 #define _CONVERTER_H
 
-#include "converter/dither_44.h"
-#include "converter/dither_128.h"
-
 /*============================================================================*
  *                                 Macros                                     * 
  *============================================================================*/
 #ifdef BUILD_SMALL_DITHER_MASK
-# define DM_TABLE     _evas_dither_44
+# define DM_TABLE     emage_converter_dither_44
 # define DM_SIZE      4
 # define DM_BITS      4
 # define DM_DIV       16
@@ -16,13 +13,22 @@
 # define DM_MSK       (DM_SIZE - 1)
 # define DM_SHF(_b)   (DM_BITS - (8 - _b))
 #else
-# define DM_TABLE     _evas_dither_128128
+# define DM_TABLE     emage_converter_dither_128128
 # define DM_SIZE      128
 # define DM_BITS      6
 # define DM_DIV       64
 # define USE_DITHER_128128 1
 # define DM_MSK       (DM_SIZE - 1)
 # define DM_SHF(_b)   (DM_BITS - (8 - _b))
+#endif
+
+#ifndef BUILD_NO_DITHER_MASK
+#ifdef USE_DITHER_44
+extern const DATA8 emage_converter_dither_44[4][4];
+#endif
+#ifdef USE_DITHER_128128
+extern const DATA8 emage_converter_dither_128128[128][128];
+#endif
 #endif
 
 #define CONVERT_LOOP_START_ROT_0() \
@@ -173,6 +179,7 @@ Emage_Converter_Func emage_converter_rgb8_get(Emage_Converter_Pal_Mode pal_mode)
 
 
 /* old code */
+#if 0
 void evas_common_convert_rgba2_to_16bpp_rgb_565_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
 void evas_common_convert_rgba_to_16bpp_rgb_565_dith             (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
 void evas_common_convert_rgba2_to_16bpp_bgr_565_dith            (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
@@ -254,5 +261,5 @@ void evas_common_convert_rgba_to_4bpp_gry_4_dith               (DATA32 *src, DAT
 void evas_common_convert_rgba_to_4bpp_gry_1_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
 
 void evas_common_convert_rgba_to_1bpp_gry_1_dith               (DATA32 *src, DATA8 *dst, int src_jump, int dst_jump, int w, int h, int dith_x, int dith_y, DATA8 *pal);
-
+#endif
 #endif

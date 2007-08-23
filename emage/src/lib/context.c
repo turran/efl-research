@@ -611,6 +611,16 @@ emage_draw_context_apply_cutouts(Emage_Draw_Context *dc)
  * TODO
  */
 EAPI void
+emage_draw_context_scaler_type_set(Emage_Draw_Context *dc, Emage_Scaler_Type t)
+{
+	assert(dc);
+	dc->stype = t;
+}
+
+/**
+ * TODO
+ */
+EAPI void
 emage_draw_context_fill_type_set(Emage_Draw_Context *dc, Emage_Fill_Type t)
 {
 	assert(dc);

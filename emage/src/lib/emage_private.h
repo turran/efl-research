@@ -8,7 +8,6 @@
  * @todo
  * - Port scale code
  * - Port blit code
- * - Port convert code
  * @{
  */
 
@@ -23,11 +22,11 @@
 #include "scanline.h"
 #include "converter.h"
 
+
 /* some useful constants */
 
 extern const DATA32 ALPHA_255;
 extern const DATA32 ALPHA_256;
-
 
 /* SOME COMMON CODE FOUND EVERYWHERE */
 
@@ -37,20 +36,16 @@ if ((r.w <= 0) || (r.h <= 0)) return;					\
 if (!(RECTS_INTERSECT(r.x, r.y, r.w, r.h, 0, 0, s->w, s->h)))		\
 	return;
 
-
-
 /* TODO
  * most of the code has a "save clip info and restore it after" put 
  * those on a function!
- * 
- *
  */
 
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
 
-
+#if 0
 void evas_common_convert_yuv_420p_601_rgba                     (DATA8 **src, DATA8 *dst, int w, int h);
 
 EAPI void evas_common_convert_argb_premul                          (DATA32 *src, unsigned int len);
@@ -62,7 +57,7 @@ EAPI void evas_common_convert_color_hsv_to_rgb                     (float h, flo
 EAPI void evas_common_convert_color_rgb_to_hsv                     (int r, int g, int b, float *h, float *s, float *v);
 EAPI void evas_common_convert_color_hsv_to_rgb_int                 (int h, int s, int v, int *r, int *g, int *b);
 EAPI void evas_common_convert_color_rgb_to_hsv_int                 (int r, int g, int b, int *h, int *s, int *v);
-
+#endif
 
 /*============================================================================*
  *                                 Macros                                     * 
@@ -83,12 +78,10 @@ EAPI void evas_common_convert_color_rgb_to_hsv_int                 (int r, int g
    (((b) >> 3) & 0x1f))
 
 
-
 #define UNROLL2(op...) op op
 #define UNROLL4(op...) UNROLL2(op) UNROLL2(op)
 #define UNROLL8(op...) UNROLL4(op) UNROLL4(op)
 #define UNROLL16(op...) UNROLL8(op) UNROLL8(op)
-
 
 #define RGB_JOIN(r,g,b) \
         (((r) << 16) + ((g) << 8) + (b))

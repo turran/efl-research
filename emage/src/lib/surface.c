@@ -131,17 +131,26 @@ emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...)
  *
  */
 EAPI void
-emage_surface_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc)
+emage_surface_scale(Emage_Surface *src, Emage_Rectangle sr, Emage_Surface *dst, Emage_Rectangle dr, Emage_Draw_Context *dc)
 {
 	Emage_Draw_Context_Clip bc;
    	Cutout_Rects *rects;
 	int i;
 
-	HANDLE_CUTOUTS(drect, dst)
+	/* dest rect outside dest surface */
+	if (!(RECTS_INTERSECT(dr.x, dr.y, dr.w, dr.h, 0, 0, dst->w, dst->h)))
+		return;
+	/* source rect outside source surface */
+	if (!(RECTS_INTERSECT(sr.x, sr.y, sr.w, sr.h, 0, 0, src->w, src->h)))
+		return;
+
+	/* apply the clipping to the destination surface */
+	//HANDLE_CUTOUTS(dr, dst)
 	/* no cutouts - cut right to the chase */
 	if (!dc->cutout.rects)
 	{
 		/* CALL THE SCALER FUNCTION BASED ON THE CPU */
+		emage_scaler_scale(src, &sr, dst, &dr, dc);
 		return;
 	}
 	//FOREACH_RECT_START(dc, drect, dst)
@@ -153,7 +162,7 @@ emage_surface_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srec
 	/* save out clip info */
 	bc = dc->clip;
 	emage_draw_context_clip_clip(dc, 0, 0, dst->w, dst->h);
-	emage_draw_context_clip_clip(dc, drect.x, drect.y, drect.w, drect.h);
+	emage_draw_context_clip_clip(dc, dr.x, dr.y, dr.w, dr.h);
 	/* our clip is 0 size.. abort */
 	if ((dc->clip.r.w <= 0) || (dc->clip.r.h <= 0))
 		goto restore_clip;
@@ -163,6 +172,7 @@ emage_surface_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srec
 		Cutout_Rect  *r = rects->rects + i;
 
 		emage_draw_context_set_clip(dc, r->x, r->y, r->w, r->h);
+		emage_scaler_scale(src, &sr, dst, &dr, dc);
 		/* CALL THE SCALER FUNCTION BASED ON THE CPU */
 	}
 	emage_draw_context_apply_clear_cutouts(rects);
@@ -171,14 +181,4 @@ emage_surface_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srec
 	/* restore clip info */
 restore_clip:
 	dc->clip = bc;
-}
-
-/**
- * TODO
- *
- */
-EAPI void
-emage_surface_scanlines_draw(Emage_Surface *src, Emage_Draw_Context *dc, Emage_Scanline *sl)
-{
-
 }

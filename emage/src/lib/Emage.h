@@ -25,9 +25,33 @@
 /**
  * @mainpage Emage
  * @section intro Introduction
- * @section diff Changes to the Evas Common Engine
- * - blah
- * - foo
+ * Emage is a state less graphics library based on the Evas' software
+ * common engine.
+ *
+ * @section changes Changes from the Evas Common Engine
+ * - Geometric objects generate scanlines that are drawn on the scanline
+ *   module, this allows to abstract the drawing context options from the
+ *   geometric algorithms. Things like drawing a rectangle based on the 
+ *   pixels of another surface are now possible with minor code changes.
+ * - Everything related to fonts is taken away from the drawing context.
+ * - We have removed the RGBA_Image as the main pixel data container and
+ *   instead we define an Emage_Surface which name makes more sense.
+ * - An Emage_Surface abstracts the pixel data it contains based on the pixel
+ *   format, right now we support pixel data in ARGB8888 (8 bits per component)
+ *   and in RGB565_A5 (5 bits for red, blue and alpha but in another plane,
+ *   6 bits for green) formats.
+ * - The compositors are abstracted based on two parameters, the @link 
+ *   #Emage_Data_Format format @endlink of the @link #Emage_Surface surface
+ *   @endlink and the @link #Emage_Render_Op render operation @endlink (we 
+ *   use a functions table).
+ * - The scaling algorithm is now a parameter of the Drawing Context.
+ * - All the headers have been split into smaller ones, for better maintenance
+ *   an easy understanding on what belongs to what.
+ *
+ * @section features New features
+ * - Possibility to draw a scanline taking as a reference another surface,
+ *   objects can be filled with another surface repeating on X, Y, both 
+ *   or none.
  *
  *
  * @file
@@ -63,11 +87,14 @@ typedef struct _Emage_Rectangle
 	int x, y, w, h;
 } Emage_Rectangle;
 
-#define EMAGE_RECT_FROM_COORDS(r, xc, yc, wc, hc) 			\
-r.x = xc;								\
-r.y = yc;								\
-r.w = wc;								\
-r.h = hc;								
+
+#define EMAGE_RECT_FROM_COORDS(r, cx, cy, cw, ch) 			\
+r.x = cx; 								\
+r.y = cy; 								\
+r.w = cw; 								\
+r.h = ch;
+
+#define EMAGE_RECT_IS_EMPTY(r) 	((r.w < 1) || (r.h < 1))
 
 /** @} */
 
@@ -89,6 +116,23 @@ typedef struct _Emage_Color
 	int b; /**< Blue Component */
 	int a; /**< Alpha Component */
 } Emage_Color;
+
+#define EMAGE_COLOR_FROM_COMPONENTS(ec, r, g, b, a) 			\
+ec.a = a;								\
+ec.r = r;								\
+ec.g = g;								\
+ec.b = b;								
+
+
+/** @} */
+
+/**
+ * @defgroup Draw_Context_Group Draw Context
+ * @{
+ */
+
+typedef struct _Emage_Draw_Context 	Emage_Draw_Context; /**< A Draw Context Handler */
+
 /** @} */
 
 /**
@@ -116,15 +160,16 @@ EAPI void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
 EAPI void 	emage_surface_data_get(Emage_Surface *s, ...);
 EAPI void 	emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...);
 EAPI Emage_Data_Format emage_surface_format_get(Emage_Surface *s);
+EAPI void emage_surface_scale(Emage_Surface *src, Emage_Rectangle sr, Emage_Surface *dst, Emage_Rectangle dr, Emage_Draw_Context *dc);
+
 
 /** @} */
 
 
 /**
- * @defgroup Draw_Context_Group Draw Context
+ * @addtogroup Draw_Context_Group 
  * @{
  */
-typedef struct _Emage_Draw_Context 	Emage_Draw_Context; /**< A Draw Context Handler */
 typedef struct _Cutout_Rects 		Cutout_Rects;
 typedef struct _Cutout_Rect 		Cutout_Rect;
 
@@ -188,6 +233,18 @@ EAPI void               emage_draw_context_set_sli           (Emage_Draw_Context
 EAPI void 		emage_draw_context_cutouts_del(Cutout_Rects* rects, int index);
 
 /**
+ * TODO
+ * FIXME what about unscaled? 
+ */
+typedef enum _Emage_Scaler_Type
+{
+	EMAGE_SCALER_SMOOTH, 	/**< TODO */
+	EMAGE_SCALER_SAMPLED, 	/**< TODO */
+	EMAGE_SCALER_TYPES 	/**< TODO */
+} Emage_Scaler_Type;
+
+
+/**
  * @todo and fill with a gradient?
  */
 typedef enum _Emage_Fill_Type
@@ -198,19 +255,20 @@ typedef enum _Emage_Fill_Type
 } Emage_Fill_Type;
 
 /**
- * TODO
+ * How to repeat the source surface on the destination surface
  */
 typedef enum _Emage_Fill_Surface_Type
 {
-	EMAGE_FILL_SURFACE_REPEAT_NONE 	= 0, /**< TODO */
-	EMAGE_FILL_SURFACE_REPEAT_X	= (1 << 0), /**< TODO */
-	EMAGE_FILL_SURFACE_REPEAT_Y 	= (1 << 1), /**< TODO */
+	EMAGE_FILL_SURFACE_REPEAT_NONE 	= 0, /**< Don't repeat on any axis */
+	EMAGE_FILL_SURFACE_REPEAT_X	= (1 << 0), /**< Repeat on X axis */
+	EMAGE_FILL_SURFACE_REPEAT_Y 	= (1 << 1), /**< Repeat on Y axis */
 	EMAGE_FILL_SURFACE_TYPES
 } Emage_Fill_Surface_Type;
 
 EAPI void emage_draw_context_fill_type_set(Emage_Draw_Context *dc, Emage_Fill_Type t);
 EAPI void emage_draw_context_fill_surface_type_set(Emage_Draw_Context *dc, Emage_Fill_Surface_Type t);
 EAPI void emage_draw_context_fill_surface_set(Emage_Draw_Context *dc, Emage_Surface *s, Emage_Rectangle *srect, Emage_Rectangle *drect);
+EAPI void 		emage_draw_context_scaler_type_set(Emage_Draw_Context *dc, Emage_Scaler_Type t);
 
 
 /** @} */
@@ -228,25 +286,7 @@ EAPI Emage_Polygon_Point *emage_polygon_points_clear(Emage_Polygon_Point *points
 
 /** @} */
 
-/**
- * @defgroup Scaler_Group Scaler
- * @{
- */
 
-/**
- * TODO
- * FIXME what about unscaled? 
- */
-typedef enum _Emage_Scaler_Type
-{
-	EMAGE_SCALER_SMOOTH, 	/**< TODO */
-	EMAGE_SCALER_SAMPLED, 	/**< TODO */
-	EMAGE_SCALER_TYPES 	/**< TODO */
-} Emage_Scaler_Type;
-
-EAPI void emage_scale(Emage_Surface *src, Emage_Surface *dst, Emage_Rectangle srect, Emage_Rectangle drect, Emage_Draw_Context *dc);
-
-/** @} */
 
 /**
  * @defgroup Scanlines_Group Scanlines
