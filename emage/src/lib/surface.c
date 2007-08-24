@@ -182,3 +182,31 @@ emage_surface_scale(Emage_Surface *src, Emage_Rectangle sr, Emage_Surface *dst, 
 restore_clip:
 	dc->clip = bc;
 }
+
+/**
+ * TODO
+ *
+ */
+EAPI void
+emage_surface_color_get(Emage_Surface *s, DATA32 *c, int offset)
+{
+	DATA32 c32;
+	DATA16 c16;
+
+	assert(s);
+
+	switch (s->format)
+	{
+		case EMAGE_DATA_ARGB8888:
+		*c = *(s->data.argb8888.data + offset);
+		break;
+
+		case EMAGE_DATA_RGB565_A5:
+		//c16 = *(s->data.rgb565_a5.data + offset);
+		//c->a = *(s->data.rgb565_a5.alpha + offset);
+		break;
+
+		default:
+		break;
+	}
+}

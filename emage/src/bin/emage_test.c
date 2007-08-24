@@ -225,7 +225,7 @@ void test3(void)
 	EMAGE_RECT_FROM_COORDS(sr, -50, 50, 100, 100);
 	EMAGE_RECT_FROM_COORDS(dr, 30, -30, 180, 192);
 	emage_draw_context_set_color(dc, 0, 80, 0, 80);
-	emage_rectangle_draw(&dr, dst, dc);
+	//emage_rectangle_draw(&dr, dst, dc);
 
 	emage_draw_context_scaler_type_set(dc, EMAGE_SCALER_SAMPLED);
 	emage_surface_scale(src, sr, dst, dr, dc);
