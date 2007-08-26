@@ -65,7 +65,7 @@ _shrink(int *s_pos, int *s_size, int pos, int size)
 
 static inline void rect_print(Emage_Rectangle *r)
 {
-	printf("R %d %d %d %d\n", r->x, r->y, r->w, r->h); 
+	//printf("R %d %d %d %d\n", r->x, r->y, r->w, r->h); 
 }
 
 static int
@@ -84,7 +84,7 @@ _adjust_areas(Emage_Rectangle *src,
    _shrink(&dst_clip->x, &dst_clip->w, dst->x, dst->w);
    _shrink(&dst_clip->y, &dst_clip->h, dst->y, dst->h);
    // ok until here
-rect_print(dst_clip);
+//rect_print(dst_clip);
    if (_is_empty_rectangle(dst_clip)) return 0;
 
 /* sanitise x */
@@ -113,7 +113,7 @@ rect_print(dst_clip);
 
    _shrink(&dst_clip->x, &dst_clip->w, dst->x, dst_max_x);
 rect_print(dst_clip);
-printf("dst->x = %d, dst_max_x = %d\n", dst->x, dst_max_x);
+//printf("dst->x = %d, dst_max_x = %d\n", dst->x, dst_max_x);
    if (dst_clip->w <= 0) return 0;
 
    /* sanitise y */
@@ -179,9 +179,9 @@ void emage_scaler_scale(Emage_Surface *src, Emage_Rectangle *sr, Emage_Surface *
 		return;
 	/* TODO check if we need to scale or not, if not just do a copy */
 	/* call the correct scaler function */
-	printf("SR %d %d %d %d\n", sr->x, sr->y, sr->w, sr->h); 
+	/*printf("SR %d %d %d %d\n", sr->x, sr->y, sr->w, sr->h); 
 	printf("DR %d %d %d %d\n", dr->x, dr->y, dr->w, dr->h); 
-	printf("CR %d %d %d %d\n", cr.x, cr.y, cr.w, cr.h); 
+	printf("CR %d %d %d %d\n", cr.x, cr.y, cr.w, cr.h);*/
 	Emage_Scalers[dc->stype].func(src, sr, dst, dr, dc, &cr);
 }
 

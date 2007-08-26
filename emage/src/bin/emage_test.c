@@ -222,8 +222,8 @@ void test3(void)
 	_background_draw(dst, dc);
 	src = surface_blocks();
 
-	EMAGE_RECT_FROM_COORDS(sr, -50, 50, 100, 100);
-	EMAGE_RECT_FROM_COORDS(dr, 30, -30, 180, 192);
+	EMAGE_RECT_FROM_COORDS(sr, 0, 0, 100, 100);
+	EMAGE_RECT_FROM_COORDS(dr, 0, 0, 128, 128);
 	emage_draw_context_set_color(dc, 0, 80, 0, 80);
 	//emage_rectangle_draw(&dr, dst, dc);
 
@@ -240,6 +240,36 @@ void test3(void)
 /* performance test */
 void ptest1(void)
 {
+	Emage_Surface *dst = NULL;
+	Emage_Surface *src = NULL;
+	Emage_Draw_Context *dc = NULL;
+	Emage_Rectangle sr, dr;
+	struct timeval ts, te;
+	int i;
+
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 1);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+	emage_draw_context_scaler_type_set(dc, EMAGE_SCALER_SAMPLED);
+	src = surface_blocks();
+	
+	/* upscaling */
+	dst = surface_new(1024, 1024, EMAGE_DATA_ARGB8888);
+	_background_draw(dst, dc);
+	EMAGE_RECT_FROM_COORDS(sr, 0, 0, 192, 192);
+	EMAGE_RECT_FROM_COORDS(dr, 0, 0, 1024, 1024);
+	gettimeofday(&ts, NULL);
+	for (i = 0; i < 2000; i++)
+	{
+		emage_surface_scale(src, sr, dst, dr, dc);
+		//emage_surface_scale(dst, dr, src, sr, dc);
+	}
+	gettimeofday(&te, NULL);
+	time_display(ts, te);
+	surface_free(dst);
+	
+	surface_free(src);
+	free(dc);
 
 }
 
@@ -297,9 +327,10 @@ int main(void)
 
 	if (!emage_init()) return -1;
 
-	test1();
-	test2();
-	test3();
+	//test1();
+	//test2();
+	//test3();
+	ptest1();
 
 	emage_shutdown();
 	return 0;
