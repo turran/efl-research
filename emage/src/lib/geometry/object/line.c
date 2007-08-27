@@ -209,7 +209,8 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 	int dx = x1 - x0;
 	int dy = y1 - y0;
 	int offset;
-	Emage_Pt_Func func;
+	Emage_Pt_Func pfunc;
+	Emage_Sl_Func sfunc;
 
 	int j = 0;
 	/* first octant */
@@ -218,18 +219,23 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 	err = r;
 
 	offset = (y0 * dst->w) + x0;
-	func = emage_compositor_pt_color_get(dc, dst);
+
+	sfunc = emage_compositor_sl_color_get(dc, dst);
+	pfunc = emage_compositor_pt_color_get(dc, dst);
 	for (y = 0; y < dy; y++, offset += dst->w)
 	{
 		/* draw point (x,y) */
 		if (err >= dy)
 		{
 			err -= dy;
-			func(NULL, 0, 0, dc->fill.color, dst, offset);
+			sfunc(NULL, 0, NULL, 0, dc->fill.color, dst, offset, 2);
+			offset += 2;
+		}
+		else
+		{
+			pfunc(NULL, 0, 0, dc->fill.color, dst, offset);
 			offset++;
 		}
-		func(NULL, 0, 0, dc->fill.color, dst, offset);
-		offset++;
 		err += r;
 	}
 }
