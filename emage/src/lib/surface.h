@@ -4,6 +4,11 @@
 /** 
  * @file
  * @brief Surface
+ * @todo 
+ * - Ok, doing some benchs what realy slow downs everything is
+ *   having to add the offset everytime we want to draw, so why
+ *   not have functions in every surface to add the offset, get
+ *   the color etc from an abstraction of the surface data (union)
  * @defgroup Surface_Internal Surface
  * @ingroup Internal_Group Internal
  * @{
