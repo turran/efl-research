@@ -179,20 +179,95 @@
 static void
 _evas_draw_point(Emage_Surface *dst, Emage_Draw_Context *dc, int x, int y)
 {
+#if 0
    Emage_Pt_Func pfunc;
    //RGBA_Gfx_Pt_Func pfunc;
 
    if (!IN_RANGE(x, y, dst->w, dst->h))
 	return;
-   if ((dc->clip.use) && (!IN_RECT(x, y, dc->clip.x, dc->clip.y, dc->clip.w, dc->clip.h)))
+   if ((dc->clip.use) && (!IN_RECT(x, y, dc->clip.r.x, dc->clip.r.y, dc->clip.r.w, dc->clip.r.h)))
 	return;
 	pfunc = emage_compositor_pt_color_get(dc, dst);
    //pfunc = evas_common_gfx_func_composite_color_pt_get(dc->col.col, dst, dc->render_op);
    //if (pfunc)
 	//pfunc(0, 255, dc->col.col, dst->data + (dst->w * y) + x);
 	pfunc(0, 255, dc->col.col, dst, (dst->w * y) + x);
+#endif
 }
 
+static void
+_evas_draw_simple_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
+{
+
+}
+
+static void
+_evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
+{
+	int step, err, r;
+	int i;
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int offset;
+	Emage_Pt_Func func;
+
+	int j = 0;
+	/* first octant */
+	step = dx / dy;
+	r = dx - (step * dy);
+	err = 0;
+
+	offset = (y0 * dst->w) + x0;
+	func = emage_compositor_pt_color_get(dc, dst);
+	for (i = 0; i < dx; i++, offset++)
+	{
+		/* draw point (x,y) */
+		func(NULL, 0, 0, dc->fill.color, dst, offset);
+		if (err >= dy)
+		{
+			err -= dy;
+			offset += dst->w;
+			j++;
+		}
+		else
+			err += r;
+	}
+}
+
+static void
+_evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
+{
+	int step, err, r;
+	int i;
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int offset;
+
+	int half = dx/2;
+
+	Emage_Pt_Func func;
+
+	/* first octant */
+	step = dx / dy;
+	r = dx - (step * dy);
+	err = r;
+	
+	offset = (y0 * dst->w) + x0;
+	func = emage_compositor_pt_color_get(dc, dst);
+	for (i = 0; i <= dx; i++, offset++)
+	{
+		if (err >= dy)
+		{
+			err -= dy;
+			offset += dst->w;
+		}
+		/* draw point (x,y) */
+		func(NULL, 0, 0, dc->fill.color, dst, offset);
+		err += r;
+	}
+}
+
+#if 0
 /*
    these functions use the dc->clip data as bounding
    data. they assume that such data has already been cut
@@ -504,7 +579,6 @@ _evas_draw_line(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
      }
 }
 
-
 static void
 _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int x1, int y1)
 {
@@ -627,7 +701,7 @@ _evas_draw_line_aa(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, i
 	offset += dstw;
      }
 }
-
+#endif
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -650,10 +724,10 @@ emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 
    /* save out clip info */
    cuse = dc->clip.use;
-   cx = dc->clip.x;
-   cy = dc->clip.y;
-   cw = dc->clip.w;
-   ch = dc->clip.h;
+   cx = dc->clip.r.x;
+   cy = dc->clip.r.y;
+   cw = dc->clip.r.w;
+   ch = dc->clip.r.h;
 
    if (cuse)
      {
@@ -672,10 +746,10 @@ emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 	return;
 
    dc->clip.use = 1;
-   dc->clip.x = clx;
-   dc->clip.y = cly;
-   dc->clip.w = clw;
-   dc->clip.h = clh;
+   dc->clip.r.x = clx;
+   dc->clip.r.y = cly;
+   dc->clip.r.w = clw;
+   dc->clip.r.h = clh;
 
    if (dc->anti_alias)
 	_evas_draw_line_aa(dst, dc, x0, y0, x1, y1);
@@ -684,9 +758,9 @@ emage_line_draw(Emage_Surface *dst, Emage_Draw_Context *dc, int x0, int y0, int 
 
    /* restore clip info */
    dc->clip.use = cuse;
-   dc->clip.x = cx;
-   dc->clip.y = cy;
-   dc->clip.w = cw;
-   dc->clip.h = ch;
+   dc->clip.r.x = cx;
+   dc->clip.r.y = cy;
+   dc->clip.r.w = cw;
+   dc->clip.r.h = ch;
    evas_common_cpu_end_opt();
 }

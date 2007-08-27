@@ -9,9 +9,9 @@ INCLUDES = \
 noinst_LTLIBRARIES      = libemage_geometry_object.la
 
 libemage_geometry_object_la_SOURCES  = \
-rectangle.c \
-polygon.c 
-#line.c 
+line.c \
+polygon.c  \
+rectangle.c
 
 libemage_geometry_object_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h

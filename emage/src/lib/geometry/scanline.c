@@ -63,6 +63,7 @@ else 									\
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+/* TODO remove this and use the one provided by Emage.h */
 static inline int
 _sl_split(Emage_Scanline *sl, Emage_Scanline *rsl, int x)
 {
@@ -138,8 +139,6 @@ _surface_repeat_x(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc
 		w -= tmp.w;
 	}
 }
-
-
 
 
 static inline void
@@ -241,6 +240,11 @@ emage_scanline_draw_surface(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_C
 EAPI void
 emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc)
 {
+	/* TODO
+	 * handle special cases like drwing a surface to be repeated
+	 * on X and the surface has only 1 pixel, so no need for
+	 * pixel but use color
+	 */
 	/* Check the fill type */
 	switch (dc->fill.type)
 	{

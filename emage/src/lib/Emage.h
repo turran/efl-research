@@ -88,6 +88,8 @@ typedef struct _Emage_Rectangle
 } Emage_Rectangle;
 
 
+/* delete the reference for this MACROS */
+
 #define EMAGE_RECT_FROM_COORDS(r, cx, cy, cw, ch) 			\
 r.x = cx; 								\
 r.y = cy; 								\
@@ -284,6 +286,27 @@ EAPI void emage_rectangle_draw(Emage_Rectangle *r, Emage_Surface *dst, Emage_Dra
 EAPI Emage_Polygon_Point *emage_polygon_point_add(Emage_Polygon_Point *points, int x, int y);
 EAPI Emage_Polygon_Point *emage_polygon_points_clear(Emage_Polygon_Point *points);
 
+/**
+ * TODO
+ */
+static inline void
+emage_rectangle_from_coords(Emage_Rectangle *r, int x, int y, int w, int h)
+{
+	r->x = x;
+	r->y = y;
+	r->w = w;
+	r->h = h;
+}
+
+/**
+ * TODO
+ */
+static inline int
+emage_rectangle_is_empty(Emage_Rectangle *r)
+{
+	return ((r->w < 1) || (r->h < 1));
+}
+
 /** @} */
 
 
@@ -306,6 +329,27 @@ struct _Emage_Scanline
 };
 
 EAPI void emage_scanline_draw(Emage_Scanline *sl, Emage_Surface *dst, Emage_Draw_Context *dc);
+
+/**
+ * TODO
+ * again
+ */
+EAPI static inline int
+emage_scanline_split(Emage_Scanline *sl, Emage_Scanline *rsl, int x)
+{
+	if ((sl->x <= x) && (sl->x + sl->w > x))
+	{
+		int x2;
+
+		x2 = sl->x + sl->w;
+		sl->w = x - sl->x;
+		rsl->y = sl->y;
+		rsl->x = x;
+		rsl->w = x2 - x;
+		return 1;
+	}
+	return 0;
+}
 
 /** @} */
 

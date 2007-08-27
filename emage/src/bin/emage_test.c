@@ -275,6 +275,33 @@ void ptest1(void)
 
 }
 
+void ptest2(void)
+{
+	Emage_Surface *dst = NULL;
+	Emage_Draw_Context *dc = NULL;
+	struct timeval ts, te;
+	int i;
+
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 0);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+	
+	dst = surface_new(1024, 1024, EMAGE_DATA_ARGB8888);
+	_background_draw(dst, dc);
+	emage_draw_context_set_color(dc, 255, 0, 255, 255);
+	gettimeofday(&ts, NULL);
+	for (i = 0; i < 2000; i++)
+	{
+		emage_line_draw(dst, dc, 0, 0, 192, 128);
+	}
+	gettimeofday(&te, NULL);
+	time_display(ts, te);
+	png_save(dst, "/tmp/emage_ptest2_dst.png", 0);
+	surface_free(dst);
+	free(dc);
+
+}
+
 #if 0
 static void line_test(Emage_Surface *s, Emage_Draw_Context *dc)
 {
@@ -332,7 +359,8 @@ int main(void)
 	//test1();
 	//test2();
 	//test3();
-	ptest1();
+	//ptest1();
+	ptest2();
 
 	emage_shutdown();
 	return 0;
