@@ -19,7 +19,7 @@
 #include "compositor.h"
 #include "scaler.h"
 #include "data.h"
-#include "scanline.h"
+#include "geometry.h"
 #include "converter.h"
 
 

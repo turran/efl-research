@@ -5,15 +5,13 @@
 #include "emage_private.h"
 
 
-/* This scaler does not provide any smoothness, but it is quite fast
- * we use some macros for the downy, upy, noy cases as the code is
- * exactly the same but using two different functions (upx, downx)
- *
- * change how the xscale_init works, it should also return the xscale func
- * passed to the xscale_fun so we need to pass the src, dst and dc
- *
- * my algorithm is better than evas', the problem i have is that i cannot
+/* 
+ * My algorithm is better than evas', the problem i have is that i cannot
  * make y_offsets (row_ptr) pointers, the data of a surface is abstracted :(
+ * we could optmize it by making sl composite functions to have a step
+ * for each passed surface (src,dst,mask) it will improve a lot the 
+ * downscaling, because i wont have to add the row offset and get the point
+ * there each time
  */
 
 /*============================================================================*
@@ -271,7 +269,10 @@ static inline int _upx_do(Emage_Surface *src, int s_w, int soffset,
 
 #endif
 
-/* 15518338/2000 = 7759.16  us */
+/* 15518338 us/2000 scales = 7759.16  us/scale
+ * On a Core 2 Duo, evas algorithm is faster by ~10%
+ * On a Pentium4 this is faster by ~14%
+ */
 static inline void _get_lengths(int s, int d, int *lengths)
 {
 	int step, err, r, i, j, width;
@@ -323,9 +324,8 @@ _upy_upx(Emage_Surface *src, Emage_Rectangle *sr,
 	{
 		for (j = 0; j < sr->w; j++)
 		{
-			int tmp = soffset + j;
 
-			emage_surface_color_get(src, &colors[j], tmp);
+			emage_surface_color_get(src, &colors[j], soffset + j);
 			/* in case we have the mul set, multiply now */
 			emage_draw_context_color_mul_apply(dc, &colors[j]);
 		}
@@ -339,8 +339,9 @@ _upy_upx(Emage_Surface *src, Emage_Rectangle *sr,
 				func(NULL, 0, NULL, 0, colors[k], dst, tmp, x_lengths[k]);
 				tmp += x_lengths[k];
 			}
-			soffset += src->w;
+			doffset += dst->w;
 		}
+		soffset += src->w;
 	}
 }
 
@@ -446,10 +447,7 @@ _upy_downx(Emage_Surface *src, Emage_Rectangle *sr,
 	Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc,
 	Emage_Rectangle *cr)
 {
-/*	UPY(xscale_data = _downx_init(sr->w, cr->w);,
-		_downx_do(src, soffset, dst, cr->w, doffset, dc,
-		func, xscale_data);)
-*/
+
 }
 
 static inline void
@@ -457,22 +455,114 @@ _downy_upx(Emage_Surface *src, Emage_Rectangle *sr,
 	Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc,
 	Emage_Rectangle *cr)
 {
-#if 0
-	DOWNY(xscale_data = _upx_init(sr->w, cr->w);,
-		_upx_do(src, sr->w, soffset, dst, doffset, dc,
-		func, xscale_data);)
-#endif
+
 }
 
+/* */
+static inline void _get_offsets(int s, int d, int *offsets)
+{
+	int step, err, r, i, j;
+
+	step = (s - d) / (d - 1);
+	r = (s - d) - (step * (d - 1));
+	err = r;
+	j = 0;
+	for (i = 0; i < d; i++, j++)
+	{
+		if (err >= d)
+		{
+			err -= d;
+			j++;
+		}
+		offsets[i] = j;
+		j += step;
+		err += r;
+	}
+}
+
+static inline void _get_y_offsets(int s, int s_w, int soffset, int d, int *offsets)
+{
+	int step, err, r, i, j;
+
+	step = (s - d) / (d - 1);
+	r = (s - d) - (step * (d - 1));
+	err = r;
+	
+	step *= s_w;
+	for (i = 0; i < d; i++, soffset += s_w)
+	{
+		if (err >= d)
+		{
+			err -= d;
+			/* one line more */
+			soffset += s_w;
+		}
+		offsets[i] = soffset;
+		soffset += step;
+		err += r;
+	}
+}
+/* 4040864 us / 2000 scales = us/scale */
 static inline void
 _downy_downx(Emage_Surface *src, Emage_Rectangle *sr, 
 	Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc,
 	Emage_Rectangle *cr)
 {
-#if 0
-	DOWNY(xscale_data = _downx_init(sr->w, cr->w);,
-		_downx_do(src, soffset, dst, cr->w, doffset, dc,
-		func, xscale_data);)
+	int step, err, r, i, j;
+	int soffset, doffset;
+	int *x_offsets, *y_offsets;
+	Emage_Pt_Func func;
+	
+	func = emage_compositor_pt_color_get(dc, dst);
+	soffset = (src->h * sr->y) + sr->x;
+	doffset = (dst->h * cr->y) + cr->x;
+	
+	/* get the x lengths */
+	x_offsets = alloca(sizeof(int) * cr->w);
+	
+	_get_offsets(sr->w, cr->w, x_offsets);
+#if 0 
+	y_offsets = alloca(sizeof(int) * cr->h);
+	_get_y_offsets(sr->h, src->w, soffset, cr->h, y_offsets);
+	/* the real step is in units of source width */
+	for (i = 0; i < cr->h; i++)
+	{
+		for (j = 0; j < cr->w; j++)
+		{
+			DATA32 color;
+			emage_surface_color_get(src, &color, y_offsets[i] + x_offsets[j]);
+			/* in case we have the mul set, multiply now */
+			emage_draw_context_color_mul_apply(dc, &color);
+			func(NULL, 0, 0, color, dst, doffset + j);
+		}
+		doffset += dst->w;
+	}
+#else
+	step = (sr->h - cr->h) / (cr->h - 1);
+	r = (sr->h - cr->h) - (step * (cr->h - 1));
+	err = r;
+	
+	step *= src->w;
+	for (i = 0; i < cr->h; i++, soffset += src->w)
+	{
+		if (err >= cr->h)
+		{
+			err -= cr->h;
+			/* one line more */
+			soffset += src->w;
+		}
+		for (j = 0; j < cr->w; j++)
+		{
+			DATA32 color;
+			emage_surface_color_get(src, &color, soffset + x_offsets[j]);
+			/* in case we have the mul set, multiply now */
+			emage_draw_context_color_mul_apply(dc, &color);
+			func(NULL, 0, 0, color, dst, doffset + j);
+		}
+		doffset += dst->w;
+		soffset += step;
+		err += r;
+	}
 #endif
 }
 
@@ -481,11 +571,6 @@ _noy_downx(Emage_Surface *src, Emage_Rectangle *sr,
 	Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc,
 	Emage_Rectangle *cr)
 {
-#if 0
-	NOY(xscale_data = _downx_init(sr->w, cr->w);,
-		_downx_do(src, soffset, dst, cr->w, doffset, dc,
-		func, xscale_data);)
-#endif
 }
 
 static inline void
@@ -493,11 +578,6 @@ _noy_upx(Emage_Surface *src, Emage_Rectangle *sr,
 	Emage_Surface *dst, Emage_Rectangle *dr, Emage_Draw_Context *dc,
 	Emage_Rectangle *cr)
 {
-#if 0
-	NOY(xscale_data = _upx_init(sr->w, cr->w);,
-		_upx_do(src, sr->w, soffset, dst, doffset, dc,
-		func, xscale_data);)
-#endif
 }
 
 

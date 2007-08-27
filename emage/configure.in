@@ -985,13 +985,14 @@ Makefile
 src/Makefile 
 src/bin/Makefile 
 src/lib/Makefile 
-src/lib/object/Makefile 
-src/lib/data/Makefile 
 src/lib/compositor/Makefile 
 src/lib/compositor/blend/Makefile 
+src/lib/converter/Makefile 
+src/lib/data/Makefile 
+src/lib/geometry/Makefile 
+src/lib/geometry/object/Makefile 
 src/lib/scaler/Makefile 
 src/lib/scaler/sampled/Makefile 
-src/lib/converter/Makefile 
 ])
 
 #src/lib/op/Makefile 

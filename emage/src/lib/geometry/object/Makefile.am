@@ -6,12 +6,12 @@ INCLUDES = \
 -I. \
 -I$(top_srcdir)/src/lib
 
-noinst_LTLIBRARIES      = libemage_object.la
+noinst_LTLIBRARIES      = libemage_geometry_object.la
 
-libemage_object_la_SOURCES  = \
+libemage_geometry_object_la_SOURCES  = \
 rectangle.c \
 polygon.c 
 #line.c 
 
-libemage_object_la_DEPENDENCIES = \
+libemage_geometry_object_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h

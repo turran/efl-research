@@ -1,4 +1,4 @@
-SUBDIRS = object compositor data scaler converter
+SUBDIRS = compositor converter data geometry scaler
 #scale convert op
 
 MAINTAINERCLEANFILES = \
@@ -20,25 +20,24 @@ converter.c \
 cpu.c \
 main.c \
 scaler.c \
-scanline.c \
 surface.c
 #emage_blend.c
 #emage_blit.c
 
 libemage_la_LIBADD = \
  -lm \
-object/libemage_object.la \
-data/libemage_data.la \
 compositor/libemage_compositor.la \
-scaler/libemage_scaler.la \
-converter/libemage_converter.la
+converter/libemage_converter.la \
+data/libemage_data.la \
+geometry/libemage_geometry.la \
+scaler/libemage_scaler.la
 
 libemage_la_DEPENDENCIES = \
 $(top_builddir)/src/lib/config.h \
-object/libemage_object.la \
-data/libemage_data.la \
 compositor/libemage_compositor.la \
-scaler/libemage_scaler.la \
-converter/libemage_converter.la
+converter/libemage_converter.la \
+data/libemage_data.la \
+geometry/libemage_geometry.la \
+scaler/libemage_scaler.la
 
 libemage_la_LDFLAGS      = -version-info 1:0:0

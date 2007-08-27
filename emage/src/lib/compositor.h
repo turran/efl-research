@@ -10,7 +10,6 @@
  * @todo
  * - instead of 32 b color, why not some functions for each data format
  *   to get the current color
- * - what about the src offset?
  * - use another render operation based on different parameters:
  *   if render op = blend and use color span with color 0xffxxxxxxxx then 
  *   the render op should be a copy not a blend, etc
@@ -19,6 +18,9 @@
  * - Remove pixel_color in compositor.c, it's a special case for pixel 
  *   with mul.use, the compositor still need to provide a function for it
  * - The above also matches the mask case? if so the dc needs a mask
+ * - One way to improve the speed on the scalers is to change how the scanlines
+ *   functions work, instead of passing only the offset we should pass also
+ *   the step for each surface, for not having to add the offset every time
  * 
  * @{
  *

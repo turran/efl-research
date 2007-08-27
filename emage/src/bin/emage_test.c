@@ -266,6 +266,8 @@ void ptest1(void)
 	}
 	gettimeofday(&te, NULL);
 	time_display(ts, te);
+	png_save(dst, "/tmp/emage_ptest1_dst.png", 0);
+	png_save(src, "/tmp/emage_ptest1_src.png", 0);
 	surface_free(dst);
 	
 	surface_free(src);
