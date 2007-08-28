@@ -11,7 +11,7 @@
  * TODO
  */
 EAPI Emage_Surface *
-emage_surface_new(Emage_Data_Format f, int w, int h, ...)
+emage_surface_new(Emage_Surface_Data_Format f, int w, int h, ...)
 {
 	Emage_Surface *s;
 	va_list va;
@@ -91,7 +91,7 @@ emage_surface_data_get(Emage_Surface *s, ...)
  * TODO
  *
  */
-EAPI Emage_Data_Format
+EAPI Emage_Surface_Data_Format
 emage_surface_format_get(Emage_Surface *s)
 {
 	assert(s);
@@ -103,7 +103,7 @@ emage_surface_format_get(Emage_Surface *s)
  *
  */
 EAPI void 
-emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...)
+emage_surface_data_set(Emage_Surface *s, Emage_Surface_Data_Format f, ...)
 {
 	va_list va;
 	

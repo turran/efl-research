@@ -27,32 +27,39 @@ typedef enum _Emage_Surface_Flag
 /**
  * TODO 
  */
-typedef struct _Emage_Data_ARGB8888
+typedef struct _Emage_Surface_Data_ARGB8888
 {
 	DATA32 *data;
-} Emage_Data_ARGB8888;
+} Emage_Surface_Data_ARGB8888;
 
 /**
  * TODO 
  */
-typedef struct _Emage_Data_RGB565_A5
+typedef struct _Emage_Surface_Data_RGB565_A5
 {
 	DATA16 	*data;
 	DATA8 	*alpha;
-} Emage_Data_RGB565_A5;
+} Emage_Surface_Data_RGB565_A5;
+
+/**
+ * TODO 
+ */
+typedef union _Emage_Surface_Data
+{
+	Emage_Surface_Data_ARGB8888 	argb8888;
+	Emage_Surface_Data_RGB565_A5 	rgb565_a5;
+} Emage_Surface_Data;
+
 
 /**
  * FIXME check the above flags!! 
  */
 struct _Emage_Surface
 {
-	int                	w; /**< Width */
-	int 			h; /**< Height */
-	union {
-		Emage_Data_ARGB8888 	argb8888;
-		Emage_Data_RGB565_A5 	rgb565_a5;
-	} data;
-	Emage_Data_Format	format; /**< Data format */
+	int                		w; /**< Width */
+	int 				h; /**< Height */
+	Emage_Surface_Data 		data; /**< */
+	Emage_Surface_Data_Format	format; /**< Data format */
 	Emage_Surface_Flag 	flags; 	/**< Surface Flags */
 };
 

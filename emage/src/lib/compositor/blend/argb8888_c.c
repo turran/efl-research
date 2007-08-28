@@ -431,7 +431,7 @@ PT_FUNC(blend, argb8888, c, mask_color)
 PT_FUNC(blend, argb8888, c, pixel_mask)
 {
 	DATA32 s, *d;
-	Emage_Data_ARGB8888 *f;
+	Emage_Surface_Data_ARGB8888 *f;
 
 	s = *(src->data.argb8888.data + soffset);
 	d = dst->data.argb8888.data + doffset;

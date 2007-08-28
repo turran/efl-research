@@ -269,7 +269,8 @@ static inline int _upx_do(Emage_Surface *src, int s_w, int soffset,
 
 #endif
 
-/* 15518338 us/2000 scales = 7759.16  us/scale
+/* 15518338 us/2000 scales = 7759.16  us/scale (Core 2 Duo)
+ * 32323566 us/2000 scales = (Pentium 4)
  * On a Core 2 Duo, evas algorithm is faster by ~10%
  * On a Pentium4 this is faster by ~14%
  */

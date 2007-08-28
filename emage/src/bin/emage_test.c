@@ -6,7 +6,7 @@
 /* parameters */
 
 /* local */
-Emage_Surface * surface_new(int w, int h, Emage_Data_Format fmt)
+Emage_Surface * surface_new(int w, int h, Emage_Surface_Data_Format fmt)
 {
 	Emage_Surface *s = NULL;
 	switch(fmt)
@@ -28,7 +28,7 @@ Emage_Surface * surface_new(int w, int h, Emage_Data_Format fmt)
 
 void surface_free(Emage_Surface *s)
 {
-	Emage_Data_Format fmt;
+	Emage_Surface_Data_Format fmt;
 	fmt = emage_surface_format_get(s);
 	switch(fmt)
 	{
@@ -359,8 +359,8 @@ int main(void)
 	//test1();
 	//test2();
 	//test3();
-	//ptest1();
-	ptest2();
+	ptest1();
+	//ptest2();
 
 	emage_shutdown();
 	return 0;

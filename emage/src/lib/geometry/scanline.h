@@ -8,6 +8,8 @@
  * For anti aliased scanlines each 
  * TODO
  * - each scanline pixel can have different subpixel approximation
+ * - instead of one function (scanline_draw, point_draw) better
+ *   do a scanline_get and point_get
  */
 
 

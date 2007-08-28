@@ -41,9 +41,9 @@
  *   and in RGB565_A5 (5 bits for red, blue and alpha but in another plane,
  *   6 bits for green) formats.
  * - The compositors are abstracted based on two parameters, the @link 
- *   #Emage_Data_Format format @endlink of the @link #Emage_Surface surface
- *   @endlink and the @link #Emage_Render_Op render operation @endlink (we 
- *   use a functions table).
+ *   #Emage_Surface_Data_Format format @endlink of the @link #Emage_Surface 
+ *   surface @endlink and the @link #Emage_Render_Op render operation @endlink
+ *   (we use a functions table).
  * - The scaling algorithm is now a parameter of the Drawing Context.
  * - All the headers have been split into smaller ones, for better maintenance
  *   an easy understanding on what belongs to what.
@@ -149,19 +149,19 @@ typedef struct _Emage_Surface 		Emage_Surface; /**< A Surface Handler */
 /**
  * TODO
  */
-typedef enum _Emage_Data_Format
+typedef enum _Emage_Surface_Data_Format
 {
 	EMAGE_DATA_ARGB8888, 	/**< ARGB8888 */
 	EMAGE_DATA_RGB565_A5, 	/**< RGB5656 A5 */
 	EMAGE_DATA_FORMATS
-} Emage_Data_Format;
+} Emage_Surface_Data_Format;
 
 
-EAPI Emage_Surface * 	emage_surface_new(Emage_Data_Format f, int w, int h, ...);
+EAPI Emage_Surface * 	emage_surface_new(Emage_Surface_Data_Format f, int w, int h, ...);
 EAPI void	emage_surface_size_get(Emage_Surface *s, int *w, int *h);
 EAPI void 	emage_surface_data_get(Emage_Surface *s, ...);
-EAPI void 	emage_surface_data_set(Emage_Surface *s, Emage_Data_Format f, ...);
-EAPI Emage_Data_Format emage_surface_format_get(Emage_Surface *s);
+EAPI void 	emage_surface_data_set(Emage_Surface *s, Emage_Surface_Data_Format f, ...);
+EAPI Emage_Surface_Data_Format emage_surface_format_get(Emage_Surface *s);
 EAPI void emage_surface_scale(Emage_Surface *src, Emage_Rectangle sr, Emage_Surface *dst, Emage_Rectangle dr, Emage_Draw_Context *dc);
 
 
