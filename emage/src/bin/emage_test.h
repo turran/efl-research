@@ -7,5 +7,6 @@
 #include "Emage.h"
 
 void png_save(Emage_Surface *s, char *file, int compress);
+void png_load(Emage_Surface *s, char *file);
 double time_get(void);
 void time_display(struct timeval ts, struct timeval te);

@@ -5,6 +5,7 @@
 
 /* parameters */
 
+//Emage_Surface * surface_new_from_png()
 /* local */
 Emage_Surface * surface_new(int w, int h, Emage_Surface_Data_Format fmt)
 {
@@ -237,6 +238,22 @@ void test3(void)
 	free(dc);
 }
 
+void test4(void)
+{
+	Emage_Surface *dst = NULL;
+	Emage_Draw_Context *dc = NULL;
+
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 1);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+	
+	dst = surface_new(320, 320, EMAGE_DATA_ARGB8888);
+	png_load(dst, "evas.png");
+	png_save(dst, "/tmp/emage_test4_src.png", 0);
+	surface_free(dst);
+	free(dc);
+}
+
 /* performance test */
 void ptest1(void)
 {
@@ -299,7 +316,43 @@ void ptest2(void)
 	png_save(dst, "/tmp/emage_ptest2_dst.png", 0);
 	surface_free(dst);
 	free(dc);
+}
 
+void ptest3(void)
+{
+	Emage_Surface *s = NULL;
+	Emage_Draw_Context *dc = NULL;
+	Emage_Polygon_Point *pts = NULL;
+	struct timeval ts, te;
+	int i;
+
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 0);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+	
+	s = surface_new(120, 120, EMAGE_DATA_ARGB8888);
+	_background_draw(s, dc);
+	emage_draw_context_set_color(dc, 0, 0, 30, 30);
+	gettimeofday(&ts, NULL);
+	for (i = 0; i < 2000; i++)
+	{
+		pts = emage_polygon_point_add(pts, 92, 1);
+		pts = emage_polygon_point_add(pts, 45, 5);
+		pts = emage_polygon_point_add(pts, 1, 92);
+		pts = emage_polygon_point_add(pts, 80, 80);
+		pts = emage_polygon_point_add(pts, 100, 100);
+		pts = emage_polygon_point_add(pts, 120, 5);
+		pts = emage_polygon_point_add(pts, 110, 20);
+		pts = emage_polygon_point_add(pts, 108, 30);
+		emage_polygon_draw(s, dc, pts);
+		emage_polygon_points_clear(pts);
+		pts = NULL;
+	}
+	gettimeofday(&te, NULL);
+	time_display(ts, te);
+	png_save(s, "/tmp/emage_ptest3_dst.png", 0);
+	surface_free(s);
+	free(dc);
 }
 
 #if 0
@@ -359,8 +412,10 @@ int main(void)
 	//test1();
 	//test2();
 	//test3();
-	ptest1();
+	//test4();
+	//ptest1();
 	//ptest2();
+	ptest3();
 
 	emage_shutdown();
 	return 0;
