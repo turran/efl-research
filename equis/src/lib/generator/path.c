@@ -1,7 +1,3 @@
-/*
- * main vector source
- */
-
 #include "Equis.h"
 #include "equis_private.h"
 

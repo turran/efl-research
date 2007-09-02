@@ -3,6 +3,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "data.h"
 #include "generator.h"
+#include "geometry.h"
 
 #endif

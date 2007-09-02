@@ -3,7 +3,9 @@
 
 struct _Equis_Generator
 {
+	Equis_Generator *from;
 	const char 	*type;
 	void 		*data;
 };
+
 #endif
