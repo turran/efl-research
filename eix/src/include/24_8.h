@@ -2,8 +2,9 @@
 #define _EIX_24_8_H
 
 /**
- * 24.8
- * 16 777 216.256
+ * @file 
+ * @brief 
+ * 24.8 precision
  */
 typedef int eix;
 
@@ -25,7 +26,7 @@ static inline float eix_to_float(eix v)
 {
 	float r;
 	
-	r = v/256.0;
+	r = v / 256.0;
 	return r;
 }
 
@@ -53,6 +54,13 @@ static inline eix eix_mul(eix a, eix b)
 #ifdef _EIX_OVERFLOW
 #else
 	return r >> 8;
+#endif
+}
+
+static inline eix eix_div(eix a, eix b)
+{
+#ifdef _EIX_OVERFLOW
+#else
 #endif
 }
 

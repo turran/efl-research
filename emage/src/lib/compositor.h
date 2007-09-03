@@ -21,6 +21,7 @@
  * - One way to improve the speed on the scalers is to change how the scanlines
  *   functions work, instead of passing only the offset we should pass also
  *   the step for each surface, for not having to add the offset every time
+ * - Port all compositors from evas common engine
  * 
  * @{
  *

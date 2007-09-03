@@ -13,12 +13,12 @@ void time_display(struct timeval ts, struct timeval te)
 int main(void)
 {
 	eix a, b, r;
-	float fa, fb;
+	float fa, fb, fr;
 	int i;
 	struct timeval ts, te, tr;
 
-	fa = 25.13;
-	fb = 32.10;
+	fa = 4.13;
+	fb = 1.13;
 	a = eix_from_float(fa);
 	b = eix_from_float(fb);
 
@@ -26,18 +26,18 @@ int main(void)
 	printf("%d.%d\n", r >> 8, r & 0xff);
 
 	gettimeofday(&ts, NULL);
-	for (i = 0; i < 10000; i++)
+	for (i = 0; i < 15; i++)
 	{
-		a = eix_add(a, b);
+		a = eix_mul(a, b);
 	}
 	gettimeofday(&te, NULL);
 	printf("RESULT = %f\n", eix_to_float(a));
 	time_display(ts, te);
 	
 	gettimeofday(&ts, NULL);
-	for (i = 0; i < 10000; i++)
+	for (i = 0; i < 15; i++)
 	{
-		fa += fb;
+		fa *= fb;
 	}
 	gettimeofday(&te, NULL);
 	printf("RESULT = %f\n", fa);

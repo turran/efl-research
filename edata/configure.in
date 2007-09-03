@@ -5,7 +5,7 @@ AC_INIT(configure.in)
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
-AM_INIT_AUTOMAKE(equis, 0.0.1)
+AM_INIT_AUTOMAKE(edata, 0.0.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_C_BIGENDIAN
@@ -113,6 +113,7 @@ dnl Set PACKAGE_SOURCE_DIR in config.h.
 packagesrcdir=`cd $srcdir && pwd`
 AC_DEFINE_UNQUOTED(PACKAGE_SOURCE_DIR, "${packagesrcdir}", [Source Code Directory])
 
+create_shared_lib=""
 case "$host_os" in
     *bsd*)
        AC_DEFINE(HAVE_BSD, [], "Have a BSD distribution")
@@ -120,20 +121,19 @@ case "$host_os" in
     linux*)
        AC_DEFINE(HAVE_LINUX, [], "Have a Linux distribution")
     ;;
+    mingw|mingw32)
+	create_shared_lib="-no-undefined"
+    ;;
 esac
-
-PKG_CHECK_MODULES(EIX, [eix >= 0.0.1])
-
+AC_SUBST(create_shared_lib)
 
 ## Make the debug preprocessor configurable
 
 AC_OUTPUT([
 Makefile
-equis.pc
+edata.pc
 src/Makefile
 src/lib/Makefile
-src/lib/generator/Makefile
-src/lib/data/Makefile
 ],[
 ])
 
