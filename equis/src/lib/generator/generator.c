@@ -1,5 +1,9 @@
+#define EIX_24P8
+#include "Eix.h"
+
 #include "Equis.h"
 #include "equis_private.h"
+
 
 Equis_Generator * equis_generator_new(void)
 {

@@ -8,4 +8,4 @@ Description: Eix
 Requires: 
 Version: @VERSION@
 Libs: 
-Cflags: -I${includedir} -I${includedir}/eix
+Cflags: -I${includedir}/eix

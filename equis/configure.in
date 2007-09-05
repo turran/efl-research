@@ -133,7 +133,6 @@ equis.pc
 src/Makefile
 src/lib/Makefile
 src/lib/generator/Makefile
-src/lib/data/Makefile
 ],[
 ])
 

@@ -1,6 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 EIXHEADERS = \
+Eix.h \
 24p8.h \
 16p16.h
 
