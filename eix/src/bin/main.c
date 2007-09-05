@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
+
+#define EIX_24P8
 #include "Eix.h"
 
 void time_display(struct timeval ts, struct timeval te)
