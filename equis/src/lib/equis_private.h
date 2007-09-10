@@ -4,6 +4,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "generator.h"
+#define SSE
+
+#ifdef SSE
+#include "x86_sse.h"
+#endif
+
+#ifdef MMX 
+#include "x86_mmx.h"
+#endif
+
+#include "path.h"
 
 #endif

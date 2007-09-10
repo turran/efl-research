@@ -132,6 +132,7 @@ Makefile
 equis.pc
 src/Makefile
 src/lib/Makefile
+src/bin/Makefile
 ],[
 ])
 

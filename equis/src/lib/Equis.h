@@ -26,21 +26,7 @@
  *
  *
  */
+typedef struct _Equis_Path Equis_Path;
 
-typedef struct _Equis_Generator Equis_Generator; /**< */
-
-EAPI void equis_path_move_to(Equis_Generator *g, eix x, eix y);
-EAPI void equis_path_line_to(Equis_Generator *g, eix x, eix y);
-EAPI void equis_path_close(Equis_Generator *g);
-
-/**
- *
- */
-enum Cmd
-{
-	TEST
-};
-
-EAPI int equis_generator_vertex_get(Equis_Generator *g, eix *x, eix *y);
 
 #endif
