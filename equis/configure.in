@@ -122,7 +122,7 @@ case "$host_os" in
     ;;
 esac
 
-PKG_CHECK_MODULES(EIX, [eix >= 0.0.1])
+#PKG_CHECK_MODULES(EIX, [eix >= 0.0.1])
 
 
 ## Make the debug preprocessor configurable
@@ -132,7 +132,6 @@ Makefile
 equis.pc
 src/Makefile
 src/lib/Makefile
-src/lib/generator/Makefile
 ],[
 ])
 
