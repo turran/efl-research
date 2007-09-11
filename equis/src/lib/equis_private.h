@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SSE
+//#define SSE
+#define C 
 
 #ifdef SSE
 #include "x86_sse.h"
@@ -12,6 +13,10 @@
 
 #ifdef MMX 
 #include "x86_mmx.h"
+#endif
+
+#ifdef C
+#include "x86.h"
 #endif
 
 #include "path.h"

@@ -28,5 +28,12 @@
  */
 typedef struct _Equis_Path Equis_Path;
 
+EAPI Equis_Path * equis_path_new(int num_vertices);
+EAPI void equis_path_delete(Equis_Path *p);
+EAPI void equis_path_transform(Equis_Path *s, Equis_Path *d, float *tm);
+/* for now */
+EAPI void equis_path_vertex_add(Equis_Path *p, float x, float y);
+EAPI void equis_path_vertex_get(Equis_Path *p, float *x, float *y);
+EAPI void equis_path_rewind(Equis_Path *p);
 
 #endif
