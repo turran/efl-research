@@ -16,7 +16,7 @@
 #endif
 
 #ifdef C
-#include "x86.h"
+#include "c.h"
 #endif
 
 #include "path.h"

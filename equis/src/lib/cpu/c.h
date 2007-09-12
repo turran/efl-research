@@ -1,5 +1,5 @@
-#ifndef _X86_H
-#define _X86_H
+#ifndef _C_H
+#define _C_H
 
 /* TODO rename this file */
 #if 0
