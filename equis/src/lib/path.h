@@ -3,8 +3,9 @@
 
 struct _Equis_Path
 {
-	equis_t *x;
-	equis_t *y;
+	void *cpu_data;
+	//equis_t *x;
+	//equis_t *y;
 	char *cmd;
 
 	int num_allocated;
@@ -18,5 +19,6 @@ struct _Equis_Path
 #define MATRIX_IS_SHEAR_Y(m) 	((tm[0] == 1) && (!tm[1]) && (tm[3] == 1))
 #define MATRIX_IS_IDENTITY(m) 	((tm[0] == 1) && (!tm[1]) &&		\
 				(!tm[2]) && (tm[3] == 1))
+
 
 #endif

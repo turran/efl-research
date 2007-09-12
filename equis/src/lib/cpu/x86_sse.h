@@ -1,73 +1,12 @@
 #ifndef _X86_SSE_H
 #define _X86_SSE_H
 
+#include "sse.h"
+
 #define equis_t sse_t
 #define equis_c_elements 4
 
-typedef union _sse_t {
-	long double 		qf;	/* Quad precision (128-bit) 	*/
-	long long 		q[2];	/* 2 Quadword (64-bit) */
-	unsigned long long 	uq[2];	/* 2 Unsigned Quadword */
-	int 			d[4];	/* 4 Doubleword (32-bit) */
-	unsigned int 		ud[4];	/* 4 Unsigned Doubleword */
-	short 			w[8];	/* 8 Word (16-bit) */
-	unsigned short 		uw[8];	/* 8 Unsigned Word */
-	char 			b[16];	/* 16 Byte (8-bit) */
-	unsigned char 		ub[16];	/* 16 Unsigned Byte */
-	float 			s[4]; 	/* 4 Single-precision (32-bit) 	*/
-} __attribute__ ((aligned (16))) sse_t;
-
-#define	sse_i2r(op, imm, reg) 						\
-	__asm__ __volatile__ (#op " $" #imm ", %%" #reg 		\
-			      : /* nothing */ 				\
-			      : /* nothing */);
-
-#define	sse_m2r(op, mem, reg) 						\
-	__asm__ __volatile__ (#op " %0, %%" #reg 			\
-			      : /* nothing */ 				\
-			      : "m" (mem))
-
-#define	sse_r2m(op, reg, mem) 						\
-	__asm__ __volatile__ (#op " %%" #reg ", %0" 			\
-			      : "=m" (mem) 				\
-			      : /* nothing */ )
-
-#define	sse_a2r(op, mem, reg) 						\
-	__asm__ __volatile__ (#op " %0, %%" #reg 			\
-			      : /* nothing */ 				\
-			      : "m" (mem))
-
-#define	sse_r2a(op, reg, mem) 						\
-	__asm__ __volatile__ (#op " %%" #reg ", %0" 			\
-			      : "=m" (mem) \
-			      : /* nothing */ )
-
-#define	sse_r2r(op, regs, regd) \
-	__asm__ __volatile__ (#op " %" #regs ", %" #regd)
-
-/*
- * Scalar - MOVSS
- * Packed - MOVAPS, MOVUPS, MOVLPS, MOVHPS, MOVLHPS, MOVHLPS
- */
-
-#define	movaps_m2r(var, reg)	sse_a2r(movaps, var, reg)
-#define	movaps_r2m(reg, var)	sse_r2a(movaps, reg, var)
-#define	movaps_r2r(regs, regd)	sse_r2r(movaps, regs, regd)
-
-#define	movups_m2r(var, reg)	sse_a2r(movups, var, reg)
-#define	movups_r2m(reg, var)	sse_r2a(movups, reg, var)
-#define	movups_r2r(regs, regd)	sse_r2r(movups, regs, regd)
-
-/*
- * Scalar - ADDSS, SUBSS, MULSS, DIVSS, RCPSS, SQRTSS, MAXSS, MINSS, RSQRTSS
- * Packed - ADDPS, SUBPS, MULPS, DIVPS, RCPPS, SQRTPS, MAXPS, MINPS, RSQRTPS
- */
-
-#define	mulps_m2r(var, reg)	sse_m2r(mulps, var, reg)
-#define	mulps_r2r(regs, regd)	sse_r2r(mulps, regs, regd)
-
-#define	addps_m2r(var, reg)	sse_m2r(addps, var, reg)
-#define	addps_r2r(regs, regd)	sse_r2r(addps, regs, regd)
+#if 0
 
 static inline void
 sse_path_scale(sse_t *x, sse_t *y, sse_t *dx, sse_t *dy, int vertices, 
@@ -185,6 +124,103 @@ sse_path_alloc(sse_t **x, sse_t **y, int num)
 #define cpu_path_scale sse_path_scale
 #define cpu_path_shear sse_path_shear
 #define cpu_path_alloc sse_path_alloc
+#define cpu_path_vertex_add sse_path_vertex_add
+#define cpu_path_vertex_get sse_path_vertex_get
+
+#endif
+
+typedef struct
+{
+	sse_t *coords;
+} sse_data;
+
+static inline void
+sse_path_scale(sse_data *s, sse_data *d, int vertices, 
+	float sx, float sy)
+{
+	sse_t *ts , *td;
+	int i;
+	int num = (vertices / 2) + (vertices % 2 ? 1 : 0);
+	sse_t s4 = { 
+		.s[0] = sx,
+		.s[1] = sy,
+		.s[2] = sx,
+		.s[3] = sy
+	};
+
+	ts = s->coords;
+	td = d->coords;
+
+	for (i = 0; i < num; i++)
+	{
+		movaps_m2r(s4, xmm1);
+		mulps_m2r(*ts, xmm1); 
+		movaps_r2m(xmm1, *td);
+	
+		td++;
+		ts++;
+
+		#if 0
+		movaps_m2r(*ts, xmm1);
+		shufps(xmm1, xmm1, 0xd8);
+		ts++;
+		movaps_m2r(*ts, xmm2);
+		shufps(xmm2, xmm2, 0x8d);
+		movaps_
+		ts++;
+		#endif
+
+		//movaps_r2m(xmm2, *ts);
+		//printf("%f %f %f %f\n", ts->s[0], ts->s[1], ts->s[2], ts->s[3]);
+		/*
+		s++;
+		movaps_m2r(*s, xmm3);
+		d++;
+		
+		s++;
+		d++;*/
+	}
+}
+
+static inline void
+sse_path_vertex_add(sse_data *d, int vertex, float vx, float vy)
+{
+	sse_t *t;
+	int offset = 2 * (vertex % 2);
+	int i;
+
+	t = d->coords + (vertex / 2);
+	t->s[offset] = vx;
+	t->s[offset + 1] = vy;
+
+}
+
+static inline void
+sse_path_vertex_get(sse_data *d, int vertex, float *vx, float *vy)
+{
+	sse_t *t;
+	int offset = 2 * (vertex % 2);
+
+	t = d->coords + (vertex / 2);
+	*vx = t->s[offset];
+	*vy = t->s[offset + 1];
+}
+
+static inline void
+sse_path_new(void **data, int num)
+{
+	sse_data *d;
+
+	*data = calloc(1, sizeof(sse_data));
+	if (num)
+	{
+		d = *data;
+		posix_memalign((void **)&d->coords, 16, sizeof(float) * num * 2);
+	}
+}
+
+#define cpu_path_scale sse_path_scale
+#define cpu_path_new sse_path_new
 #define cpu_path_vertex_add sse_path_vertex_add
 #define cpu_path_vertex_get sse_path_vertex_get
 

@@ -1,7 +1,14 @@
-#ifndef _GENERATOR_H
-#define _GENERATOR_H
+#ifndef _COMPONENT_H
+#define _COMPONENT_H
 
-struct _Equis_Generator
+/**
+ * The component idea is to define a vector pipeline using small black boxes
+ * A source component can be a path
+ * A sink component 
+ * A pipe component can be the transformation matrix operations
+ */
+
+struct _Equis_Component
 {
 	/* input array of vertices/cmd's */
 	void *in;
@@ -10,16 +17,16 @@ struct _Equis_Generator
 	/* in case the output vertices need to be recalculated */
 	int has_changed; 	
 	
-	Equis_Generator *from;
+	Equis_Component *from;
 	const char 	*type;
 	void 		*data;
 };
 
-/* forward notification of a change, so dependant generators are also marked
+/* forward notification of a change, so dependant components are also marked
  * as changed
  */
-void equis_generator_change_set(Equis_Generator *g, int changed);
-void equis_generator_attach(Equis_Generator *g, Equis_Generator *to);
-void equis_generator_dettach(Equis_Generator *g);
+void equis_component_change_set(Equis_Component *g, int changed);
+void equis_component_attach(Equis_Component *g, Equis_Component *to);
+void equis_component_dettach(Equis_Component *g);
 
 #endif
