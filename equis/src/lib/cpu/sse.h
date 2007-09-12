@@ -87,5 +87,13 @@ typedef union _sse_t {
 /*============================================================================*
  *                                   Other                                    * 
  *============================================================================*/
-
+/* PREFETCHT0: */
+#define prefetch0(p) 	\
+	__asm__ __volatile__ ( \
+			      "prefetch0  %0 \n" \
+			      : "=m" (p) \
+			      : /* nothing */ )
+/* PREFETCHT1: */
+/* PREFETCHT2: */
+/* PREFETCHNTA: */
 #endif

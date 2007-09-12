@@ -174,55 +174,6 @@ sse_path_transform(sse_data *s, sse_data *d, int vertices,
 	}
 }
 
-
-static inline void
-sse_path_scale(sse_data *s, sse_data *d, int vertices, 
-	float sx, float sy)
-{
-	sse_t *ts , *td;
-	int i;
-	int num = (vertices / 2) + (vertices % 2 ? 1 : 0);
-	sse_t s4 = { 
-		.s[0] = sx,
-		.s[1] = sy,
-		.s[2] = sx,
-		.s[3] = sy
-	};
-
-	ts = s->coords;
-	td = d->coords;
-
-	for (i = 0; i < num; i++)
-	{
-		movaps_m2r(s4, xmm1);
-		mulps_m2r(*ts, xmm1); 
-		movaps_r2m(xmm1, *td);
-	
-		td++;
-		ts++;
-
-		#if 0
-		movaps_m2r(*ts, xmm1);
-		shufps(xmm1, xmm1, 0xd8);
-		ts++;
-		movaps_m2r(*ts, xmm2);
-		shufps(xmm2, xmm2, 0x8d);
-		movaps_
-		ts++;
-		#endif
-
-		//movaps_r2m(xmm2, *ts);
-		//printf("%f %f %f %f\n", ts->s[0], ts->s[1], ts->s[2], ts->s[3]);
-		/*
-		s++;
-		movaps_m2r(*s, xmm3);
-		d++;
-		
-		s++;
-		d++;*/
-	}
-}
-
 static inline void
 sse_path_vertex_add(sse_data *d, int vertex, float vx, float vy)
 {

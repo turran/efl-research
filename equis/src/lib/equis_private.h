@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SSE
-//#define C 
+//#define SSE
+#define C 
 
 #ifdef SSE
 #include "x86_sse.h"
