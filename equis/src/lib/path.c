@@ -12,6 +12,7 @@
  *============================================================================*/
 EAPI void equis_path_transform(Equis_Path *s, Equis_Path *d, float *tm)
 {
+#if 0
 	/* handle all possible cases */
 	/* check the dst path space */
 	/* empty matrix */
@@ -34,7 +35,9 @@ EAPI void equis_path_transform(Equis_Path *s, Equis_Path *d, float *tm)
 		//	tm[2]);
 		return;
 	}
+#endif
 	/* general case */
+	cpu_path_transform(s->cpu_data, d->cpu_data, s->num_vertices, tm);
 }
 
 EAPI Equis_Path * equis_path_new(int num_vertices)

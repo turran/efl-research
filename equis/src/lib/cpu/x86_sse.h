@@ -135,6 +135,47 @@ typedef struct
 } sse_data;
 
 static inline void
+sse_path_transform(sse_data *s, sse_data *d, int vertices, 
+	float *tm)
+{
+	int num = (vertices / 2) + (vertices % 2 ? 1 : 0);
+	int i;
+	sse_t *ts , *td;
+	
+	sse_t s1 = { 
+		.s[0] = tm[0],
+		.s[1] = tm[3],
+		.s[2] = tm[0],
+		.s[3] = tm[3]
+	};
+	sse_t s2 = { 
+		.s[0] = tm[1],
+		.s[1] = tm[2],
+		.s[2] = tm[1],
+		.s[3] = tm[2]
+	};
+	
+	ts = s->coords;
+	td = d->coords;
+	
+	movaps_m2r(s1, xmm1);
+	movaps_m2r(s2, xmm2);
+	for (i = 0; i < num; i++)
+	{
+		movaps_m2r(*ts, xmm3);
+		mulps_r2r(xmm1, xmm3);
+		movaps_m2r(*ts, xmm4);
+		shufps(xmm4, xmm4, 0xb1);
+		mulps_r2r(xmm2, xmm4);
+		addps_r2r(xmm4, xmm3);
+		movaps_r2m(xmm3, *td);
+		ts++;
+		td++;
+	}
+}
+
+
+static inline void
 sse_path_scale(sse_data *s, sse_data *d, int vertices, 
 	float sx, float sy)
 {
@@ -223,5 +264,6 @@ sse_path_new(void **data, int num)
 #define cpu_path_new sse_path_new
 #define cpu_path_vertex_add sse_path_vertex_add
 #define cpu_path_vertex_get sse_path_vertex_get
+#define cpu_path_transform sse_path_transform
 
 #endif
