@@ -1,6 +1,8 @@
 #ifndef _X86_SSE_H
 #define _X86_SSE_H
 
+/* TODO
+ * check this = #include <xmmintrin.h> */
 #include "sse.h"
 
 #define equis_t sse_t
@@ -209,6 +211,13 @@ sse_path_new(void **data, int num)
 		d = *data;
 		posix_memalign((void **)&d->coords, 16, sizeof(float) * num * 2);
 	}
+}
+
+
+static inline void
+sse_path_bezier(sse_t *d)
+{
+
 }
 
 #define cpu_path_scale sse_path_scale

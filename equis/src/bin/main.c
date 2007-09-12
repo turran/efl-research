@@ -29,7 +29,7 @@ int main(void)
 	gettimeofday(&ts, NULL);
 	//t[0] = 2.5, t[1] = 0, t[2] = 0, t[3] =  3.0;
 	//equis_path_transform(p1, p2, t);
-	t[0] = 1, t[1] = 3.0, t[2] = 0, t[3] =  1;
+	t[0] = 1.1, t[1] = 3.0, t[2] = 0.4, t[3] =  1;
 	equis_path_transform(p1, p2, t);
 	gettimeofday(&te, NULL);
 	time_display(ts, te);
