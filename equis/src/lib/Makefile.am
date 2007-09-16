@@ -1,4 +1,4 @@
-SUBDIRS = 
+SUBDIRS = component 
 
 MAINTAINERCLEANFILES = \
 Makefile.in
@@ -14,8 +14,10 @@ libequis_la_SOURCES = \
 path.c
 
 libequis_la_LIBADD = \
+component/libequis_component.la \
  -lm 
 
-libequis_la_DEPENDENCIES = 
+libequis_la_DEPENDENCIES = \
+component/libequis_component.la
 
 libequis_la_LDFLAGS      = -version-info 1:0:0

@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SSE
-//#define C 
+#if 0
+//#define SSE
+#define C 
 
 #ifdef SSE
 #include "x86_sse.h"
@@ -17,6 +18,7 @@
 
 #ifdef C
 #include "c.h"
+#endif
 #endif
 
 #include "path.h"

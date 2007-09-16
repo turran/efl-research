@@ -1,6 +1,12 @@
 #ifndef _PATH_H
 #define _PATH_H
 
+typedef struct _Equis_Point
+{
+	float x;
+	float y;
+} Equis_Point;
+
 struct _Equis_Path
 {
 	void *cpu_data;
@@ -19,6 +25,4 @@ struct _Equis_Path
 #define MATRIX_IS_SHEAR_Y(m) 	((tm[0] == 1) && (!tm[1]) && (tm[3] == 1))
 #define MATRIX_IS_IDENTITY(m) 	((tm[0] == 1) && (!tm[1]) &&		\
 				(!tm[2]) && (tm[3] == 1))
-
-
 #endif

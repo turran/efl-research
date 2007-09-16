@@ -10,6 +10,7 @@ void time_display(struct timeval ts, struct timeval te)
 	printf("TIME %ld us\n", (tr.tv_sec * 1000000) + tr.tv_usec);
 }
 
+#if 0
 int main(void)
 {
 	Equis_Path *p1, *p2;
@@ -43,4 +44,15 @@ int main(void)
 	equis_path_delete(p1);
 	equis_path_delete(p2);
 	return 0;
+}
+#endif
+
+int main(void)
+{
+	Equis_Component *src;
+	Equis_Component_Reader *r;
+
+	src = equis_source_csv_new("/tmp/test.csv");
+	r = equis_component_reader_new(src);
+	equis_component_delete(src);
 }

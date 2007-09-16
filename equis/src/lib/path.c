@@ -10,6 +10,7 @@
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+#if 0
 EAPI void equis_path_transform(Equis_Path *s, Equis_Path *d, float *tm)
 {
 #if 0
@@ -106,3 +107,4 @@ EAPI void equis_path_rewind(Equis_Path *p)
 {
 	p->next_vertex = 0;
 }
+#endif
