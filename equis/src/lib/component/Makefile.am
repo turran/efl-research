@@ -11,7 +11,8 @@ noinst_LTLIBRARIES = libequis_component.la
 libequis_component_la_SOURCES = \
 component.c \
 reader.c \
-source_csv.c
+source_csv.c \
+transform.c
 
 libequis_component_la_LIBADD = \
  -lm \

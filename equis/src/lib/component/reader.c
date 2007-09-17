@@ -28,21 +28,14 @@ EAPI void equis_reader_rewind(Equis_Component_Reader *r)
 {
 	r->points = r->from->points;
 	r->cmds = r->from->cmds;
+	r->pos = 0;
 }
 
 EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
 {
-#if 0
-	equis_t *tmp_x, *tmp_y;
-
-	tmp_x = p->x + (p->next_vertex / equis_c_elements);
-	tmp_y = p->y + (p->next_vertex / equis_c_elements);
-	cpu_path_vertex_get(tmp_x, tmp_y, x, y, 
-		p->next_vertex % equis_c_elements);
-	cpu_path_vertex_get(p->cpu_data, p->next_vertex, x, y);
-	if (p->next_vertex++ > p->num_vertices)
-	{
-		p->next_vertex = 0;
-	}
-#endif
+	*x = r->points->x;
+	*y = r->points->y;
+	r->points++;
+	r->cmds++;
+	r->pos;
 }

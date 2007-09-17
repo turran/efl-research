@@ -2,7 +2,8 @@
 #define _X86_SSE_H
 
 /* TODO
- * check this = #include <xmmintrin.h> */
+ * check this */
+#include <xmmintrin.h>
 #include "sse.h"
 
 #define equis_t sse_t

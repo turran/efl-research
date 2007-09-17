@@ -1,4 +1,4 @@
-INCLUDES = -Wall -g \
+INCLUDES = -Wall -g -msse \
 -I$(top_srcdir)/src/lib \
 -I$(top_srcdir)/src/lib/cpu
 

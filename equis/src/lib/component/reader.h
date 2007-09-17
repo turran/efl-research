@@ -3,10 +3,15 @@
 
 struct _Equis_Component_Reader
 {
-	Equis_Component_Reader 	*points;
+	Equis_Point 		*points;
 	char 			*cmds;
-	Equis_Component 	*from;
-	Equis_Component 	*to;
+	
+	int 			pos;
+
+
+	Equis_Component 	*from; 	/**< Component the reader reads from */
+	Equis_Component 	*to; 	/**< In case the reader is used as a pipe */
+	
 };
 
 #endif

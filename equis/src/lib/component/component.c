@@ -27,8 +27,14 @@ void equis_component_reader_notify(Equis_Component *c)
 	/* for each reader call the notify function on the readers 
 	 * equis_reader_notify(r) 
 	 */
+}
+
+/* should create maximum num vertices and store it */
+void equis_component_generate(Equis_Component *c, int *num)
+{
 
 }
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
