@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: eix
-Description: Eix
+Name: Edata 
+Description: Edata
 Requires: 
 Version: @VERSION@
-Libs: 
-Cflags: -I${includedir} -I${includedir}/eix
+Libs: -L${libdir} -ledata
+Cflags: -I${includedir}

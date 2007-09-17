@@ -53,7 +53,7 @@ edata_sheap_init(Edata_Sheap *heap, Edata_Compare_Cb compare, int size)
      heap->compare = edata_direct_compare;
    else
      heap->compare = compare;
-   heap->order = ECORE_SORT_MIN;
+   heap->order = EDATA_SORT_MIN;
 
    heap->data = (void **)malloc(heap->space * sizeof(void *));
    if (!heap->data)
@@ -148,7 +148,7 @@ edata_sheap_insert(Edata_Sheap *heap, void *data)
     * data. The loop is placed inside the if statement to reduce the
     * number of branching decisions that must be predicted.
     */
-   if (heap->order == ECORE_SORT_MIN)
+   if (heap->order == EDATA_SORT_MIN)
      {
 	while ((position > 0) && heap->compare(heap->data[parent],
 					       heap->data[position]) > 0)
@@ -382,7 +382,7 @@ _edata_sheap_heapify(Edata_Sheap *heap, int i)
    int left = LEFT(i);
    int right = RIGHT(i);
 
-   if (heap->order == ECORE_SORT_MIN)
+   if (heap->order == EDATA_SORT_MIN)
      {
 	if (left <= heap->size && heap->compare(heap->data[left - 1],
 						heap->data[i - 1]) < 0)

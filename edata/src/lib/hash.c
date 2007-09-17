@@ -5,17 +5,17 @@
 #define PRIME_MIN 17
 #define PRIME_MAX 16777213
 
-#define ECORE_HASH_CHAIN_MAX 3
+#define EDATA_HASH_CHAIN_MAX 3
 
-#define ECORE_COMPUTE_HASH(hash, key) hash->hash_func(key) % \
+#define EDATA_COMPUTE_HASH(hash, key) hash->hash_func(key) % \
 					edata_prime_table[hash->size];
 
-#define ECORE_HASH_INCREASE(hash) ((hash && edata_prime_table[hash->size] < PRIME_MAX) ? \
+#define EDATA_HASH_INCREASE(hash) ((hash && edata_prime_table[hash->size] < PRIME_MAX) ? \
 		(hash->nodes / edata_prime_table[hash->size]) > \
-		ECORE_HASH_CHAIN_MAX : FALSE)
-#define ECORE_HASH_REDUCE(hash) ((hash && edata_prime_table[hash->size] > PRIME_MIN) ? \
+		EDATA_HASH_CHAIN_MAX : FALSE)
+#define EDATA_HASH_REDUCE(hash) ((hash && edata_prime_table[hash->size] > PRIME_MIN) ? \
 		(double)hash->nodes / (double)edata_prime_table[hash->size-1] \
-		< ((double)ECORE_HASH_CHAIN_MAX * 0.375) : FALSE)
+		< ((double)EDATA_HASH_CHAIN_MAX * 0.375) : FALSE)
 
 /* Private hash manipulation functions */
 static int _edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node);
@@ -418,14 +418,14 @@ _edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node)
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
    /* Check to see if the hash needs to be resized */
-   if (ECORE_HASH_INCREASE(hash))
+   if (EDATA_HASH_INCREASE(hash))
      _edata_hash_increase(hash);
 
    /* Compute the position in the table */
    if (!hash->hash_func)
      hash_val = (unsigned int)node->key % edata_prime_table[hash->size];
    else
-     hash_val = ECORE_COMPUTE_HASH(hash, node->key);
+     hash_val = EDATA_COMPUTE_HASH(hash, node->key);
 
    /* Prepend the node to the list at the index position */
    node->next = hash->buckets[hash_val];
@@ -483,7 +483,7 @@ edata_hash_remove(Edata_Hash *hash, const void *key)
    if (!hash->hash_func)
      hash_val = (unsigned int )key % edata_prime_table[hash->size];
    else
-     hash_val = ECORE_COMPUTE_HASH(hash, key);
+     hash_val = EDATA_COMPUTE_HASH(hash, key);
 
    /*
     * If their is a list that could possibly hold the key/value pair
@@ -530,7 +530,7 @@ edata_hash_remove(Edata_Hash *hash, const void *key)
 	  }
      }
 
-   if (ECORE_HASH_REDUCE(hash))
+   if (EDATA_HASH_REDUCE(hash))
      _edata_hash_decrease(hash);
 
    return ret;
@@ -593,7 +593,7 @@ _edata_hash_get_node(Edata_Hash *hash, const void *key)
    if (!hash->hash_func)
      hash_val = (unsigned int )key % edata_prime_table[hash->size];
    else
-     hash_val = ECORE_COMPUTE_HASH(hash, key);
+     hash_val = EDATA_COMPUTE_HASH(hash, key);
 
    /* Grab the bucket at the specified position */
    if (hash->buckets[hash_val])

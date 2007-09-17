@@ -51,29 +51,29 @@ extern "C" {
 
    EAPI extern const unsigned int edata_prime_table[];
    
-# define ECORE_SORT_MIN 0
-# define ECORE_SORT_MAX 1
+# define EDATA_SORT_MIN 0
+# define EDATA_SORT_MAX 1
 
    typedef void (*Edata_For_Each) (void *value, void *user_data);
-# define ECORE_FOR_EACH(function) ((Edata_For_Each)function)
+# define EDATA_FOR_EACH(function) ((Edata_For_Each)function)
    
    typedef void (*Edata_Free_Cb) (void *data);
-# define ECORE_FREE_CB(func) ((Edata_Free_Cb)func)
+# define EDATA_FREE_CB(func) ((Edata_Free_Cb)func)
    
    typedef unsigned int (*Edata_Hash_Cb) (const void *key);
-# define ECORE_HASH_CB(function) ((Edata_Hash_Cb)function)
+# define EDATA_HASH_CB(function) ((Edata_Hash_Cb)function)
    
    typedef int (*Edata_Compare_Cb) (const void *data1, const void *data2);
-# define ECORE_COMPARE_CB(function) ((Edata_Compare_Cb)function)
+# define EDATA_COMPARE_CB(function) ((Edata_Compare_Cb)function)
    
    typedef struct _edata_list Edata_List;
-# define ECORE_LIST(list) ((Edata_List *)list)
+# define EDATA_LIST(list) ((Edata_List *)list)
    
    typedef struct _edata_list_node Edata_List_Node;
-# define ECORE_LIST_NODE(node) ((Edata_List_Node *)node)
+# define EDATA_LIST_NODE(node) ((Edata_List_Node *)node)
 
    typedef struct _edata_strbuf Edata_Strbuf;
-# define ECORE_STRBUF(buf) ((Edata_Strbuf *)buf)
+# define EDATA_STRBUF(buf) ((Edata_Strbuf *)buf)
    
    struct _edata_list_node {
       void *data;
@@ -161,10 +161,10 @@ extern "C" {
    EAPI int edata_list_free_cb_set(Edata_List * list, Edata_Free_Cb free_func);
    
    typedef Edata_List Edata_DList;
-# define ECORE_DLIST(dlist) ((Edata_DList *)dlist)
+# define EDATA_DLIST(dlist) ((Edata_DList *)dlist)
    
    typedef struct _edata_dlist_node Edata_DList_Node;
-# define ECORE_DLIST_NODE(dlist) ((Edata_DList_Node *)dlist)
+# define EDATA_DLIST_NODE(dlist) ((Edata_DList_Node *)dlist)
    
    struct _edata_dlist_node {
       Edata_List_Node single;
@@ -186,7 +186,7 @@ extern "C" {
    /* Info about list's state */
    EAPI void *edata_dlist_current(Edata_DList *list);
    EAPI int edata_dlist_index(Edata_DList *list);
-# define edata_dlist_count(list) edata_list_count(ECORE_LIST(list))
+# define edata_dlist_count(list) edata_list_count(EDATA_LIST(list))
    
    /* Removing items from the list */
    EAPI void *edata_dlist_remove(Edata_DList * _e_dlist);
@@ -196,7 +196,7 @@ extern "C" {
    
    /* Traversing the list */
 # define edata_dlist_for_each(list, function, user_data) \
-   edata_list_for_each(ECORE_LIST(list), function, user_data)
+   edata_list_for_each(EDATA_LIST(list), function, user_data)
    EAPI void *edata_dlist_first_goto(Edata_DList * _e_dlist);
    EAPI void *edata_dlist_last_goto(Edata_DList * _e_dlist);
    EAPI void *edata_dlist_index_goto(Edata_DList * _e_dlist, int index);
@@ -240,7 +240,7 @@ extern "C" {
     */
    
    typedef struct _edata_hash_node Edata_Hash_Node;
-# define ECORE_HASH_NODE(hash) ((Edata_Hash_Node *)hash)
+# define EDATA_HASH_NODE(hash) ((Edata_Hash_Node *)hash)
    
    struct _edata_hash_node {
       Edata_Hash_Node *next; /* Pointer to the next node in the bucket list */
@@ -249,7 +249,7 @@ extern "C" {
    };
    
    typedef struct _edata_hash Edata_Hash;
-# define ECORE_HASH(hash) ((Edata_Hash *)hash)
+# define EDATA_HASH(hash) ((Edata_Hash *)hash)
    
    struct _edata_hash {
       Edata_Hash_Node **buckets;
@@ -356,7 +356,7 @@ extern "C" {
 
 
    typedef struct _edata_heap Edata_Sheap;
-# define ECORE_HEAP(heap) ((Edata_Sheap *)heap)
+# define EDATA_HEAP(heap) ((Edata_Sheap *)heap)
    
    struct _edata_heap {
       void **data;
@@ -402,7 +402,7 @@ extern "C" {
    
    
    typedef struct _Edata_Tree_Node Edata_Tree_Node;
-# define ECORE_TREE_NODE(object) ((Edata_Tree_Node *)object)
+# define EDATA_TREE_NODE(object) ((Edata_Tree_Node *)object)
    struct _Edata_Tree_Node {
       
       /* The actual data for each node */
@@ -420,7 +420,7 @@ extern "C" {
    };
    
    typedef struct _Edata_Tree Edata_Tree;
-# define ECORE_TREE(object) ((Edata_Tree *)object)
+# define EDATA_TREE(object) ((Edata_Tree *)object)
    struct _Edata_Tree {
       /* Nodes of the tree */
       Edata_Tree_Node *tree;
@@ -516,4 +516,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* _ECORE_DATA_H */
+#endif				/* _EDATA_DATA_H */

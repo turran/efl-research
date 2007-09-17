@@ -4,7 +4,7 @@
 /* Some tests showed that beyond that value heap sort is faster than merge sort
  * (in this implementation). This value has to be changed or at least review
  * if someone is changing the implementation. */
-#define ECORE_MERGESORT_LIMIT 40000
+#define EDATA_MERGESORT_LIMIT 40000
 
 /* Return information about the list */
 static void *_edata_list_current(Edata_List * list);
@@ -1134,8 +1134,8 @@ _edata_list_find(Edata_List *list, Edata_Compare_Cb function, const void *user_d
  * Sort data in @p list using the compare function @p compare
  * @param list      The list.
  * @param compare   The function to compare the data of @p list
- * @param order     The sort direction, possible values are ECORE_SORT_MIN and
- *                  ECORE_SORT_MAX
+ * @param order     The sort direction, possible values are EDATA_SORT_MIN and
+ *                  EDATA_SORT_MAX
  * @return          true on success
  *
  * This is a wrapper function for mergesort and heapsort. It
@@ -1149,7 +1149,7 @@ edata_list_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
    
    if (list->nodes < 2)
      return 1;
-   if (list->nodes < ECORE_MERGESORT_LIMIT)
+   if (list->nodes < EDATA_MERGESORT_LIMIT)
      return edata_list_mergesort(list, compare, order);
    if (!edata_list_heapsort(list, compare, order))
      return edata_list_mergesort(list, compare, order);
@@ -1161,8 +1161,8 @@ edata_list_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
  * Sort data in @p list using the compare function @p compare
  * @param list      The list.
  * @param compare   The function to compare the data of @p list
- * @param order     The sort direction, possible values are ECORE_SORT_MIN and
- *                  ECORE_SORT_MAX
+ * @param order     The sort direction, possible values are EDATA_SORT_MIN and
+ *                  EDATA_SORT_MAX
  * @return          true on success
  *
  * Mergesort is a stable, in-place sorting algorithm 
@@ -1176,7 +1176,7 @@ edata_list_mergesort(Edata_List *list, Edata_Compare_Cb compare, char order)
    if (list->nodes < 2)
      return 1;
 
-   if (order == ECORE_SORT_MIN)
+   if (order == EDATA_SORT_MIN)
      order = 1;
    else
      order = -1;
@@ -1287,8 +1287,8 @@ _edata_list_node_merge(Edata_List_Node *first, Edata_List_Node *second,
  * Sort data in @p list using the compare function @p compare
  * @param list      The list.
  * @param compare   The function to compare the data of @p list
- * @param order     The sort direction, possible values are ECORE_SORT_MIN and
- *                  ECORE_SORT_MAX
+ * @param order     The sort direction, possible values are EDATA_SORT_MIN and
+ *                  EDATA_SORT_MAX
  * @return          true on success
  *
  * Heapsort is a unstable sorting algorithm, it needs to allocate extra memomry,
@@ -1472,7 +1472,7 @@ edata_dlist_free_cb_set(Edata_DList *list, Edata_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   return edata_list_free_cb_set(ECORE_LIST(list), free_func);
+   return edata_list_free_cb_set(EDATA_LIST(list), free_func);
 }
 
 /**
@@ -1485,7 +1485,7 @@ edata_dlist_empty_is(Edata_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   return edata_list_empty_is(ECORE_LIST(list));
+   return edata_list_empty_is(EDATA_LIST(list));
 }
 
 /**
@@ -1498,7 +1498,7 @@ edata_dlist_index(Edata_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   return edata_list_index(ECORE_LIST(list));
+   return edata_list_index(EDATA_LIST(list));
 }
 
 /**
@@ -1524,10 +1524,10 @@ edata_dlist_append(Edata_DList *list, void *data)
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
    node = edata_dlist_node_new();
-   ECORE_LIST_NODE(node)->data = data;
+   EDATA_LIST_NODE(node)->data = data;
 
-   prev = ECORE_DLIST_NODE(ECORE_LIST(list)->last);
-   ret = _edata_list_append_0(ECORE_LIST(list), ECORE_LIST_NODE(node));
+   prev = EDATA_DLIST_NODE(EDATA_LIST(list)->last);
+   ret = _edata_list_append_0(EDATA_LIST(list), EDATA_LIST_NODE(node));
    if (ret)
      node->previous = prev;
 
@@ -1551,10 +1551,10 @@ edata_dlist_prepend(Edata_DList *list, void *data)
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
    node = edata_dlist_node_new();
-   ECORE_LIST_NODE(node)->data = data;
+   EDATA_LIST_NODE(node)->data = data;
 
-   prev = ECORE_DLIST_NODE(ECORE_LIST(list)->first);
-   ret = _edata_list_prepend_0(ECORE_LIST(list), ECORE_LIST_NODE(node));
+   prev = EDATA_DLIST_NODE(EDATA_LIST(list)->first);
+   ret = _edata_list_prepend_0(EDATA_LIST(list), EDATA_LIST_NODE(node));
    if (ret && prev)
      prev->previous = node;
 
@@ -1580,26 +1580,26 @@ edata_dlist_insert(Edata_DList *list, void *data)
    /*
     * Identify and shortcut the end cases.
     */
-   if (!ECORE_LIST(list)->current)
+   if (!EDATA_LIST(list)->current)
      return edata_dlist_append(list, data);
-   if (ECORE_LIST(list)->current == ECORE_LIST(list)->first)
+   if (EDATA_LIST(list)->current == EDATA_LIST(list)->first)
      return edata_dlist_prepend(list, data);
 
    node = edata_dlist_node_new();
-   ECORE_LIST_NODE(node)->data = data;
+   EDATA_LIST_NODE(node)->data = data;
 
    /* Setup the fields of the new node */
-   ECORE_LIST_NODE(node)->next = ECORE_LIST(list)->current;
+   EDATA_LIST_NODE(node)->next = EDATA_LIST(list)->current;
 
    /* And hook the node into the list */
-   prev = ECORE_DLIST_NODE(ECORE_LIST(list)->current)->previous;
-   ECORE_LIST_NODE(prev)->next = ECORE_LIST_NODE(node);
-   ECORE_DLIST_NODE(ECORE_LIST(list)->current)->previous = node;
+   prev = EDATA_DLIST_NODE(EDATA_LIST(list)->current)->previous;
+   EDATA_LIST_NODE(prev)->next = EDATA_LIST_NODE(node);
+   EDATA_DLIST_NODE(EDATA_LIST(list)->current)->previous = node;
    node->previous = prev;
 
    /* Now move the current item to the inserted item */
-   ECORE_LIST(list)->current = ECORE_LIST_NODE(node);
-   ECORE_LIST(list)->nodes++;
+   EDATA_LIST(list)->current = EDATA_LIST_NODE(node);
+   EDATA_LIST(list)->nodes++;
 
    return ret;
 }
@@ -1629,7 +1629,7 @@ edata_dlist_append_list(Edata_DList *list, Edata_DList *append)
    else
      {
 	list->last->next = append->first;
-	ECORE_DLIST_NODE(append->first)->previous = ECORE_DLIST_NODE(list->last);
+	EDATA_DLIST_NODE(append->first)->previous = EDATA_DLIST_NODE(list->last);
 	list->last = append->last;
 	list->nodes += append->nodes;
      }
@@ -1662,7 +1662,7 @@ edata_dlist_prepend_list(Edata_DList *list, Edata_DList *prepend)
    else
      {
 	prepend->last->next = list->first;
-	ECORE_DLIST_NODE(list->first)->previous = ECORE_DLIST_NODE(prepend->last);
+	EDATA_DLIST_NODE(list->first)->previous = EDATA_DLIST_NODE(prepend->last);
 	list->first = prepend->first;
 	list->nodes += prepend->nodes;
 	list->index += prepend->nodes;
@@ -1687,16 +1687,16 @@ EAPI void *
 edata_dlist_remove(Edata_DList *list)
 {
    void *ret;
-   Edata_List *l2 = ECORE_LIST(list);
+   Edata_List *l2 = EDATA_LIST(list);
    Edata_DList_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
    if (l2->current)
      {
-	node = ECORE_DLIST_NODE(list->current->next);
+	node = EDATA_DLIST_NODE(list->current->next);
 	if (node)
-	  node->previous = ECORE_DLIST_NODE(l2->current)->previous;
+	  node->previous = EDATA_DLIST_NODE(l2->current)->previous;
      }
    ret = _edata_list_remove_0(list);
 
@@ -1754,8 +1754,8 @@ _edata_dlist_first_remove(Edata_DList *list)
      return NULL;
 
    ret = _edata_list_first_remove(list);
-   if (ret && ECORE_LIST(list)->first)
-     ECORE_DLIST_NODE(ECORE_LIST(list)->first)->previous = NULL;
+   if (ret && EDATA_LIST(list)->first)
+     EDATA_DLIST_NODE(EDATA_LIST(list)->first)->previous = NULL;
 
    return ret;
 }
@@ -1778,7 +1778,7 @@ edata_dlist_last_remove(Edata_DList *list)
      return NULL;
 
    node = list->last;
-   list->last = ECORE_LIST_NODE(ECORE_DLIST_NODE(node)->previous);
+   list->last = EDATA_LIST_NODE(EDATA_DLIST_NODE(node)->previous);
    if (list->last)
      list->last->next = NULL;
    if (list->first == node)
@@ -1824,21 +1824,21 @@ _edata_dlist_index_goto(Edata_DList *list, int index)
    if (!list)
      return NULL;
 
-   if (edata_list_empty_is(ECORE_LIST(list)))
+   if (edata_list_empty_is(EDATA_LIST(list)))
      return NULL;
 
-   if (index > edata_list_count(ECORE_LIST(list)) || index < 0)
+   if (index > edata_list_count(EDATA_LIST(list)) || index < 0)
      return NULL;
 
-   if (ECORE_LIST(list)->index >= ECORE_LIST(list)->nodes)
-     _edata_list_last_goto(ECORE_LIST(list));
+   if (EDATA_LIST(list)->index >= EDATA_LIST(list)->nodes)
+     _edata_list_last_goto(EDATA_LIST(list));
 
-   if (index < ECORE_LIST(list)->index)
+   if (index < EDATA_LIST(list)->index)
      increment = -1;
    else
      increment = 1;
 
-   for (i = ECORE_LIST(list)->index; i != index; i += increment)
+   for (i = EDATA_LIST(list)->index; i != index; i += increment)
      {
 	if (increment > 0)
 	  _edata_list_next(list);
@@ -1863,7 +1863,7 @@ edata_dlist_goto(Edata_DList *list, void *data)
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_goto(ECORE_LIST(list), data);
+   ret = _edata_list_goto(EDATA_LIST(list), data);
 
    return ret;
 }
@@ -1898,7 +1898,7 @@ edata_dlist_last_goto(Edata_DList *list)
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_last_goto(ECORE_LIST(list));
+   ret = _edata_list_last_goto(EDATA_LIST(list));
 
    return ret;
 }
@@ -1913,7 +1913,7 @@ edata_dlist_current(Edata_DList *list)
 {
    void *ret;
 
-   ret = _edata_list_current(ECORE_LIST(list));
+   ret = _edata_list_current(EDATA_LIST(list));
 
    return ret;
 }
@@ -1956,15 +1956,15 @@ _edata_dlist_previous(Edata_DList *list)
    if (!list)
      return NULL;
 
-   if (ECORE_LIST(list)->current)
+   if (EDATA_LIST(list)->current)
      {
-	data = ECORE_LIST(list)->current->data;
-	ECORE_LIST(list)->current = ECORE_LIST_NODE(ECORE_DLIST_NODE(
-								     ECORE_LIST(list)->current)->previous);
-	ECORE_LIST(list)->index--;
+	data = EDATA_LIST(list)->current->data;
+	EDATA_LIST(list)->current = EDATA_LIST_NODE(EDATA_DLIST_NODE(
+								     EDATA_LIST(list)->current)->previous);
+	EDATA_LIST(list)->index--;
      }
    else
-     _edata_list_last_goto(ECORE_LIST(list));
+     _edata_list_last_goto(EDATA_LIST(list));
 
    return data;
 }
@@ -1980,7 +1980,7 @@ edata_dlist_clear(Edata_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   edata_list_clear(ECORE_LIST(list));
+   edata_list_clear(EDATA_LIST(list));
 
    return TRUE;
 }
@@ -1989,8 +1989,8 @@ edata_dlist_clear(Edata_DList *list)
  * Sort data in @p list using the compare function @p compare
  * @param list      The list.
  * @param compare   The function to compare the data of @p list
- * @param order     The sort direction, possible values are ECORE_SORT_MIN and
- *                  ECORE_SORT_MAX
+ * @param order     The sort direction, possible values are EDATA_SORT_MIN and
+ *                  EDATA_SORT_MAX
  * @return          true on success
  *
  * This is a wrapper function for mergesort and heapsort. It
@@ -2004,7 +2004,7 @@ edata_dlist_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
    
    if (list->nodes < 2)
      return 1;
-   if (list->nodes < ECORE_MERGESORT_LIMIT)
+   if (list->nodes < EDATA_MERGESORT_LIMIT)
      return edata_dlist_mergesort(list, compare, order);
    if (!edata_dlist_heapsort(list, compare, order))
      return edata_dlist_mergesort(list, compare, order);
@@ -2016,8 +2016,8 @@ edata_dlist_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
  * Sort data in @p list using the compare function @p compare
  * @param list      The list.
  * @param compare   The function to compare the data of @p list
- * @param order     The sort direction, possible values are ECORE_SORT_MIN and
- *                  ECORE_SORT_MAX
+ * @param order     The sort direction, possible values are EDATA_SORT_MIN and
+ *                  EDATA_SORT_MAX
  * @return          true on success
  *
  * Mergesort is a stable, in-place sorting algorithm 
@@ -2031,7 +2031,7 @@ edata_dlist_mergesort(Edata_DList *list, Edata_Compare_Cb compare, char order)
    if (list->nodes < 2)
      return 1;
 
-   if (order == ECORE_SORT_MIN)
+   if (order == EDATA_SORT_MIN)
      order = 1;
    else
      order = -1;
@@ -2083,7 +2083,7 @@ _edata_dlist_node_mergesort(Edata_List_Node *first, int n,
    /* split the list */
    middle = premid->next;
    premid->next = NULL;
-   ECORE_DLIST_NODE(middle)->previous = NULL;
+   EDATA_DLIST_NODE(middle)->previous = NULL;
 
    /* sort the the partial lists */
    first = _edata_dlist_node_mergesort(first, mid, compare, order);
@@ -2118,13 +2118,13 @@ _edata_dlist_node_merge(Edata_List_Node *first, Edata_List_Node *second,
      {
 	if (compare(first->data, second->data) * order > 0)
 	  {
-		ECORE_DLIST_NODE(second)->previous = ECORE_DLIST_NODE(l);
+		EDATA_DLIST_NODE(second)->previous = EDATA_DLIST_NODE(l);
 		l = l->next = second;
 		second = second->next;
 	  }
 	else
 	  {
-		ECORE_DLIST_NODE(first)->previous = ECORE_DLIST_NODE(l);
+		EDATA_DLIST_NODE(first)->previous = EDATA_DLIST_NODE(l);
 		l = l->next = first;
 		first = first->next;
 	  }
@@ -2133,12 +2133,12 @@ _edata_dlist_node_merge(Edata_List_Node *first, Edata_List_Node *second,
    /* append the rest or set it to NULL */
    if (first) 
      {
-	ECORE_DLIST_NODE(first)->previous = ECORE_DLIST_NODE(l);
+	EDATA_DLIST_NODE(first)->previous = EDATA_DLIST_NODE(l);
         l->next = first;
      }
    else if (second)
      {
-     	ECORE_DLIST_NODE(second)->previous = ECORE_DLIST_NODE(l);
+     	EDATA_DLIST_NODE(second)->previous = EDATA_DLIST_NODE(l);
 	l->next = second;
      }
    else
@@ -2159,7 +2159,7 @@ edata_dlist_node_init(Edata_DList_Node *node)
 
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
-   ret = edata_list_node_init(ECORE_LIST_NODE(node));
+   ret = edata_list_node_init(EDATA_LIST_NODE(node));
    if (ret)
      node->previous = NULL;
 
@@ -2200,5 +2200,5 @@ edata_dlist_node_destroy(Edata_DList_Node * node, Edata_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
-   return edata_list_node_destroy(ECORE_LIST_NODE(node), free_func);
+   return edata_list_node_destroy(EDATA_LIST_NODE(node), free_func);
 }

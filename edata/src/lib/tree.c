@@ -31,7 +31,7 @@ edata_tree_new(Edata_Compare_Cb compare_func)
 {
    Edata_Tree *new_tree;
 
-   new_tree = ECORE_TREE(malloc(sizeof(Edata_Tree)));
+   new_tree = EDATA_TREE(malloc(sizeof(Edata_Tree)));
    if (!new_tree)
      return NULL;
 
@@ -127,7 +127,7 @@ edata_tree_node_new()
 {
    Edata_Tree_Node *new_node;
 
-   new_node = ECORE_TREE_NODE(malloc(sizeof(Edata_Tree_Node)));
+   new_node = EDATA_TREE_NODE(malloc(sizeof(Edata_Tree_Node)));
    if (!new_node)
      return NULL;
 
