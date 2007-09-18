@@ -4,13 +4,69 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+#define ALLOC_STEP 1000
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+Equis_Path * equis_path_new(void *data, int vertices_ref)
+{
+	Equis_Path *p;
+
+	p = calloc(1, sizeof(Equis_Path));
+	p->data = data;
+	if (vertices_ref)
+	{
+		p->points = realloc(p->points, sizeof(Equis_Point) * vertices_ref);
+		p->cmds = realloc(p->cmds, sizeof(char) * vertices_ref);
+		p->point_curr = p->points;
+		p->cmd_curr = p->cmds;
+		p->num_allocated += vertices_ref;
+	}
+	return p;
+}
+
+void * equis_path_delete(Equis_Path *p)
+{
+	free(p->points);
+	free(p->cmds);
+	return p->data;
+}
+
+void equis_path_vertex_add(Equis_Path *p, float x, float y, char cmd)
+{
+	/* increase the size of the arrays in ALLOC_STEP elements */
+	if (p->num_allocated == p->num_vertices)
+	{
+		int tmp;
+
+		tmp = p->num_allocated + ALLOC_STEP;
+		p->num_allocated += ALLOC_STEP;
+		
+		p->points = realloc(p->points, sizeof(Equis_Point) * tmp);
+		p->cmds = realloc(p->cmds, sizeof(char) * tmp);
+		/* in case the realloc returns a different pointer */
+		p->point_curr = p->points + p->num_vertices;
+		p->cmd_curr = p->cmds + p->num_vertices;
+		/* every time we alloc new data call the alloc_cb */
+		p->alloc_cb(p->data);
+	}
+	p->point_curr->x = x;
+	p->point_curr->y = y;
+	*p->cmd_curr = cmd;
+	p->num_vertices++;
+	p->point_curr++;
+	p->cmd_curr++;
+}
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 #if 0
+#define MATRIX_IS_SCALE(m) 	((!tm[1]) && (!tm[2]))
+#define MATRIX_IS_SHEAR_X(m) 	((tm[0] == 1) && (!tm[2]) && (tm[3] == 1))
+#define MATRIX_IS_SHEAR_Y(m) 	((tm[0] == 1) && (!tm[1]) && (tm[3] == 1))
+#define MATRIX_IS_IDENTITY(m) 	((tm[0] == 1) && (!tm[1]) &&		\
+				(!tm[2]) && (tm[3] == 1))
 EAPI void equis_path_transform(Equis_Path *s, Equis_Path *d, float *tm)
 {
 #if 0

@@ -33,7 +33,7 @@ EAPI Equis_Component * equis_transform_new(float *matrix)
 	return c;
 }
 
-EAPI void equis_transform_matrix_set(Equis_Component *c)
+EAPI void equis_transform_matrix_set(Equis_Component *c, float matrix)
 {
 	Equis_Transform *d;
 

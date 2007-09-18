@@ -15,8 +15,9 @@ libequis_la_SOURCES = \
 path.c
 
 libequis_la_LIBADD = \
+ -lm \
 component/libequis_component.la \
- -lm 
+@EDATA_LIBS@
 
 libequis_la_DEPENDENCIES = \
 component/libequis_component.la

@@ -22,13 +22,27 @@
 # endif
 #endif
 
+enum
+{
+	EQUIS_CMD_MOVE_TO,
+	EQUIS_CMD_LINE_TO,
+	EQUIS_CMD_END,
+};
+
+
 /* component */
 typedef struct _Equis_Component 	Equis_Component;
 typedef struct _Equis_Component_Reader 	Equis_Component_Reader;
 EAPI void equis_component_delete(Equis_Component *c);
+/* transform */
+
 /* source csv */
-EAPI Equis_Component * equis_source_csv_new(const char *f);
-EAPI void equis_source_csv_file_set(Equis_Component *c, const char *f);
+EAPI Equis_Component * equis_source_csv_new(void);
+EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path);
+/* reader */
+EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c);
+EAPI void equis_reader_rewind(Equis_Component_Reader *r);
+EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y);
 
 #if 0
 typedef struct _Equis_Path Equis_Path;

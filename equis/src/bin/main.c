@@ -49,10 +49,18 @@ int main(void)
 
 int main(void)
 {
+	float x, y;
+	int cmd;
 	Equis_Component *src;
 	Equis_Component_Reader *r;
 
-	src = equis_source_csv_new("/tmp/test.csv");
-	r = equis_component_reader_new(src);
+	src = equis_source_csv_new();
+	//equis_source_csv_file_set(src, "/tmp/test.csv");
+	r = equis_reader_new(src);
+	equis_source_csv_file_set(src, "/tmp/test.csv");
+	while ((cmd = equis_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
+	{
+		printf("%d %f %f\n", cmd, x, y);
+	}
 	equis_component_delete(src);
 }
