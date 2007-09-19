@@ -50,9 +50,12 @@ void equis_component_notify(Equis_Component *c)
 /* should create maximum num vertices */
 int equis_component_generate(Equis_Component *c, int *num)
 {
-	/* TODO check the source, if its there do the same
-	 * request to it and generate based on that data
-	 */
+	/* if the component is of type input-ouput and we dont
+	 * have a source of vertices, just return */
+	if ((c->type == EQUIS_COMPONENT_IO) && (!c->src))
+	{
+		return 0;
+	}
 	if (c->generate)
 	{
 		c->generate(c->data, num);
@@ -83,11 +86,11 @@ EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src)
 	assert(src);
 
 	/* output component only */
-	if (c->type == EQUIS_COMPONENT_OUTPUT_ONLY)
+	if (c->type == EQUIS_COMPONENT_O)
 		return -EQUIS_ERROR_INVAL;
 	/* same source, do nothing */
 	if ((c->src) && (c->src->from == src))
-		return;
+		return EQUIS_ERROR_NONE;
 	if (!c->src)
 		c->src = equis_reader_new(src);
 	/* notify the change */

@@ -47,13 +47,8 @@ int main(void)
 }
 #endif
 
+/* Test1. Source -> Reader */
 void test1(void)
-{
-
-}
-
-
-int main(void)
 {
 	float x, y;
 	int cmd;
@@ -69,4 +64,52 @@ int main(void)
 		printf("%d %f %f\n", cmd, x, y);
 	}
 	equis_component_delete(src);
+}
+
+/* Test2. Source -> Transform -> Reader */
+void test2(void)
+{
+	float x, y;
+	int cmd;
+	Equis_Component *src;
+	Equis_Component *t;
+	Equis_Component_Reader *r;
+	float m[] = {1.5, 3.4, 0.0, 10};
+	int end = 0;
+	struct timeval ts, te;
+	int i = 0;
+	
+	src = equis_source_csv_new();
+	equis_source_csv_file_set(src, "/tmp/test.csv");
+	t = equis_transform_new();
+	equis_transform_matrix_set(t, m);
+	equis_component_source_set(t, src);
+	r = equis_reader_new(t);
+read:
+	gettimeofday(&ts, NULL);
+	while ((cmd = equis_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
+	{
+		printf("[%d] READING %d %f %f\n", i, cmd, x, y);
+		i++;
+	}
+	gettimeofday(&te, NULL);
+	printf("LOOP %d\n", end);
+	time_display(ts, te);
+	equis_reader_rewind(r);
+	if (!end)
+	{
+		end = 1;
+		i = 0;
+		goto read;
+	}
+	equis_component_delete(src);
+	equis_component_delete(t);
+}
+
+int main(void)
+{
+	test1();
+	printf("==========\n");
+	test2();
+	return 1;
 }

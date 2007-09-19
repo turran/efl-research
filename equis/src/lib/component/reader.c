@@ -41,6 +41,10 @@ void equis_reader_reference_update(Equis_Component_Reader *r)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ *
+ *
+ */
 EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
 {
 	Equis_Component_Reader *r;
@@ -48,7 +52,6 @@ EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
 	r = calloc(1, sizeof(Equis_Component_Reader));
 	r->from = c;
 	_rewind(r);
-	printf("%p\n", r->points);
 	/* append the reader to the list of readers,
 	 * if we add a reader to a component that has changed
 	 * propagate that change to the other end of the reader
@@ -57,11 +60,17 @@ EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
 	return r;
 }
 
+/**
+ *
+ */
 EAPI void equis_reader_rewind(Equis_Component_Reader *r)
 {
 	_rewind(r);
 }
 
+/**
+ * FIXME do we have to go vertex by vertex?
+ */
 EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
 {
 	int ret;
@@ -82,4 +91,13 @@ EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
 	r->pos++;
 	r->cmds++;
 	return ret;
+}
+
+/**
+ *
+ */
+EAPI int equis_reader_vertices_get(Equis_Component_Reader *r, float *x, float *y, int *cmds)
+{
+
+
 }

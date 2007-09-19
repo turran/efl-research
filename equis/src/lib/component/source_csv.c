@@ -10,6 +10,9 @@
  *
  */
 
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
 static const char _name[] = "source_csv";
 
 typedef struct _Equis_Source_Csv
@@ -60,7 +63,7 @@ static void equis_source_csv_generate(void *data, int *num)
 		}
 	}
 	/* next vertices should be a LINETO */
-	while ((i < *num) && ((fscanf(d->f, "%f %f\n", &x, &y) != EOF)))
+	while ((i < *num) && (fscanf(d->f, "%f %f\n", &x, &y) != EOF))
 	{
 		equis_path_vertex_add(d->c->path, x, y, EQUIS_CMD_LINE_TO);
 		i++;
@@ -79,6 +82,7 @@ static void equis_source_csv_free(void *data)
 	Equis_Source_Csv *d = data;
 
 	equis_source_csv_close(d);
+	free(d);
 }
 
 static void equis_source_csv_init(Equis_Component *c)

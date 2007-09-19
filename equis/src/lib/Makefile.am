@@ -5,11 +5,11 @@ Makefile.in
 
 INCLUDES = -I. \
 -I$(top_srcdir)/src/lib \
--I$(top_srcdir)/src/lib/cpu \
--msse
-##@EIX_CFLAGS@
+-I$(top_srcdir)/src/lib/cpu 
 
 lib_LTLIBRARIES = libequis.la
+include_HEADERS = \
+Equis.h
 
 libequis_la_SOURCES = \
 path.c

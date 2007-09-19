@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Equis
-Description: Equis
+Name: etc
+Description: Etc
 Requires: 
 Version: @VERSION@
-Libs: -L${libdir} -lequis
+Libs: -L${libdir} -letc
 Cflags: -I${includedir}

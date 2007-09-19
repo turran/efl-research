@@ -23,6 +23,18 @@
 #endif
 
 /**
+ * @mainpage Equis
+ * @section intro Introduction
+ * 
+ * @file
+ * @brief Equis API
+ * @defgroup Equis API
+ *
+ * @{
+ */
+
+
+/**
  *
  */
 enum
@@ -30,6 +42,7 @@ enum
 	EQUIS_CMD_MOVE_TO,
 	EQUIS_CMD_LINE_TO,
 	EQUIS_CMD_END,
+	EQUIS_CMDS
 };
 
 /**
@@ -51,6 +64,7 @@ EAPI void equis_component_delete(Equis_Component *c);
 EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src);
 /* transform */
 EAPI Equis_Component * equis_transform_new(void);
+EAPI void equis_transform_matrix_set(Equis_Component *c, float *matrix);
 /* source csv */
 EAPI Equis_Component * equis_source_csv_new(void);
 EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path);
@@ -58,6 +72,8 @@ EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path);
 EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c);
 EAPI void equis_reader_rewind(Equis_Component_Reader *r);
 EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y);
+
+/** @} */
 
 #if 0
 typedef struct _Equis_Path Equis_Path;
