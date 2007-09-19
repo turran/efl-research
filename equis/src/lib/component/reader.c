@@ -23,7 +23,6 @@ void equis_reader_notify(Equis_Component_Reader *r)
 {
 	/* FIXME update the pointers as the component might have had to
 	 * realloc its data */
-	printf("notified\n");
 	if (r->to && !r->to->has_changed)
 	{
 		equis_component_notify(r->to);

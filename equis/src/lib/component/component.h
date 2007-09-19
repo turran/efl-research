@@ -7,22 +7,26 @@
  */
 struct _Equis_Component
 {
-	Equis_Path	*path;
-#if 0
-	Equis_Point 	*points;
-	char 		*cmds;
-	Equis_Point 	*point_curr;
-	char 		*cmd_curr;
-	int 		vertex_max; 	/**< number of vertices calculated */
-#endif
-	
-	Edata_List	*readers;
-	int 		has_changed; 	/**< usefull for forward notification */
+	Equis_Path		*path; 		/**< Main temporal data */
+	Equis_Component_Reader 	*src; 		/**< Source data */
+	Edata_List		*readers;
+	int 			has_changed; 	/**< Forward notification */
+	int 			type;
 	/* component specific data */
-	const char 	*type; 		/**< component's type */
-	void 		*data; 		/**< specific component data */
-	void 		(*generate)(void *data, int *num);
-	void 		(*free)(void *data);
+	const char 		*name; 		/**< Component's name */
+	void 			*data; 		/**< Specific component data */
+	void 			(*generate)(void *data, int *num);
+	void 			(*free)(void *data);
+};
+
+/**
+ *
+ */
+enum
+{
+	EQUIS_COMPONENT_OUTPUT_ONLY,
+	EQUIS_COMPONENT_INPUT_OUTPUT,
+	EQUIS_COMPONENT_TYPES
 };
 
 Equis_Component * equis_component_new(void);

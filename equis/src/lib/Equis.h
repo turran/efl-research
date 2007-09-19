@@ -22,6 +22,9 @@
 # endif
 #endif
 
+/**
+ *
+ */
 enum
 {
 	EQUIS_CMD_MOVE_TO,
@@ -29,13 +32,25 @@ enum
 	EQUIS_CMD_END,
 };
 
+/**
+ *
+ */
+/* TODO normalize this errors */
+enum
+{
+	EQUIS_ERROR_NONE 	= 1,
+	EQUIS_ERROR_INVAL,
+	EQUIS_ERROR_IO,
+	EQUIS_ERRORS
+};
 
 /* component */
 typedef struct _Equis_Component 	Equis_Component;
 typedef struct _Equis_Component_Reader 	Equis_Component_Reader;
 EAPI void equis_component_delete(Equis_Component *c);
+EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src);
 /* transform */
-
+EAPI Equis_Component * equis_transform_new(void);
 /* source csv */
 EAPI Equis_Component * equis_source_csv_new(void);
 EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path);

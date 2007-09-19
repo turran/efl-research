@@ -2,6 +2,7 @@
 #include "equis_private.h"
 #include "Edata.h"
 #include "component.h"
+#include "reader.h"
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -17,7 +18,6 @@ static void _alloc_cb(void *data)
 		equis_reader_reference_update(r);
 	}
 }
-
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
@@ -50,6 +50,9 @@ void equis_component_notify(Equis_Component *c)
 /* should create maximum num vertices */
 int equis_component_generate(Equis_Component *c, int *num)
 {
+	/* TODO check the source, if its there do the same
+	 * request to it and generate based on that data
+	 */
 	if (c->generate)
 	{
 		c->generate(c->data, num);
@@ -61,10 +64,34 @@ int equis_component_generate(Equis_Component *c, int *num)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ *
+ */
 EAPI void equis_component_delete(Equis_Component *c)
 {
 	if (c->free)
 		c->free(c->data);
 	/* TODO what about all the readers attached */
 	free(c);
+}
+/**
+ *
+ */
+EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src)
+{
+	assert(c);
+	assert(src);
+
+	/* output component only */
+	if (c->type == EQUIS_COMPONENT_OUTPUT_ONLY)
+		return -EQUIS_ERROR_INVAL;
+	/* same source, do nothing */
+	if ((c->src) && (c->src->from == src))
+		return;
+	if (!c->src)
+		c->src = equis_reader_new(src);
+	/* notify the change */
+	equis_component_notify(c);
+
+	return EQUIS_ERROR_NONE;
 }

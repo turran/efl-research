@@ -29,6 +29,7 @@ void * equis_path_delete(Equis_Path *p)
 {
 	free(p->points);
 	free(p->cmds);
+	
 	return p->data;
 }
 

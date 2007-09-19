@@ -10,7 +10,7 @@
  *
  */
 
-static const char _type[] = "source_csv";
+static const char _name[] = "source_csv";
 
 typedef struct _Equis_Source_Csv
 {
@@ -20,21 +20,28 @@ typedef struct _Equis_Source_Csv
 } Equis_Source_Csv;
 
 
-static void equis_source_csv_open(Equis_Source_Csv *d, const char *name)
+static int equis_source_csv_open(Equis_Source_Csv *d, const char *name)
 {
 	if (!name) return;
+	
 	d->name = strdup(name);
 	d->f = fopen(name, "r");
 	/* if !f d->name = NULL */
+	return 1;
 }
 
 static void equis_source_csv_close(Equis_Source_Csv *d)
 {
-	free(d->name);
-	d->name = NULL;
-	fclose(d->f);
+	if (d->name)
+	{
+		free(d->name);
+		d->name = NULL;
+	}
+	if (d->f)
+	{
+		fclose(d->f);
+	}
 }
-
 
 static void equis_source_csv_generate(void *data, int *num)
 {
@@ -48,20 +55,20 @@ static void equis_source_csv_generate(void *data, int *num)
 	{
 		if (fscanf(d->f, "%f %f\n", &x, &y) != EOF)
 		{
-			equis_path_vertex_add(d->c->path, EQUIS_CMD_MOVE_TO, x, y);
+			equis_path_vertex_add(d->c->path, x, y, EQUIS_CMD_MOVE_TO);
 			i++;
 		}
 	}
 	/* next vertices should be a LINETO */
 	while ((i < *num) && ((fscanf(d->f, "%f %f\n", &x, &y) != EOF)))
 	{
-		equis_path_vertex_add(d->c->path, EQUIS_CMD_LINE_TO, x, y);
+		equis_path_vertex_add(d->c->path, x, y, EQUIS_CMD_LINE_TO);
 		i++;
 	}
 	/* last vertex we generate must be an END command */
 	if (i < *num)
 	{
-		equis_path_vertex_add(d->c->path, EQUIS_CMD_END, 0, 0);
+		equis_path_vertex_add(d->c->path, 0, 0, EQUIS_CMD_END);
 	}
 	/* set the correct number of vertices calculated */
 	*num = i;
@@ -70,6 +77,8 @@ static void equis_source_csv_generate(void *data, int *num)
 static void equis_source_csv_free(void *data)
 {
 	Equis_Source_Csv *d = data;
+
+	equis_source_csv_close(d);
 }
 
 static void equis_source_csv_init(Equis_Component *c)
@@ -80,7 +89,7 @@ static void equis_source_csv_init(Equis_Component *c)
 
 	d->c = c;
 	c->data = d;
-	c->type = _type;
+	c->name = _name;
 	c->generate = equis_source_csv_generate;
 	c->free = equis_source_csv_free;
 }
@@ -102,11 +111,14 @@ EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path)
 {
 	Equis_Source_Csv *d;
 
+	assert(c);
+	assert(c->data);
+
 	d = c->data;
-	if (d->name)
-		equis_source_csv_close(d);
-	equis_source_csv_open(d, path);
+	equis_source_csv_close(d);
+	if (!equis_source_csv_open(d, path))
+		return EQUIS_ERROR_INVAL;
 	/* we have changed the file, propagate it */
 	equis_component_notify(c);
-	return 1;
+	return EQUIS_ERROR_NONE;
 }

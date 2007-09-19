@@ -131,6 +131,7 @@ AC_OUTPUT([
 Makefile
 equis.pc
 src/Makefile
+data/Makefile
 src/lib/Makefile
 src/lib/component/Makefile
 src/bin/Makefile
