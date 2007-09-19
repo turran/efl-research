@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <Equis.h>
 #include <Etc.h>
 
@@ -18,7 +19,6 @@ int main(void)
 	equis_transform_matrix_set(t, m);
 	equis_component_source_set(t, src);
 	r = equis_reader_new(t);
-read:
 	while ((cmd = equis_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
 	{
 		printf("%f %f\n", x, y);
