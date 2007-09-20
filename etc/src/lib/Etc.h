@@ -28,6 +28,6 @@ EAPI Etc_Scanline * etc_scanline_new(void);
 EAPI void etc_scanline_edge_reset(Etc_Scanline *s);
 EAPI void etc_scanline_edge_add(Etc_Scanline *s, float x0, float y0, float x1, float y1);
 EAPI void etc_scanline_vertex_add(Etc_Scanline *s, float x, float y);
-EAPI void etc_scanline_generate(Etc_Scanline *s);
+EAPI void etc_scanline_generate_all(Etc_Scanline *s);
 
 #endif
