@@ -130,6 +130,7 @@ Makefile
 etc.pc
 src/Makefile
 src/lib/Makefile
+src/lib/rasterizer/Makefile
 ],[
 ])
 
@@ -148,8 +149,8 @@ echo
 echo "Configuration Options Summary:"
 echo
 echo "Installation Path.........: $prefix"
-echo "CFLAGS....................: $EQUIS_CFLAGS"
-echo "LIBS......................: $EQUIS_LIBS"
+echo "CFLAGS....................: $ETC_CFLAGS"
+echo "LIBS......................: $ETC_LIBS"
 echo
 echo "Now type 'make' ('gmake' on some systems) to compile $PACKAGE,"
 echo "and then afterwards as root (or the user who will install this), type"

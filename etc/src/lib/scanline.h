@@ -8,6 +8,12 @@ enum
 	ETC_EDGE_DIRECTIONS
 };
 
+typedef struct _Etc_Vertex
+{
+	float 	x;
+	float 	y;
+} Etc_Vertex;
+
 typedef struct _Etc_Edge
 {
 	float 	x0;
@@ -38,7 +44,10 @@ struct _Etc_Scanline
 	Etc_Active_Edge *aedges;
 	int num_aedges;
 	int num_aallocated;
+	void *data;
 };
+
+
 
 #if 0
 /* same scheme we use on equis, better abstract them? */

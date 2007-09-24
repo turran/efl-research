@@ -1,3 +1,5 @@
+SUBDIRS = rasterizer
+
 MAINTAINERCLEANFILES = \
 Makefile.in
 

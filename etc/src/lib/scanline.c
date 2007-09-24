@@ -6,8 +6,9 @@
 
 /**
  * TODO
- * + do we need to allocate active edges incrementally? 
- * or just use the worst case always
+ * This will be just the interface, let the rasterizers implement this
+ * functions
+ *
  */
 
 /*============================================================================*
@@ -31,11 +32,6 @@ static inline void _aedge_new(Etc_Scanline *s)
 		s->aedges = realloc(s->aedges, sizeof(Etc_Active_Edge) * (s->num_aedges + ALLOC_STEP));
 		s->num_aallocated += ALLOC_STEP;
 	}
-}
-
-static int line_interesect(int y, float m)
-{
-
 }
 
 static inline void _scanline_generate(Etc_Scanline *s, int y)
@@ -69,6 +65,10 @@ static inline void _scanline_generate(Etc_Scanline *s, int y)
 		printf("edge %d, %fx%f => %fx%f\n", i, s->edges[i].x0, s->edges[i].y0, s->edges[i].x1, s->edges[i].y1);
 	}
 }
+
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
 
 /*============================================================================*
  *                                   API                                      * 
