@@ -254,6 +254,88 @@ void test4(void)
 	free(dc);
 }
 
+void test5(void)
+{
+	Emage_Surface *dst = NULL;
+	Emage_Draw_Context *dc = NULL;
+	Emage_Polygon_Point *pts = NULL;
+	int i;
+	struct
+	{
+		int x;
+		int y;
+	} points[] = {
+		{1168, 2500},
+		{1181, 2510},
+		{1219, 2580},
+		{1272, 2700},
+		{1328, 2870},
+		{1371, 3040},
+		{1436, 3320},
+		{1431, 3430},
+		{1453, 3520},
+		{1450, 3570},
+		{1445, 3520},
+		{1428, 3460},
+		{1404, 3390},
+		{1379, 3330},
+		{1344, 3270},
+		{1330, 3230},
+		{1329, 3200},
+		{1321, 3160},
+		{1327, 3160},
+		{1311, 3120},
+		{1320, 3130},
+		{1299, 3080},
+		{1310, 3090},
+		{1295, 3060},
+		{1305, 3060},
+		{1309, 3080},
+		{1322, 3110},
+		{1318, 3110},
+		{1338, 3160},
+		{1327, 3150},
+		{1345, 3190},
+		{1340, 3200},
+		{1350, 3230},
+		{1374, 3270},
+		{1397, 3320},
+		{1382, 3260},
+		{1404, 3320},
+		{1381, 3230},
+		{1400, 3280},
+		{1379, 3200},
+		{1396, 3250},
+		{1372, 3160},
+		{1389, 3200},
+		{1370, 3130},
+		{1383, 3160},
+		{1366, 3100},
+		{1353, 3050},
+		{1341, 2980},
+		{1318, 2880},
+		{1292, 2790},
+		{1246, 2660},
+		{1216, 2590},
+		{1185, 2530}
+	};
+	dc = emage_draw_context_new();
+	emage_draw_context_set_anti_alias(dc, 1);
+	emage_draw_context_set_render_op(dc, EMAGE_RENDER_BLEND);
+	dst = surface_new(4000, 4000, EMAGE_DATA_ARGB8888);
+	_background_draw(dst, dc);
+	emage_draw_context_set_color(dc, 0, 0, 30, 30);
+	for (i = 0; i < 53; i++)
+	{
+		pts = emage_polygon_point_add(pts, points[i].x, points[i].y);
+	}
+	emage_polygon_draw(dst, dc, pts);
+	emage_polygon_points_clear(pts);
+	png_save(dst, "/tmp/emage_test5.png", 0);
+	surface_free(dst);
+	free(dc);
+}
+
 /* performance test */
 void ptest1(void)
 {
@@ -413,9 +495,10 @@ int main(void)
 	//test2();
 	//test3();
 	//test4();
+	test5();
 	//ptest1();
 	//ptest2();
-	ptest3();
+	//ptest3();
 
 	emage_shutdown();
 	return 0;

@@ -67,7 +67,12 @@ _edge_add(Gcp_Edge *edges, int *nedges, Gcp_Vertex *vertices, int nvertices, int
 	}
 	/* intersection of edge with scanline y */
 	/* FIXME INF case?? */
-	dx = (q->x - p->x) / (q->y - p ->y);
+	if ((p->y - q->y)  == 0)
+	{
+		printf("ZDIV %f %f %f %f\n", p->x, p->y, q->x, q->y);
+	}
+	dx = (q->x - p->x) / (q->y - p->y);
+	printf("%f\n", dx);	
 	edges[n].dx = dx;
 	edges[n].x = dx * (y + 0.5 - p->y) + p->x;
 	edges[n].i = i;
