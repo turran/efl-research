@@ -7,7 +7,9 @@ INCLUDES = -I. \
 noinst_LTLIBRARIES = libetc_rasterizer.la
 
 libetc_rasterizer_la_SOURCES = \
-faap.c
+rasterizer.c \
+faap.c \
+gcp.c 
 
 libetc_rasterizer_la_LIBADD = \
  -lm
