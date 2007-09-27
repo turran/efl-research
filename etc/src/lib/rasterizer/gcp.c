@@ -5,6 +5,10 @@
 #include "rasterizer.h"
 #include "scanline.h"
 
+/* Code based on the algorithm Concave Polygon Scan Conversion by Paul Heckbert
+ * from "Graphics Gems"
+ */
+
 typedef struct _Gcp_Vertex
 {
 	float 	x;
@@ -66,13 +70,7 @@ _edge_add(Gcp_Edge *edges, int *nedges, Gcp_Vertex *vertices, int nvertices, int
 		q = &vertices[i];
 	}
 	/* intersection of edge with scanline y */
-	/* FIXME INF case?? */
-	if ((p->y - q->y)  == 0)
-	{
-		printf("ZDIV %f %f %f %f\n", p->x, p->y, q->x, q->y);
-	}
 	dx = (q->x - p->x) / (q->y - p->y);
-	printf("%f\n", dx);	
 	edges[n].dx = dx;
 	edges[n].x = dx * (y + 0.5 - p->y) + p->x;
 	edges[n].i = i;
@@ -86,7 +84,7 @@ _edge_del(Gcp_Edge *edges, int *nedges, int nvertices, int i)
 	int n = *nedges;
 	int j;
 
-	for (j = 0; j < n && edges[j].i != i; j++);
+	for (j = 0; (j < n) && (edges[j].i != i); j++);
 	/* edge on ative list */
 	if (j < n)
 	{
@@ -167,7 +165,7 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 	}
 	free(vertices);
 	vertices = r->vertices;
-	/* get the min and max y from the polygon */
+	/* get the min and max y from the polygon and thw display size */
 	y0 = ceil(vertices[sindex[0]].y - 0.5);
 	y1 = floor(vertices[sindex[n - 1]].y - 0.5);
 
@@ -181,7 +179,7 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 			i = sindex[k];
 
 			/* vertex previous to i */
-			j = i > 0 ? i -1 : n - 1;
+			j = i > 0 ? (i -1) : (n - 1);
 			if (vertices[j].y <= ((float)y - 0.5))
 			{
 				_edge_del(aet, &nedges, n, j);
@@ -191,14 +189,14 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 				_edge_add(aet, &nedges, vertices, n, j, y);
 			}
 			/* vertex next to i */
-			j = i < n -1 ? i + 1 : 0;
+			j = (i < (n - 1)) ? i + 1 : 0;
 			if (vertices[j].y <= ((float)y - 0.5))
 			{
-				_edge_del(aet, &nedges, n, j);
+				_edge_del(aet, &nedges, n, i);
 			}
 			else if (vertices[j].y > ((float)y + 0.5))
 			{
-				_edge_add(aet, &nedges, vertices, n, j, y);
+				_edge_add(aet, &nedges, vertices, n, i, y);
 			}
 		}
 		/* sort active edge table by x */
@@ -220,7 +218,6 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 			aet[j + 1].x += aet[j + 1].dx;
 		}
 	}
-	printf("EOG\n");
 	free(aet);
 	free(sindex);
 }
