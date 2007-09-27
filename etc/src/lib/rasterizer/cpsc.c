@@ -9,14 +9,14 @@
  * from "Graphics Gems"
  */
 
-typedef struct _Gcp_Vertex
+typedef struct _Cpsc_Vertex
 {
 	float 	x;
 	float 	y;
 	int 	i;
-} Gcp_Vertex;
+} Cpsc_Vertex;
 
-typedef struct _Gcp_Edge
+typedef struct _Cpsc_Edge
 {
 	/* x coordinate of edge intersection with current scanline */
 	float 	x;
@@ -24,15 +24,15 @@ typedef struct _Gcp_Edge
 	float 	dx;
 	/* edge number */
 	int 	i;
-} Gcp_Edge;
+} Cpsc_Edge;
 
 
-typedef struct _Gcp_Rasterizer
+typedef struct _Cpsc_Rasterizer
 {
-	Gcp_Vertex 	*vertices;
+	Cpsc_Vertex 	*vertices;
 	int 		num_vertices;
 	int 		num_allocated;
-} Gcp_Rasterizer;
+} Cpsc_Rasterizer;
 
 
 /*============================================================================*
@@ -40,20 +40,20 @@ typedef struct _Gcp_Rasterizer
  *============================================================================*/
 #define ALLOC_STEP 1024
 
-static inline void _vertex_new(Gcp_Rasterizer *r)
+static inline void _vertex_new(Cpsc_Rasterizer *r)
 {
 	if (r->num_vertices == r->num_allocated)
 	{
-		r->vertices = realloc(r->vertices, sizeof(Gcp_Vertex) * (r->num_vertices + ALLOC_STEP));
+		r->vertices = realloc(r->vertices, sizeof(Cpsc_Vertex) * (r->num_vertices + ALLOC_STEP));
 		r->num_allocated += ALLOC_STEP;
 	}
 }
 
 /* append edge i to list of edges */
 static inline void
-_edge_add(Gcp_Edge *edges, int *nedges, Gcp_Vertex *vertices, int nvertices, int i, int y)
+_edge_add(Cpsc_Edge *edges, int *nedges, Cpsc_Vertex *vertices, int nvertices, int i, int y)
 {
-	Gcp_Vertex *p, *q;
+	Cpsc_Vertex *p, *q;
 	int n = *nedges;
 	int j;
 	float dx;
@@ -79,7 +79,7 @@ _edge_add(Gcp_Edge *edges, int *nedges, Gcp_Vertex *vertices, int nvertices, int
 
 /* remove edge i from list of edges */
 static inline void
-_edge_del(Gcp_Edge *edges, int *nedges, int nvertices, int i)
+_edge_del(Cpsc_Edge *edges, int *nedges, int nvertices, int i)
 {
 	int n = *nedges;
 	int j;
@@ -89,39 +89,39 @@ _edge_del(Gcp_Edge *edges, int *nedges, int nvertices, int i)
 	if (j < n)
 	{
 		(*nedges)--;
-		memmove(&(edges[j]), &(edges[j + 1]), (*nedges - j) * sizeof(Gcp_Edge));
+		memmove(&(edges[j]), &(edges[j + 1]), (*nedges - j) * sizeof(Cpsc_Edge));
 	}
 }
 
 static int _compare_vertex(const void *a, const void *b)
 {
-	Gcp_Vertex *p, *q;
+	Cpsc_Vertex *p, *q;
 
-	p = (Gcp_Vertex *)a;
-	q = (Gcp_Vertex *)b;
+	p = (Cpsc_Vertex *)a;
+	q = (Cpsc_Vertex *)b;
 	if (p->y <= q->y) return -1;
 	return 1;
 }
 
 static int _compare_edge(const void *a, const void *b)
 {
-	Gcp_Edge *p, *q;
+	Cpsc_Edge *p, *q;
 
-	p = (Gcp_Edge *)a;
-	q = (Gcp_Edge *)b;
+	p = (Cpsc_Edge *)a;
+	q = (Cpsc_Edge *)b;
 	if (p->x <= q->x) return -1;
 	return 1;
 }
 
 static void * _create(void)
 {
-	Gcp_Rasterizer *r;
+	Cpsc_Rasterizer *r;
 
-	r = calloc(1, sizeof(Gcp_Rasterizer));
+	r = calloc(1, sizeof(Cpsc_Rasterizer));
 	return r;
 }
 
-static void _vertex_add(Gcp_Rasterizer *r, float x, float y)
+static void _vertex_add(Cpsc_Rasterizer *r, float x, float y)
 {
 	int n = r->num_vertices;
 
@@ -133,10 +133,10 @@ static void _vertex_add(Gcp_Rasterizer *r, float x, float y)
 	r->num_vertices++;
 }
 
-static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
+static void _generate(Cpsc_Rasterizer *r, Etc_Scanline *sl)
 {
-	Gcp_Vertex 	*vertices;
-	Gcp_Edge 	*aet;
+	Cpsc_Vertex 	*vertices;
+	Cpsc_Edge 	*aet;
 	int 		*sindex;
 	int 		y0, y1, y, i, j, k;
 	int 		nedges;
@@ -144,12 +144,12 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 		
 	if (n < 3) return;
 
-	aet = malloc(sizeof(Gcp_Edge) * n);
+	aet = malloc(sizeof(Cpsc_Edge) * n);
 	nedges = 0;
 
 	/* FIXME do we have to work on a copy ? */
-	vertices = malloc(sizeof(Gcp_Vertex) * n);
-	memcpy(vertices, r->vertices, sizeof(Gcp_Vertex) * n);
+	vertices = malloc(sizeof(Cpsc_Vertex) * n);
+	memcpy(vertices, r->vertices, sizeof(Cpsc_Vertex) * n);
 
 	/* create the sorted index array */
 	sindex = malloc(sizeof(int) * n);
@@ -158,7 +158,7 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 		sindex[i] = i;
 	}
 	/* sort index by vertex.y */
-	qsort(vertices, n, sizeof(Gcp_Vertex), _compare_vertex);
+	qsort(vertices, n, sizeof(Cpsc_Vertex), _compare_vertex);
 	for (i = 0; i < n; i++)
 	{
 		sindex[i] = vertices[i].i;
@@ -200,7 +200,7 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 			}
 		}
 		/* sort active edge table by x */
-		qsort(aet, nedges, sizeof(Gcp_Edge), _compare_edge);
+		qsort(aet, nedges, sizeof(Cpsc_Edge), _compare_edge);
 		/* store horizontal segments */
 		for (j = 0; j < nedges; j += 2)
 		{
@@ -225,7 +225,7 @@ static void _generate(Gcp_Rasterizer *r, Etc_Scanline *sl)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Etc_Rasterizer_Func gcp = {
+Etc_Rasterizer_Func cpsc = {
 	.create 	= _create,
 	.vertex_add 	= _vertex_add,
 	.generate 	= _generate

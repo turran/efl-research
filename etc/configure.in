@@ -131,6 +131,7 @@ etc.pc
 src/Makefile
 src/lib/Makefile
 src/lib/rasterizer/Makefile
+src/lib/scanline/Makefile
 ],[
 ])
 

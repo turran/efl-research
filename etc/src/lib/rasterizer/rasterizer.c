@@ -5,6 +5,12 @@
 #include "rasterizer.h"
 #include "scanline.h"
 
+/**
+ * TODO
+ * add a function to set up window boundaries i.e destination surface/clip
+ * add a fucntion to set up the odd/even/zero fill rule
+ */
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -13,8 +19,8 @@ EAPI Etc_Rasterizer * etc_rasterizer_new(void)
 	Etc_Rasterizer *r;
 
 	r = calloc(1, sizeof(Etc_Rasterizer));
-	r->funcs = &gcp;
-	r->data = gcp.create();
+	r->funcs = &cpsc;
+	r->data = cpsc.create();
 	return r;
 }
 

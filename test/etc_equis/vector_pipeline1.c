@@ -17,9 +17,9 @@ int main(void)
 	src = equis_source_csv_new();
 	equis_source_csv_file_set(src, "/tmp/test.csv");
 	t = equis_transform_new();
-	equis_transform_matrix_set(t, m);
+	//equis_transform_matrix_set(t, m);
 	equis_component_source_set(t, src);
-	r = equis_reader_new(t);
+	r = equis_reader_new(src);
 	while ((cmd = equis_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
 	{
 		printf("%f %f\n", x, y);

@@ -8,7 +8,7 @@ typedef struct _Etc_Rasterizer_Func
 	void (*generate)(void *r, Etc_Scanline *sl);
 } Etc_Rasterizer_Func;
 
-extern Etc_Rasterizer_Func gcp;
+extern Etc_Rasterizer_Func cpsc;
 extern Etc_Rasterizer_Func faap;
 
 struct _Etc_Rasterizer
