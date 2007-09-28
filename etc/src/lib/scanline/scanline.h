@@ -1,64 +1,26 @@
 #ifndef _SCANLINE_H
 #define _SCANLINE_H
 
-enum
-{
-	ETC_EDGE_UP,
-	ETC_EDGE_DOWN,
-	ETC_EDGE_DIRECTIONS
-};
+typedef void *(*Etc_Scanline_Create)(void);
+typedef void (*Etc_Scanline_Add)(void *d, int x0, int x1, int y, int coverage);
+typedef void (*Etc_Scanline_Free)(void *d);
+#define ETC_SCANLINE_CREATE(function) 	((Etc_Scanline_Create(function))
+#define	ETC_SCANLINE_FREE(function) 	((Etc_Scanline_Free(function))
+#define	ETC_SCANLINE_ADD(function) 	((Etc_Scanline_Add(function))
 
-typedef struct _Etc_Vertex
+typedef struct _Etc_Scanline_Func
 {
-	float 	x;
-	float 	y;
-} Etc_Vertex;
-
-typedef struct _Etc_Edge
-{
-	float 	x0;
-	float 	y0;
-	float 	x1;
-	float 	y1;
-} Etc_Edge;
-
-typedef struct _Etc_Active_Edge
-{
-	float 	x0;
-	float 	y0;
-	float 	y1;
-	float 	minx;
-	float 	maxx;
-	float 	dx;
-	float 	dy;
-	int 	direction;
-} Etc_Active_Edge;
+	Etc_Scanline_Create 	create;
+	Etc_Scanline_Add 	add;
+	Etc_Scanline_Free 	free;
+} Etc_Scanline_Func;
 
 struct _Etc_Scanline
 {
-	Etc_Edge *edges;
-	int num_vertices;
-	int num_edges;
-	int num_allocated;
-	
-	Etc_Active_Edge *aedges;
-	int num_aedges;
-	int num_aallocated;
-	void *data;
+	Etc_Scanline_Func 	*funcs;
+	void 			*data;
 };
 
-
-
-#if 0
-/* same scheme we use on equis, better abstract them? */
-struct _Etc_Alloc
-{
-	void 	*data;
-	int 	selement;
-	int 	nelements;
-	int 	nalloc;
-};
-#endif
-
+extern Etc_Scanline_Func naa;
 
 #endif

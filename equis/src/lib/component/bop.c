@@ -44,6 +44,10 @@ static void equis_bop_init(Equis_Component *c)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Equis_Component * equis_bop_new(void)
 {
 	Equis_Component *c;

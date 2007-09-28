@@ -122,6 +122,7 @@ case "$host_os" in
     ;;
 esac
 
+PKG_CHECK_MODULES(EDATA, [edata >= 0.0.1])
 
 ## Make the debug preprocessor configurable
 

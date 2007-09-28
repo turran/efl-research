@@ -5,6 +5,13 @@
 #include <stdio.h>
 #include <assert.h>
 
+/**
+ * @file
+ * @brief Internal Implementation
+ * @defgroup Internal_Group Internal Implementation
+ * @{
+ */
+
 #if 0
 //#define SSE
 #define C 
@@ -23,5 +30,7 @@
 #endif
 
 #include "path.h"
+
+/** @} */
 
 #endif

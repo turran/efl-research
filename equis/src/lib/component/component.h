@@ -2,8 +2,16 @@
 #define _COMPONENT_H
 
 /**
- *
- *
+ * @file
+ * @brief Components
+ * @defgroup Component_Internal_Group Component
+ * @ingroup Internal_Group
+ * @{
+ */
+
+/**
+ * To be documented
+ * FIXME: To be fixed
  */
 struct _Equis_Component
 {
@@ -20,12 +28,13 @@ struct _Equis_Component
 };
 
 /**
- *
+ * To be documented
+ * FIXME: To be fixed
  */
 enum
 {
-	EQUIS_COMPONENT_O,
-	EQUIS_COMPONENT_IO,
+	EQUIS_COMPONENT_O, 	/**< Output Only Component */
+	EQUIS_COMPONENT_IO,	/**< Input/Output Component */
 	EQUIS_COMPONENT_TYPES
 };
 
@@ -33,4 +42,5 @@ Equis_Component * equis_component_new(void);
 void equis_component_notify(Equis_Component *c);
 int equis_component_generate(Equis_Component *c, int *num);
 
+/** @} */
 #endif

@@ -8,6 +8,7 @@ include_HEADERS = \
 Edata.h
 
 libedata_la_SOURCES = \
+array.c \
 hash.c \
 list.c \
 sheap.c \

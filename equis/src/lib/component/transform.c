@@ -61,6 +61,10 @@ static void equis_transform_init(Equis_Component *c)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Equis_Component * equis_transform_new(void)
 {
 	Equis_Component *c;
@@ -69,7 +73,10 @@ EAPI Equis_Component * equis_transform_new(void)
 	equis_transform_init(c);
 	return c;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void equis_transform_matrix_set(Equis_Component *c, float *matrix)
 {
 	Equis_Transform *d;

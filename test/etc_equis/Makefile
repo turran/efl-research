@@ -1,4 +1,4 @@
-FLAGS = `pkg-config --cflags etc` `pkg-config --cflags equis`
+FLAGS = -g `pkg-config --cflags etc` `pkg-config --cflags equis`
 LIBS = `pkg-config --libs etc` `pkg-config --libs equis`
 
 BINS  = vector_pipeline1 

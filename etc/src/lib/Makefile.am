@@ -15,6 +15,7 @@ libetc_la_SOURCES =
 libetc_la_LIBADD = \
 rasterizer/libetc_rasterizer.la \
 scanline/libetc_scanline.la \
+@EDATA_LIBS@ \
  -lm
 
 libetc_la_DEPENDENCIES = \

@@ -102,6 +102,10 @@ static void equis_source_csv_init(Equis_Component *c)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Equis_Component * equis_source_csv_new(void)
 {
 	Equis_Component *c;
@@ -110,7 +114,10 @@ EAPI Equis_Component * equis_source_csv_new(void)
 	equis_source_csv_init(c);
 	return c;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path)
 {
 	Equis_Source_Csv *d;

@@ -38,13 +38,10 @@ void equis_path_vertex_add(Equis_Path *p, float x, float y, char cmd)
 	/* increase the size of the arrays in ALLOC_STEP elements */
 	if (p->num_allocated == p->num_vertices)
 	{
-		int tmp;
-
-		tmp = p->num_allocated + ALLOC_STEP;
 		p->num_allocated += ALLOC_STEP;
 		
-		p->points = realloc(p->points, sizeof(Equis_Point) * tmp);
-		p->cmds = realloc(p->cmds, sizeof(char) * tmp);
+		p->points = realloc(p->points, sizeof(Equis_Point) * p->num_allocated);
+		p->cmds = realloc(p->cmds, sizeof(char) * p->num_allocated);
 		/* in case the realloc returns a different pointer */
 		p->point_curr = p->points + p->num_vertices;
 		p->cmd_curr = p->cmds + p->num_vertices;

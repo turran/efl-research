@@ -1,12 +1,15 @@
 #include <stdlib.h>
 
+#include "Edata.h"
 #include "Etc.h"
 #include "etc_private.h"
 #include "rasterizer.h"
 #include "scanline.h"
 
-/* Code based on the algorithm Concave Polygon Scan Conversion by Paul Heckbert
- * from "Graphics Gems"
+/* Code based on the algorithm "Concave Polygon Scan Conversion" by 
+ * Paul Heckbert from "Graphics Gems". 
+ * 
+ * This doesnt support anti-aliasing.
  */
 
 typedef struct _Cpsc_Vertex
@@ -27,26 +30,25 @@ typedef struct _Cpsc_Edge
 } Cpsc_Edge;
 
 
-typedef struct _Cpsc_Rasterizer
+typedef struct _Cpsc
 {
+	Edata_Array	*a;
 	Cpsc_Vertex 	*vertices;
 	int 		num_vertices;
-	int 		num_allocated;
-} Cpsc_Rasterizer;
+} Cpsc;
 
 
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-#define ALLOC_STEP 1024
-
-static inline void _vertex_new(Cpsc_Rasterizer *r)
+static void _a_alloc(Cpsc *c, int num)
 {
-	if (r->num_vertices == r->num_allocated)
-	{
-		r->vertices = realloc(r->vertices, sizeof(Cpsc_Vertex) * (r->num_vertices + ALLOC_STEP));
-		r->num_allocated += ALLOC_STEP;
-	}
+	c->vertices = realloc(c->vertices, num * sizeof(Cpsc));
+}
+
+static void _a_free(Cpsc *c)
+{
+	free(c->vertices);
 }
 
 /* append edge i to list of edges */
@@ -115,17 +117,19 @@ static int _compare_edge(const void *a, const void *b)
 
 static void * _create(void)
 {
-	Cpsc_Rasterizer *r;
+	Cpsc *c;
 
-	r = calloc(1, sizeof(Cpsc_Rasterizer));
-	return r;
+	c = calloc(1, sizeof(Cpsc));
+	c->a = edata_array_new(c, EDATA_ARRAY_ALLOC(_a_alloc),
+		EDATA_ARRAY_FREE(_a_free));
+	return c;
 }
 
-static void _vertex_add(Cpsc_Rasterizer *r, float x, float y)
+static void _vertex_add(Cpsc *r, float x, float y)
 {
 	int n = r->num_vertices;
 
-	_vertex_new(r);
+	edata_array_element_new(r->a);
 
 	r->vertices[n].x = x;
 	r->vertices[n].y = y;
@@ -133,7 +137,7 @@ static void _vertex_add(Cpsc_Rasterizer *r, float x, float y)
 	r->num_vertices++;
 }
 
-static void _generate(Cpsc_Rasterizer *r, Etc_Scanline *sl)
+static void _generate(Cpsc *r, Etc_Scanline *sl)
 {
 	Cpsc_Vertex 	*vertices;
 	Cpsc_Edge 	*aet;
@@ -212,6 +216,8 @@ static void _generate(Cpsc_Rasterizer *r, Etc_Scanline *sl)
 			xr = floor(aet[j + 1].x - 0.5);
 			if (xl <= xr)
 			{
+				/* append a new scanline from xl to xr at y */
+				sl->funcs->add(sl->data, y, xl, xr, 255);
 				//printf("span from [%d] %d to %d, %d\n", y, xl, xr, j);
 			}
 			aet[j].x += aet[j].dx;

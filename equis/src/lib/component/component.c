@@ -7,6 +7,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+/* called whenever the pointer to the path has changed */
 static void _alloc_cb(void *data)
 {
 	Equis_Component_Reader *r;
@@ -21,6 +22,10 @@ static void _alloc_cb(void *data)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 Equis_Component * equis_component_new(void)
 {
 	Equis_Component *c;
@@ -33,6 +38,10 @@ Equis_Component * equis_component_new(void)
 	return c;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 void equis_component_notify(Equis_Component *c)
 {
 	Equis_Component_Reader *r;
@@ -47,6 +56,10 @@ void equis_component_notify(Equis_Component *c)
 	}
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 /* should create maximum num vertices */
 int equis_component_generate(Equis_Component *c, int *num)
 {
@@ -68,7 +81,8 @@ int equis_component_generate(Equis_Component *c, int *num)
  *                                   API                                      * 
  *============================================================================*/
 /**
- *
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void equis_component_delete(Equis_Component *c)
 {
@@ -78,7 +92,8 @@ EAPI void equis_component_delete(Equis_Component *c)
 	free(c);
 }
 /**
- *
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src)
 {

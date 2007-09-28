@@ -47,8 +47,8 @@ void equis_reader_reference_update(Equis_Component_Reader *r)
  *                                   API                                      * 
  *============================================================================*/
 /**
- *
- *
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
 {
@@ -66,7 +66,8 @@ EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
 }
 
 /**
- *
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void equis_reader_rewind(Equis_Component_Reader *r)
 {
@@ -74,7 +75,8 @@ EAPI void equis_reader_rewind(Equis_Component_Reader *r)
 }
 
 /**
- * FIXME do we have to go vertex by vertex?
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
 {
@@ -99,7 +101,8 @@ EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
 }
 
 /**
- *
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI int equis_reader_vertices_get(Equis_Component_Reader *r, float *x, float *y, int *cmds)
 {
