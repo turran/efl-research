@@ -17,7 +17,8 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-etc.pc 
+etc.pc \
+etc_docs.tar.gz
 
 EXTRA_DIST = \
 AUTHORS \
