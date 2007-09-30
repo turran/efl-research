@@ -17,7 +17,8 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-equis.pc 
+equis.pc \
+equis_docs.tar.gz
 
 EXTRA_DIST = \
 AUTHORS \
