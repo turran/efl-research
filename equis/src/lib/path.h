@@ -18,16 +18,15 @@ struct _Equis_Point
  */
 struct _Equis_Path
 {
+	Edata_Array	*a;
 	Equis_Point 	*points;
 	char 		*cmds;
 	Equis_Point 	*point_curr;
 	char 		*cmd_curr;
-	int 		num_allocated;
 	int 		num_vertices;
 
 	void 		*data;
 	void		(*alloc_cb)(void *data);
-
 };
 
 Equis_Path * 	equis_path_new(void *data, int vertices_ref);

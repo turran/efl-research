@@ -5,7 +5,8 @@ Makefile.in
 
 INCLUDES = -I. \
 -I$(top_srcdir)/src/lib \
--I$(top_srcdir)/src/lib/cpu 
+-I$(top_srcdir)/src/lib/cpu \
+@EDATA_CFLAGS@
 
 lib_LTLIBRARIES = libequis.la
 include_HEADERS = \

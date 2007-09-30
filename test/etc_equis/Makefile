@@ -10,8 +10,6 @@ vector_pipeline1: $(vector_pipeline1_OBJS)
 	$(RM) $@
 	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(vector_pipeline1_OBJS) -o $@
 
-############################################################################
-#### boilerplate
 .c.o:
 	$(CC) $(FLAGS) $(CFLAGS) -c $< -o $@
 clean::

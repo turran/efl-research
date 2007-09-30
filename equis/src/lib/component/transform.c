@@ -1,7 +1,11 @@
 #include "Equis.h"
 #include "equis_private.h"
-#include "Edata.h"
 #include "component.h"
+
+
+/**
+ *
+ */
 
 /*============================================================================*
  *                                  Local                                     * 

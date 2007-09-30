@@ -24,9 +24,11 @@
 
 /**
  * @mainpage Equis
- * @section intro Introduction
+ * @section Intro Introduction
  * Equis is a library that ...
  * @image html overview.png 
+ * @section Implementation Implementation
+ * @image html implementation.png 
  * 
  * @file
  * @brief Equis API

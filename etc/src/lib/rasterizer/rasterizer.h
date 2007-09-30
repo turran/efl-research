@@ -1,6 +1,11 @@
 #ifndef _RASTERIZER_H
 #define _RASTERIZER_H
 
+/**
+ * @todo
+ * - on vertex add, calculate the bounding box
+ */
+
 typedef struct _Etc_Rasterizer_Func
 {
 	void *(*create)(void);

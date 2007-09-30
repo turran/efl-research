@@ -26,6 +26,7 @@
  * @mainpage Etc
  * @section intro Introduction
  * Etc is a library that ...
+ * @image html overview.png
  * 
  * @file
  * @brief Etc API

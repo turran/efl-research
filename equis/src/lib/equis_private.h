@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "Edata.h"
+
 /**
  * @file
  * @brief Internal Implementation
