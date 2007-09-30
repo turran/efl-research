@@ -165,11 +165,11 @@ EAPI int edata_list_node_destroy(Edata_List_Node * _e_node, Edata_Free_Cb free_f
 EAPI int edata_list_free_cb_set(Edata_List * list, Edata_Free_Cb free_func);
 /** @} */
 
-EAPI int edata_direct_compare(const void *key1, const void *key2);
-EAPI int edata_str_compare(const void *key1, const void *key2);
 
-EAPI unsigned int edata_direct_hash(const void *key);
-EAPI unsigned int edata_str_hash(const void *key);
+/**
+ * @defgroup DList_Group Double Linked List
+ * @{
+ */
 
 typedef Edata_List Edata_DList;
 # define EDATA_DLIST(dlist) ((Edata_DList *)dlist)
@@ -240,58 +240,89 @@ EAPI int edata_dlist_node_destroy(Edata_DList_Node * node, Edata_Free_Cb free_fu
 
 EAPI int edata_dlist_free_cb_set(Edata_DList * dlist, Edata_Free_Cb free_func);
 
+/** @} */
 
-
-/*
- * Hash Table Implementation:
+/**
+ * @defgroup Hash_Group Hash
+  * Hash Table Implementation:
  * 
  * Traditional hash table implementation. I had tried a list of tables
  * approach to save on the realloc's but it ended up being much slower than
  * the traditional approach.
+ * @{
  */
 
 typedef struct _edata_hash_node Edata_Hash_Node;
 # define EDATA_HASH_NODE(hash) ((Edata_Hash_Node *)hash)
 
 struct _edata_hash_node {
-Edata_Hash_Node *next; /* Pointer to the next node in the bucket list */
-void *key;	     /* The key for the data node */
-void *value;	     /* The value associated with this node */
+	Edata_Hash_Node *next; /* Pointer to the next node in the bucket list */
+	void *key;	     /* The key for the data node */
+	void *value;	     /* The value associated with this node */
 };
 
 typedef struct _edata_hash Edata_Hash;
 # define EDATA_HASH(hash) ((Edata_Hash *)hash)
 
 struct _edata_hash {
-Edata_Hash_Node **buckets;
-int size;		/* An index into the table of primes to
-		 determine size */
-int nodes;		/* The number of nodes currently in the hash */
+	Edata_Hash_Node **buckets;
+	int size;	/* An index into the table of primes to
+			 determine size */
+	int nodes;	/* The number of nodes currently in the hash */
 
-int index;    /* The current index into the bucket table */
+	int index;    /* The current index into the bucket table */
 
-Edata_Compare_Cb compare;	/* The function used to compare node values */
-Edata_Hash_Cb hash_func;	/* The callback function to determine hash */
+	Edata_Compare_Cb compare;	/* The function used to compare node values */
+	Edata_Hash_Cb hash_func;	/* The callback function to determine hash */
 
-Edata_Free_Cb free_key;	/* The callback function to free key */
-Edata_Free_Cb free_value;	/* The callback function to free value */
+	Edata_Free_Cb free_key;	/* The callback function to free key */
+	Edata_Free_Cb free_value;	/* The callback function to free value */
 };
 
-/* Create and initialize a hash */
+/**
+ * @defgroup Edata_Data_Hash_ADT_Creation_Group Hash Creation Functions
+ *
+ * Functions that create hash tables.
+ * Create and initialize a hash
+ * @{
+ */
 EAPI Edata_Hash *edata_hash_new(Edata_Hash_Cb hash_func, Edata_Compare_Cb compare);
 EAPI int edata_hash_init(Edata_Hash *hash, Edata_Hash_Cb hash_func, Edata_Compare_Cb compare);
+/** @} */
 
-/* Functions related to freeing the data in the hash table */
+/**
+ * @defgroup Edata_Data_Hash_ADT_Destruction_Group Hash Destruction Functions
+ *
+ * Functions that destroy hash tables and their contents.
+ * Functions related to freeing the data in the hash table
+ * @{
+ */
 EAPI int edata_hash_free_key_cb_set(Edata_Hash *hash, Edata_Free_Cb function);
 EAPI int edata_hash_free_value_cb_set(Edata_Hash *hash, Edata_Free_Cb function);
 EAPI void edata_hash_destroy(Edata_Hash *hash);
+/** @} */
+
+/**
+ * @defgroup Edata_Data_Hash_ADT_Traverse_Group Hash Traverse Functions
+ *
+ * Functions that iterate through hash tables.
+ * @{
+ */
 
 EAPI int edata_hash_count(Edata_Hash *hash);
 EAPI int edata_hash_for_each_node(Edata_Hash *hash, Edata_For_Each for_each_func,
 			     void *user_data);
 EAPI Edata_List *edata_hash_keys(Edata_Hash *hash);
+/** @} */
 
-/* Retrieve and store data into the hash */
+/**
+ * @defgroup Edata_Data_Hash_ADT_Data_Group Hash Data Functions
+ *
+ * Functions that set, access and delete values from the hash tables.
+ * Retrieve and store data into the hash
+ * @{
+ */
+
 EAPI void *edata_hash_get(Edata_Hash *hash, const void *key);
 EAPI int edata_hash_set(Edata_Hash *hash, void *key, void *value);
 EAPI int edata_hash_hash_set(Edata_Hash *hash, Edata_Hash *set);
@@ -299,7 +330,8 @@ EAPI void *edata_hash_remove(Edata_Hash *hash, const void *key);
 EAPI void *edata_hash_find(Edata_Hash *hash, Edata_Compare_Cb compare, const void *value);
 EAPI void edata_hash_dump_graph(Edata_Hash *hash);
 EAPI void edata_hash_dump_stats(Edata_Hash *hash);
-
+/** @} */
+/** @} */
 
 typedef struct _edata_heap Edata_Sheap;
 # define EDATA_HEAP(heap) ((Edata_Sheap *)heap)
@@ -458,6 +490,12 @@ EAPI int edata_strbuf_replace(Edata_Strbuf *buf, const char *str,
 edata_strbuf_replace(buf, str, with, 1)
 EAPI int edata_strbuf_replace_all(Edata_Strbuf *buf, const char *str,
 			     const char *with);
+
+EAPI int edata_direct_compare(const void *key1, const void *key2);
+EAPI int edata_str_compare(const void *key1, const void *key2);
+
+EAPI unsigned int edata_direct_hash(const void *key);
+EAPI unsigned int edata_str_hash(const void *key);
 
 /**
  * @defgroup Array_Group Array

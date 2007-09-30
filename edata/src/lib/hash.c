@@ -34,17 +34,10 @@ static int _edata_hash_node_destroy(Edata_Hash_Node *node, Edata_Free_Cb keyd,
 				    Edata_Free_Cb valued);
 
 /**
- * @defgroup Edata_Data_Hash_ADT_Creation_Group Hash Creation Functions
- *
- * Functions that create hash tables.
- */
-
-/**
  * Creates and initializes a new hash
  * @param hash_func The function for determining hash position.
  * @param compare   The function for comparing node keys.
  * @return @c NULL on error, a new hash on success.
- * @ingroup Edata_Data_Hash_ADT_Creation_Group
  */
 EAPI Edata_Hash *
 edata_hash_new(Edata_Hash_Cb hash_func, Edata_Compare_Cb compare)
@@ -68,7 +61,6 @@ edata_hash_new(Edata_Hash_Cb hash_func, Edata_Compare_Cb compare)
  * @param   hash_func  The function used for hashing node keys.
  * @param   compare    The function used for comparing node keys.
  * @return  @c TRUE on success, @c FALSE on an error.
- * @ingroup Edata_Data_Hash_ADT_Creation_Group
  */
 EAPI int
 edata_hash_init(Edata_Hash *hash, Edata_Hash_Cb hash_func, Edata_Compare_Cb compare)
@@ -86,11 +78,6 @@ edata_hash_init(Edata_Hash *hash, Edata_Hash_Cb hash_func, Edata_Compare_Cb comp
    return TRUE;
 }
 
-/**
- * @defgroup Edata_Data_Hash_ADT_Destruction_Group Hash Destruction Functions
- *
- * Functions that destroy hash tables and their contents.
- */
 
 /**
  * Sets the function to destroy the keys of the given hash.
@@ -98,7 +85,6 @@ edata_hash_init(Edata_Hash *hash, Edata_Hash_Cb hash_func, Edata_Compare_Cb comp
  * @param   function The function used to free the node keys. NULL is a
  *          valid value and means that no function will be called.
  * @return  @c TRUE on success, @c FALSE on error.
- * @ingroup Edata_Data_Hash_ADT_Destruction_Group
  */
 EAPI int
 edata_hash_free_key_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
@@ -116,7 +102,6 @@ edata_hash_free_key_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
  * @param   function The function that will free the node values. NULL is a
  *          valid value and means that no function will be called.
  * @return  @c TRUE on success, @c FALSE on error
- * @ingroup Edata_Data_Hash_ADT_Destruction_Group
  */
 EAPI int
 edata_hash_free_value_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
@@ -129,18 +114,11 @@ edata_hash_free_value_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
 }
 
 /**
- * @defgroup Edata_Data_Hash_ADT_Data_Group Hash Data Functions
- *
- * Functions that set, access and delete values from the hash tables.
- */
-
-/**
  * Sets a key-value pair in the given hash table.
  * @param   hash    The given hash table.
  * @param   key     The key.
  * @param   value   The value.
  * @return  @c TRUE if successful, @c FALSE if not.
- * @ingroup Edata_Data_Hash_ADT_Data_Group
  */
 EAPI int
 edata_hash_set(Edata_Hash *hash, void *key, void *value)
@@ -173,7 +151,6 @@ edata_hash_set(Edata_Hash *hash, void *key, void *value)
  * @param   hash    The given hash table.
  * @param   set     The hash table to import.
  * @return  @c TRUE if successful, @c FALSE if not.
- * @ingroup Edata_Data_Hash_ADT_Data_Group
  */
 EAPI int
 edata_hash_hash_set(Edata_Hash *hash, Edata_Hash *set)
@@ -215,7 +192,6 @@ edata_hash_hash_set(Edata_Hash *hash, Edata_Hash *set)
  * Frees the hash table and the data contained inside it.
  * @param   hash The hash table to destroy.
  * @return  @c TRUE on success, @c FALSE on error.
- * @ingroup Edata_Data_Hash_ADT_Destruction_Group
  */
 EAPI void 
 edata_hash_destroy(Edata_Hash *hash)
@@ -252,17 +228,11 @@ edata_hash_destroy(Edata_Hash *hash)
    return;
 }
 
-/**
- * @defgroup Edata_Data_Hash_ADT_Traverse_Group Hash Traverse Functions
- *
- * Functions that iterate through hash tables.
- */
 
 /**
  * Counts the number of nodes in a hash table.
  * @param   hash The hash table to count current nodes.
  * @return  The number of nodes in the hash.
- * @ingroup Edata_Data_Hash_ADT_Destruction_Group
  */
 EAPI int
 edata_hash_count(Edata_Hash *hash)
@@ -278,7 +248,6 @@ edata_hash_count(Edata_Hash *hash)
  * @param   for_each_func The function that each entry is passed to.
  * @param		user_data			a pointer passed to calls of for_each_func
  * @return  TRUE on success, FALSE otherwise.
- * @ingroup Edata_Data_Hash_ADT_Traverse_Group
  */
 EAPI int 
 edata_hash_for_each_node(Edata_Hash *hash, Edata_For_Each for_each_func, void *user_data)
@@ -309,7 +278,6 @@ edata_hash_for_each_node(Edata_Hash *hash, Edata_For_Each for_each_func, void *u
  * Retrieves an edata_list of all keys in the given hash.
  * @param   hash          The given hash.
  * @return  new edata_list on success, NULL otherwise
- * @ingroup Edata_Data_Hash_ADT_Traverse_Group
  */
 EAPI Edata_List *
 edata_hash_keys(Edata_Hash *hash)
@@ -441,7 +409,6 @@ _edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node)
  * @param   hash The given hash table.
  * @param   key  The key to search for.
  * @return  The value corresponding to key on success, @c NULL otherwise.
- * @ingroup Edata_Data_Hash_ADT_Data_Group
  */
 EAPI void *
 edata_hash_get(Edata_Hash *hash, const void *key)
@@ -467,7 +434,6 @@ edata_hash_get(Edata_Hash *hash, const void *key)
  * @param   key  The key to search for.
  * @return  The value corresponding to the key on success.  @c NULL is
  *          returned if there is an error.
- * @ingroup Edata_Data_Hash_ADT_Data_Group
  */
 EAPI void *
 edata_hash_remove(Edata_Hash *hash, const void *key)
@@ -542,7 +508,6 @@ edata_hash_remove(Edata_Hash *hash, const void *key)
  * @param   hash The given hash table.
  * @param   key  The key to search for.
  * @return  The value corresponding to key on success, @c NULL otherwise.
- * @ingroup Edata_Data_Hash_ADT_Data_Group
  */
 EAPI void *
 edata_hash_find(Edata_Hash *hash, Edata_Compare_Cb compare, const void *value)

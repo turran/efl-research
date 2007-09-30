@@ -11,6 +11,10 @@ struct _Edata_Array
 	Edata_Array_Free free_cb;
 };
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Edata_Array * edata_array_new(void *data, Edata_Array_Alloc alloc_cb, Edata_Array_Free free_cb)
 {
 	Edata_Array *a;
@@ -22,6 +26,10 @@ EAPI Edata_Array * edata_array_new(void *data, Edata_Array_Alloc alloc_cb, Edata
 	return a;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void edata_array_element_new(Edata_Array *a)
 {
 	if (a->num_elements == a->num_allocated)
@@ -33,6 +41,10 @@ EAPI void edata_array_element_new(Edata_Array *a)
 	a->num_elements++;
 }
 
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void edata_array_free(Edata_Array *a)
 {
 	a->free_cb(a->data);
