@@ -8,19 +8,17 @@ INCLUDES = -I. \
 -I$(top_srcdir)/src/lib/cpu \
 @EDATA_CFLAGS@
 
-lib_LTLIBRARIES = libenginy.la
+noinst_LTLIBRARIES = libenesim_vector.la
 include_HEADERS = \
 Enginy.h
 
-libenginy_la_SOURCES = \
+libenesim_vector_la_SOURCES = \
 path.c
 
-libenginy_la_LIBADD = \
- -lm \
-component/libenginy_component.la \
-@EDATA_LIBS@
+libenesim_vector_la_LIBADD = \
+component/libenesim_component.la
 
-libenginy_la_DEPENDENCIES = \
-component/libenginy_component.la
+libenesim_vector_la_DEPENDENCIES = \
+component/libenesim_component.la
 
-libenginy_la_LDFLAGS      = -version-info 1:0:0
+libenesim_vector_la_LDFLAGS      = -version-info 1:0:0
