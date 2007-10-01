@@ -131,11 +131,11 @@ Makefile
 enesim.pc
 src/Makefile
 src/lib/Makefile
-src/lib/render/Makefile
-src/lib/render/rasterizer/Makefile
-src/lib/render/renderer/Makefile
-src/lib/render/scanline/Makefile
-src/lib/render/surface/Makefile
+src/lib/raster/Makefile
+src/lib/raster/rasterizer/Makefile
+src/lib/raster/renderer/Makefile
+src/lib/raster/scanline/Makefile
+src/lib/raster/surface/Makefile
 src/lib/vector/Makefile
 src/lib/vector/component/Makefile
 ],[

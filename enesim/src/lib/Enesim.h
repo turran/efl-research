@@ -1,5 +1,5 @@
-#ifndef _ETC_H
-#define _ETC_H
+#ifndef _ENESIM_H
+#define _ENESIM_H
 
 #ifdef EAPI
 #undef EAPI
@@ -30,14 +30,11 @@
  * @image html implementation.png 
  * 
  * @file
- * @brief Enginy API
+ * @brief Enesim API
  * Enesim is a library that ...
  * @image html overview.png
  * 
- * @file
- * @brief Enesim API
  * @defgroup Enesim API
- *
  * @{
  * @defgroup Enesim_Scanline_Group Scanline
  * @{
@@ -85,7 +82,7 @@ typedef struct _Enesim_Surface 	Enesim_Surface;
 /** @} */
 
 /*
- * @defgroup Enginy API
+ * @defgroup Enesim API
  *
  * @{
  *
@@ -111,52 +108,50 @@ enum
 };
 
 /**
- * @defgroup Enginy_Component_Group Component
+ * @defgroup Enesim_Component_Group Component
  * @{
  */
-typedef struct _Enginy_Component 	Enginy_Component;
-typedef struct _Enginy_Component_Reader 	Enginy_Component_Reader;
-EAPI void enginy_component_delete(Enginy_Component *c);
-EAPI int enginy_component_source_set(Enginy_Component *c, Enginy_Component *src);
+typedef struct _Enesim_Component 		Enesim_Component;
+typedef struct _Enesim_Component_Reader 	Enesim_Component_Reader;
+EAPI void enesim_component_delete(Enesim_Component *c);
+EAPI int enesim_component_source_set(Enesim_Component *c, Enesim_Component *src);
 /**
- * @defgroup Enginy_Component_Transform_Group Transform Component
+ * @defgroup Enesim_Component_Transform_Group Transform Component
  * @brief This Component applies a transformation matrix.
  * Reads vertex values from another component that is linked with the XXX
  * function and applies a transformation matrix to them.
  * @{
  */
-EAPI Enginy_Component * enginy_transform_new(void);
-EAPI void enginy_transform_matrix_set(Enginy_Component *c, float *matrix);
+EAPI Enesim_Component * enesim_transform_new(void);
+EAPI void enesim_transform_matrix_set(Enesim_Component *c, float *matrix);
 /**
  * @}
- * @defgroup Enginy_Component_Csv_Source_Group CSV Source Component
+ * @defgroup Enesim_Component_Csv_Source_Group CSV Source Component
  * @brief This Component reads data from a csv (Comma Separated Values) file.
  * @{
  */
-EAPI Enginy_Component * enginy_source_csv_new(void);
-EAPI int enginy_source_csv_file_set(Enginy_Component *c, const char *path);
+EAPI Enesim_Component * enesim_source_csv_new(void);
+EAPI int enesim_source_csv_file_set(Enesim_Component *c, const char *path);
 /** 
  *  @}
  *  @}
- * @defgroup Enginy_Component_Reader_Group Reader
+ * @defgroup Enesim_Component_Reader_Group Reader
  * @{
  */
-EAPI Enginy_Component_Reader * enginy_reader_new(Enginy_Component *c);
-EAPI void enginy_reader_rewind(Enginy_Component_Reader *r);
-EAPI int enginy_reader_vertex_get(Enginy_Component_Reader *r, float *x, float *y);
+EAPI Enesim_Component_Reader * enesim_reader_new(Enesim_Component *c);
+EAPI void enesim_reader_rewind(Enesim_Component_Reader *r);
+EAPI int enesim_reader_vertex_get(Enesim_Component_Reader *r, float *x, float *y);
 /** @} */
 /** @} */
 
 #if 0
-typedef struct _Enginy_Path Enginy_Path;
-EAPI Enginy_Path * enginy_path_new(int num_vertices);
-EAPI void enginy_path_delete(Enginy_Path *p);
-EAPI void enginy_path_transform(Enginy_Path *s, Enginy_Path *d, float *tm);
+typedef struct _Enesim_Path Enesim_Path;
+EAPI Enesim_Path * enesim_path_new(int num_vertices);
+EAPI void enesim_path_delete(Enesim_Path *p);
+EAPI void enesim_path_transform(Enesim_Path *s, Enesim_Path *d, float *tm);
 /* for now */
-EAPI void enginy_path_vertex_add(Enginy_Path *p, float x, float y);
-EAPI void enginy_path_vertex_get(Enginy_Path *p, float *x, float *y);
-EAPI void enginy_path_rewind(Enginy_Path *p);
+EAPI void enesim_path_vertex_add(Enesim_Path *p, float x, float y);
+EAPI void enesim_path_vertex_get(Enesim_Path *p, float *x, float *y);
+EAPI void enesim_path_rewind(Enesim_Path *p);
 #endif
-#endif
-
 #endif

@@ -3,6 +3,7 @@ Makefile.in
 
 INCLUDES = -I. \
 -I$(top_srcdir)/src/lib \
+-I$(top_srcdir)/src/lib/raster \
 @EDATA_CFLAGS@
 
 noinst_LTLIBRARIES = libenesim_scanline.la

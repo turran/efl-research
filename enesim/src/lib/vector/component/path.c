@@ -1,46 +1,47 @@
-#include "Enginy.h"
-#include "enginy_private.h"
+#include "Enesim.h"
+#include "enesim_private.h"
+#include "component.h"
 
 static const char type[] = "path";
 
-typedef struct _Enginy_Path
+typedef struct _Enesim_Path
 {
 
-} Enginy_Path;
+} Enesim_Path;
 
-static Enginy_Path * enginy_path_create(void)
+static Enesim_Path * enesim_path_create(void)
 {
-	Enginy_Path *p;
+	Enesim_Path *p;
 
-	p = calloc(1, sizeof(Enginy_Path));
+	p = calloc(1, sizeof(Enesim_Path));
 	return p;
 }
 
-static void enginy_path_init(Enginy_Generator *g)
+static void enesim_path_init(Enesim_Generator *g)
 {
-	g->data = enginy_path_create();
+	g->data = enesim_path_create();
 }
 
-EAPI Enginy_Generator * enginy_path_new(void)
+EAPI Enesim_Generator * enesim_path_new(void)
 {
-	Enginy_Generator *g;
+	Enesim_Generator *g;
 
-	g = enginy_generator_new();
-	enginy_path_init(g);
+	g = enesim_generator_new();
+	enesim_path_init(g);
 	return g;
 }
 
-EAPI void enginy_path_move_to(Enginy_Generator *p, int x, int y)
+EAPI void enesim_path_move_to(Enesim_Generator *p, int x, int y)
 {
 
 }
 
-EAPI void enginy_path_line_to(Enginy_Generator *p, int x, int y)
+EAPI void enesim_path_line_to(Enesim_Generator *p, int x, int y)
 {
 
 }
 
-EAPI void enginy_path_close(Enginy_Generator *p)
+EAPI void enesim_path_close(Enesim_Generator *p)
 {
 
 }

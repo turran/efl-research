@@ -13,10 +13,10 @@
  * To be documented
  * FIXME: To be fixed
  */
-struct _Enginy_Component
+struct _Enesim_Component
 {
-	Enginy_Path		*path; 		/**< Main temporal data */
-	Enginy_Component_Reader 	*src; 		/**< Source data */
+	Enesim_Path		*path; 		/**< Main temporal data */
+	Enesim_Component_Reader 	*src; 		/**< Source data */
 	Edata_List		*readers;
 	int 			has_changed; 	/**< Forward notification */
 	int 			type;
@@ -33,14 +33,14 @@ struct _Enginy_Component
  */
 enum
 {
-	EQUIS_COMPONENT_O, 	/**< Output Only Component */
-	EQUIS_COMPONENT_IO,	/**< Input/Output Component */
-	EQUIS_COMPONENT_TYPES
+	ENESIM_COMPONENT_O, 	/**< Output Only Component */
+	ENESIM_COMPONENT_IO,	/**< Input/Output Component */
+	ENESIM_COMPONENT_TYPES
 };
 
-Enginy_Component * enginy_component_new(void);
-void enginy_component_notify(Enginy_Component *c);
-int enginy_component_generate(Enginy_Component *c, int *num);
+Enesim_Component * enesim_component_new(void);
+void enesim_component_notify(Enesim_Component *c);
+int enesim_component_generate(Enesim_Component *c, int *num);
 
 /** @} */
 #endif

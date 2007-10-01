@@ -1,13 +1,13 @@
 #ifndef _PATH_H
 #define _PATH_H
 
-typedef struct _Enginy_Path 	Enginy_Path; /**< */
-typedef struct _Enginy_Point 	Enginy_Point; /**< */
+typedef struct _Enesim_Path 	Enesim_Path; /**< */
+typedef struct _Enesim_Point 	Enesim_Point; /**< */
 
 /**
  *
  */
-struct _Enginy_Point
+struct _Enesim_Point
 {
 	float x;
 	float y;
@@ -16,12 +16,12 @@ struct _Enginy_Point
 /**
  *
  */
-struct _Enginy_Path
+struct _Enesim_Path
 {
 	Edata_Array	*a;
-	Enginy_Point 	*points;
+	Enesim_Point 	*points;
 	char 		*cmds;
-	Enginy_Point 	*point_curr;
+	Enesim_Point 	*point_curr;
 	char 		*cmd_curr;
 	int 		num_vertices;
 
@@ -29,8 +29,8 @@ struct _Enginy_Path
 	void		(*alloc_cb)(void *data);
 };
 
-Enginy_Path * 	enginy_path_new(void *data, int vertices_ref);
-void * 		enginy_path_delete(Enginy_Path *p);
-void 		enginy_path_vertex_add(Enginy_Path *p, float x, float y, char cmd);
+Enesim_Path * 	enesim_path_new(void *data, int vertices_ref);
+void * 		enesim_path_delete(Enesim_Path *p);
+void 		enesim_path_vertex_add(Enesim_Path *p, float x, float y, char cmd);
 
 #endif

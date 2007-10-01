@@ -4,19 +4,19 @@
 /**
  *
  */
-struct _Enginy_Component_Reader
+struct _Enesim_Component_Reader
 {
-	Enginy_Point 		*points;
+	Enesim_Point 		*points;
 	char 			*cmds;
 	
 	int 			pos;
 
-	Enginy_Component 	*from; 	/**< Component the reader reads from */
-	Enginy_Component 	*to; 	/**< In case the reader is used as a pipe */
+	Enesim_Component 	*from; 	/**< Component the reader reads from */
+	Enesim_Component 	*to; 	/**< In case the reader is used as a pipe */
 	
 };
 
-void enginy_reader_notify(Enginy_Component_Reader *r);
-void enginy_reader_reference_update(Enginy_Component_Reader *r);
+void enesim_reader_notify(Enesim_Component_Reader *r);
+void enesim_reader_reference_update(Enesim_Component_Reader *r);
 
 #endif

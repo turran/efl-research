@@ -1,9 +1,6 @@
-#include "Enginy.h"
-#include "enginy_private.h"
-#include "Edata.h"
-#include "component.h"
-#include "reader.h"
-
+#include "Enesim.h"
+#include "enesim_private.h"
+#include "enesim_vector.h"
 /**
  * TODO
  * flat a pipeline
@@ -12,7 +9,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static inline _rewind(Enginy_Component_Reader *r)
+static inline _rewind(Enesim_Component_Reader *r)
 {
 	r->points = r->from->path->points;
 	r->cmds = r->from->path->cmds;
@@ -24,20 +21,20 @@ static inline _rewind(Enginy_Component_Reader *r)
 /**
  *
  */
-void enginy_reader_notify(Enginy_Component_Reader *r)
+void enesim_reader_notify(Enesim_Component_Reader *r)
 {
 	/* FIXME update the pointers as the component might have had to
 	 * realloc its data */
 	if (r->to && !r->to->has_changed)
 	{
-		enginy_component_notify(r->to);
+		enesim_component_notify(r->to);
 	}
 }
 
 /**
  * called when the path of a component has realloced its data 
  */
-void enginy_reader_reference_update(Enginy_Component_Reader *r)
+void enesim_reader_reference_update(Enesim_Component_Reader *r)
 {
 	r->points = r->from->path->points;
 	r->cmds = r->from->path->cmds;
@@ -50,11 +47,11 @@ void enginy_reader_reference_update(Enginy_Component_Reader *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enginy_Component_Reader * enginy_reader_new(Enginy_Component *c)
+EAPI Enesim_Component_Reader * enesim_reader_new(Enesim_Component *c)
 {
-	Enginy_Component_Reader *r;
+	Enesim_Component_Reader *r;
 
-	r = calloc(1, sizeof(Enginy_Component_Reader));
+	r = calloc(1, sizeof(Enesim_Component_Reader));
 	r->from = c;
 	_rewind(r);
 	/* append the reader to the list of readers,
@@ -69,7 +66,7 @@ EAPI Enginy_Component_Reader * enginy_reader_new(Enginy_Component *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void enginy_reader_rewind(Enginy_Component_Reader *r)
+EAPI void enesim_reader_rewind(Enesim_Component_Reader *r)
 {
 	_rewind(r);
 }
@@ -78,7 +75,7 @@ EAPI void enginy_reader_rewind(Enginy_Component_Reader *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int enginy_reader_vertex_get(Enginy_Component_Reader *r, float *x, float *y)
+EAPI int enesim_reader_vertex_get(Enesim_Component_Reader *r, float *x, float *y)
 {
 	int ret;
 	int num = 1;
@@ -86,10 +83,10 @@ EAPI int enginy_reader_vertex_get(Enginy_Component_Reader *r, float *x, float *y
 	assert(r->from);
 	if (r->pos >= r->from->path->num_vertices)
 	{
-		if (!enginy_component_generate(r->from, &num))
-			return EQUIS_CMD_END;
+		if (!enesim_component_generate(r->from, &num))
+			return ENESIM_CMD_END;
 		if (num < 1)
-			return EQUIS_CMD_END;
+			return ENESIM_CMD_END;
 	}
 	*x = r->points->x;
 	*y = r->points->y;
@@ -104,7 +101,7 @@ EAPI int enginy_reader_vertex_get(Enginy_Component_Reader *r, float *x, float *y
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int enginy_reader_vertices_get(Enginy_Component_Reader *r, float *x, float *y, int *cmds)
+EAPI int enesim_reader_vertices_get(Enesim_Component_Reader *r, float *x, float *y, int *cmds)
 {
 
 

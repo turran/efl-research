@@ -1,44 +1,43 @@
-#include "Enginy.h"
-#include "enginy_private.h"
-#include "component.h"
+#include "Enesim.h"
+#include "enesim_private.h"
 
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
 static const char _name[] = "bop";
 
-typedef struct _Enginy_Bop
+typedef struct _Enesim_Bop
 {
-	Enginy_Component 	*c;
-} Enginy_Bop;
+	Enesim_Component 	*c;
+} Enesim_Bop;
 
-static void enginy_bop_generate(void *data, int *num)
+static void enesim_bop_generate(void *data, int *num)
 {
-	Enginy_Bop *d = data;
+	Enesim_Bop *d = data;
 	float x, y;
 	int cmd, i = 0;
 	
 }
 
-static void enginy_bop_free(void *data)
+static void enesim_bop_free(void *data)
 {
-	Enginy_Bop *d = data;
+	Enesim_Bop *d = data;
 
 	free(d);
 }
 
-static void enginy_bop_init(Enginy_Component *c)
+static void enesim_bop_init(Enesim_Component *c)
 {
-	Enginy_Bop *d;
+	Enesim_Bop *d;
 
-	d = calloc(1, sizeof(Enginy_Bop));
+	d = calloc(1, sizeof(Enesim_Bop));
 
 	d->c = c;
 	c->data = d;
 	c->name = _name;
 	c->type = EQUIS_COMPONENT_IO;
-	c->generate = enginy_bop_generate;
-	c->free = enginy_bop_free;
+	c->generate = enesim_bop_generate;
+	c->free = enesim_bop_free;
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -47,11 +46,11 @@ static void enginy_bop_init(Enginy_Component *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enginy_Component * enginy_bop_new(void)
+EAPI Enesim_Component * enesim_bop_new(void)
 {
-	Enginy_Component *c;
+	Enesim_Component *c;
 
-	c = enginy_component_new();
-	enginy_bop_init(c);
+	c = enesim_component_new();
+	enesim_bop_init(c);
 	return c;
 }

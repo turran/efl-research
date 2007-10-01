@@ -2,8 +2,9 @@ MAINTAINERCLEANFILES = \
 Makefile.in
 
 INCLUDES = -I. \
--I$(top_srcdir)/src/lib \
--I$(top_srcdir)/src/lib/scanline
+-I$(top_srcdir)/src/lib/ \
+-I$(top_srcdir)/src/lib/raster \
+-I$(top_srcdir)/src/lib/raster/scanline
 
 noinst_LTLIBRARIES = libenesim_rasterizer.la
 

@@ -1,11 +1,6 @@
-#include "Enginy.h"
-#include "enginy_private.h"
-#include "component.h"
-
-
-/**
- *
- */
+#include "Enesim.h"
+#include "enesim_private.h"
+#include "enesim_vector.h"
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -14,42 +9,42 @@ static const char _name[] = "transform";
 
 typedef struct _Transform
 {
-	Enginy_Component 	*c;
+	Enesim_Component 	*c;
 	float 			m[4];
 } Transform;
 
-static void enginy_transform_generate(void *data, int *num)
+static void enesim_transform_generate(void *data, int *num)
 {
 	Transform *d = data;
 	float x, y;
 	int cmd, i = 0;
 	
 	while ((i < *num) && 
-		((cmd = enginy_reader_vertex_get(d->c->src, &x, &y)) != EQUIS_CMD_END))
+		((cmd = enesim_reader_vertex_get(d->c->src, &x, &y)) != ENESIM_CMD_END))
 	{
 		float x2, y2;
 
 		x2 = (x * d->m[0]) + (y * d->m[1]);
 		y2 = (x * d->m[2]) + (y * d->m[3]);
-		enginy_path_vertex_add(d->c->path, x2, y2, cmd);
+		enesim_path_vertex_add(d->c->path, x2, y2, cmd);
 		i++;
 	}
 	/* last vertex we generate must be an END command */
 	if (i < *num)
 	{
-		enginy_path_vertex_add(d->c->path, 0, 0, EQUIS_CMD_END);
+		enesim_path_vertex_add(d->c->path, 0, 0, ENESIM_CMD_END);
 	}
 	*num = i;
 }
 
-static void enginy_transform_free(void *data)
+static void enesim_transform_free(void *data)
 {
 	Transform *d = data;
 
 	free(d);
 }
 
-static void enginy_transform_init(Enginy_Component *c)
+static void enesim_transform_init(Enesim_Component *c)
 {
 	Transform *d;
 
@@ -58,9 +53,9 @@ static void enginy_transform_init(Enginy_Component *c)
 	d->c = c;
 	c->data = d;
 	c->name = _name;
-	c->type = EQUIS_COMPONENT_IO;
-	c->generate = enginy_transform_generate;
-	c->free = enginy_transform_free;
+	c->type = ENESIM_COMPONENT_IO;
+	c->generate = enesim_transform_generate;
+	c->free = enesim_transform_free;
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -69,19 +64,19 @@ static void enginy_transform_init(Enginy_Component *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enginy_Component * enginy_transform_new(void)
+EAPI Enesim_Component * enesim_transform_new(void)
 {
-	Enginy_Component *c;
+	Enesim_Component *c;
 
-	c = enginy_component_new();
-	enginy_transform_init(c);
+	c = enesim_component_new();
+	enesim_transform_init(c);
 	return c;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void enginy_transform_matrix_set(Enginy_Component *c, float *matrix)
+EAPI void enesim_transform_matrix_set(Enesim_Component *c, float *matrix)
 {
 	Transform *d;
 
@@ -90,5 +85,5 @@ EAPI void enginy_transform_matrix_set(Enginy_Component *c, float *matrix)
 	d->m[1] = matrix[1];
 	d->m[2] = matrix[2];
 	d->m[3] = matrix[3];
-	enginy_component_notify(c);
+	enesim_component_notify(c);
 }
