@@ -1,5 +1,5 @@
-FLAGS = -g `pkg-config --cflags etc` `pkg-config --cflags equis`
-LIBS = `pkg-config --libs etc` `pkg-config --libs equis`
+FLAGS = -g `pkg-config --cflags enesim` `pkg-config --cflags enginy`
+LIBS = `pkg-config --libs enesim` `pkg-config --libs enginy`
 
 BINS  = vector_pipeline1 
 all: $(BINS)

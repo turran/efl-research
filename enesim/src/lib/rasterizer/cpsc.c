@@ -145,7 +145,7 @@ static void _generate(Cpsc *r, Enesim_Scanline *sl)
 	int 		y0, y1, y, i, j, k;
 	int 		nedges;
 	int 		n = r->num_vertices;
-		
+	
 	if (n < 3) return;
 
 	aet = malloc(sizeof(Cpsc_Edge) * n);
@@ -217,8 +217,8 @@ static void _generate(Cpsc *r, Enesim_Scanline *sl)
 			if (xl <= xr)
 			{
 				/* append a new scanline from xl to xr at y */
-				sl->funcs->add(sl->data, y, xl, xr, 255);
 				//printf("span from [%d] %d to %d, %d\n", y, xl, xr, j);
+				sl->funcs->add(sl->data, y, xl, xr, 255);
 			}
 			aet[j].x += aet[j].dx;
 			aet[j + 1].x += aet[j + 1].dx;

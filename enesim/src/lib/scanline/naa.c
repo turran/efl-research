@@ -44,7 +44,7 @@ static void *_sl_create(void)
 {
 	Naa *n;
 
-	n = malloc(sizeof(Naa));
+	n = calloc(1, sizeof(Naa));
 	n->a = edata_array_new(n, EDATA_ARRAY_ALLOC(_a_alloc),
 		EDATA_ARRAY_FREE(_a_free));
 	return n;

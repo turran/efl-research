@@ -12,15 +12,15 @@
  *============================================================================*/
 static const char _name[] = "transform";
 
-typedef struct _Enginy_Transform
+typedef struct _Transform
 {
 	Enginy_Component 	*c;
 	float 			m[4];
-} Enginy_Transform;
+} Transform;
 
 static void enginy_transform_generate(void *data, int *num)
 {
-	Enginy_Transform *d = data;
+	Transform *d = data;
 	float x, y;
 	int cmd, i = 0;
 	
@@ -44,16 +44,16 @@ static void enginy_transform_generate(void *data, int *num)
 
 static void enginy_transform_free(void *data)
 {
-	Enginy_Transform *d = data;
+	Transform *d = data;
 
 	free(d);
 }
 
 static void enginy_transform_init(Enginy_Component *c)
 {
-	Enginy_Transform *d;
+	Transform *d;
 
-	d = calloc(1, sizeof(Enginy_Transform));
+	d = calloc(1, sizeof(Transform));
 
 	d->c = c;
 	c->data = d;
@@ -83,7 +83,7 @@ EAPI Enginy_Component * enginy_transform_new(void)
  */
 EAPI void enginy_transform_matrix_set(Enginy_Component *c, float *matrix)
 {
-	Enginy_Transform *d;
+	Transform *d;
 
 	d = c->data;
 	d->m[0] = matrix[0];

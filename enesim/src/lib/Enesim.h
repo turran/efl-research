@@ -58,4 +58,24 @@ EAPI Enesim_Rasterizer * enesim_rasterizer_new(void);
 
 /** @} */
 
+/**
+ * @defgroup Enesim_Renderer_Group Renderer
+ * @{
+ */
+typedef struct _Enesim_Renderer 	Enesim_Renderer;
+EAPI Enesim_Renderer * enesim_fill_color_new(void);
+EAPI void enesim_fill_color_color_set(Enesim_Renderer *r);
+/** @} */
+
+/**
+ * @defgroup Enesim_Surface_Group Surface
+ * @{
+ */
+typedef unsigned int 		DATA32;
+typedef unsigned short int 	DATA16;
+typedef unsigned char 		DATA8;
+typedef struct _Enesim_Surface 	Enesim_Surface;
+
+/** @} */
+
 #endif
