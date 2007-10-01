@@ -149,8 +149,6 @@ echo
 echo "Configuration Options Summary:"
 echo
 echo "Installation Path.........: $prefix"
-echo "CFLAGS....................: $ETC_CFLAGS"
-echo "LIBS......................: $ETC_LIBS"
 echo
 echo "Now type 'make' ('gmake' on some systems) to compile $PACKAGE,"
 echo "and then afterwards as root (or the user who will install this), type"
