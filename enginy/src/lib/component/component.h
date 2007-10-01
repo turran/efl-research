@@ -13,10 +13,10 @@
  * To be documented
  * FIXME: To be fixed
  */
-struct _Equis_Component
+struct _Enginy_Component
 {
-	Equis_Path		*path; 		/**< Main temporal data */
-	Equis_Component_Reader 	*src; 		/**< Source data */
+	Enginy_Path		*path; 		/**< Main temporal data */
+	Enginy_Component_Reader 	*src; 		/**< Source data */
 	Edata_List		*readers;
 	int 			has_changed; 	/**< Forward notification */
 	int 			type;
@@ -38,9 +38,9 @@ enum
 	EQUIS_COMPONENT_TYPES
 };
 
-Equis_Component * equis_component_new(void);
-void equis_component_notify(Equis_Component *c);
-int equis_component_generate(Equis_Component *c, int *num);
+Enginy_Component * enginy_component_new(void);
+void enginy_component_notify(Enginy_Component *c);
+int enginy_component_generate(Enginy_Component *c, int *num);
 
 /** @} */
 #endif

@@ -1,12 +1,12 @@
-#include "Equis.h"
-#include "equis_private.h"
+#include "Enginy.h"
+#include "enginy_private.h"
 
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _a_alloc(Equis_Path *p, int num)
+static void _a_alloc(Enginy_Path *p, int num)
 {
-	p->points = realloc(p->points, sizeof(Equis_Point) * num);
+	p->points = realloc(p->points, sizeof(Enginy_Point) * num);
 	p->cmds = realloc(p->cmds, sizeof(char) * num);
 	/* FIXME only add the offset and call the alloc_cb in case the pointer
 	 * has changed */
@@ -17,7 +17,7 @@ static void _a_alloc(Equis_Path *p, int num)
 	p->alloc_cb(p->data);
 }
 
-static void _a_free(Equis_Path *p)
+static void _a_free(Enginy_Path *p)
 {
 	free(p->points);
 	free(p->cmds);
@@ -29,11 +29,11 @@ static void _a_free(Equis_Path *p)
  * To be documented
  * FIXME: To be fixed
  */
-Equis_Path * equis_path_new(void *data, int vertices_ref)
+Enginy_Path * enginy_path_new(void *data, int vertices_ref)
 {
-	Equis_Path *p;
+	Enginy_Path *p;
 
-	p = calloc(1, sizeof(Equis_Path));
+	p = calloc(1, sizeof(Enginy_Path));
 	p->data = data;
 	p->a = edata_array_new(p, EDATA_ARRAY_ALLOC(_a_alloc),
 		EDATA_ARRAY_FREE(_a_free));
@@ -43,7 +43,7 @@ Equis_Path * equis_path_new(void *data, int vertices_ref)
  * To be documented
  * FIXME: To be fixed
  */
-void * equis_path_delete(Equis_Path *p)
+void * enginy_path_delete(Enginy_Path *p)
 {
 	free(p->points);
 	free(p->cmds);
@@ -54,7 +54,7 @@ void * equis_path_delete(Equis_Path *p)
  * To be documented
  * FIXME: To be fixed
  */
-void equis_path_vertex_add(Equis_Path *p, float x, float y, char cmd)
+void enginy_path_vertex_add(Enginy_Path *p, float x, float y, char cmd)
 {
 	edata_array_element_new(p->a);
 	p->point_curr->x = x;

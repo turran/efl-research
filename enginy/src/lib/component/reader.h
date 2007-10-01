@@ -4,19 +4,19 @@
 /**
  *
  */
-struct _Equis_Component_Reader
+struct _Enginy_Component_Reader
 {
-	Equis_Point 		*points;
+	Enginy_Point 		*points;
 	char 			*cmds;
 	
 	int 			pos;
 
-	Equis_Component 	*from; 	/**< Component the reader reads from */
-	Equis_Component 	*to; 	/**< In case the reader is used as a pipe */
+	Enginy_Component 	*from; 	/**< Component the reader reads from */
+	Enginy_Component 	*to; 	/**< In case the reader is used as a pipe */
 	
 };
 
-void equis_reader_notify(Equis_Component_Reader *r);
-void equis_reader_reference_update(Equis_Component_Reader *r);
+void enginy_reader_notify(Enginy_Component_Reader *r);
+void enginy_reader_reference_update(Enginy_Component_Reader *r);
 
 #endif

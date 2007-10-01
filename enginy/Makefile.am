@@ -17,8 +17,8 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-equis.pc \
-equis_docs.tar.gz
+enginy.pc \
+enginy_docs.tar.gz
 
 EXTRA_DIST = \
 AUTHORS \
@@ -26,8 +26,8 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-equis.pc.in
+enginy.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = equis.pc
+pkgconfig_DATA = enginy.pc
 ACLOCAL_AMFLAGS = -I m4

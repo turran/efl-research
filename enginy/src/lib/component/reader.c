@@ -1,5 +1,5 @@
-#include "Equis.h"
-#include "equis_private.h"
+#include "Enginy.h"
+#include "enginy_private.h"
 #include "Edata.h"
 #include "component.h"
 #include "reader.h"
@@ -12,7 +12,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static inline _rewind(Equis_Component_Reader *r)
+static inline _rewind(Enginy_Component_Reader *r)
 {
 	r->points = r->from->path->points;
 	r->cmds = r->from->path->cmds;
@@ -24,20 +24,20 @@ static inline _rewind(Equis_Component_Reader *r)
 /**
  *
  */
-void equis_reader_notify(Equis_Component_Reader *r)
+void enginy_reader_notify(Enginy_Component_Reader *r)
 {
 	/* FIXME update the pointers as the component might have had to
 	 * realloc its data */
 	if (r->to && !r->to->has_changed)
 	{
-		equis_component_notify(r->to);
+		enginy_component_notify(r->to);
 	}
 }
 
 /**
  * called when the path of a component has realloced its data 
  */
-void equis_reader_reference_update(Equis_Component_Reader *r)
+void enginy_reader_reference_update(Enginy_Component_Reader *r)
 {
 	r->points = r->from->path->points;
 	r->cmds = r->from->path->cmds;
@@ -50,11 +50,11 @@ void equis_reader_reference_update(Equis_Component_Reader *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
+EAPI Enginy_Component_Reader * enginy_reader_new(Enginy_Component *c)
 {
-	Equis_Component_Reader *r;
+	Enginy_Component_Reader *r;
 
-	r = calloc(1, sizeof(Equis_Component_Reader));
+	r = calloc(1, sizeof(Enginy_Component_Reader));
 	r->from = c;
 	_rewind(r);
 	/* append the reader to the list of readers,
@@ -69,7 +69,7 @@ EAPI Equis_Component_Reader * equis_reader_new(Equis_Component *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void equis_reader_rewind(Equis_Component_Reader *r)
+EAPI void enginy_reader_rewind(Enginy_Component_Reader *r)
 {
 	_rewind(r);
 }
@@ -78,7 +78,7 @@ EAPI void equis_reader_rewind(Equis_Component_Reader *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
+EAPI int enginy_reader_vertex_get(Enginy_Component_Reader *r, float *x, float *y)
 {
 	int ret;
 	int num = 1;
@@ -86,7 +86,7 @@ EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
 	assert(r->from);
 	if (r->pos >= r->from->path->num_vertices)
 	{
-		if (!equis_component_generate(r->from, &num))
+		if (!enginy_component_generate(r->from, &num))
 			return EQUIS_CMD_END;
 		if (num < 1)
 			return EQUIS_CMD_END;
@@ -104,7 +104,7 @@ EAPI int equis_reader_vertex_get(Equis_Component_Reader *r, float *x, float *y)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int equis_reader_vertices_get(Equis_Component_Reader *r, float *x, float *y, int *cmds)
+EAPI int enginy_reader_vertices_get(Enginy_Component_Reader *r, float *x, float *y, int *cmds)
 {
 
 

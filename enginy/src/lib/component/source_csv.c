@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "Equis.h"
-#include "equis_private.h"
+#include "Enginy.h"
+#include "enginy_private.h"
 #include "component.h"
 
 /* TODO
@@ -14,15 +14,15 @@
  *============================================================================*/
 static const char _name[] = "source_csv";
 
-typedef struct _Equis_Source_Csv
+typedef struct _Enginy_Source_Csv
 {
-	Equis_Component *c;
+	Enginy_Component *c;
 	char 		*name;
 	FILE 		*f;
-} Equis_Source_Csv;
+} Enginy_Source_Csv;
 
 
-static int equis_source_csv_open(Equis_Source_Csv *d, const char *name)
+static int enginy_source_csv_open(Enginy_Source_Csv *d, const char *name)
 {
 	if (!name) return;
 	
@@ -32,7 +32,7 @@ static int equis_source_csv_open(Equis_Source_Csv *d, const char *name)
 	return 1;
 }
 
-static void equis_source_csv_close(Equis_Source_Csv *d)
+static void enginy_source_csv_close(Enginy_Source_Csv *d)
 {
 	if (d->name)
 	{
@@ -45,9 +45,9 @@ static void equis_source_csv_close(Equis_Source_Csv *d)
 	}
 }
 
-static void equis_source_csv_generate(void *data, int *num)
+static void enginy_source_csv_generate(void *data, int *num)
 {
-	Equis_Source_Csv *d = data;
+	Enginy_Source_Csv *d = data;
 	int i = 0;
 	float x, y;
 
@@ -57,44 +57,44 @@ static void equis_source_csv_generate(void *data, int *num)
 	{
 		if (fscanf(d->f, "%f %f\n", &x, &y) != EOF)
 		{
-			equis_path_vertex_add(d->c->path, x, y, EQUIS_CMD_MOVE_TO);
+			enginy_path_vertex_add(d->c->path, x, y, EQUIS_CMD_MOVE_TO);
 			i++;
 		}
 	}
 	/* next vertices should be a LINETO */
 	while ((i < *num) && (fscanf(d->f, "%f %f\n", &x, &y) != EOF))
 	{
-		equis_path_vertex_add(d->c->path, x, y, EQUIS_CMD_LINE_TO);
+		enginy_path_vertex_add(d->c->path, x, y, EQUIS_CMD_LINE_TO);
 		i++;
 	}
 	/* last vertex we generate must be an END command */
 	if (i < *num)
 	{
-		equis_path_vertex_add(d->c->path, 0, 0, EQUIS_CMD_END);
+		enginy_path_vertex_add(d->c->path, 0, 0, EQUIS_CMD_END);
 	}
 	/* set the correct number of vertices calculated */
 	*num = i;
 }
 
-static void equis_source_csv_free(void *data)
+static void enginy_source_csv_free(void *data)
 {
-	Equis_Source_Csv *d = data;
+	Enginy_Source_Csv *d = data;
 
-	equis_source_csv_close(d);
+	enginy_source_csv_close(d);
 	free(d);
 }
 
-static void equis_source_csv_init(Equis_Component *c)
+static void enginy_source_csv_init(Enginy_Component *c)
 {
-	Equis_Source_Csv *d;
+	Enginy_Source_Csv *d;
 
-	d = calloc(1, sizeof(Equis_Source_Csv));
+	d = calloc(1, sizeof(Enginy_Source_Csv));
 
 	d->c = c;
 	c->data = d;
 	c->name = _name;
-	c->generate = equis_source_csv_generate;
-	c->free = equis_source_csv_free;
+	c->generate = enginy_source_csv_generate;
+	c->free = enginy_source_csv_free;
 }
 
 
@@ -105,30 +105,30 @@ static void equis_source_csv_init(Equis_Component *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Equis_Component * equis_source_csv_new(void)
+EAPI Enginy_Component * enginy_source_csv_new(void)
 {
-	Equis_Component *c;
+	Enginy_Component *c;
 
-	c = equis_component_new();
-	equis_source_csv_init(c);
+	c = enginy_component_new();
+	enginy_source_csv_init(c);
 	return c;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int equis_source_csv_file_set(Equis_Component *c, const char *path)
+EAPI int enginy_source_csv_file_set(Enginy_Component *c, const char *path)
 {
-	Equis_Source_Csv *d;
+	Enginy_Source_Csv *d;
 
 	assert(c);
 	assert(c->data);
 
 	d = c->data;
-	equis_source_csv_close(d);
-	if (!equis_source_csv_open(d, path))
+	enginy_source_csv_close(d);
+	if (!enginy_source_csv_open(d, path))
 		return EQUIS_ERROR_INVAL;
 	/* we have changed the file, propagate it */
-	equis_component_notify(c);
+	enginy_component_notify(c);
 	return EQUIS_ERROR_NONE;
 }

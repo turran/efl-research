@@ -1,46 +1,46 @@
-#include "Equis.h"
-#include "equis_private.h"
+#include "Enginy.h"
+#include "enginy_private.h"
 
 static const char type[] = "path";
 
-typedef struct _Equis_Path
+typedef struct _Enginy_Path
 {
 
-} Equis_Path;
+} Enginy_Path;
 
-static Equis_Path * equis_path_create(void)
+static Enginy_Path * enginy_path_create(void)
 {
-	Equis_Path *p;
+	Enginy_Path *p;
 
-	p = calloc(1, sizeof(Equis_Path));
+	p = calloc(1, sizeof(Enginy_Path));
 	return p;
 }
 
-static void equis_path_init(Equis_Generator *g)
+static void enginy_path_init(Enginy_Generator *g)
 {
-	g->data = equis_path_create();
+	g->data = enginy_path_create();
 }
 
-EAPI Equis_Generator * equis_path_new(void)
+EAPI Enginy_Generator * enginy_path_new(void)
 {
-	Equis_Generator *g;
+	Enginy_Generator *g;
 
-	g = equis_generator_new();
-	equis_path_init(g);
+	g = enginy_generator_new();
+	enginy_path_init(g);
 	return g;
 }
 
-EAPI void equis_path_move_to(Equis_Generator *p, int x, int y)
+EAPI void enginy_path_move_to(Enginy_Generator *p, int x, int y)
 {
 
 }
 
-EAPI void equis_path_line_to(Equis_Generator *p, int x, int y)
+EAPI void enginy_path_line_to(Enginy_Generator *p, int x, int y)
 {
 
 }
 
-EAPI void equis_path_close(Equis_Generator *p)
+EAPI void enginy_path_close(Enginy_Generator *p)
 {
 
 }

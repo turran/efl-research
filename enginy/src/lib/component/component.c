@@ -1,5 +1,5 @@
-#include "Equis.h"
-#include "equis_private.h"
+#include "Enginy.h"
+#include "enginy_private.h"
 #include "Edata.h"
 #include "component.h"
 #include "reader.h"
@@ -10,13 +10,13 @@
 /* called whenever the pointer to the path has changed */
 static void _alloc_cb(void *data)
 {
-	Equis_Component_Reader *r;
-	Equis_Component *c = data;
+	Enginy_Component_Reader *r;
+	Enginy_Component *c = data;
 	
 	edata_list_first_goto(c->readers);
 	while ((r = edata_list_next(c->readers)))
 	{
-		equis_reader_reference_update(r);
+		enginy_reader_reference_update(r);
 	}
 }
 /*============================================================================*
@@ -26,13 +26,13 @@ static void _alloc_cb(void *data)
  * To be documented
  * FIXME: To be fixed
  */
-Equis_Component * equis_component_new(void)
+Enginy_Component * enginy_component_new(void)
 {
-	Equis_Component *c;
+	Enginy_Component *c;
 
-	c = calloc(1, sizeof(Equis_Component));
+	c = calloc(1, sizeof(Enginy_Component));
 	c->readers = edata_list_new();
-	c->path = equis_path_new(c, 0);
+	c->path = enginy_path_new(c, 0);
 	/* ABSTRACT THIS */
 	c->path->alloc_cb = _alloc_cb;
 	return c;
@@ -42,9 +42,9 @@ Equis_Component * equis_component_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-void equis_component_notify(Equis_Component *c)
+void enginy_component_notify(Enginy_Component *c)
 {
-	Equis_Component_Reader *r;
+	Enginy_Component_Reader *r;
 	
 	if (c->has_changed) return;
 	
@@ -52,7 +52,7 @@ void equis_component_notify(Equis_Component *c)
 	edata_list_first_goto(c->readers);
 	while ((r = edata_list_next(c->readers)))
 	{
-		equis_reader_notify(r);
+		enginy_reader_notify(r);
 	}
 }
 
@@ -61,7 +61,7 @@ void equis_component_notify(Equis_Component *c)
  * FIXME: To be fixed
  */
 /* should create maximum num vertices */
-int equis_component_generate(Equis_Component *c, int *num)
+int enginy_component_generate(Enginy_Component *c, int *num)
 {
 	/* if the component is of type input-ouput and we dont
 	 * have a source of vertices, just return */
@@ -84,7 +84,7 @@ int equis_component_generate(Equis_Component *c, int *num)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void equis_component_delete(Equis_Component *c)
+EAPI void enginy_component_delete(Enginy_Component *c)
 {
 	if (c->free)
 		c->free(c->data);
@@ -95,7 +95,7 @@ EAPI void equis_component_delete(Equis_Component *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src)
+EAPI int enginy_component_source_set(Enginy_Component *c, Enginy_Component *src)
 {
 	assert(c);
 	assert(src);
@@ -107,9 +107,9 @@ EAPI int equis_component_source_set(Equis_Component *c, Equis_Component *src)
 	if ((c->src) && (c->src->from == src))
 		return EQUIS_ERROR_NONE;
 	if (!c->src)
-		c->src = equis_reader_new(src);
+		c->src = enginy_reader_new(src);
 	/* notify the change */
-	equis_component_notify(c);
+	enginy_component_notify(c);
 
 	return EQUIS_ERROR_NONE;
 }

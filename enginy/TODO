@@ -1,2 +1,0 @@
-define equis_t as the main data type (fixed point, floating point, whatever)
-define equis_c_t as the container data type (mmx = 64 bits, xmm = 128, etc)
