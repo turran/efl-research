@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <Enginy.h>
+#include <Enesim.h>
 #include <Enesim.h>
 
 #define DATA "../data"
@@ -8,13 +8,13 @@ int main(void)
 {
 	float x, y;
 	int cmd;
-	Enginy_Component *src;
-	Enginy_Component *t;
-	Enginy_Component_Reader *r;
+	Enesim_Component *src;
+	Enesim_Component *t;
+	Enesim_Component_Reader *r;
 	
 	Enesim_Rasterizer *rs;
 	Enesim_Scanline *sl;
-	//Enesim_Renderer *rd;
+	Enesim_Renderer *rd;
 	//Enesim_Surface *dst;
 	float m[] = {1.5, 3.4, 0.0, 10};
 
@@ -27,7 +27,7 @@ int main(void)
 	//enesim_transform_matrix_set(t, m);
 	enesim_component_source_set(t, src);
 	rs = enesim_rasterizer_new();
-	while ((cmd = enesim_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
+	while ((cmd = enesim_reader_vertex_get(r, &x, &y)) != ENESIM_CMD_END)
 	{
 		//printf("%f %f\n", x, y);
 		enesim_rasterizer_vertex_add(rs, x, y);
