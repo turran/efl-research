@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
 #include "Edata.h"
-#include "Etc.h"
-#include "etc_private.h"
+#include "Enesim.h"
+#include "enesim_private.h"
 #include "rasterizer.h"
 #include "scanline.h"
 
@@ -137,7 +137,7 @@ static void _vertex_add(Cpsc *r, float x, float y)
 	r->num_vertices++;
 }
 
-static void _generate(Cpsc *r, Etc_Scanline *sl)
+static void _generate(Cpsc *r, Enesim_Scanline *sl)
 {
 	Cpsc_Vertex 	*vertices;
 	Cpsc_Edge 	*aet;
@@ -231,7 +231,7 @@ static void _generate(Cpsc *r, Etc_Scanline *sl)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Etc_Rasterizer_Func cpsc = {
+Enesim_Rasterizer_Func cpsc = {
 	.create 	= _create,
 	.vertex_add 	= _vertex_add,
 	.generate 	= _generate

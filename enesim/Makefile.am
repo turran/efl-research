@@ -17,8 +17,8 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-etc.pc \
-etc_docs.tar.gz
+enesim.pc \
+enesim_docs.tar.gz
 
 EXTRA_DIST = \
 AUTHORS \
@@ -26,8 +26,8 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-etc.pc.in
+enesim.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = etc.pc
+pkgconfig_DATA = enesim.pc
 ACLOCAL_AMFLAGS = -I m4

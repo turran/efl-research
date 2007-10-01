@@ -6,20 +6,20 @@
  * - on vertex add, calculate the bounding box
  */
 
-typedef struct _Etc_Rasterizer_Func
+typedef struct _Enesim_Rasterizer_Func
 {
 	void *(*create)(void);
 	void (*vertex_add)(void *r, float x, float y);
-	void (*generate)(void *r, Etc_Scanline *sl);
+	void (*generate)(void *r, Enesim_Scanline *sl);
 	/* TODO free */
-} Etc_Rasterizer_Func;
+} Enesim_Rasterizer_Func;
 
-extern Etc_Rasterizer_Func cpsc;
-extern Etc_Rasterizer_Func faap;
+extern Enesim_Rasterizer_Func cpsc;
+extern Enesim_Rasterizer_Func faap;
 
-struct _Etc_Rasterizer
+struct _Enesim_Rasterizer
 {
-	Etc_Rasterizer_Func 	*funcs;
+	Enesim_Rasterizer_Func 	*funcs;
 	void 			*data;
 };
 

@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
 #include "Edata.h"
-#include "Etc.h"
-#include "etc_private.h"
+#include "Enesim.h"
+#include "enesim_private.h"
 #include "scanline.h"
 
 /**
@@ -59,7 +59,7 @@ static void _sl_add(Naa *n, int x0, int x1, int y, int coverage)
 	n->num_sls++;
 }
 
-Etc_Scanline_Func naa = {
+Enesim_Scanline_Func naa = {
 	.create = _sl_create,
 	.free	= _sl_free,
 	.add 	= _sl_add

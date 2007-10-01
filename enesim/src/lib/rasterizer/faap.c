@@ -1,5 +1,5 @@
-#include "Etc.h"
-#include "etc_private.h"
+#include "Enesim.h"
+#include "enesim_private.h"
 #include "rasterizer.h"
 
 typedef struct _Faap_Vertex
@@ -57,7 +57,7 @@ static void _generate(Faap_Rasterizer *r)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Etc_Rasterizer_Func faap = {
+Enesim_Rasterizer_Func faap = {
 	.create 	= _create,
 	.vertex_add 	= _vertex_add,
 	.generate 	= _generate

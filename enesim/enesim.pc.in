@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: etc
-Description: Etc
+Name: enesim
+Description: Enesim
 Requires: 
 Version: @VERSION@
-Libs: -L${libdir} -letc
+Libs: -L${libdir} -lenesim
 Cflags: -I${includedir}

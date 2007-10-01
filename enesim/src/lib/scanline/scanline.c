@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include "Etc.h"
-#include "etc_private.h"
+#include "Enesim.h"
+#include "enesim_private.h"
 #include "scanline.h"
 
 /*============================================================================*
@@ -11,11 +11,11 @@
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Etc_Scanline * etc_scanline_new(void)
+EAPI Enesim_Scanline * enesim_scanline_new(void)
 {
-	Etc_Scanline *sl;
+	Enesim_Scanline *sl;
 
-	sl = calloc(1, sizeof(Etc_Scanline));
+	sl = calloc(1, sizeof(Enesim_Scanline));
 	sl->funcs = &naa;
 	sl->data = sl->funcs->create();
 	return sl;
@@ -25,7 +25,7 @@ EAPI Etc_Scanline * etc_scanline_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void etc_scanline_delete(Etc_Scanline *sl)
+EAPI void enesim_scanline_delete(Enesim_Scanline *sl)
 {
 	sl->funcs->free(sl->data);
 	free(sl);

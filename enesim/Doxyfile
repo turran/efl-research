@@ -1,4 +1,4 @@
-PROJECT_NAME           = Etc
+PROJECT_NAME           = Enesim
 PROJECT_NUMBER         =
 OUTPUT_DIRECTORY       = doc
 INPUT                  = ./src/lib
