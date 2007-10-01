@@ -19,23 +19,23 @@ int main(void)
 	float m[] = {1.5, 3.4, 0.0, 10};
 
 	/* vector pipeline */
-	src = enginy_source_csv_new();
-	t = enginy_transform_new();
-	r = enginy_reader_new(src);
+	src = enesim_source_csv_new();
+	t = enesim_transform_new();
+	r = enesim_reader_new(src);
 	
-	enginy_source_csv_file_set(src, DATA"/vector_source1.csv");
-	//enginy_transform_matrix_set(t, m);
-	enginy_component_source_set(t, src);
+	enesim_source_csv_file_set(src, DATA"/vector_source1.csv");
+	//enesim_transform_matrix_set(t, m);
+	enesim_component_source_set(t, src);
 	rs = enesim_rasterizer_new();
-	while ((cmd = enginy_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
+	while ((cmd = enesim_reader_vertex_get(r, &x, &y)) != EQUIS_CMD_END)
 	{
 		//printf("%f %f\n", x, y);
 		enesim_rasterizer_vertex_add(rs, x, y);
 	}
-	//enginy_reader_rewind(r);
-	enginy_component_delete(src);
-	enginy_component_delete(t);
-	//enginy_reader_delete(r);
+	//enesim_reader_rewind(r);
+	enesim_component_delete(src);
+	enesim_component_delete(t);
+	//enesim_reader_delete(r);
 	
 	/* raster pipeline */
 	sl = enesim_scanline_new();
