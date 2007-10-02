@@ -10,17 +10,15 @@ typedef void (*Enesim_Scanline_Free)(void *d);
 
 typedef struct _Enesim_Scanline_Func
 {
-	Enesim_Scanline_Create 	create;
 	Enesim_Scanline_Add 	add;
 	Enesim_Scanline_Free 	free;
 } Enesim_Scanline_Func;
 
 struct _Enesim_Scanline
 {
+	int 			anti_alias;
 	Enesim_Scanline_Func 	*funcs;
 	void 			*data;
 };
-
-extern Enesim_Scanline_Func naa;
 
 #endif

@@ -10,7 +10,7 @@ noinst_LTLIBRARIES = libenesim_scanline.la
 
 libenesim_scanline_la_SOURCES = \
 scanline.c \
-naa.c
+alias.c
 
 libenesim_scanline_la_LIBADD = \
  -lm

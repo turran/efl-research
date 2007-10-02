@@ -42,7 +42,7 @@
 
 typedef struct _Enesim_Scanline 	Enesim_Scanline;
 
-EAPI Enesim_Scanline 	*enesim_scanline_new(void);
+EAPI Enesim_Scanline 	*enesim_scanline_alias_new(void);
 EAPI void 		enesim_scanline_delete(Enesim_Scanline *sl);
 
 /** @} */

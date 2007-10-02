@@ -8,41 +8,45 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
+   width="1024"
+   height="1052.3622"
    id="svg7419"
    sodipodi:version="0.32"
    inkscape:version="0.45.1"
    sodipodi:docbase="/home/jl/version/svn/code.google.com/efl-research/enesim/doc/img"
-   sodipodi:docname="etc_images.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   sodipodi:docname="enesim_images.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   inkscape:export-filename="/tmp/enesim_images.jpg"
+   inkscape:export-xdpi="135.94"
+   inkscape:export-ydpi="135.94">
   <defs
      id="defs7421">
     <marker
        inkscape:stockid="SquareL"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="SquareL"
        style="overflow:visible">
       <path
          id="path4189"
-         d="M -5.0,-5.0 L -5.0,5.0 L 5.0,5.0 L 5.0,-5.0 L -5.0,-5.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
-         transform="scale(0.8)" />
+         d="M -5,-5 L -5,5 L 5,5 L 5,-5 L -5,-5 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="scale(0.8,0.8)" />
     </marker>
     <marker
        inkscape:stockid="Arrow1Mend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Mend"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          id="path4127"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
-         transform="scale(0.4) rotate(180) translate(10,0)" />
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)" />
     </marker>
   </defs>
   <sodipodi:namedview
@@ -53,14 +57,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="350"
-     inkscape:cy="548.57143"
+     inkscape:cx="217.83529"
+     inkscape:cy="621.89435"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="810"
-     inkscape:window-height="586"
-     inkscape:window-x="487"
-     inkscape:window-y="197" />
+     inkscape:window-height="588"
+     inkscape:window-x="86"
+     inkscape:window-y="159"
+     width="1024px"
+     height="1052.3622px" />
   <metadata
      id="metadata7424">
     <rdf:RDF>
@@ -81,8 +87,8 @@
        id="rect2160"
        width="50"
        height="50"
-       x="56.356461"
-       y="342.35974"
+       x="270.32016"
+       y="229.95076"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -91,8 +97,8 @@
        id="rect3134"
        width="50"
        height="50"
-       x="154.57072"
-       y="342.35974"
+       x="368.53442"
+       y="229.95076"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -101,8 +107,8 @@
        id="rect3136"
        width="50"
        height="50"
-       x="154.57072"
-       y="420.21689"
+       x="368.53442"
+       y="307.80789"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -111,28 +117,28 @@
        id="rect3138"
        width="50"
        height="50"
-       x="249.57072"
-       y="342.35974"
+       x="463.53442"
+       y="229.95076"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#SquareL);marker-end:url(#SquareL);stroke-opacity:1"
-       d="M 106.71359,385.57404 L 128.14218,385.57404 L 128.14218,443.43118 L 154.57075,443.43118"
+       d="M 320.67731,273.16505 L 342.1059,273.16505 L 342.1059,331.02219 L 368.53447,331.02219"
        id="path3140"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#SquareL);marker-end:url(#SquareL);stroke-opacity:1"
-       d="M 105.99931,356.28833 L 154.57075,356.28833"
+       d="M 319.96303,243.87934 L 368.53447,243.87934"
        id="path3142"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#SquareL);marker-end:url(#SquareL);stroke-opacity:1"
-       d="M 205.28503,367.00261 L 249.57075,367.00261"
+       d="M 419.24875,254.59362 L 463.53447,254.59362"
        id="path3144"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
@@ -140,8 +146,8 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="69.927887"
-       y="449.14548"
+       x="283.8916"
+       y="336.73648"
        id="text4315"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -149,45 +155,45 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan4317"
-         x="69.927887"
-         y="449.14548">Component</tspan><tspan
+         x="283.8916"
+         y="336.73648">Component</tspan><tspan
          sodipodi:role="line"
-         x="69.927887"
-         y="464.14548"
+         x="283.8916"
+         y="351.73648"
          id="tspan4319">Readers</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="81.523163"
-       y="373.87079"
+       x="295.48688"
+       y="261.46179"
        id="text4321"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="81.523163"
-         y="373.87079"
+         x="295.48688"
+         y="261.46179"
          id="tspan4329">A</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="179.57074"
-       y="375.03638"
+       x="393.53445"
+       y="262.62738"
        id="text4333"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="179.57074"
-         y="375.03638"
+         x="393.53445"
+         y="262.62738"
          id="tspan4335">B</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="274.23676"
-       y="375.03638"
+       x="488.20044"
+       y="262.62738"
        id="text4337"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -195,13 +201,13 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan4341"
-         x="274.23676"
-         y="375.03638">C</tspan></text>
+         x="488.20044"
+         y="262.62738">C</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="179.23674"
-       y="453.60779"
+       x="393.20044"
+       y="341.19879"
        id="text4343"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -209,11 +215,11 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan4347"
-         x="179.23674"
-         y="453.60779">D</tspan></text>
+         x="393.20044"
+         y="341.19879">D</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 111.49931,442.00262 L 116.49931,393.43118"
+       d="M 325.46303,329.59363 L 330.46303,281.02219"
        id="path5318"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -221,7 +227,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 112.92788,441.28833 L 140.07075,366.28833"
+       d="M 326.8916,328.87934 L 354.03447,253.87934"
        id="path5320"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -229,7 +235,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 112.07074,442.00261 L 232.78503,377.7169"
+       d="M 326.03446,329.59362 L 446.74875,265.30791"
        id="path5322"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -238,20 +244,20 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="180.38031"
-       y="319.29935"
+       x="394.34402"
+       y="206.89037"
        id="text6360"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="180.38031"
-         y="319.29935"
+         x="394.34402"
+         y="206.89037"
          id="tspan6364">Components</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 179.36535,323.08928 L 109.36534,340.23213"
+       d="M 393.32907,210.68029 L 323.32906,227.82314"
        id="path6368"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -259,7 +265,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 179.9314,322.58421 L 251.35997,339.72706"
+       d="M 393.89512,210.17522 L 465.32369,227.31807"
        id="path6370"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -267,7 +273,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 180.64568,321.86992 L 174.2171,338.29848"
+       d="M 394.6094,209.46093 L 388.18082,225.88949"
        id="path6372"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -275,7 +281,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 180.71361,323.41334 L 187.14218,419.12761"
+       d="M 394.67733,211.00435 L 401.1059,306.71862"
        id="path6374"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -286,8 +292,8 @@
        id="rect2287"
        width="50"
        height="50"
-       x="385.06451"
-       y="344.84796"
+       x="599.0282"
+       y="232.43898"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -296,8 +302,8 @@
        id="rect2289"
        width="50"
        height="50"
-       x="483.27878"
-       y="344.84796"
+       x="697.24249"
+       y="232.43898"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -306,21 +312,21 @@
        id="rect2291"
        width="50"
        height="50"
-       x="578.27881"
-       y="344.84796"
+       x="792.24249"
+       y="232.43898"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#SquareL);marker-end:url(#SquareL);stroke-opacity:1"
-       d="M 434.70738,368.77653 L 483.27882,368.77653"
+       d="M 648.6711,256.36754 L 697.24254,256.36754"
        id="path2293"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#SquareL);marker-end:url(#SquareL);stroke-opacity:1"
-       d="M 533.9931,369.4908 L 578.27882,369.4908"
+       d="M 747.95682,257.08181 L 792.24254,257.08181"
        id="path2295"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
@@ -328,36 +334,36 @@
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="410.23123"
-       y="376.35898"
+       x="624.19495"
+       y="263.94998"
        id="text2297"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="410.23123"
-         y="376.35898"
+         x="624.19495"
+         y="263.94998"
          id="tspan2299">A</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="508.27878"
-       y="377.5246"
+       x="722.24249"
+       y="265.1156"
        id="text2301"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="508.27878"
-         y="377.5246"
+         x="722.24249"
+         y="265.1156"
          id="tspan2303">B</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="602.94482"
-       y="377.5246"
+       x="816.90851"
+       y="265.1156"
        id="text2305"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
@@ -365,21 +371,21 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan2307"
-         x="602.94482"
-         y="377.5246">C</tspan></text>
+         x="816.90851"
+         y="265.1156">C</tspan></text>
     <rect
        style="opacity:1;color:#000000;fill:#f4ee13;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect2315"
        width="50"
        height="50"
-       x="673.24988"
-       y="345.96472"
+       x="887.21356"
+       y="233.55574"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#SquareL);marker-end:url(#SquareL);stroke-opacity:1"
-       d="M 628.96414,370.60757 L 673.24986,370.60757"
+       d="M 842.92786,258.19858 L 887.21358,258.19858"
        id="path2317"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
@@ -387,8 +393,8 @@
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="697.91589"
-       y="378.64136"
+       x="911.87958"
+       y="266.23236"
        id="text2319"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
@@ -396,18 +402,18 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan2321"
-         x="697.91589"
-         y="378.64136">D</tspan></text>
+         x="911.87958"
+         y="266.23236">D</tspan></text>
     <path
        style="fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
-       d="M 669.56019,400.04709 L 669.56019,402.04709 L 531.46644,402.04709 L 531.46644,406.04709 L 669.56019,406.04709 L 669.56019,408.04709 L 676.46644,404.04709 L 669.56019,400.04709 z "
+       d="M 883.52391,287.6381 L 883.52391,289.6381 L 745.43016,289.6381 L 745.43016,293.6381 L 883.52391,293.6381 L 883.52391,295.6381 L 890.43016,291.6381 L 883.52391,287.6381 z "
        id="path2323"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
-       d="M 505.68182,406.89129 L 507.68182,406.89129 L 507.68182,442.95963 L 511.68182,442.95963 L 511.68182,406.89129 L 513.68182,406.89129 L 509.68182,399.98504 L 505.68182,406.89129 z "
+       d="M 719.64554,294.4823 L 721.64554,294.4823 L 721.64554,330.55064 L 725.64554,330.55064 L 725.64554,294.4823 L 727.64554,294.4823 L 723.64554,287.57605 L 719.64554,294.4823 z "
        id="path3509"
        sodipodi:nodetypes="cccccccc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
@@ -416,8 +422,8 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="510.71228"
-       y="453.29214"
+       x="724.67596"
+       y="340.88315"
        id="text3511"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
@@ -425,29 +431,29 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan3513"
-         x="510.71228"
-         y="453.29214">1. Property</tspan><tspan
+         x="724.67596"
+         y="340.88315">1. Property</tspan><tspan
          sodipodi:role="line"
-         x="510.71228"
-         y="468.29214"
+         x="724.67596"
+         y="355.88315"
          id="tspan3515">Change</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="605.59912"
-       y="419.54248"
+       x="819.56281"
+       y="307.13348"
        id="text3517"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="605.59912"
-         y="419.54248"
+         x="819.56281"
+         y="307.13348"
          id="tspan3521">2. Forward Notification</tspan></text>
     <path
        style="fill:#0000ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
-       d="M 419.35964,328.07384 L 419.35964,330.07384 L 692.81384,330.07384 L 692.81384,334.07384 L 419.35964,334.07384 L 419.35964,336.07384 L 412.45339,332.07384 L 419.35964,328.07384 z "
+       d="M 633.32336,215.66485 L 633.32336,217.66485 L 906.77756,217.66485 L 906.77756,221.66485 L 633.32336,221.66485 L 633.32336,223.66485 L 626.41711,219.66485 L 633.32336,215.66485 z "
        id="path3525"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
@@ -456,20 +462,20 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="585.03467"
-       y="322.40533"
+       x="798.99835"
+       y="209.99635"
        id="text4496"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="585.03467"
-         y="322.40533"
+         x="798.99835"
+         y="209.99635"
          id="tspan4498">3. Vertex Get</tspan></text>
     <path
        style="fill:#0000ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
-       d="M 690.45328,296.75911 L 690.45328,298.75911 L 506.39759,298.75911 L 506.39759,302.75911 L 690.45328,302.75911 L 690.45328,304.75911 L 697.35953,300.75911 L 690.45328,296.75911 z "
+       d="M 904.417,184.35012 L 904.417,186.35012 L 720.36131,186.35012 L 720.36131,190.35012 L 904.417,190.35012 L 904.417,192.35012 L 911.32328,188.35012 L 904.417,184.35012 z "
        id="path2235"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
@@ -478,20 +484,20 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="538.41956"
-       y="290.98514"
+       x="752.38324"
+       y="178.57616"
        id="text2237"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="538.41956"
-         y="290.98514"
+         x="752.38324"
+         y="178.57616"
          id="tspan2239">4. Vertex Generate</tspan></text>
     <path
        style="fill:#00c8ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
-       d="M 499.78697,298.25403 L 413.211,298.25403 L 413.211,302.25403 L 499.78697,302.25403 L 499.78697,298.25403 z "
+       d="M 713.75069,185.84504 L 627.17472,185.84504 L 627.17472,189.84504 L 713.75069,189.84504 L 713.75069,185.84504 z "
        id="path2241"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/implementation.png"
        inkscape:export-xdpi="90"
@@ -500,20 +506,20 @@
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="466.72961"
-       y="322.90125"
+       x="680.6933"
+       y="210.49226"
        id="text3212"
        sodipodi:linespacing="100%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         x="466.72961"
-         y="322.90125"
+         x="680.6933"
+         y="210.49226"
          id="tspan3214">Buffered / Unbuffered</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 438.71073,312.33983 L 449.45474,306.54503"
+       d="M 652.67445,199.93084 L 663.41846,194.13604"
        id="path3216"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
@@ -521,118 +527,283 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 516.64196,314.37546 L 527.38597,308.58066"
+       d="M 730.60568,201.96647 L 741.34969,196.17167"
        id="path3218"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/equis/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
+       style="opacity:1;color:#000000;fill:#ffc870;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2377"
+       width="116.75047"
+       height="39.001926"
+       x="111.72507"
+       y="269.33206"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="opacity:1;color:#000000;fill:#ffc870;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2379"
+       width="116.75047"
+       height="39.001926"
+       x="111.72507"
+       y="223.6441"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="opacity:1;color:#000000;fill:#ff7b00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2381"
+       width="116.75047"
+       height="39.001926"
+       x="111.72507"
+       y="176.17316"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.99999989, 3.99999978;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 99.382871,219.29816 L 240.59534,219.29816"
+       id="path2389"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="opacity:1;color:#000000;fill:#ffc870;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2399"
+       width="116.75047"
+       height="39.001926"
+       x="112.28104"
+       y="315.02002"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
        style="opacity:1;fill:#ff7b00;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect7427"
-       width="150"
-       height="50"
-       x="98.000008"
-       y="654.93359"
+       width="116.75047"
+       height="39.001926"
+       x="111.05792"
+       y="532.76215"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
        style="opacity:1;fill:#ff7b00;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect7429"
-       width="150"
-       height="50"
-       x="97.999992"
-       y="596.36218"
+       width="116.75047"
+       height="39.001926"
+       x="111.05791"
+       y="487.07422"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <rect
-       style="opacity:1;fill:#ffb542;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#ffc870;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect7431"
-       width="150"
-       height="50"
-       x="97.999992"
-       y="535.505"
+       width="116.75047"
+       height="39.001926"
+       x="111.05791"
+       y="439.6033"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;opacity:0.6;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="171.85715"
-       y="557.93359"
-       id="text8402"
-       sodipodi:linespacing="100%"
-       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan8406"
-         x="171.85715"
-         y="557.93359">Vector</tspan><tspan
-         sodipodi:role="line"
-         id="tspan8410"
-         x="171.85715"
-         y="577.93359">data source</tspan></text>
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:2, 4;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 82.142853,590.79075 L 263.57143,590.79075"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.99999989, 3.99999978;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 98.715727,482.72831 L 239.9282,482.72831"
        id="path8414"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="124.99999"
-       y="627.64789"
-       id="text11323"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan11325"
-         x="124.99999"
-         y="627.64789">Rasterizer</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="134.29953"
-       y="688.81824"
-       id="text11327"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan11329"
-         x="134.29953"
-         y="688.81824">Scanline</tspan></text>
     <rect
        style="opacity:1;fill:#ff7b00;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect11524"
-       width="150"
-       height="50"
-       x="98.714287"
-       y="713.505"
+       width="116.75047"
+       height="39.001926"
+       x="111.61387"
+       y="578.4502"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="opacity:1;color:#000000;fill:#ffc870;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2433"
+       width="116.75047"
+       height="39.001926"
+       x="111.61387"
+       y="361.48804"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="opacity:1;color:#000000;fill:#ff7b00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2439"
+       width="116.75047"
+       height="39.001926"
+       x="110.94673"
+       y="624.91815"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="131.34738"
-       y="744.38965"
-       id="text11526"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;opacity:0.6;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="172.31575"
+       y="456.06802"
+       id="text2383"
+       sodipodi:linespacing="100%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan2385"
+         x="172.31575"
+         y="456.06802">Vector</tspan><tspan
+         sodipodi:role="line"
+         id="tspan2387"
+         x="172.31575"
+         y="471.65176">data source</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans"
+       x="170.88562"
+       y="191.54987"
+       id="text8402"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
        inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan8406"
+         x="170.88562"
+         y="191.54987">Vector</tspan><tspan
+         sodipodi:role="line"
+         id="tspan8410"
+         x="170.88562"
+         y="211.02954">data source</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:100%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;opacity:0.6;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans"
+       x="170.14372"
+       y="248.42686"
+       id="text11323"
+       sodipodi:linespacing="100%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan11325"
+         x="170.14372"
+         y="248.42686">Rasterizer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:100%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;opacity:0.6;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans"
+       x="171.38326"
+       y="296.09009"
+       id="text11327"
+       sodipodi:linespacing="100%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan11329"
+         x="171.38326"
+         y="296.09009">Scanline</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:100%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;opacity:0.6;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans"
+       x="169.08298"
+       y="339.39062"
+       id="text11526"
+       sodipodi:linespacing="100%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
          sodipodi:role="line"
          id="tspan11528"
-         x="131.34738"
-         y="744.38965">Renderer</tspan></text>
+         x="169.08298"
+         y="339.39062">Renderer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:100%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;opacity:0.6;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans"
+       x="171.53185"
+       y="385.80786"
+       id="text2441"
+       sodipodi:linespacing="100%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan2443"
+         x="171.53185"
+         y="385.80786">Surface</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="130.72781"
+       y="509.5701"
+       id="text2391"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan2393"
+         x="130.72781"
+         y="509.5701">Rasterizer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="137.97388"
+       y="557.23328"
+       id="text2395"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan2397"
+         x="137.97388"
+         y="557.23328">Scanline</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="135.6736"
+       y="600.53375"
+       id="text2401"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan2403"
+         x="135.6736"
+         y="600.53375">Renderer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:15.58374023px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="138.12247"
+       y="646.95099"
+       id="text2435"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/jl/version/svn/code.google.com/efl-research/etc/doc/img/overview.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(0.9989084,1.0010928)"><tspan
+         sodipodi:role="line"
+         id="tspan2437"
+         x="138.12247"
+         y="646.95099">Surface</tspan></text>
   </g>
 </svg>

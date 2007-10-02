@@ -38,7 +38,7 @@ int main(void)
 	//enesim_reader_delete(r);
 	
 	/* raster pipeline */
-	sl = enesim_scanline_new();
+	sl = enesim_scanline_alias_new();
 	enesim_rasterizer_generate(rs, sl);
 	rd = enesim_fill_color_new();
 	//dst = enesim_surface_new(ETC_SURFACE_ARGB888);
