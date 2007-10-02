@@ -54,5 +54,8 @@ EAPI void enesim_rasterizer_generate(Enesim_Rasterizer *r, Enesim_Scanline *s)
  */
 EAPI void enesim_rasterizer_boundings_set(Enesim_Rasterizer *r, int x, int y, int w, int h)
 {
-
+	r->bound.x = x;
+	r->bound.y = y;
+	r->bound.w = w;
+	r->bound.h = h;
 }
