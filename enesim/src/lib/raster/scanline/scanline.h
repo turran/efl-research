@@ -5,7 +5,7 @@
  * @file
  * @brief Scanline
  * @defgroup Scanline_Internal_Group Scanline
- * @ingroup Internal_Group
+ * @ingroup Enesim_Internal_Group
  * @{
  */
 

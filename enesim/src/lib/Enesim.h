@@ -26,8 +26,8 @@
  * @mainpage Enesim
  * @section intro Introduction
  * Enesim is a library that ...
- * @section Implementation Implementation
- * @image html vector.png 
+ * @image html vector.png
+ * The raster sub-library is ...
  * @image html raster.png 
  * 
  * @file
