@@ -10,6 +10,7 @@ noinst_LTLIBRARIES = libenesim_component.la
 
 libenesim_component_la_SOURCES = \
 component.c \
+path.c \
 reader.c \
 source_csv.c \
 transform.c

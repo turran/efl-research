@@ -14,15 +14,15 @@
  *============================================================================*/
 static const char _name[] = "source_csv";
 
-typedef struct _Enesim_Source_Csv
+typedef struct _Source_Csv
 {
 	Enesim_Component *c;
 	char 		*name;
 	FILE 		*f;
-} Enesim_Source_Csv;
+} Source_Csv;
 
 
-static int enesim_source_csv_open(Enesim_Source_Csv *d, const char *name)
+static int enesim_source_csv_open(Source_Csv *d, const char *name)
 {
 	if (!name) return;
 	
@@ -32,7 +32,7 @@ static int enesim_source_csv_open(Enesim_Source_Csv *d, const char *name)
 	return 1;
 }
 
-static void enesim_source_csv_close(Enesim_Source_Csv *d)
+static void enesim_source_csv_close(Source_Csv *d)
 {
 	if (d->name)
 	{
@@ -47,7 +47,7 @@ static void enesim_source_csv_close(Enesim_Source_Csv *d)
 
 static void enesim_source_csv_generate(void *data, int *num)
 {
-	Enesim_Source_Csv *d = data;
+	Source_Csv *d = data;
 	int i = 0;
 	float x, y;
 
@@ -57,20 +57,20 @@ static void enesim_source_csv_generate(void *data, int *num)
 	{
 		if (fscanf(d->f, "%f %f\n", &x, &y) != EOF)
 		{
-			enesim_path_vertex_add(d->c->path, x, y, ENESIM_CMD_MOVE_TO);
+			enesim_container_vertex_add(d->c->path, x, y, ENESIM_CMD_MOVE_TO);
 			i++;
 		}
 	}
 	/* next vertices should be a LINETO */
 	while ((i < *num) && (fscanf(d->f, "%f %f\n", &x, &y) != EOF))
 	{
-		enesim_path_vertex_add(d->c->path, x, y, ENESIM_CMD_LINE_TO);
+		enesim_container_vertex_add(d->c->path, x, y, ENESIM_CMD_LINE_TO);
 		i++;
 	}
 	/* last vertex we generate must be an END command */
 	if (i < *num)
 	{
-		enesim_path_vertex_add(d->c->path, 0, 0, ENESIM_CMD_END);
+		enesim_container_vertex_add(d->c->path, 0, 0, ENESIM_CMD_END);
 	}
 	/* set the correct number of vertices calculated */
 	*num = i;
@@ -78,7 +78,7 @@ static void enesim_source_csv_generate(void *data, int *num)
 
 static void enesim_source_csv_free(void *data)
 {
-	Enesim_Source_Csv *d = data;
+	Source_Csv *d = data;
 
 	enesim_source_csv_close(d);
 	free(d);
@@ -86,13 +86,14 @@ static void enesim_source_csv_free(void *data)
 
 static void enesim_source_csv_init(Enesim_Component *c)
 {
-	Enesim_Source_Csv *d;
+	Source_Csv *d;
 
-	d = calloc(1, sizeof(Enesim_Source_Csv));
+	d = calloc(1, sizeof(Source_Csv));
 
 	d->c = c;
 	c->data = d;
 	c->name = _name;
+	c->type = ENESIM_COMPONENT_O;
 	c->generate = enesim_source_csv_generate;
 	c->free = enesim_source_csv_free;
 }
@@ -119,7 +120,7 @@ EAPI Enesim_Component * enesim_source_csv_new(void)
  */
 EAPI int enesim_source_csv_file_set(Enesim_Component *c, const char *path)
 {
-	Enesim_Source_Csv *d;
+	Source_Csv *d;
 
 	assert(c);
 	assert(c->data);

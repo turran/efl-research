@@ -5,7 +5,7 @@
  * @file
  * @brief Components
  * @defgroup Component_Internal_Group Component
- * @ingroup Internal_Group
+ * @ingroup Enesim_Internal_Group
  * @{
  */
 
@@ -15,7 +15,7 @@
  */
 struct _Enesim_Component
 {
-	Enesim_Path		*path; 		/**< Main temporal data */
+	Enesim_Container		*path; 		/**< Main temporal data */
 	Enesim_Component_Reader 	*src; 		/**< Source data */
 	Edata_List		*readers;
 	int 			has_changed; 	/**< Forward notification */

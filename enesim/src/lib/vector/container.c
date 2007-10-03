@@ -1,11 +1,11 @@
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "path.h"
+#include "container.h"
 
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _a_alloc(Enesim_Path *p, int num)
+static void _a_alloc(Enesim_Container *p, int num)
 {
 	p->points = realloc(p->points, sizeof(Enesim_Point) * num);
 	p->cmds = realloc(p->cmds, sizeof(char) * num);
@@ -18,7 +18,7 @@ static void _a_alloc(Enesim_Path *p, int num)
 	p->alloc_cb(p->data);
 }
 
-static void _a_free(Enesim_Path *p)
+static void _a_free(Enesim_Container *p)
 {
 	free(p->points);
 	free(p->cmds);
@@ -30,11 +30,11 @@ static void _a_free(Enesim_Path *p)
  * To be documented
  * FIXME: To be fixed
  */
-Enesim_Path * enesim_path_new(void *data, int vertices_ref)
+Enesim_Container * enesim_container_new(void *data, int vertices_ref)
 {
-	Enesim_Path *p;
+	Enesim_Container *p;
 
-	p = calloc(1, sizeof(Enesim_Path));
+	p = calloc(1, sizeof(Enesim_Container));
 	p->data = data;
 	p->a = edata_array_new(p, EDATA_ARRAY_ALLOC(_a_alloc),
 		EDATA_ARRAY_FREE(_a_free));
@@ -44,7 +44,7 @@ Enesim_Path * enesim_path_new(void *data, int vertices_ref)
  * To be documented
  * FIXME: To be fixed
  */
-void * enesim_path_delete(Enesim_Path *p)
+void * enesim_container_delete(Enesim_Container *p)
 {
 	free(p->points);
 	free(p->cmds);
@@ -55,7 +55,7 @@ void * enesim_path_delete(Enesim_Path *p)
  * To be documented
  * FIXME: To be fixed
  */
-void enesim_path_vertex_add(Enesim_Path *p, float x, float y, char cmd)
+void enesim_container_vertex_add(Enesim_Container *p, float x, float y, char cmd)
 {
 	edata_array_element_new(p->a);
 	p->point_curr->x = x;

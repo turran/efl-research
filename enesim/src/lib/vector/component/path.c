@@ -1,47 +1,100 @@
+#include <stdlib.h>
+
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "component.h"
+#include "enesim_vector.h"
 
-static const char type[] = "path";
+static const char _name[] = "path";
 
-typedef struct _Enesim_Path
+typedef struct _Path
 {
+	Enesim_Component *c;
 
-} Enesim_Path;
+} Path;
 
-static Enesim_Path * enesim_path_create(void)
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+
+static void enesim_path_generate(void *data, int *num)
 {
-	Enesim_Path *p;
-
-	p = calloc(1, sizeof(Enesim_Path));
-	return p;
+	Path *d = data;
 }
 
-static void enesim_path_init(Enesim_Generator *g)
+static void enesim_path_free(void *data)
 {
-	g->data = enesim_path_create();
+	Path *d = data;
+
+	free(d);
 }
 
-EAPI Enesim_Generator * enesim_path_new(void)
+static void enesim_path_init(Enesim_Component *c)
 {
-	Enesim_Generator *g;
+	Path *d;
 
-	g = enesim_generator_new();
-	enesim_path_init(g);
-	return g;
+	d = calloc(1, sizeof(Path));
+
+	d->c = c;
+	c->data = d;
+	c->name = _name;
+	c->type = ENESIM_COMPONENT_O;
+	c->generate = enesim_path_generate;
+	c->free = enesim_path_free;
 }
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Enesim_Component * enesim_path_new(void)
+{
+	Enesim_Component *c;
 
-EAPI void enesim_path_move_to(Enesim_Generator *p, int x, int y)
+	c = enesim_component_new();
+	enesim_path_init(c);
+	return c;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_path_move_to(Enesim_Component *p, int x, int y)
 {
 
 }
-
-EAPI void enesim_path_line_to(Enesim_Generator *p, int x, int y)
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_path_line_to(Enesim_Component *p, int x, int y)
 {
 
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_path_close(Enesim_Component *p)
+{
 
-EAPI void enesim_path_close(Enesim_Generator *p)
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_path_curve3(Enesim_Component *p, float x1, float y1, float x2,
+	float y2, float x3, float y3)
+{
+
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_path_curve4(Enesim_Component *p, float x1, float y1, float x2,
+	float y2, float x3, float y3, float x4, float y4)
 {
 
 }

@@ -1,7 +1,7 @@
 #ifndef _PATH_H
 #define _PATH_H
 
-typedef struct _Enesim_Path 	Enesim_Path; /**< */
+typedef struct _Enesim_Container 	Enesim_Container; /**< */
 typedef struct _Enesim_Point 	Enesim_Point; /**< */
 
 /**
@@ -16,7 +16,7 @@ struct _Enesim_Point
 /**
  *
  */
-struct _Enesim_Path
+struct _Enesim_Container
 {
 	Edata_Array	*a;
 	Enesim_Point 	*points;
@@ -29,8 +29,8 @@ struct _Enesim_Path
 	void		(*alloc_cb)(void *data);
 };
 
-Enesim_Path * 	enesim_path_new(void *data, int vertices_ref);
-void * 		enesim_path_delete(Enesim_Path *p);
-void 		enesim_path_vertex_add(Enesim_Path *p, float x, float y, char cmd);
+Enesim_Container * 	enesim_container_new(void *data, int vertices_ref);
+void * 		enesim_container_delete(Enesim_Container *p);
+void 		enesim_container_vertex_add(Enesim_Container *p, float x, float y, char cmd);
 
 #endif

@@ -1,6 +1,6 @@
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "path.h"
+#include "container.h"
 #include "component.h"
 #include "reader.h"
 
@@ -32,7 +32,7 @@ Enesim_Component * enesim_component_new(void)
 
 	c = calloc(1, sizeof(Enesim_Component));
 	c->readers = edata_list_new();
-	c->path = enesim_path_new(c, 0);
+	c->path = enesim_container_new(c, 0);
 	/* ABSTRACT THIS */
 	c->path->alloc_cb = _alloc_cb;
 	return c;

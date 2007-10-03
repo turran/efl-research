@@ -10,7 +10,7 @@ INCLUDES = -I. \
 noinst_LTLIBRARIES = libenesim_vector.la
 
 libenesim_vector_la_SOURCES = \
-path.c
+container.c
 
 libenesim_vector_la_LIBADD = \
 component/libenesim_component.la

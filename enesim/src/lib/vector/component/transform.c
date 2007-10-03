@@ -26,13 +26,13 @@ static void enesim_transform_generate(void *data, int *num)
 
 		x2 = (x * d->m[0]) + (y * d->m[1]);
 		y2 = (x * d->m[2]) + (y * d->m[3]);
-		enesim_path_vertex_add(d->c->path, x2, y2, cmd);
+		enesim_container_vertex_add(d->c->path, x2, y2, cmd);
 		i++;
 	}
 	/* last vertex we generate must be an END command */
 	if (i < *num)
 	{
-		enesim_path_vertex_add(d->c->path, 0, 0, ENESIM_CMD_END);
+		enesim_container_vertex_add(d->c->path, 0, 0, ENESIM_CMD_END);
 	}
 	*num = i;
 }
