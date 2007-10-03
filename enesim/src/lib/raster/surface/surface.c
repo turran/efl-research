@@ -13,7 +13,7 @@
  * FIXME: To be fixed
  */
 EAPI Enesim_Surface *
-enesim_surface_new(Enesim_Surface_Data_Format f, int w, int h, ...)
+enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag flags, ...)
 {
 	Enesim_Surface *s;
 	va_list va;
@@ -22,18 +22,18 @@ enesim_surface_new(Enesim_Surface_Data_Format f, int w, int h, ...)
 	s->w = w;
 	s->h = h;
 	s->format = f;
-	s->flags = RGBA_SURFACE_HAS_ALPHA;
+	s->flags = flags;
 
-	va_start(va, h);
+	va_start(va, flags);
 	switch (s->format)
 	{
-		case ENESIM_DATA_ARGB8888:
+		case ENESIM_SURFACE_ARGB8888:
 		s->data.argb8888.data = va_arg(va, DATA32 *);
 		break;
 
-		case ENESIM_DATA_RGB565_A5:
-		s->data.rgb565_a5.data = va_arg(va, DATA16 *);
-		s->data.rgb565_a5.alpha = va_arg(va, DATA8 *);
+		case ENESIM_SURFACE_RGB565:
+		s->data.rgb565.data = va_arg(va, DATA16 *);
+		s->data.rgb565.alpha = va_arg(va, DATA8 *);
 		break;
 
 		default:
@@ -57,6 +57,16 @@ enesim_surface_size_get(Enesim_Surface *s, int *w, int *h)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void enesim_surface_size_set(Enesim_Surface *s, int w, int h)
+{
+	assert(s);
+	s->w = w;
+	s->h = h;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void
 enesim_surface_data_get(Enesim_Surface *s, ...)
 {
@@ -69,16 +79,16 @@ enesim_surface_data_get(Enesim_Surface *s, ...)
 	va_start(va, s);
 	switch (s->format)
 	{
-		case ENESIM_DATA_ARGB8888:
+		case ENESIM_SURFACE_ARGB8888:
 		d32 = va_arg(va, DATA32 **);
 		*d32 = s->data.argb8888.data;
 		break;
 
-		case ENESIM_DATA_RGB565_A5:
+		case ENESIM_SURFACE_RGB565:
 		d16 = va_arg(va, DATA16 **);
-		*d16 = s->data.rgb565_a5.data;
+		*d16 = s->data.rgb565.data;
 		d8 = va_arg(va, DATA8 **);
-		*d8 = s->data.rgb565_a5.alpha;
+		*d8 = s->data.rgb565.alpha;
 		break;
 
 		default:
@@ -90,7 +100,7 @@ enesim_surface_data_get(Enesim_Surface *s, ...)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Surface_Data_Format
+EAPI Enesim_Surface_Format
 enesim_surface_format_get(Enesim_Surface *s)
 {
 	assert(s);
@@ -100,22 +110,43 @@ enesim_surface_format_get(Enesim_Surface *s)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI int
+enesim_surface_flag_get(Enesim_Surface *s)
+{
+	assert(s);
+	return s->flags;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void 
-enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Data_Format f, ...)
+enesim_surface_flag_set(Enesim_Surface *s, Enesim_Surface_Flag flags)
+{
+	assert(s);
+	s->flags = flags;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void 
+enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...)
 {
 	va_list va;
 	
 	assert(s);
+	/* TODO check if we already had data */
 	va_start(va, f);
 	switch (s->format)
 	{
-		case ENESIM_DATA_ARGB8888:
+		case ENESIM_SURFACE_ARGB8888:
 		s->data.argb8888.data = va_arg(va, DATA32 *);
 		break;
 
-		case ENESIM_DATA_RGB565_A5:
-		s->data.rgb565_a5.data = va_arg(va, DATA16 *);
-		s->data.rgb565_a5.alpha = va_arg(va, DATA8 *);
+		case ENESIM_SURFACE_RGB565:
+		s->data.rgb565.data = va_arg(va, DATA16 *);
+		s->data.rgb565.alpha = va_arg(va, DATA8 *);
 		break;
 
 		default:

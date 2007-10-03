@@ -1,4 +1,4 @@
-SUBDIRS = rasterizer renderer scanline
+SUBDIRS = rasterizer renderer scanline surface
 
 MAINTAINERCLEANFILES = \
 Makefile.in
