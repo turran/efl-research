@@ -136,6 +136,8 @@ src/lib/raster/rasterizer/Makefile
 src/lib/raster/renderer/Makefile
 src/lib/raster/scanline/Makefile
 src/lib/raster/surface/Makefile
+src/lib/raster/surface/rop/Makefile
+src/lib/raster/surface/rop/blend/Makefile
 src/lib/vector/Makefile
 src/lib/vector/component/Makefile
 ],[

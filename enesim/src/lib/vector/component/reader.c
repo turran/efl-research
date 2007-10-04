@@ -36,8 +36,9 @@ void enesim_reader_notify(Enesim_Component_Reader *r)
  */
 void enesim_reader_reference_update(Enesim_Component_Reader *r)
 {
-	r->points = r->from->path->points;
-	r->cmds = r->from->path->cmds;
+	printf("called\n");
+	r->points = r->from->path->points + r->pos;
+	r->cmds = r->from->path->cmds + r->pos;
 }
 
 /*============================================================================*

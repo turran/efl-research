@@ -1,6 +1,9 @@
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "renderer.h"
+#include "surface.h"
+#include "scanline.h"
+#include "alias.h"
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -9,50 +12,66 @@ typedef struct _Fill_Color
 {
 	DATA32	color;
 } Fill_Color;
-	
-void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
+
+void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Surface *dst)
 {
 	Fill_Color *f;
+	Scanline_Alias_Sl *s;
+	Span_Color_Func cfnc;
 	int nsl;
-	int y, x, w, c;
+	int offset;
+	int i;
 
-#if 0
 	f = r->data;
-	nsl = sl->num;
-	enesim_surface_color_func_get(dst, r->rop, sl->anti_alias);
+	nsl = sl->num_sls;
+	s = sl->sls;
+
+	cfnc = enesim_surface_span_color_get(dst, r->rop);
 	for (i = 0; i < nsl; i++)
 	{
-		int offset;
-		sl->get(&y, &x, &w, &c);
-		offset = (dst->w * y) + x;
-		dst->color_draw(dst, offset, w, c);
+		offset = (dst->w * s->y) + s->x;
+		//printf("%d %d %d\n", s->y, s->x, s->w);
+		cfnc(&dst->data, offset, f->color, s->w);
+		s++;
 	}
-#endif
 }
 
-Enesim_Renderer_Func f_func;
-
-static void _new(Enesim_Renderer *r)
+void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
 {
-	Fill_Color *f;
-
-	f = calloc(1, sizeof(Fill_Color));
-	r->data = f;
-	r->funcs = &f_func;
+	_draw_alias(r, sl->data, dst);
 }
 
+void _free(Enesim_Renderer *r)
+{
+	free(r->data);
+}
+
+Enesim_Renderer_Func f_func = {
+	.draw 	= _draw,
+	.free 	= _free,
+};
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 EAPI Enesim_Renderer * enesim_fill_color_new(void)
 {
+	Fill_Color *f;
 	Enesim_Renderer *r;
 
+	f = calloc(1, sizeof(Fill_Color));
+	
 	r = enesim_renderer_new();
+	r->data = f;
+	r->funcs = &f_func;
+
 	return r;
 }
 
-EAPI void enesim_fill_color_color_set(Enesim_Renderer *r)
+EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, DATA32 color)
 {
+	Fill_Color *f;
 
+	assert(r);
+	f = r->data;
+	f->color = color;
 }

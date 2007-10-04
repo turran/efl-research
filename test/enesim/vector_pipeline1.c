@@ -15,7 +15,8 @@ int main(void)
 	Enesim_Rasterizer *rs;
 	Enesim_Scanline *sl;
 	Enesim_Renderer *rd;
-	//Enesim_Surface *dst;
+	DATA32 *d32 = calloc(1, sizeof(DATA32) * 400 * 400);
+	Enesim_Surface *dst;
 	float m[] = {1.5, 3.4, 0.0, 10};
 
 	/* vector pipeline */
@@ -41,8 +42,10 @@ int main(void)
 	sl = enesim_scanline_alias_new();
 	enesim_rasterizer_generate(rs, sl);
 	rd = enesim_fill_color_new();
-	//dst = enesim_surface_new(ETC_SURFACE_ARGB888);
-	//enesim_renderer_draw(rd, dst, sl);
+	enesim_fill_color_color_set(rd, 0x5f00005f);
+	dst = enesim_surface_new(ENESIM_SURFACE_ARGB8888, 400, 400, ENESIM_SURFACE_ALPHA, d32);
+	enesim_renderer_draw(rd, sl, dst);
 	enesim_scanline_delete(sl);
 	//enesim_rasterizer_delete(rs);
+	png_save(dst, "/tmp/enesim0.png", 0);
 }

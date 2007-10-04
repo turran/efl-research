@@ -48,6 +48,11 @@ enum
 /**
  * @defgroup Enesim_Raster_Group Raster
  * @{
+ */
+typedef unsigned int 		DATA32;
+typedef unsigned short int 	DATA16;
+typedef unsigned char 		DATA8;
+/**
  * @defgroup Enesim_Scanline_Group Scanline
  * @{
  */
@@ -71,21 +76,9 @@ EAPI Enesim_Rasterizer * enesim_rasterizer_new(void);
 /** @} */ //End of Enesim_Rasterizer_Group
 
 /**
- * @defgroup Enesim_Renderer_Group Renderer
- * @{
- */
-typedef struct _Enesim_Renderer Enesim_Renderer; /**< Renderer Handler */
-EAPI Enesim_Renderer * enesim_fill_color_new(void);
-EAPI void enesim_fill_color_color_set(Enesim_Renderer *r);
-/** @} */
-
-/**
  * @defgroup Enesim_Surface_Group Surface
  * @{
  */
-typedef unsigned int 		DATA32;
-typedef unsigned short int 	DATA16;
-typedef unsigned char 		DATA8;
 typedef struct _Enesim_Surface 	Enesim_Surface; /**< Surface Handler */
 typedef enum
 {
@@ -97,6 +90,7 @@ typedef enum
 {
 	ENESIM_SURFACE_ARGB8888,
 	ENESIM_SURFACE_RGB565,
+	ENESIM_SURFACE_FORMATS,
 } Enesim_Surface_Format;
 
 EAPI Enesim_Surface * enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag flags, ...);
@@ -109,6 +103,24 @@ EAPI void enesim_surface_flag_set(Enesim_Surface *s, Enesim_Surface_Flag flags);
 EAPI void enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...);
 
 /** @} */ //End of Enesim_Surface_Group
+
+/**
+ * @defgroup Enesim_Renderer_Group Renderer
+ * @{
+ */
+typedef struct _Enesim_Renderer Enesim_Renderer; /**< Renderer Handler */
+typedef enum
+{
+	ENESIM_RENDERER_BLEND,
+	ENESIM_RENDERER_ROPS
+} Enesim_Renderer_Rop;
+EAPI void enesim_renderer_rop_set(Enesim_Renderer *r, int rop);
+EAPI void enesim_renderer_delete(Enesim_Renderer *r);
+EAPI void enesim_renderer_draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst);
+EAPI Enesim_Renderer * enesim_fill_color_new(void);
+EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, DATA32 color);
+
+/** @} */ //End of Enesim_Renderer_Group
 /** @} */ //End of Enesim_Raster_Group
 
 /**

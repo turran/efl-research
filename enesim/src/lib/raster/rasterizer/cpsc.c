@@ -130,7 +130,7 @@ static void _vertex_add(Cpsc *r, float x, float y)
 	int n = r->num_vertices;
 
 	edata_array_element_new(r->a);
-
+	printf("%f %f\n", x, y);
 	r->vertices[n].x = x;
 	r->vertices[n].y = y;
 	r->vertices[n].i = n;
@@ -178,7 +178,7 @@ static void _generate(Cpsc *r, Enesim_Scanline *sl)
 	for (y = y0; y <= y1; y++)
 	{
 		/* check vertices between previous and current scanline */
-		for (; k < n && vertices[sindex[k]].y <= ((float)y + 0.5); k++)
+		for (; (k < n) && (vertices[sindex[k]].y <= ((float)y + 0.5)); k++)
 		{
 			i = sindex[k];
 
@@ -206,6 +206,7 @@ static void _generate(Cpsc *r, Enesim_Scanline *sl)
 		/* sort active edge table by x */
 		qsort(aet, nedges, sizeof(Cpsc_Edge), _compare_edge);
 		/* store horizontal segments */
+		printf("[%d] %d %d\n", y, j, nedges);
 		for (j = 0; j < nedges; j += 2)
 		{
 			int xl, xr;

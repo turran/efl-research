@@ -3,13 +3,13 @@
 #include <alloca.h>
 #include <stdlib.h>
 
-#include "Emage.h"
+#include "Enesim.h"
 
 #define PNG_BYTES_TO_CHECK 4
 
 /* TODO
  * fix all this mess */
-void png_load(Emage_Surface *s, char *file)
+void png_load(Enesim_Surface *s, char *file)
 {
 	png_uint_32 w32, h32;
 	int w, h;
@@ -62,7 +62,7 @@ void png_load(Emage_Surface *s, char *file)
 		(png_uint_32 *) (&h32), &bit_depth, &color_type,
 		&interlace_type, NULL, NULL);
 	
-	emage_surface_size_get(s, &w, &h);
+	enesim_surface_size_get(s, &w, &h);
 	if ((w32 != w) || (h32 != h))
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
@@ -110,17 +110,17 @@ void png_load(Emage_Surface *s, char *file)
 		if (png_get_bit_depth(png_ptr, info_ptr) < 8)
 			png_set_gray_1_2_4_to_8(png_ptr);
 	}
-	emage_surface_data_get(s, &sdata);
+	enesim_surface_data_get(s, &sdata);
 	for (i = 0; i < h; i++)
 		lines[i] = ((unsigned char *)(sdata)) + (i * w * sizeof(DATA32));
 	png_read_image(png_ptr, lines);
 	png_read_end(png_ptr, info_ptr);
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
 	fclose(f);
-        emage_color_data_argb_premul(sdata, w * h);
+        //enesim_color_data_argb_premul(sdata, w * h);
 }
 
-void png_save(Emage_Surface *s, char *file, int compress)
+void png_save(Enesim_Surface *s, char *file, int compress)
 {
 	FILE *f;
 	int num_passes = 1, pass;
@@ -150,8 +150,8 @@ void png_save(Emage_Surface *s, char *file, int compress)
 
 //	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
 	{
-		emage_surface_data_get(s, &sdata);
-		emage_surface_size_get(s, &w, &h);
+		enesim_surface_data_get(s, &sdata);
+		enesim_surface_size_get(s, &w, &h);
 		data = malloc(w * h * sizeof(DATA32));
         if (!data)
           {
@@ -161,7 +161,7 @@ void png_save(Emage_Surface *s, char *file, int compress)
             return;
           }
 	memcpy(data, sdata, w * h * sizeof(DATA32));
-        emage_color_data_argb_unpremul(data, w * h);
+        //enesim_color_data_argb_unpremul(data, w * h);
         png_init_io(png_ptr, f);
         png_set_IHDR(png_ptr, info_ptr, w, h, 8,
                      PNG_COLOR_TYPE_RGB_ALPHA, png_ptr->interlaced,

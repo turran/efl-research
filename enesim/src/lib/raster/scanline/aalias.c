@@ -12,6 +12,12 @@
 
 typedef struct _AAlias_Sl
 {
+	int y;
+	int w;
+	int a;
+	int x0;
+	int x1;
+	int x2;
 } AAlias_Sl;
 
 typedef struct _AAlias

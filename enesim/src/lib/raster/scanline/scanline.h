@@ -10,7 +10,7 @@
  */
 
 typedef void *(*Enesim_Scanline_Create)(void);
-typedef void (*Enesim_Scanline_Add)(void *d, int x0, int x1, int y, int coverage);
+typedef void (*Enesim_Scanline_Add)(void *d, int y, int x0, int x1, int coverage);
 typedef void (*Enesim_Scanline_Free)(void *d);
 
 typedef struct _Enesim_Scanline_Func
@@ -21,7 +21,6 @@ typedef struct _Enesim_Scanline_Func
 
 struct _Enesim_Scanline
 {
-	int 			anti_alias;
 	Enesim_Scanline_Func 	*funcs;
 	void 			*data;
 };

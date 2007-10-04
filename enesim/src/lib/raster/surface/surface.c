@@ -4,7 +4,28 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static Enesim_Surface_Func *_funcs[ENESIM_SURFACE_FORMATS] = {
+	argb8888_funcs,
+	rgb565_funcs,
+};
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+Span_Color_Func enesim_surface_span_color_get(Enesim_Surface *s, int rop)
+{
+	if ((rop == ENESIM_RENDERER_BLEND) && (s->flags & ENESIM_SURFACE_DIRTY))
+	{
 
+	}
+	return _funcs[s->format][ENESIM_RENDERER_BLEND].sp_color;
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/

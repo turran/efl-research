@@ -1,3 +1,5 @@
+SUBDIRS = rop
+
 MAINTAINERCLEANFILES = \
 Makefile.in
 
@@ -7,9 +9,11 @@ INCLUDES = -I. \
 noinst_LTLIBRARIES = libenesim_surface.la
 
 libenesim_surface_la_SOURCES = \
-surface.c \
-argb8888.c
+surface.c
 
-libenesim_surface_la_LIBADD = 
+libenesim_surface_la_LIBADD = \
+rop/libenesim_surface_rop.la
 
-libenesim_surface_la_DEPENDENCIES =
+libenesim_surface_la_DEPENDENCIES = \
+rop/libenesim_surface_rop.la
+
