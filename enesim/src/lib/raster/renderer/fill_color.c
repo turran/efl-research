@@ -53,6 +53,10 @@ Enesim_Renderer_Func f_func = {
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI Enesim_Renderer * enesim_fill_color_new(void)
 {
 	Fill_Color *f;
@@ -66,7 +70,10 @@ EAPI Enesim_Renderer * enesim_fill_color_new(void)
 
 	return r;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, DATA32 color)
 {
 	Fill_Color *f;
