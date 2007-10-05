@@ -1,6 +1,14 @@
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "enesim_vector.h"
+/**
+ * @file
+ * @brief
+ * @defgroup Transform_Internal_Group Transform
+ * @ingroup Enesim_Internal_Group
+ * @todo make sse optimized implementation
+ * @{
+ */
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -51,12 +59,18 @@ static void enesim_transform_init(Enesim_Component *c)
 	d = calloc(1, sizeof(Transform));
 
 	d->c = c;
+	/* identity matrix on init */
+	d->m[0] = 1;
+	d->m[1] = 0;
+	d->m[2] = 0;
+	d->m[3] = 1;
 	c->data = d;
 	c->name = _name;
 	c->type = ENESIM_COMPONENT_IO;
 	c->generate = enesim_transform_generate;
 	c->free = enesim_transform_free;
 }
+/** @} */
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -86,4 +100,21 @@ EAPI void enesim_transform_matrix_set(Enesim_Component *c, float *matrix)
 	d->m[2] = matrix[2];
 	d->m[3] = matrix[3];
 	enesim_component_notify(c);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_transform_matrix_rotate_get(Enesim_Component *c, float t, float *matrix)
+{
+
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void enesim_transform_matrix_scale_get(Enesim_Component *c, float sx, float sy, float *matrix)
+{
+
 }

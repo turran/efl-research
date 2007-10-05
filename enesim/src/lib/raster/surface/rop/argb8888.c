@@ -5,6 +5,6 @@
 
 Enesim_Surface_Func argb8888_funcs[ENESIM_RENDERER_ROPS] = {
 	[ENESIM_RENDERER_BLEND] = {
-		argb8888_color,
+		argb8888_c_color,
 	},
 };

@@ -10,13 +10,68 @@
  *============================================================================*/
 typedef struct _Fill_Surface
 {
-	Enesim_Surface 	s;
-	int 		mode;
-	//Enesim_Rectangle area;
+	Enesim_Surface 		s;
+	int 			mode;
+	Enesim_Rectangle 	area;
 } Fill_Surface;
 
-void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Surface *dst)
+static inline void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Surface *dst)
 {
+	Fill_Surface *f;
+
+	f = r->data;
+
+	/*
+	 * +---+---+  +---+---+
+	 * | S | S |  | S |   |
+	 * +---+---+  +---+   |
+	 * |       |  |       |
+	 * +-------+  +-------+
+	 */
+	if (!(f->mode & EMAGE_FILL_SURFACE_REPEAT_Y))
+	{
+		/* scanline outside vertical area */
+		/* scanline inside vertical area */
+	}
+	/*
+	 * +---+---+  +---+---+
+	 * | S |   |  | S | S |
+	 * +---+   +  +---+---+
+	 * | S |   |  | S | S |
+	 * +-------+  +-------+
+	 */
+	else
+	{
+		/* scanline inside vertical area */
+	}
+	/*
+	 * +---+---+  +---+---+
+	 * | S |   |  | S |   |
+	 * +---+   +  +---+   |
+	 * | S |   |  |       |
+	 * +-------+  +-------+
+	 */
+	/* simple cases are done, now the complex ones */
+	if (!(f->mode & EMAGE_FILL_SURFACE_REPEAT_X))
+	{
+		/* scanline inside horizontal area */
+		/* scanline outside horizontal area */
+	}
+	/*
+	 * +---+---+  +---+---+
+	 * | S | S |  | S | S |
+	 * +---+---+  +---+---|
+	 * |       |  | S | S |
+	 * +-------+  +-------+
+	 */
+	else
+	{
+		/* check if the scanline is inside the dst rect
+		 * +---+          +---+      +---+     +---+
+		 * | Ds|---   s---|-D |    s-|-D-|-    |sD |
+		 * +---+          +----      +---+     +---+
+		 */
+	}
 }
 
 void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
@@ -62,6 +117,7 @@ EAPI void enesim_fill_surface_surface_set(Enesim_Renderer *r, Enesim_Surface *s)
 	Fill_Surface *f;
 
 	assert(r);
+	assert(s);
 	f = r->data;
 	f->surface = s;
 }
@@ -71,7 +127,8 @@ EAPI void enesim_fill_surface_surface_set(Enesim_Renderer *r, Enesim_Surface *s)
  */
 EAPI void enesim_fill_surface_mode_set(Enesim_Renderer *r, int mode)
 {
-
+	assert(r);
+	r->mode = mode;
 }
 /**
  * To be documented
@@ -79,5 +136,9 @@ EAPI void enesim_fill_surface_mode_set(Enesim_Renderer *r, int mode)
  */
 EAPI void enesim_fill_surface_area_set(Enesim_Renderer *r, int x, int y, int w, int h)
 {
-
+	assert(r);
+	r->area.x = (x < 0) ? 0 : x;
+	r->area.y = (y < 0) ? 0 : y;
+	r->area.w = (w < 0) ? 0 : w;
+	r->area.h = (h < 0) ? 0 : h;
 }

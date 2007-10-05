@@ -40,4 +40,3 @@ void surface_free(Enesim_Surface *s)
 	}
 	free(s);
 }
-

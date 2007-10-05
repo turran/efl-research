@@ -1,6 +1,10 @@
 #ifndef _SURFACE_H
 #define _SURFACE_H
 
+/**
+ *
+ * @todo, resize code (enesim_surface_resize())
+ */
 
 typedef struct _Argb8888_Data
 {

@@ -5,13 +5,6 @@
  * @todo
  * - on vertex add, calculate the bounding box
  */
-typedef struct _Enesim_Rectangle
-{
-	int 	x;
-	int 	y;
-	int 	w;
-	int 	h;
-} Enesim_Rectangle;
 
 
 typedef struct _Enesim_Rasterizer_Func
