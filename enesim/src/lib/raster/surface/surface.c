@@ -175,3 +175,12 @@ enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...)
 	}
 	va_end(va);
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void 
+enesim_surface_resize(Enesim_Surface *s, Enesim_Rectangle *srect, Enesim_Surface *d, Enesim_Rectangle *drect, int mode)
+{
+
+}

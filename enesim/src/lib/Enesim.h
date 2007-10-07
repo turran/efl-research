@@ -101,6 +101,7 @@ EAPI Enesim_Surface_Format enesim_surface_format_get(Enesim_Surface *s);
 EAPI int enesim_surface_flag_get(Enesim_Surface *s);
 EAPI void enesim_surface_flag_set(Enesim_Surface *s, Enesim_Surface_Flag flags);
 EAPI void enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...);
+//EAPI void enesim_surface_resize(Enesim_Surface *s, Enesim_Rectangle *srect, Enesim_Surface *d, Enesim_Rectangle *drect, int mode);
 
 /** @} */ //End of Enesim_Surface_Group
 
