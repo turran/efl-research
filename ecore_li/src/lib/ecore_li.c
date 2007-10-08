@@ -49,6 +49,7 @@ EAPI int ecore_li_shutdown(void)
 {
 	if (--_count)
 		return _count;
+	/* TODO free the list */
 	return _count;
 }
 /**
@@ -208,7 +209,9 @@ ecore_li_device_axis_size_set(Ecore_Li_Device *dev, int w, int h)
 EAPI void
 ecore_li_device_keyboard_layout_set(Ecore_Li_Device *dev, Ecore_Li_Keyboard_Layout *l)
 {
+	assert(dev);
 
+	dev->keyboard.layout = l;
 }
 
 EAPI void ecore_li_device_delete(Ecore_Li_Device *d)

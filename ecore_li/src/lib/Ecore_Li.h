@@ -92,6 +92,21 @@ struct _Ecore_Li_Event_Button_Up /** Mouse Up event */
 	int     y; /**< Mouse co-ordinates when mouse button was raised */
 };
 
+enum
+{
+	ECORE_LI_MOD_PLAIN,
+	ECORE_LI_MOD_SHIFT,
+	ECORE_LI_MOD_ALTGR,
+	ECORE_LI_MOD_CONTROL,
+	ECORE_LI_MOD_ALT,
+	ECORE_LI_MOD_SHIFTL,
+	ECORE_LI_MOD_SHIFTR,
+	ECORE_LI_MOD_CONTROLL,
+	ECORE_LI_MOD_CONTROLR,
+	ECORE_LI_MODS
+};
+
+
 typedef struct _Ecore_Li_Keyboard_Keycode Ecore_Li_Keyboard_Keycode;
 struct _Ecore_Li_Keyboard_Keycode /** Keyboard Keycode */
 {

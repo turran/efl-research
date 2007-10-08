@@ -12,35 +12,35 @@ _keyboard_modifiers_unset(int *mods, char *keyname)
 {
 	if (!strcmp(keyname, "Shift"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_SHIFT - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_SHIFT - 1));
 	}
 	else if (!strcmp(keyname, "AltGr"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_ALTGR - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_ALTGR - 1));
 	}
 	else if (!strcmp(keyname, "Control"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_CONTROL - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_CONTROL - 1));
 	}
 	else if (!strcmp(keyname, "Alt"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_ALT - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_ALT - 1));
 	}
 	else if (!strcmp(keyname, "ShiftL"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_SHIFTL - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_SHIFTL - 1));
 	}
 	else if (!strcmp(keyname, "ShiftR"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_SHIFTR - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_SHIFTR - 1));
 	}
 	else if (!strcmp(keyname, "CtrlL"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_CONTROLL - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_CONTROLL - 1));
 	}
 	else if (!strcmp(keyname, "CtrlR"))
 	{
-		*mods &= ~(1 << (ECORE_FB_MOD_CONTROLR - 1));
+		*mods &= ~(1 << (ECORE_LI_MOD_CONTROLR - 1));
 	}
 	else
 		return 0;
@@ -52,35 +52,35 @@ _keyboard_modifiers_set(int *mods, char *keyname)
 {
 	if (!strcmp(keyname, "Shift"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_SHIFT - 1);
+		*mods |= 1 << (ECORE_LI_MOD_SHIFT - 1);
 	}
 	else if (!strcmp(keyname, "AltGr"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_ALTGR - 1);
+		*mods |= 1 << (ECORE_LI_MOD_ALTGR - 1);
 	}
 	else if (!strcmp(keyname, "Control"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_CONTROL - 1);
+		*mods |= 1 << (ECORE_LI_MOD_CONTROL - 1);
 	}
 	else if (!strcmp(keyname, "Alt"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_ALT - 1);
+		*mods |= 1 << (ECORE_LI_MOD_ALT - 1);
 	}
 	else if (!strcmp(keyname, "ShiftL"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_SHIFTL - 1);
+		*mods |= 1 << (ECORE_LI_MOD_SHIFTL - 1);
 	}
 	else if (!strcmp(keyname, "ShiftR"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_SHIFTR - 1);
+		*mods |= 1 << (ECORE_LI_MOD_SHIFTR - 1);
 	}
 	else if (!strcmp(keyname, "CtrlL"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_CONTROLL - 1);
+		*mods |= 1 << (ECORE_LI_MOD_CONTROLL - 1);
 	}
 	else if (!strcmp(keyname, "CtrlR"))
 	{
-		*mods |= 1 << (ECORE_FB_MOD_CONTROLR - 1);
+		*mods |= 1 << (ECORE_LI_MOD_CONTROLR - 1);
 	}
 	else
 		return 0;
@@ -112,7 +112,7 @@ static Ecore_Li_Event_Key_Down *_key_down_get(Ecore_Li_Device *d, int code)
 	/* on modifiers/locks we aren't strict, just check on the
 	 * "plain" element to see if it's a modifier
 	 */
-	tmp = d->keyboard.layout->codes[code].mod[ECORE_FB_MOD_PLAIN].name;
+	tmp = d->keyboard.layout->codes[code].mod[ECORE_LI_MOD_PLAIN].name;
 	/* check if its a modifier */
 	if (tmp && _keyboard_modifiers_set(&d->keyboard.mods, tmp))
 		keyname = tmp;
@@ -130,14 +130,15 @@ static Ecore_Li_Event_Key_Down *_key_down_get(Ecore_Li_Device *d, int code)
 		 */
 		if (d->keyboard.layout->codes[code].mod[mods].letter && d->keyboard.capslock)
 		{
-			if (mods & (1 << (ECORE_FB_MOD_SHIFT - 1)))
-				mods &= ~(1 << (ECORE_FB_MOD_SHIFT - 1));
+			if (mods & (1 << (ECORE_LI_MOD_SHIFT - 1)))
+				mods &= ~(1 << (ECORE_LI_MOD_SHIFT - 1));
 			else
-				mods |= (1 << (ECORE_FB_MOD_SHIFT - 1));
+				mods |= (1 << (ECORE_LI_MOD_SHIFT - 1));
 		}
 		keyname = d->keyboard.layout->codes[code].mod[mods].name;
 	}
 	ev->dev = d;
+	printf("%s\n", keyname);
 	ev->keyname = strdup(keyname);
 
 	return ev;
@@ -157,7 +158,7 @@ static Ecore_Li_Event_Key_Up * _key_up_get(Ecore_Li_Device *d, int code)
 	if (!ev) return NULL;
 
 	
-	tmp = d->keyboard.layout->codes[code].mod[ECORE_FB_MOD_PLAIN].name;
+	tmp = d->keyboard.layout->codes[code].mod[ECORE_LI_MOD_PLAIN].name;
 	if (tmp && _keyboard_modifiers_unset(&d->keyboard.mods, tmp))
 		keyname = tmp;
 	else if (tmp && _keyboard_locks_toggle(&caps, tmp))
@@ -168,19 +169,19 @@ static Ecore_Li_Event_Key_Up * _key_up_get(Ecore_Li_Device *d, int code)
 
 		if (d->keyboard.layout->codes[code].mod[mods].letter && d->keyboard.capslock)
 		{
-			if (mods & (1 << (ECORE_FB_MOD_SHIFT - 1)))
-				mods &= ~(1 << (ECORE_FB_MOD_SHIFT - 1));
+			if (mods & (1 << (ECORE_LI_MOD_SHIFT - 1)))
+				mods &= ~(1 << (ECORE_LI_MOD_SHIFT - 1));
 			else
-				mods |= (1 << (ECORE_FB_MOD_SHIFT - 1));
+				mods |= (1 << (ECORE_LI_MOD_SHIFT - 1));
 		}
 		keyname = d->keyboard.layout->codes[code].mod[mods].name;
 
 	}
 	ev->dev = d;
+	printf("%s\n", keyname);
 	ev->keyname = strdup(keyname);
 	
 	return ev;
-
 }
 
 static void _key_free(void *data, void *ev)
@@ -204,7 +205,7 @@ _event_abs(Ecore_Li_Device *dev, struct input_event *iev)
 		case ABS_Y:
 		{
 			Ecore_Li_Event_Mouse_Move *ev;
-			if((iev->code == ABS_X) && (dev->mouse.w != 0))
+			if ((iev->code == ABS_X) && (dev->mouse.w != 0))
 			{
 				int tmp;
 
@@ -252,7 +253,7 @@ _event_rel(Ecore_Li_Device *dev, struct input_event *iev)
 		case REL_Y:
 		{
 			Ecore_Li_Event_Mouse_Move *ev;
-			if(iev->code == REL_X)
+			if (iev->code == REL_X)
 			{
 				dev->mouse.x += iev->value;
 				if(dev->mouse.x > dev->mouse.w - 1)
@@ -331,7 +332,7 @@ _event_key(Ecore_Li_Device *dev, struct input_event *iev)
 		int button;
 
 		button = ((iev->code & 0x00F) + 1);
-		if(iev->value)
+		if (iev->value)
 		{
 			Ecore_Li_Event_Button_Down *ev;
 			double current;
@@ -392,9 +393,9 @@ device_fd_callback(void *data, Ecore_Fd_Handler *fdh)
 	/* read up to 64 events at once */
 	len = read(dev->fd, &ev, sizeof(ev));
 	// printf("[ecore_li_li_device:fd_callback] received %d data\n", len);
-	for(i = 0; i < len/sizeof(ev[0]); i++)
+	for (i = 0; i < len/sizeof(ev[0]); i++)
 	{
-		switch(ev[i].type)
+		switch (ev[i].type)
 		{
 			case EV_ABS:
 				_event_abs(dev, &ev[i]);
