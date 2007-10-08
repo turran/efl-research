@@ -123,6 +123,7 @@ case "$host_os" in
 esac
 
 PKG_CHECK_MODULES(EDATA, [edata >= 0.0.1])
+PKG_CHECK_MODULES(ECORE, [ecore >= 0.9.9])
 
 ## Make the debug preprocessor configurable
 
@@ -131,6 +132,7 @@ Makefile
 ecore_li.pc
 src/Makefile
 src/lib/Makefile
+src/bin/Makefile
 ],[
 ])
 

@@ -1,21 +1,29 @@
-#include <Edata.h>
-#include <Ecore.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <fcntl.h>
-#include <linux/input.h>
+
+#include <Edata.h>
+#include <Ecore.h>
 
 #include "Ecore_Li.h"
 #include "ecore_li_private.h"
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+#define TEST_BIT(bit, array)    (array[bit/8] & (1<<(bit%8)))
+
 static int _count = 0;
 Edata_List *_devices = NULL;
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+int ECORE_LI_EVENT_KEY_DOWN;
+int ECORE_LI_EVENT_KEY_UP;
+int ECORE_LI_EVENT_BUTTON_UP;
+int ECORE_LI_EVENT_BUTTON_DOWN;
+int ECORE_LI_EVENT_MOUSE_MOVE;
+int ECORE_LI_EVENT_MOUSE_WHEEL;
 /**
  * To be documented
  * FIXME: To be fixed
@@ -37,8 +45,11 @@ EAPI int ecore_li_init(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ecore_li_shutdown(void)
+EAPI int ecore_li_shutdown(void)
 {
+	if (--_count)
+		return _count;
+	return _count;
 }
 /**
  * To be documented
@@ -76,8 +87,8 @@ EAPI Ecore_Li_Device *ecore_li_device_new(const char *path)
 	device->fd = fd;
 	device->info.dev = strdup(path);
 	/* common */
-	//device->mouse.threshold = CLICK_THRESHOLD_DEFAULT;
-	//device->keyboard.layout = &kbd_layout_default;
+	device->mouse.threshold = CLICK_THRESHOLD;
+	device->keyboard.layout = &kbd_layout;
 
 	/* set info */
 	for (event_type = 0; event_type < EV_MAX; event_type++)
@@ -124,14 +135,84 @@ error_open:
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ecore_li_device_listen(Ecore_Li_Device *dev, int listen)
+EAPI const char *ecore_li_device_name_get(Ecore_Li_Device *dev)
 {
-	if(!dev) return;
-	if((listen && dev->listen) || (!listen && !dev->listen)) return;
-	if(listen)
+	assert(dev);
+	return dev->info.name;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ecore_li_device_enable(Ecore_Li_Device *dev, int enable)
+{
+	/* TODO redo this function */
+	assert(dev);
+	if (enable == dev->enabled) return;
+	if (enable)
 	{
 		/* if the device already had a handler */
-		if(!dev->handler)
-			//dev->handler = ecore_main_fd_handler_add(dev->fd, ECORE_FD_READ, _ecore_fb_li_device_fd_callback, dev, NULL, NULL);
+		if (!dev->handler)
+			dev->handler = ecore_main_fd_handler_add(dev->fd, ECORE_FD_READ, device_fd_callback, dev, NULL, NULL);
 	}
 }
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ * 
+ * If the device is a relative input device, 
+ * we must set a width and height for it. If its
+ * absolute set the ioctl correctly, if not, unsupported
+ * device
+ */
+EAPI void
+ecore_li_device_axis_size_set(Ecore_Li_Device *dev, int w, int h)
+{
+	assert(dev);
+	
+	if(w < 0 || h < 0)
+		return;
+	/* FIXME 
+	 * this code is for a touchscreen device, 
+	 * make it configurable (ABSOLUTE | RELATIVE)
+	 */
+	if(dev->info.caps & ECORE_LI_DEVICE_CAP_ABSOLUTE)
+	{
+		/* FIXME looks like some kernels dont include this struct */
+		struct input_absinfo abs_features;
+
+		ioctl(dev->fd, EVIOCGABS(ABS_X), &abs_features);
+		dev->mouse.min_w = abs_features.minimum;
+		dev->mouse.rel_w = (double)(abs_features.maximum - abs_features.minimum)/(double)(w);
+
+		ioctl(dev->fd, EVIOCGABS(ABS_Y), &abs_features);
+		dev->mouse.min_h = abs_features.minimum;
+		dev->mouse.rel_h = (double)(abs_features.maximum - abs_features.minimum)/(double)(h);
+	}
+	else if(!(dev->info.caps & ECORE_LI_DEVICE_CAP_RELATIVE))
+		return;
+
+	/* update the local values */
+	if(dev->mouse.x > w - 1)
+		dev->mouse.x = w -1;
+	if(dev->mouse.y > h - 1)
+		dev->mouse.y = h -1;
+	dev->mouse.w = w;
+	dev->mouse.h = h;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void
+ecore_li_device_keyboard_layout_set(Ecore_Li_Device *dev, Ecore_Li_Keyboard_Layout *l)
+{
+
+}
+
+EAPI void ecore_li_device_delete(Ecore_Li_Device *d)
+{
+	free(d);
+}
+

@@ -8,7 +8,8 @@ include_HEADERS = \
 Ecore_Li.h
 
 libecore_li_la_SOURCES = \
-ecore_li.c
+ecore_li.c \
+device.c
 
 libecore_li_la_LIBADD =
 libecore_li_la_LDFLAGS = -version-info 1:0:0
