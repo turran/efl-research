@@ -109,6 +109,7 @@ static Ecore_Li_Event_Key_Down *_key_down_get(Ecore_Li_Device *d, int code)
 	ev = calloc(1, sizeof(Ecore_Li_Event_Key_Down));
 	if (!ev) return NULL;
 
+	printf("%d\n", code);	
 	/* on modifiers/locks we aren't strict, just check on the
 	 * "plain" element to see if it's a modifier
 	 */
@@ -136,13 +137,13 @@ static Ecore_Li_Event_Key_Down *_key_down_get(Ecore_Li_Device *d, int code)
 				mods |= (1 << (ECORE_LI_MOD_SHIFT - 1));
 		}
 		keyname = d->keyboard.layout->codes[code].mod[mods].name;
+		if (!keyname)
+			keyname = tmp;
 	}
 	ev->dev = d;
-	printf("%s\n", keyname);
 	ev->keyname = strdup(keyname);
 
 	return ev;
-
 }
 
 static Ecore_Li_Event_Key_Up * _key_up_get(Ecore_Li_Device *d, int code)
@@ -157,7 +158,6 @@ static Ecore_Li_Event_Key_Up * _key_up_get(Ecore_Li_Device *d, int code)
 	ev = calloc(1, sizeof(Ecore_Li_Event_Key_Up));
 	if (!ev) return NULL;
 
-	
 	tmp = d->keyboard.layout->codes[code].mod[ECORE_LI_MOD_PLAIN].name;
 	if (tmp && _keyboard_modifiers_unset(&d->keyboard.mods, tmp))
 		keyname = tmp;
@@ -175,10 +175,10 @@ static Ecore_Li_Event_Key_Up * _key_up_get(Ecore_Li_Device *d, int code)
 				mods |= (1 << (ECORE_LI_MOD_SHIFT - 1));
 		}
 		keyname = d->keyboard.layout->codes[code].mod[mods].name;
-
+		if (!keyname)
+			keyname = tmp;
 	}
 	ev->dev = d;
-	printf("%s\n", keyname);
 	ev->keyname = strdup(keyname);
 	
 	return ev;
@@ -193,7 +193,6 @@ static void _key_free(void *data, void *ev)
 	if (e->keysymbol) free(e->keysymbol);
 	if (e->key_compose) free(e->key_compose);
 	free(e);
-
 }
 
 static inline void

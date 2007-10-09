@@ -7,8 +7,7 @@
 #include <string.h>
 
 #include <Eet.h>
-#include "Ecore_Data.h"
-#include "Ecore_Fb.h"
+#include "Ecore_Li.h"
 
 #define ADD_ARRAY 1
 
@@ -336,8 +335,6 @@ static const char *iso10646[] = {
 	"caron",
 };
 
-
-
 /* encodes an unicode value into utf8 */
 static int unicode_utf8_encode(int unicode)
 {
@@ -360,7 +357,7 @@ static int usage(const char *prog)
 {
 	fprintf(stderr, "Usage: %s <MAP> [-e] <TRANS>\n", prog);
 	fprintf(stderr, "  <MAP>    the keyboard map file to translate\n");
-	fprintf(stderr, "  <TRANS>  the keyboard map file translated to use with ecore_fb\n");
+	fprintf(stderr, "  <TRANS>  the keyboard map file translated to use with ecore_li\n");
 	fprintf(stderr, "\nExample:\n");
 	fprintf(stderr, "%s es es\n", prog);
 	fprintf(stderr, "Looks for a file called es.map[.gz] and converts it to es.eet\n");
@@ -374,11 +371,11 @@ static inline char * remove_blanks(char *p)
 	return p;
 }
 
-static void dump(Ecore_Fb_Keyboard_Layout *l)
+static void dump(Ecore_Li_Keyboard_Layout *l)
 {
 	int i;
 	/* dump layout */
-	printf("Ecore_Fb_Keyboard_Layout layout = {\n");
+	printf("Ecore_Li_Keyboard_Layout layout = {\n");
 	printf("\t.codes = {\n");
 	for (i = 0; i < 256; i ++)
 	{
@@ -445,7 +442,7 @@ static void parse_keymaps(char *p, int *mods)
 }
 
 /* keycode 1 = Meta_Escape */
-static void parse_keycode(char *p, int *mods, int curr_mod, Ecore_Fb_Keyboard_Layout *l)
+static void parse_keycode(char *p, int *mods, int curr_mod, Ecore_Li_Keyboard_Layout *l)
 {
 	int pos = 0; 	/* the position on the mods array */
 	int kc; 	/* keycode */
@@ -548,14 +545,14 @@ static void parse_keycode(char *p, int *mods, int curr_mod, Ecore_Fb_Keyboard_La
 	}
 }
 
-static Ecore_Fb_Keyboard_Layout * parse(FILE *src, Ecore_Fb_Keyboard_Layout *layout)
+static Ecore_Li_Keyboard_Layout * parse(FILE *src, Ecore_Li_Keyboard_Layout *layout)
 {
 	char line[512];
 	int  mods[256];
-	Ecore_Fb_Keyboard_Layout *l;
+	Ecore_Li_Keyboard_Layout *l;
 
 	if (!layout)
-		l = calloc(1, sizeof(Ecore_Fb_Keyboard_Layout));
+		l = calloc(1, sizeof(Ecore_Li_Keyboard_Layout));
 	else
 		l = layout;
 	
@@ -652,15 +649,15 @@ int main(int argc, char **argv)
 {
 	FILE *map;
 	Eet_Data_Descriptor *ldesc, *kdesc;
-	Ecore_Fb_Keyboard_Layout *l;
-	Ecore_Fb_Keyboard_Keycode *c;
+	Ecore_Li_Keyboard_Layout *l;
+	Ecore_Li_Keyboard_Keycode *c;
 
 	if (argc < 4) return usage(argv[0]);
 
 	/* open the input file */
 	if ((map = fopen(argv[1], "r")) < 0)
 	{
-		fprintf(stderr, "[ecore_fb_kbd] Error opening %s (%s)\n", argv[1], strerror(errno));
+		fprintf(stderr, "[ecore_li_kbd] Error opening %s (%s)\n", argv[1], strerror(errno));
 		return -2;
 	}
 	/* parse the keyboard layout */
@@ -670,7 +667,7 @@ int main(int argc, char **argv)
 	/* TODO wait for eet commit */
 #if 0
 	/* setup the eet descriptor */
-	kdesc = eet_data_descriptor_new("keycode", sizeof(Ecore_Fb_Keybord_Keycode),
+	kdesc = eet_data_descriptor_new("keycode", sizeof(Ecore_Li_Keybord_Keycode),
 		NULL,
 		NULL,
 		NULL,
@@ -679,9 +676,9 @@ int main(int argc, char **argv)
 		NULL,
 		NULL,
 		NULL);
-	EET_DATA_DESCRIPTOR_ADD_BASIC(kdesc, Ecore_Fb_Keyboard_Keycode, "name", name, EET_T_STRING);
-	EET_DATA_DESCRIPTOR_ADD_BASIC(kdesc, Ecore_Fb_Keyboard_Keycode, "value", value, EET_T_CHAR);
-	ldesc = eet_data_descriptor_new("layout", sizeof(Ecore_Fb_Keyboard_Layout),
+	EET_DATA_DESCRIPTOR_ADD_BASIC(kdesc, Ecore_Li_Keyboard_Keycode, "name", name, EET_T_STRING);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(kdesc, Ecore_Li_Keyboard_Keycode, "value", value, EET_T_CHAR);
+	ldesc = eet_data_descriptor_new("layout", sizeof(Ecore_Li_Keyboard_Layout),
 		NULL,
 		NULL,
 		NULL,
@@ -690,7 +687,7 @@ int main(int argc, char **argv)
 		NULL,
 		NULL,
 		NULL);
-	EET_DATA_DESCRIPTOR_ADD_ARRAY(ldesc, Ecore_Fb_Keyboard_Layout, "codes", codes, ldesc);
+	EET_DATA_DESCRIPTOR_ADD_ARRAY(ldesc, Ecore_Li_Keyboard_Layout, "codes", codes, ldesc);
 #endif
 	return 0;
 }

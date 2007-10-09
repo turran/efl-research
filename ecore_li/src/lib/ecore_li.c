@@ -213,9 +213,13 @@ ecore_li_device_keyboard_layout_set(Ecore_Li_Device *dev, Ecore_Li_Keyboard_Layo
 
 	dev->keyboard.layout = l;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void ecore_li_device_delete(Ecore_Li_Device *d)
 {
+	assert(d);
 	free(d);
 }
 
