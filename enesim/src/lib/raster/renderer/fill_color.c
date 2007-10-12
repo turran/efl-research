@@ -13,7 +13,7 @@ typedef struct _Fill_Color
 	DATA32	color;
 } Fill_Color;
 
-void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Surface *dst)
+static void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Surface *dst)
 {
 	Fill_Color *f;
 	Scanline_Alias_Sl *s;
@@ -36,17 +36,17 @@ void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Surface *dst)
 	}
 }
 
-void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
+static void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
 {
 	_draw_alias(r, sl->data, dst);
 }
 
-void _free(Enesim_Renderer *r)
+static void _free(Enesim_Renderer *r)
 {
 	free(r->data);
 }
 
-Enesim_Renderer_Func f_func = {
+static Enesim_Renderer_Func f_func = {
 	.draw 	= _draw,
 	.free 	= _free,
 };

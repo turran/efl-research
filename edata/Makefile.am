@@ -17,7 +17,8 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-edata.pc 
+edata.pc \
+edata_docs.tar.gz
 
 EXTRA_DIST = \
 AUTHORS \

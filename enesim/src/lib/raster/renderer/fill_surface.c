@@ -10,7 +10,7 @@
  *============================================================================*/
 typedef struct _Fill_Surface
 {
-	Enesim_Surface 		s;
+	Enesim_Surface 		*s;
 	int 			mode;
 	Enesim_Rectangle 	area;
 } Fill_Surface;
@@ -28,7 +28,7 @@ static inline void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Su
 	 * |       |  |       |
 	 * +-------+  +-------+
 	 */
-	if (!(f->mode & EMAGE_FILL_SURFACE_REPEAT_Y))
+	if (!(f->mode & ENESIM_SURFACE_REPEAT_Y))
 	{
 		/* scanline outside vertical area */
 		/* scanline inside vertical area */
@@ -52,7 +52,7 @@ static inline void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Su
 	 * +-------+  +-------+
 	 */
 	/* simple cases are done, now the complex ones */
-	if (!(f->mode & EMAGE_FILL_SURFACE_REPEAT_X))
+	if (!(f->mode & ENESIM_SURFACE_REPEAT_X))
 	{
 		/* scanline inside horizontal area */
 		/* scanline outside horizontal area */
@@ -74,17 +74,17 @@ static inline void _draw_alias(Enesim_Renderer *r, Scanline_Alias *sl, Enesim_Su
 	}
 }
 
-void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
+static void _draw(Enesim_Renderer *r, Enesim_Scanline *sl, Enesim_Surface *dst)
 {
 	_draw_alias(r, sl->data, dst);
 }
 
-void _free(Enesim_Renderer *r)
+static void _free(Enesim_Renderer *r)
 {
 	free(r->data);
 }
 
-Enesim_Renderer_Func f_func = {
+static Enesim_Renderer_Func f_func = {
 	.draw 	= _draw,
 	.free 	= _free,
 };
@@ -119,7 +119,7 @@ EAPI void enesim_fill_surface_surface_set(Enesim_Renderer *r, Enesim_Surface *s)
 	assert(r);
 	assert(s);
 	f = r->data;
-	f->surface = s;
+	f->s = s;
 }
 /**
  * To be documented
@@ -127,8 +127,11 @@ EAPI void enesim_fill_surface_surface_set(Enesim_Renderer *r, Enesim_Surface *s)
  */
 EAPI void enesim_fill_surface_mode_set(Enesim_Renderer *r, int mode)
 {
+	Fill_Surface *f;
+	
 	assert(r);
-	r->mode = mode;
+	f = r->data;
+	f->mode = mode;
 }
 /**
  * To be documented
@@ -136,9 +139,12 @@ EAPI void enesim_fill_surface_mode_set(Enesim_Renderer *r, int mode)
  */
 EAPI void enesim_fill_surface_area_set(Enesim_Renderer *r, int x, int y, int w, int h)
 {
+	Fill_Surface *f;
+	
 	assert(r);
-	r->area.x = (x < 0) ? 0 : x;
-	r->area.y = (y < 0) ? 0 : y;
-	r->area.w = (w < 0) ? 0 : w;
-	r->area.h = (h < 0) ? 0 : h;
+	f = r->data;
+	f->area.x = (x < 0) ? 0 : x;
+	f->area.y = (y < 0) ? 0 : y;
+	f->area.w = (w < 0) ? 0 : w;
+	f->area.h = (h < 0) ? 0 : h;
 }
