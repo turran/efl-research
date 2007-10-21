@@ -11,6 +11,21 @@ typedef struct _SVG_Context
 	DATA32 color;
 } SVG_Context;
 
+static SVG_Context * _context_save(SVG_Context *c)
+{
+
+}
+
+static void _context_restore(SVG_Context *c, SVG_Context *cb)
+{
+
+}
+
+static void _context_color_set(SVG_Context *c, DATA32 col)
+{
+
+}
+
 
 typedef struct _SVG_Document
 {
