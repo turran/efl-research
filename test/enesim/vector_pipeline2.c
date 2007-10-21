@@ -26,7 +26,6 @@ static void _context_color_set(SVG_Context *c, DATA32 col)
 
 }
 
-
 typedef struct _SVG_Document
 {
 	SVG_Context ct;
