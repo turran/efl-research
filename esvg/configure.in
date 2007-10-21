@@ -107,6 +107,7 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(EDATA, [edata >= 0.0.1])
+PKG_CHECK_MODULES(ENESIM, [edata >= 0.0.1])
 PKG_CHECK_MODULES(EXML, [exml >= 0.1.1])
 
 ## Make the debug preprocessor configurable
