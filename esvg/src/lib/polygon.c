@@ -1,11 +1,12 @@
 #include "ESVG.h"
 #include "esvg_private.h"
 
-ESVG_Elements[ESVG_ELEMENT_POLYGON] = {
-
-};
-
-static void polygon_parse(void)
+static void polygon_parse(ESVG *esvg)
 {
-
+	printf("polygon parse\n");
 }
+
+ESVG_Element polygon_element = {
+	.tag = "polygon",
+	.parser = &polygon_parse,
+};
