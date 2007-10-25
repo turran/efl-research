@@ -6,6 +6,22 @@
 #include "Enesim.h"
 #include "EXML.h"
 
+/* 
+ * define attribute collections
+ * create an object for each element
+ * 
+ */
+
+typedef struct _ESVG_Shape
+{
+	float x;
+	float y;
+	float w;
+	float h;
+	float rx;
+	float ry;
+} Esvg_Shape;
+
 enum
 {
 	ESVG_ELEMENT_DOCUMENT,
@@ -14,6 +30,8 @@ enum
 	ESVG_ELEMENT_POLYGON,
 	ESVG_ELEMENTS
 };
+
+
 
 enum
 {
