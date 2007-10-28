@@ -3,6 +3,7 @@
 
 typedef struct _ESVG_Rect
 {
+	ESVG_Shape shape;
 	float x;
 	float y;
 	float w;

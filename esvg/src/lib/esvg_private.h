@@ -9,18 +9,22 @@
 /* 
  * define attribute collections
  * create an object for each element
+ * some attributes accumulate (transform) and others replace (color) 
  * 
  */
 
+typedef struct _ESVG_Context ESVG_Context;
+
+typedef struct _ESVG_Element
+{
+	ESVG_Context dc;
+	ESVG_Context dc_merged;
+} ESVG_Element;
+
 typedef struct _ESVG_Shape
 {
-	float x;
-	float y;
-	float w;
-	float h;
-	float rx;
-	float ry;
-} Esvg_Shape;
+	ESVG_Element element;
+} ESVG_Shape;
 
 enum
 {
@@ -30,8 +34,6 @@ enum
 	ESVG_ELEMENT_POLYGON,
 	ESVG_ELEMENTS
 };
-
-
 
 enum
 {
@@ -43,6 +45,7 @@ enum
 typedef void (*ESVG_Element_Parser)(ESVG *svg);
 typedef void (*ESVG_Attribute_Parser)(void);
 
+#if 0
 typedef struct _ESVG_Element
 {
 	const char *tag;
@@ -57,5 +60,5 @@ typedef struct _ESVG_Attribute
 } ESVG_Attribute;
 
 extern ESVG_Element esvg_elements[ESVG_ELEMENTS];
-
+#endif
 #endif
