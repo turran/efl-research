@@ -8,7 +8,7 @@ vp1_SRCS = vector_pipeline1.c png.c surface.c
 vp1_OBJS = $(vp1_SRCS:.c=.o)
 vector_pipeline1: $(vp1_OBJS)
 	$(RM) $@
-	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(vector_pipeline1_OBJS) -o $@
+	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(vp1_OBJS) -o $@
 
 vp2_CFLAGS=`pkg-config --cflags exml` $(CFLAGS)
 vp2_LIBS=`pkg-config --libs exml` $(LIBS) -lm
