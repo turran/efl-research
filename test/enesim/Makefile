@@ -1,8 +1,14 @@
 CFLAGS = -g `pkg-config --cflags enesim` `pkg-config --cflags libpng`
 LIBS = `pkg-config --libs enesim` `pkg-config --libs libpng`
 
-BINS  = vector_pipeline1 vector_pipeline2
+BINS  = scanlines vector_pipeline1 vector_pipeline2
 all: $(BINS)
+
+sls_SRCS = scanlines.c png.c
+sls_OBJS = $(sls_SRCS:.c=.o)
+scanlines: $(sls_OBJS)
+	$(RM) $@
+	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(sls_OBJS) -o $@
 
 vp1_SRCS = vector_pipeline1.c png.c surface.c
 vp1_OBJS = $(vp1_SRCS:.c=.o)
