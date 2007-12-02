@@ -6,6 +6,15 @@
 #include "Enesim.h"
 #include "EXML.h"
 
+
+//#define RENDER_STEPS
+#define RENDER_KIIA
+
+#ifdef REMDER_STEPS
+int dw;
+int dh;
+#endif
+
 typedef struct _SVG_Context
 {
 	DATA32 color;
@@ -83,14 +92,39 @@ static int _points_point_get(char **str, float *x, float *y)
 static int _document_get(SVG_Document *d, EXML_Node *n)
 {
 	float w, h;
+	int rw, rh;
 	
 	assert(d);
 	assert(n);
 	
 	w = _units_get(ecore_hash_get(n->attributes, "width"));
 	h = _units_get(ecore_hash_get(n->attributes, "height"));
-	d->dst = surface_new((int)ceilf(w), (int)ceilf(h), ENESIM_SURFACE_ARGB8888);
+	rw = (int)ceilf(w);
+	rh = (int)ceilf(h);
+#ifdef RENDER_STEPS
+	dw = rw;
+	dh = rh;
+#endif
+	d->dst = surface_new(rw, rh, ENESIM_SURFACE_ARGB8888);
 }
+
+struct Renderer
+{
+	Enesim_Renderer *r;
+	Enesim_Surface *s;
+};
+
+void rasterizer_callback(void *sl_data, void *data)
+{
+	struct Renderer *r = data;
+
+#ifdef RENDER_KIIA
+	enesim_renderer_draw(r->r, ENESIM_SCANLINE_MASK, sl_data, r->s);
+#else
+	enesim_renderer_draw(r->r, ENESIM_SCANLINE_ALIAS, sl_data, r->s);
+#endif
+}
+
 
 /* polygons */
 static void _polygon_parse(SVG_Document *d, EXML *xml)
@@ -111,30 +145,65 @@ static void _polygon_parse(SVG_Document *d, EXML *xml)
 	}
 	if ((data = exml_attribute_get(xml, "points")) != NULL)
 	{
+#ifdef RENDER_STEPS
+		Enesim_Surface *dst;
+#endif
 		//Enesim_Component *path;
 		Enesim_Rasterizer *rs;
-		Enesim_Scanline *sl;
 		Enesim_Renderer *rd;
+		Enesim_Rectangle rect;
+		struct Renderer rend;
 		float x, y;
+		float sx, sy;
 		int ret;
-		
+		int sw, sh;
+		char path[256];
+		static int count = 0;
+
+#ifdef RENDER_STEPS
+		dst = surface_new(dw, dh, ENESIM_SURFACE_ARGB8888);
+#endif
 		//path = enesim_path_new();
-		rs = enesim_rasterizer_new();
-		ret = _points_point_get(&data, &x, &y);
-		enesim_rasterizer_vertex_add(rs, x, y);
+		enesim_surface_size_get(d->dst, &sw, &sh);
+		enesim_rectangle_from_coords(&rect, 0, 0, sw, sh);
+#ifdef RENDER_KIIA
+		rs = enesim_rasterizer_kiia_new(ENESIM_RASTERIZER_KIIA_COUNT_16, rect);
+#else
+		rs = enesim_rasterizer_cpsc_new(rect);
+#endif
+		ret = _points_point_get(&data, &sx, &sy);
+		enesim_rasterizer_vertex_add(rs, sx, sy);
 		//enesim_path_move_to(path, x, y);
 		while (ret)
 		{
 			ret = _points_point_get(&data, &x, &y);
 			enesim_rasterizer_vertex_add(rs, x, y);
+			if (count == 52)
+				printf("%f %f\n", x, y);
 			//enesim_path_line_to(path, x, y);
 		}
-		sl = enesim_scanline_alias_new();
-		enesim_rasterizer_generate(rs, sl);
+		enesim_rasterizer_vertex_add(rs, sx, sy);
 		rd = enesim_fill_color_new();
 		enesim_fill_color_color_set(rd, d->ct.color);
-		enesim_renderer_draw(rd, sl, d->dst);
-		enesim_scanline_delete(sl);
+#ifdef RENDER_STEPS
+		rend.s = dst;
+		rend.r = rd;
+#ifdef RENDER_KIIA
+		enesim_rasterizer_generate(rs, ENESIM_SCANLINE_MASK, rasterizer_callback, &rend);
+#else
+		enesim_rasterizer_generate(rs, ENESIM_SCANLINE_ALIAS, rasterizer_callback, &rend);
+#endif
+		snprintf(path, 256, "/tmp/enesim_%02d.png", count);
+		png_save(dst, path, 0);
+		count++;
+#endif
+		rend.s = d->dst;
+		rend.r = rd;
+#ifdef RENDER_KIIA
+		enesim_rasterizer_generate(rs, ENESIM_SCANLINE_MASK, rasterizer_callback, &rend);
+#else
+		enesim_rasterizer_generate(rs, ENESIM_SCANLINE_ALIAS, rasterizer_callback, &rend);
+#endif
 	}
 	/* restore context */
 	d->ct.color = old_color;
@@ -221,6 +290,11 @@ int main(int argc, char **argv)
 		{
 			_group_parse(&d, xml);
 		}
+		if (!strcmp(tag, "polygon"))
+		{
+			_polygon_parse(&d, xml);
+		}
+
 		else
 			printf("TAG = %s\n", tag);
 	} while ((tag = exml_next_nomove(xml)) != NULL);

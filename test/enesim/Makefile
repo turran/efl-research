@@ -1,7 +1,7 @@
 CFLAGS = -g `pkg-config --cflags enesim` `pkg-config --cflags libpng`
 LIBS = `pkg-config --libs enesim` `pkg-config --libs libpng`
 
-BINS  = scanlines vector_pipeline1 vector_pipeline2
+BINS  = vector_pipeline1
 all: $(BINS)
 
 sls_SRCS = scanlines.c png.c
