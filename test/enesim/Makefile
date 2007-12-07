@@ -10,7 +10,7 @@ scanlines: $(sls_OBJS)
 	$(RM) $@
 	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(sls_OBJS) -o $@
 
-vp1_SRCS = vector_pipeline1.c png.c surface.c
+vp1_SRCS = vector_pipeline1.c png.c surface.c time.c
 vp1_OBJS = $(vp1_SRCS:.c=.o)
 vector_pipeline1: $(vp1_OBJS)
 	$(RM) $@
