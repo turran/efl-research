@@ -206,7 +206,7 @@ shmsegment_path_append(E_DBus_Object *obj, DBusMessage *msg)
 	dbus_message_get_args(msg, &e, DBUS_TYPE_STRING,
 		&path, DBUS_TYPE_INVALID);
 	/* check if the path is already appended */
-	ecore_list_goto_first(s->paths);
+	ecore_list_first_goto(s->paths);
 	p = ecore_list_current(s->paths);
 	while (p)
 	{
@@ -218,7 +218,7 @@ shmsegment_path_append(E_DBus_Object *obj, DBusMessage *msg)
 	/* append it at the end */
 	if (!p)
 	{
-		ecore_list_goto_first(s->paths);
+		ecore_list_first_goto(s->paths);
 		ecore_list_append(s->paths, strdup(path)); 
 	}
 	return r;
@@ -279,7 +279,7 @@ static inline struct element * _file_cached(struct segment *s, char *path)
 	struct element *e;
 
 	printf("%p\n", s);
-	ecore_list_goto_first(s->elements);
+	ecore_list_first_goto(s->elements);
 	while ((e = ecore_list_next(s->elements)))
 	{
 		if (!strcmp(e->path, path))
@@ -311,7 +311,7 @@ static inline char * _file_path_get(struct segment *s, char *path)
 	{
 		char real_path[PATH_MAX];
 		
-		ecore_list_goto_first(s->paths);
+		ecore_list_first_goto(s->paths);
 		while ((p = ecore_list_next(s->paths)))
 		{
 			snprintf(real_path, PATH_MAX, "%s/%s", p, path);
@@ -424,7 +424,7 @@ shmmanager_segment_list(E_DBus_Object *obj, DBusMessage *msg)
 		DBUS_STRUCT_END_CHAR_AS_STRING,
 		&it_array);
 
-	ecore_list_goto_first(m->segments);
+	ecore_list_first_goto(m->segments);
 	s = ecore_list_current(m->segments);
 	while (s)
 	{
@@ -471,7 +471,7 @@ shmmanager_segment_new(E_DBus_Object *obj, DBusMessage *msg)
 	r = dbus_message_new_method_return(msg);
 
 	/* check if the segment was already created */
-	ecore_list_goto_first(m->segments);
+	ecore_list_first_goto(m->segments);
 	s = ecore_list_current(m->segments);
 	while (s)
 	{
@@ -530,7 +530,7 @@ eshmd_init(void)
 	return m;
 
 elistnew:
-	e_dbus_connection_unref(m->conn);
+	//e_dbus_connection_unref(m->conn);
 ebusget:
 	free(m);
 ecalloc:
@@ -671,7 +671,7 @@ eshmd_shutdown(struct manager *m)
 
 	/* delete each segment */
 	if (!m->segments) goto free;
-	ecore_list_goto_first(m->segments);
+	ecore_list_first_goto(m->segments);
 	s = ecore_list_current(m->segments);
 	while (s)
 	{
@@ -680,7 +680,7 @@ eshmd_shutdown(struct manager *m)
 
 		/* remove segment elements */
 		if (!s->elements) goto next;
-		ecore_list_goto_first(s->elements);
+		ecore_list_first_goto(s->elements);
 		e = ecore_list_current(s->elements);
 		while (e)
 		{
@@ -692,7 +692,7 @@ eshmd_shutdown(struct manager *m)
 		}
 		/* remove segment paths */
 		if (!s->paths) goto next;
-		ecore_list_goto_first(s->paths);
+		ecore_list_first_goto(s->paths);
 		path = ecore_list_current(s->paths);
 		while (path)
 		{
@@ -725,7 +725,8 @@ next:
 		s = ecore_list_current(m->segments);
 	}
 free:
-	e_dbus_connection_unref(m->conn);
+	;
+	//e_dbus_connection_unref(m->conn);
 }
 
 #define DAEMONIZE 0

@@ -18,7 +18,7 @@ char * 	eshm_segment_name_get(Eshm_Segment *s);
 int 	eshm_segment_size_get(Eshm_Segment *s);
 
 void 	eshm_element_new_from_file(Eshm_Segment *s, char *file, Eshm_Callback cb, void *data);
-void 	eshm_element_new(Eshm_Segment *s, int size, Eshm_Callback cb, void *data)
+void 	eshm_element_new(Eshm_Segment *s, int size, Eshm_Callback cb, void *data);
 void * 	eshm_element_data_get(Eshm_Element *e);
 char * 	eshm_element_name_get(Eshm_Element *e);
 void * 	eshm_element_size_get(Eshm_Element *e);
