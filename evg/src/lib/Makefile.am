@@ -2,7 +2,8 @@ MAINTAINERCLEANFILES = \
 Makefile.in
 
 INCLUDES = -I. \
--I$(top_srcdir)/src/lib 
+-I$(top_srcdir)/src/lib \
+@ENESIM_CFLAGS@
 
 lib_LTLIBRARIES = libopenvg.la
 include_HEADERS = openvg.h
@@ -10,7 +11,8 @@ include_HEADERS = openvg.h
 libopenvg_la_SOURCES = \
 path.c
 
-libopenvg_la_LIBADD = 
+libopenvg_la_LIBADD = \
+@ENESIM_LIBS@ 
 
 libopenvg_la_DEPENDENCIES = 
 

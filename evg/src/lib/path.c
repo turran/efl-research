@@ -1,5 +1,24 @@
+#include <stdio.h>
 #include "openvg.h"
+#include "Enesim.h"
 
+typedef struct _Evg_Path
+{
+	VGint format;
+	VGPathDatatype datatype;
+	VGfloat scale;
+	VGfloat bias;
+	VGbitfield capabilities;
+	void *client_data;
+	void *impl_data;
+} Evg_Path;
+
+/**
+ * @errors
+ * VG_UNSUPPORTED_PATH_FORMAT_ERROR if pathFormat is not a supported format
+ * VG_ILLEGAL_ARGUMENT_ERROR if datatype is not a valid value from the 
+ * VGPathDatatype enumeration or if scale is equal to 0
+ */
 VG_API_CALL VGPath vgCreatePath(VGint pathFormat,
                                 VGPathDatatype datatype,
                                 VGfloat scale, VGfloat bias,
@@ -7,7 +26,19 @@ VG_API_CALL VGPath vgCreatePath(VGint pathFormat,
                                 VGint coordCapacityHint,
                                 VGbitfield capabilities)
 {
-
+	Evg_Path *p = NULL;
+	
+	if (pathFormat != VG_PATH_FORMAT_STANDARD)
+		
+	p = calloc(1, sizeof(Evg_Path));
+	
+	p->format = pathFormat;
+	p->datatype = datatype;
+	p->scale = scale;
+	p->bias = bias;
+	p->capabilities = capabilities & VG_PATH_CAPABILITY_ALL;
+	
+	return ((VGPath)p);
 }
 
 VG_API_CALL void vgClearPath(VGPath path, VGbitfield capabilities)
