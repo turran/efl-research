@@ -576,6 +576,14 @@ VG_API_CALL VGHardwareQueryResult vgHardwareQuery(VGHardwareQueryType key,
 /* Renderer and Extension Information */
 VG_API_CALL const VGubyte * vgGetString(VGStringID name);
 
+/* EVG Specific */
+typedef VGHandle EVGContext;
+
+VG_API_CALL void evgContextFree(EVGContext c);
+VG_API_CALL void evgContextSet(EVGContext c);
+VG_API_CALL EVGContext evgContextGet(void);
+VG_API_CALL EVGContext evgContextNew(void);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

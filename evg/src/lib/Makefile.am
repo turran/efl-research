@@ -3,16 +3,19 @@ Makefile.in
 
 INCLUDES = -I. \
 -I$(top_srcdir)/src/lib \
-@ENESIM_CFLAGS@
+@ENESIM_CFLAGS@ \
+@EDATA_CFLAGS@
 
 lib_LTLIBRARIES = libopenvg.la
 include_HEADERS = openvg.h
 
 libopenvg_la_SOURCES = \
-path.c
+path.c \
+context.c
 
 libopenvg_la_LIBADD = \
-@ENESIM_LIBS@ 
+@ENESIM_LIBS@ \
+@EDATA_LIBS@ 
 
 libopenvg_la_DEPENDENCIES = 
 
