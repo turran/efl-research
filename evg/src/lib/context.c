@@ -1,8 +1,15 @@
 #include "openvg.h"
 #include "private.h"
 
+#define EVG_MATRIX_MODES 4
+#define EVG_MATRIX_VALUES 9 /* 3x3 matrices */
+
 typedef struct _Evg_Context
 {
+	/* Matrix */
+	VGMatrixMode matrix_mode;
+	VGfloat matrices[EVG_MATRIX_MODES][EVG_MATRIX_VALUES];
+	/* Error */
 	VGErrorCode err;
 } Evg_Context;
 

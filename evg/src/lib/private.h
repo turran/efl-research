@@ -6,6 +6,19 @@
 #include "Enesim.h"
 #include "Edata.h"
 
+/**
+ * @todo
+ * - context (WIP)
+ * - setters/getters
+ * - rendering quality/antialiasing
+ * - scissoring/masking/clearing
+ * - paths (WIP)
+ * - paint
+ * - image
+ * - filters
+ * - blending
+ */
+
 #define EVG_RET_ERROR_IF(cond, err, ret) \
 	if (cond)                            \
 	{                                    \

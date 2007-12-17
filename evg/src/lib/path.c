@@ -9,7 +9,7 @@ typedef struct _Evg_Path
 	VGfloat bias;
 	VGbitfield capabilities;
 	VGbyte *segments;
-	void *data;
+	void *coords;
 	/* implementation */
 	Edata_Array *coord_allocator;
 	int coord_num;
@@ -38,6 +38,13 @@ static const VGint _command_coords[] = {
 		5, /* VG_LCWARC_TO */ 
 };
 
+static const VGint _datatype_size[] = {
+		1, /* VG_PATH_DATATYPE_S_8 */
+		2, /* VG_PATH_DATATYPE_S_16 */
+		4, /* VG_PATH_DATATYPE_S_32 */
+		4, /* VG_PATH_DATATYPE_F */
+};
+
 static VGint _segment_coords_count(const VGubyte *s, VGint num)
 {	
 	int coords = 0;
@@ -57,22 +64,24 @@ static VGint _segment_coords_count(const VGubyte *s, VGint num)
 
 static void _segment_alloc(Evg_Path *p, int num)
 {
-	
+	p->segments = realloc(p->segments, p->segment_num + num);
+	p->segment_num += num;
 }
 
 static void _segment_free(Evg_Path *p)
 {
-	
+	free(p->segments);
 }
 
 static void _coord_alloc(Evg_Path *p, int num)
 {
-	
+	p->coords = realloc(p->coords,  (p->coord_num + num) * _datatype_size[p->datatype]);
+	p->coord_num += num;
 }
 
 static void _coord_free(Evg_Path *p)
 {
-	
+	free(p->coords);
 }
 	
 /*============================================================================*
@@ -192,7 +201,7 @@ VG_API_CALL void vgAppendPathData(VGPath dstPath,
 	
 	/* copy data */
 	memcpy(p->segments + p->segment_num, pathSegments, numSegments);
-	//memcpy((VGubyte *)p->coords + (p->coord_num * DATA_SIZE), pathData, count * DATA_SIZE);
+	memcpy((VGubyte *)p->coords + (p->coord_num * _datatype_size[p->datatype]), pathData, count * _datatype_size[p->datatype]);
 }
 /**
  * To be documented

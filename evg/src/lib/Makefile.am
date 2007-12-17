@@ -10,8 +10,13 @@ lib_LTLIBRARIES = libopenvg.la
 include_HEADERS = openvg.h
 
 libopenvg_la_SOURCES = \
-path.c \
-context.c
+context.c \
+filter.c \
+image.c \
+matrix.c \
+paint.c \
+path.c
+
 
 libopenvg_la_LIBADD = \
 @ENESIM_LIBS@ \
