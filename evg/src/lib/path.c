@@ -3,6 +3,7 @@
 
 typedef struct _Evg_Path
 {
+	/* common */
 	VGint format;
 	VGPathDatatype datatype;
 	VGfloat scale;

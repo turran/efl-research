@@ -33,6 +33,8 @@
 		return;                 \
 	}
 
+typedef struct _Evg_Image Evg_Image;
+
 VGboolean evgPathExists(VGPath p);
 void evgSetError(VGErrorCode err);
 void evgCreatePath(VGPath p);

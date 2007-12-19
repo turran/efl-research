@@ -13,11 +13,10 @@ libopenvg_la_SOURCES = \
 context.c \
 filter.c \
 image.c \
-matrix.c \
 paint.c \
 path.c
 
-
+#matrix.c
 libopenvg_la_LIBADD = \
 @ENESIM_LIBS@ \
 @EDATA_LIBS@ 

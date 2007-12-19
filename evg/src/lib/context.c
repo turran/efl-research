@@ -11,6 +11,8 @@ typedef struct _Evg_Context
 	VGfloat matrices[EVG_MATRIX_MODES][EVG_MATRIX_VALUES];
 	/* Error */
 	VGErrorCode err;
+	/* Target Surface */
+	Evg_Image *tsurface;
 } Evg_Context;
 
 /*============================================================================*
@@ -35,6 +37,14 @@ void evgSetError(VGErrorCode err)
 void evgCreatePath(VGPath p)
 {
 	/* append the path to the list of paths */
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void evgCreateImage(VGImage i)
+{
+	/* append the path to the list of images */
 }
 /**
  * To be documented
@@ -92,4 +102,13 @@ VG_API_CALL void evgContextFree(EVGContext c)
 	Evg_Context *e = (Evg_Context *)c;
 	
 	free(e);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+VG_API_CALL void evgContextSetTargetSurface(EVGContext c, VGImage i)
+{
+	Evg_Context *e = (Evg_Context *)c;
+	e->tsurface = (Evg_Image *)i;
 }
