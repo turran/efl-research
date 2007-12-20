@@ -23,6 +23,7 @@ const VGfloat star_coords[] =
 int main(void)
 {
 	EVGContext c;
+	VGImage i;
 	VGPath p;
 	
 	/* create a new context */
@@ -31,6 +32,9 @@ int main(void)
 	
 	/* create a few paths */
 	p = vgCreatePath(VG_PATH_FORMAT_STANDARD, VG_PATH_DATATYPE_F, 1, 0, 6, 5, VG_PATH_CAPABILITY_ALL);
+	i = vgCreateImage(VG_lARGB_8888_PRE, 400, 400,
+			VG_IMAGE_QUALITY_NONANTIALIASED | VG_IMAGE_QUALITY_FASTER | VG_IMAGE_QUALITY_BETTER);
+	evgSetTargetSurface(i);
 	vgDrawPath(p, VG_FILL_PATH);
 	/* delete the context */
 	

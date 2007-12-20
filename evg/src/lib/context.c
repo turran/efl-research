@@ -55,6 +55,14 @@ VGboolean evgPathExists(VGPath p)
 {
 	return VG_TRUE;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+VGboolean evgImageExists(VGImage i)
+{
+	return VG_TRUE;
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -107,8 +115,7 @@ VG_API_CALL void evgContextFree(EVGContext c)
  * To be documented
  * FIXME: To be fixed
  */
-VG_API_CALL void evgContextSetTargetSurface(EVGContext c, VGImage i)
+VG_API_CALL void evgSetTargetSurface(VGImage i)
 {
-	Evg_Context *e = (Evg_Context *)c;
-	e->tsurface = (Evg_Image *)i;
+	_context->tsurface = (Evg_Image *)i;
 }

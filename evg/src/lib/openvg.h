@@ -583,6 +583,7 @@ VG_API_CALL void evgContextFree(EVGContext c);
 VG_API_CALL void evgContextSet(EVGContext c);
 VG_API_CALL EVGContext evgContextGet(void);
 VG_API_CALL EVGContext evgContextNew(void);
+VG_API_CALL void evgSetTargetSurface(VGImage i);
 
 #ifdef __cplusplus
 } /* extern "C" */
