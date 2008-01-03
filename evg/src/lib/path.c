@@ -16,6 +16,10 @@ typedef struct _Evg_Path
 	int coord_num;
 	Edata_Array *segment_allocator;
 	int segment_num;
+	Edata_Array *fcoords_allocator;
+	int flat_coords_num;
+	float *flat_coords;
+	char *flat_coords_type;
 } Evg_Path;
 
 /*============================================================================*
@@ -84,7 +88,19 @@ static void _coord_free(Evg_Path *p)
 {
 	free(p->coords);
 }
+
+static void _flat(Evg_Path *p)
+{
 	
+}
+
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+VGint evgPathGetParameteri(VGPath p, VGint paramType)
+{
+	
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -101,6 +117,9 @@ VG_API_CALL VGPath vgCreatePath(VGint pathFormat,
 {
 	Evg_Path *p = NULL;
 	
+	/**********/
+	/* common */
+	/**********/
 	/* checks */
 	EVG_RET_ERROR_IF((pathFormat != VG_PATH_FORMAT_STANDARD), VG_UNSUPPORTED_PATH_FORMAT_ERROR, VG_INVALID_HANDLE);
 	EVG_RET_ERROR_IF((scale == 0), VG_ILLEGAL_ARGUMENT_ERROR, VG_INVALID_HANDLE);
@@ -116,14 +135,16 @@ VG_API_CALL VGPath vgCreatePath(VGint pathFormat,
 	p->bias = bias;
 	p->capabilities = capabilities & VG_PATH_CAPABILITY_ALL;
 	
+	/* notify the context of a new path */
+	evgCreatePath((VGPath)p);
+	/******************/
 	/* implementation */
+	/******************/
 	/* create the vertex container */
 	p->segment_allocator = edata_array_new(p, EDATA_ARRAY_ALLOC(_segment_alloc),
 			EDATA_ARRAY_FREE(_segment_free), segmentCapacityHint);
 	p->coord_allocator = edata_array_new(p, EDATA_ARRAY_ALLOC(_coord_alloc),
 			EDATA_ARRAY_FREE(_coord_free), coordCapacityHint);
-	/* notify the context of a new path */
-	evgCreatePath((VGPath)p);
 	
 	return ((VGPath)p);
 }
@@ -180,6 +201,9 @@ VG_API_CALL void vgAppendPathData(VGPath dstPath,
 	Evg_Path *p = (Evg_Path *)dstPath;
 	int count;
 	
+	/**********/
+	/* common */
+	/**********/
 	/* checks */
 	EVG_ERROR_IF(evgPathExists(dstPath), VG_BAD_HANDLE_ERROR);
 	EVG_ERROR_IF(!(p->capabilities & VG_PATH_CAPABILITY_APPEND_TO), VG_PATH_CAPABILITY_ERROR); 
@@ -193,6 +217,9 @@ VG_API_CALL void vgAppendPathData(VGPath dstPath,
 	count = _segment_coords_count(pathSegments, numSegments);
 	EVG_ERROR_IF(count < 0, VG_ILLEGAL_ARGUMENT_ERROR);
 
+	/******************/
+	/* implementation */
+	/******************/
 	/* resize segment types and data */
 	/* TODO check that we actually alloc the space */
 	edata_array_elements_add(p->segment_allocator, count);
@@ -282,7 +309,29 @@ VG_API_CALL void vgPathTransformedBounds(VGPath path,
  */
 VG_API_CALL void vgDrawPath(VGPath path, VGbitfield paintModes)
 {
-
+	Evg_Path *p = (Evg_Path *)path;
+	/**********/
+	/* common */
+	/**********/
+	/* checks */
+	EVG_ERROR_IF(evgPathExists(path), VG_BAD_HANDLE_ERROR);
+	EVG_ERROR_IF(!paintModes || (paintModes & ~(VG_FILL_PATH | VG_STROKE_PATH)),
+			VG_ILLEGAL_ARGUMENT_ERROR);
+	/******************/
+	/* implementation */
+	/******************/
+	/* stroking */
+	if (paintModes & VG_STROKE_PATH)
+	{
+		
+	}
+	/* filling */
+	if (paintModes & VG_FILL_PATH)
+	{
+		/* flat the segments */
+		_flat(p);
+		/* call the context to rasterize and render the segments */
+	}
 
 }
 

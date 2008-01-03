@@ -40,8 +40,18 @@
 
 typedef struct _Evg_Image Evg_Image;
 
+VGboolean evgImageExists(VGImage i);
+VGboolean evgPaintExists(VGPaint p);
 VGboolean evgPathExists(VGPath p);
-void evgSetError(VGErrorCode err);
+
 void evgCreatePath(VGPath p);
+void evgCreatePaint(VGPaint p);
+void evgCreateImage(VGImage i);
+
+void evgSetError(VGErrorCode err);
+
+VGint evgPaintGetParameteri(VGPaint p, VGint paramType);
+VGint evgPathGetParameteri(VGPath p, VGint paramType);
+VGint evgImageGetParameteri(VGImage i, VGint paramType);
 
 #endif

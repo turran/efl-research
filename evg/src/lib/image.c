@@ -72,6 +72,14 @@ void evgImageRef(VGImage image)
 	Evg_Image *im = (Evg_Image *)image;
 	im->refcount++;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+VGint evgImageGetParameteri(VGImage i, VGint paramType)
+{
+	
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
