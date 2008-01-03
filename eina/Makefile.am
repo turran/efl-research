@@ -17,7 +17,7 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-ecore_li.pc 
+eina.pc 
 
 EXTRA_DIST = \
 AUTHORS \
@@ -25,8 +25,8 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-ecore_li.pc.in
+eina.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = ecore_li.pc
+pkgconfig_DATA = eina.pc
 ACLOCAL_AMFLAGS = -I m4

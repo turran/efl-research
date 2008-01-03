@@ -6,11 +6,11 @@ INCLUDES = \
 
 lib_LTLIBRARIES = libeina.la
 include_HEADERS = \
-Ecore_Li.h
+Eina.h
 
 libeina_la_SOURCES = \
-eina.c \
-device.c
+canvas.c \
+object.c
 
 libeina_la_LIBADD = \
 @EDATA_LIBS@
