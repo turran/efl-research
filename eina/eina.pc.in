@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: eina
+Description: Eina
+Requires: ecore edata 
+Version: @VERSION@
+Libs: -L${libdir} -leina
+Cflags: -I${includedir}

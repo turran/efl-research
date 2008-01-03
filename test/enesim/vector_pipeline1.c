@@ -28,7 +28,6 @@ static void kiia_rasterizer(Enesim_Component_Reader *r)
 	struct timeval ts, te;
 
 	Enesim_Rasterizer *rs;
-	Enesim_Scanline *sl;
 	Enesim_Renderer *rd;
 	DATA32 *d32 = calloc(1, sizeof(DATA32) * WIDTH * HEIGHT);
 	Enesim_Surface *dst;
@@ -40,7 +39,6 @@ static void kiia_rasterizer(Enesim_Component_Reader *r)
 	{
 		enesim_rasterizer_vertex_add(rs, x, y);
 	}
-	sl = enesim_scanline_alias_new();
 	rd = enesim_fill_color_new();
 	enesim_fill_color_color_set(rd, 0xff0000ff);
 	dst = enesim_surface_new(ENESIM_SURFACE_ARGB8888, WIDTH, HEIGHT, ENESIM_SURFACE_ALPHA, d32);

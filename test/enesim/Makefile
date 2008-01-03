@@ -1,7 +1,7 @@
 CFLAGS = -g `pkg-config --cflags enesim` `pkg-config --cflags libpng`
 LIBS = `pkg-config --libs enesim` `pkg-config --libs libpng`
 
-BINS  = vector_pipeline1
+BINS  = vector_pipeline1 fixed
 all: $(BINS)
 
 sls_SRCS = scanlines.c png.c
@@ -9,6 +9,12 @@ sls_OBJS = $(sls_SRCS:.c=.o)
 scanlines: $(sls_OBJS)
 	$(RM) $@
 	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(sls_OBJS) -o $@
+
+fixed_SRCS = fixed.c
+fixed_OBJS = $(fixed_SRCS:.c=.o)
+fixed: $(fixed_OBJS)
+	$(RM) $@
+	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(fixed_OBJS) -o $@
 
 vp1_SRCS = vector_pipeline1.c png.c surface.c time.c
 vp1_OBJS = $(vp1_SRCS:.c=.o)
