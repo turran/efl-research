@@ -1,5 +1,5 @@
-#include "edata_private.h"
-#include "Edata.h"
+#include "eina_private.h"
+#include "Eina.h"
 
 #define HEAP_INCREMENT 4096
 
@@ -7,8 +7,8 @@
 #define LEFT(i) (2 * i)
 #define RIGHT(i) (2 * i + 1)
 
-static void _edata_sheap_heapify(Edata_Sheap *heap, int i);
-static void _edata_sheap_update_data(Edata_Sheap *heap);
+static void _eina_sheap_heapify(Eina_Sheap *heap, int i);
+static void _eina_sheap_update_data(Eina_Sheap *heap);
 
 /**
  * Allocate and initialize a new binary heap
@@ -17,17 +17,17 @@ static void _edata_sheap_update_data(Edata_Sheap *heap);
  * @return A pointer to the newly allocated binary heap on success, NULL on
  * failure.
  */
-EAPI Edata_Sheap *
-edata_sheap_new(Edata_Compare_Cb compare, int size)
+EAPI Eina_Sheap *
+eina_sheap_new(Eina_Compare_Cb compare, int size)
 {
-   Edata_Sheap *heap = NULL;
+   Eina_Sheap *heap = NULL;
 
-   heap = (Edata_Sheap *)malloc(sizeof(Edata_Sheap));
+   heap = (Eina_Sheap *)malloc(sizeof(Eina_Sheap));
    if (!heap)
      return NULL;
-   memset(heap, 0, sizeof(Edata_Sheap));
+   memset(heap, 0, sizeof(Eina_Sheap));
 
-   if (!edata_sheap_init(heap, compare, size))
+   if (!eina_sheap_init(heap, compare, size))
      {
 	FREE(heap);
 	return NULL;
@@ -44,13 +44,13 @@ edata_sheap_new(Edata_Compare_Cb compare, int size)
  * @return        TRUE on success, FALSE on failure
  */
 EAPI int 
-edata_sheap_init(Edata_Sheap *heap, Edata_Compare_Cb compare, int size)
+eina_sheap_init(Eina_Sheap *heap, Eina_Compare_Cb compare, int size)
 {
    CHECK_PARAM_POINTER_RETURN("heap", heap, FALSE);
 
    heap->space = size;
    if (!compare)
-     heap->compare = edata_direct_compare;
+     heap->compare = eina_direct_compare;
    else
      heap->compare = compare;
    heap->order = EDATA_SORT_MIN;
@@ -72,7 +72,7 @@ edata_sheap_init(Edata_Sheap *heap, Edata_Compare_Cb compare, int size)
  * @param  heap The heap to be freed
  */
 EAPI void 
-edata_sheap_destroy(Edata_Sheap *heap)
+eina_sheap_destroy(Eina_Sheap *heap)
 {
    int i;
 
@@ -98,7 +98,7 @@ edata_sheap_destroy(Edata_Sheap *heap)
  * @return @c TRUE on successful set, @c FALSE otherwise.
  */
 EAPI int 
-edata_sheap_free_cb_set(Edata_Sheap *heap, Edata_Free_Cb free_func)
+eina_sheap_free_cb_set(Eina_Sheap *heap, Eina_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("heap", heap, FALSE);
 
@@ -115,7 +115,7 @@ edata_sheap_free_cb_set(Edata_Sheap *heap, Edata_Free_Cb free_func)
  *         it becomes larger than available space.
  */
 EAPI int 
-edata_sheap_insert(Edata_Sheap *heap, void *data)
+eina_sheap_insert(Eina_Sheap *heap, void *data)
 {
    int i;
    void *temp;
@@ -208,7 +208,7 @@ edata_sheap_insert(Edata_Sheap *heap, void *data)
  *         extract.
  */
 EAPI void *
-edata_sheap_extract(Edata_Sheap *heap)
+eina_sheap_extract(Eina_Sheap *heap)
 {
    void *extreme;
 
@@ -221,7 +221,7 @@ edata_sheap_extract(Edata_Sheap *heap)
    heap->size--;
    heap->data[0] = heap->data[heap->size];
 
-   _edata_sheap_heapify(heap, 1);
+   _eina_sheap_heapify(heap, 1);
 
    return extreme;
 }
@@ -233,7 +233,7 @@ edata_sheap_extract(Edata_Sheap *heap)
  * @note   The function does not alter the heap.
  */
 EAPI void *
-edata_sheap_extreme(Edata_Sheap *heap)
+eina_sheap_extreme(Eina_Sheap *heap)
 {
    if (heap->size < 1)
      return NULL;
@@ -251,7 +251,7 @@ edata_sheap_extreme(Edata_Sheap *heap)
  *               in, so the caller can perform the free if desired.
  */
 EAPI int 
-edata_sheap_change(Edata_Sheap *heap, void *item, void *newval)
+eina_sheap_change(Eina_Sheap *heap, void *item, void *newval)
 {
    int i;
 
@@ -267,7 +267,7 @@ edata_sheap_change(Edata_Sheap *heap, void *item, void *newval)
    /*
     * FIXME: This is not the correct procedure when a change occurs.
     */
-   _edata_sheap_heapify(heap, 1);
+   _eina_sheap_heapify(heap, 1);
 
    return TRUE;
 }
@@ -282,16 +282,16 @@ edata_sheap_change(Edata_Sheap *heap, void *item, void *newval)
  * by the new comparison.
  */
 EAPI int 
-edata_sheap_compare_set(Edata_Sheap *heap, Edata_Compare_Cb compare)
+eina_sheap_compare_set(Eina_Sheap *heap, Eina_Compare_Cb compare)
 {
    CHECK_PARAM_POINTER_RETURN("heap", heap, FALSE);
 
    if (!compare)
-     heap->compare = edata_direct_compare;
+     heap->compare = eina_direct_compare;
    else
      heap->compare = compare;
 
-   _edata_sheap_update_data(heap);
+   _eina_sheap_update_data(heap);
 
    return TRUE;
 }
@@ -305,13 +305,13 @@ edata_sheap_compare_set(Edata_Sheap *heap, Edata_Compare_Cb compare)
  * order. The default order is a min heap.
  */
 EAPI void 
-edata_sheap_order_set(Edata_Sheap *heap, char order)
+eina_sheap_order_set(Eina_Sheap *heap, char order)
 {
    CHECK_PARAM_POINTER("heap", heap);
 
    heap->order = order;
 
-   _edata_sheap_update_data(heap);
+   _eina_sheap_update_data(heap);
 }
 
 /**
@@ -322,7 +322,7 @@ edata_sheap_order_set(Edata_Sheap *heap, char order)
  * data.
  */
 EAPI void 
-edata_sheap_sort(Edata_Sheap *heap)
+eina_sheap_sort(Eina_Sheap *heap)
 {
    int i = 0;
    void **new_data;
@@ -335,7 +335,7 @@ edata_sheap_sort(Edata_Sheap *heap)
     * Extract the heap and insert into the new data array in order.
     */
    while (heap->size > 0)
-     new_data[i++] = edata_sheap_extract(heap);
+     new_data[i++] = eina_sheap_extract(heap);
 
    /*
     * Free the old data array and update the heap with the new data, also
@@ -356,7 +356,7 @@ edata_sheap_sort(Edata_Sheap *heap)
  * @note   The data is guaranteed to be in sorted order.
  */
 EAPI inline void *
-edata_sheap_item(Edata_Sheap *heap, int i)
+eina_sheap_item(Eina_Sheap *heap, int i)
 {
    if (i >= heap->size)
      return NULL;
@@ -365,7 +365,7 @@ edata_sheap_item(Edata_Sheap *heap, int i)
     * Make sure the data is sorted so we return the correct value.
     */
    if (!heap->sorted)
-     edata_sheap_sort(heap);
+     eina_sheap_sort(heap);
 
    return heap->data[i];
 }
@@ -376,7 +376,7 @@ edata_sheap_item(Edata_Sheap *heap, int i)
  * @param  i    The position to start heapifying
  */
 static void 
-_edata_sheap_heapify(Edata_Sheap *heap, int i)
+_eina_sheap_heapify(Eina_Sheap *heap, int i)
 {
    int extreme;
    int left = LEFT(i);
@@ -419,12 +419,12 @@ _edata_sheap_heapify(Edata_Sheap *heap, int i)
 	heap->data[extreme - 1] = heap->data[i - 1];
 	heap->data[i - 1] = temp;
 
-	_edata_sheap_heapify(heap, extreme);
+	_eina_sheap_heapify(heap, extreme);
      }
 }
 
 static void 
-_edata_sheap_update_data(Edata_Sheap *heap)
+_eina_sheap_update_data(Eina_Sheap *heap)
 {
    int i, old_size;
    void **data;
@@ -439,7 +439,7 @@ _edata_sheap_update_data(Edata_Sheap *heap)
    heap->data = malloc(heap->space * sizeof(void *));
 
    for (i = 0; i < old_size; i++)
-     edata_sheap_insert(heap, data[i]);
+     eina_sheap_insert(heap, data[i]);
 
    FREE(data);
 }

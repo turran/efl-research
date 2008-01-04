@@ -1,5 +1,5 @@
-#include "edata_private.h"
-#include "Edata.h"
+#include "eina_private.h"
+#include "Eina.h"
 
 /* Some tests showed that beyond that value heap sort is faster than merge sort
  * (in this implementation). This value has to be changed or at least review
@@ -7,56 +7,56 @@
 #define EDATA_MERGESORT_LIMIT 40000
 
 /* Return information about the list */
-static void *_edata_list_current(Edata_List * list);
+static void *_eina_list_current(Eina_List * list);
 
 /* Adding functions */
-static int _edata_list_insert(Edata_List * list, Edata_List_Node *node);
-static int _edata_list_append_0(Edata_List * list, Edata_List_Node *node);
-static int _edata_list_prepend_0(Edata_List * list, Edata_List_Node *node);
+static int _eina_list_insert(Eina_List * list, Eina_List_Node *node);
+static int _eina_list_append_0(Eina_List * list, Eina_List_Node *node);
+static int _eina_list_prepend_0(Eina_List * list, Eina_List_Node *node);
 
 /* Remove functions */
-static void *_edata_list_remove_0(Edata_List * list);
-static void *_edata_list_first_remove(Edata_List * list);
-static void *_edata_list_last_remove(Edata_List * list);
+static void *_eina_list_remove_0(Eina_List * list);
+static void *_eina_list_first_remove(Eina_List * list);
+static void *_eina_list_last_remove(Eina_List * list);
 
 /* Basic traversal functions */
-static void *_edata_list_next(Edata_List * list);
-static void *_edata_list_last_goto(Edata_List * list);
-static void *_edata_list_first_goto(Edata_List * list);
-static void *_edata_list_goto(Edata_List * list, const void *data);
-static void *_edata_list_index_goto(Edata_List *list, int index);
+static void *_eina_list_next(Eina_List * list);
+static void *_eina_list_last_goto(Eina_List * list);
+static void *_eina_list_first_goto(Eina_List * list);
+static void *_eina_list_goto(Eina_List * list, const void *data);
+static void *_eina_list_index_goto(Eina_List *list, int index);
 
 /* Iterative functions */
-static int _edata_list_for_each(Edata_List *list, Edata_For_Each function,
+static int _eina_list_for_each(Eina_List *list, Eina_For_Each function,
                                 void *user_data);
-static void *_edata_list_find(Edata_List *list, Edata_Compare_Cb function,
+static void *_eina_list_find(Eina_List *list, Eina_Compare_Cb function,
                               const void *user_data);
 
 /* Sorting functions */
-static Edata_List_Node *_edata_list_node_mergesort(Edata_List_Node *first,
-                                  int n, Edata_Compare_Cb compare, int order);
-static Edata_List_Node *_edata_list_node_merge(Edata_List_Node *first, 
-                                               Edata_List_Node *second,
-                                               Edata_Compare_Cb compare,
+static Eina_List_Node *_eina_list_node_mergesort(Eina_List_Node *first,
+                                  int n, Eina_Compare_Cb compare, int order);
+static Eina_List_Node *_eina_list_node_merge(Eina_List_Node *first, 
+                                               Eina_List_Node *second,
+                                               Eina_Compare_Cb compare,
                                                int order);
-static Edata_List_Node *_edata_dlist_node_mergesort(Edata_List_Node *first,
-                                  int n, Edata_Compare_Cb compare, int order);
-static Edata_List_Node *_edata_dlist_node_merge(Edata_List_Node *first, 
-                                               Edata_List_Node *second,
-                                               Edata_Compare_Cb compare,
+static Eina_List_Node *_eina_dlist_node_mergesort(Eina_List_Node *first,
+                                  int n, Eina_Compare_Cb compare, int order);
+static Eina_List_Node *_eina_dlist_node_merge(Eina_List_Node *first, 
+                                               Eina_List_Node *second,
+                                               Eina_Compare_Cb compare,
                                                int order);
 
 /* Private double linked list functions */
-static void *_edata_dlist_previous(Edata_DList * list);
-static void *_edata_dlist_first_remove(Edata_DList *list);
-static void *_edata_dlist_index_goto(Edata_DList *list, int index);
+static void *_eina_dlist_previous(Eina_DList * list);
+static void *_eina_dlist_first_remove(Eina_DList *list);
+static void *_eina_dlist_index_goto(Eina_DList *list, int index);
 
 /* XXX: Begin deprecated code */
 EAPI void *
-_edata_list2_append(void *in_list, void *in_item)
+_eina_list2_append(void *in_list, void *in_item)
 {
-   Edata_List2 *l, *new_l;
-   Edata_List2 *list, *item;
+   Eina_List2 *l, *new_l;
+   Eina_List2 *list, *item;
 
    list = in_list;
    item = in_item;
@@ -77,10 +77,10 @@ _edata_list2_append(void *in_list, void *in_item)
 }
 
 EAPI void *
-_edata_list2_prepend(void *in_list, void *in_item)
+_eina_list2_prepend(void *in_list, void *in_item)
 {
-   Edata_List2 *new_l;
-   Edata_List2 *list, *item;
+   Eina_List2 *new_l;
+   Eina_List2 *list, *item;
 
    list = in_list;
    item = in_item;
@@ -100,10 +100,10 @@ _edata_list2_prepend(void *in_list, void *in_item)
 }
 
 EAPI void *
-_edata_list2_append_relative(void *in_list, void *in_item, void *in_relative)
+_eina_list2_append_relative(void *in_list, void *in_item, void *in_relative)
 {
-   Edata_List2 *l;
-   Edata_List2 *list, *item, *relative;
+   Eina_List2 *l;
+   Eina_List2 *list, *item, *relative;
 
    list = in_list;
    item = in_item;
@@ -112,7 +112,7 @@ _edata_list2_append_relative(void *in_list, void *in_item, void *in_relative)
      {
 	if (l == relative)
 	  {
-	     Edata_List2 *new_l;
+	     Eina_List2 *new_l;
 
 	     new_l = item;
 	     if (l->next)
@@ -129,14 +129,14 @@ _edata_list2_append_relative(void *in_list, void *in_item, void *in_relative)
 	     return list;
 	  }
      }
-   return _edata_list2_append(list, item);
+   return _eina_list2_append(list, item);
 }
 
 EAPI void *
-_edata_list2_prepend_relative(void *in_list, void *in_item, void *in_relative)
+_eina_list2_prepend_relative(void *in_list, void *in_item, void *in_relative)
 {
-   Edata_List2 *l;
-   Edata_List2 *list, *item, *relative;
+   Eina_List2 *l;
+   Eina_List2 *list, *item, *relative;
 
    list = in_list;
    item = in_item;
@@ -145,7 +145,7 @@ _edata_list2_prepend_relative(void *in_list, void *in_item, void *in_relative)
      {
 	if (l == relative)
 	  {
-	     Edata_List2 *new_l;
+	     Eina_List2 *new_l;
 
 	     new_l = item;
 	     new_l->prev = l->prev;
@@ -171,14 +171,14 @@ _edata_list2_prepend_relative(void *in_list, void *in_item, void *in_relative)
 	       }
 	  }
      }
-   return _edata_list2_prepend(list, item);
+   return _eina_list2_prepend(list, item);
 }
 
 EAPI void *
-_edata_list2_remove(void *in_list, void *in_item)
+_eina_list2_remove(void *in_list, void *in_item)
 {
-   Edata_List2 *return_l;
-   Edata_List2 *list, *item;
+   Eina_List2 *return_l;
+   Eina_List2 *list, *item;
 
    /* checkme */
    if(!in_list)
@@ -208,10 +208,10 @@ _edata_list2_remove(void *in_list, void *in_item)
 }
 
 EAPI void *
-_edata_list2_find(void *in_list, void *in_item)
+_eina_list2_find(void *in_list, void *in_item)
 {
-   Edata_List2 *l;
-   Edata_List2 *list, *item;
+   Eina_List2 *l;
+   Eina_List2 *list, *item;
 
    list = in_list;
    item = in_item;
@@ -224,26 +224,26 @@ _edata_list2_find(void *in_list, void *in_item)
 /* XXX: End deprecated code */
 
 /**
-@defgroup Edata_Data_List_Creation_Group List Creation/Destruction Functions
+@defgroup Eina_Data_List_Creation_Group List Creation/Destruction Functions
 
-Functions that create, initialize and destroy Edata_Lists.
+Functions that create, initialize and destroy Eina_Lists.
 */
 
 /**
  * Create and initialize a new list.
  * @return  A new initialized list on success, @c NULL on failure.
- * @ingroup Edata_Data_List_Creation_Group
+ * @ingroup Eina_Data_List_Creation_Group
  */
-EAPI Edata_List *
-edata_list_new()
+EAPI Eina_List *
+eina_list_new()
 {
-   Edata_List *list;
+   Eina_List *list;
 
-   list = (Edata_List *)malloc(sizeof(Edata_List));
+   list = (Eina_List *)malloc(sizeof(Eina_List));
    if (!list)
      return NULL;
 
-   if (!edata_list_init(list))
+   if (!eina_list_init(list))
      {
 	FREE(list);
 	return NULL;
@@ -256,14 +256,14 @@ edata_list_new()
  * Initialize a list to some sane starting values.
  * @param   list The list to initialize.
  * @return  @c TRUE if successful, @c FALSE if an error occurs.
- * @ingroup Edata_Data_List_Creation_Group
+ * @ingroup Eina_Data_List_Creation_Group
  */
 EAPI int 
-edata_list_init(Edata_List *list)
+eina_list_init(Eina_List *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   memset(list, 0, sizeof(Edata_List));
+   memset(list, 0, sizeof(Eina_List));
 
    return TRUE;
 }
@@ -271,10 +271,10 @@ edata_list_init(Edata_List *list)
 /**
  * Free a list and all of it's nodes.
  * @param   list The list to be freed.
- * @ingroup Edata_Data_List_Creation_Group
+ * @ingroup Eina_Data_List_Creation_Group
  */
 EAPI void 
-edata_list_destroy(Edata_List *list)
+eina_list_destroy(Eina_List *list)
 {
    void *data;
 
@@ -282,7 +282,7 @@ edata_list_destroy(Edata_List *list)
 
    while (list->first)
      {
-	data = _edata_list_first_remove(list);
+	data = _eina_list_first_remove(list);
 	if (list->free_func)
 	  list->free_func(data);
      }
@@ -298,7 +298,7 @@ edata_list_destroy(Edata_List *list)
  * @return @c TRUE on successful set, @c FALSE otherwise.
  */
 EAPI int 
-edata_list_free_cb_set(Edata_List *list, Edata_Free_Cb free_func)
+eina_list_free_cb_set(Eina_List *list, Eina_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
@@ -313,7 +313,7 @@ edata_list_free_cb_set(Edata_List *list, Edata_Free_Cb free_func)
  * @return @c TRUE if no nodes in list, @c FALSE if the list contains nodes
  */
 EAPI int 
-edata_list_empty_is(Edata_List *list)
+eina_list_empty_is(Eina_List *list)
 {
    int ret = TRUE;
 
@@ -331,7 +331,7 @@ edata_list_empty_is(Edata_List *list)
  * @return The number of the current node in the list.
  */
 EAPI int 
-edata_list_index(Edata_List *list)
+eina_list_index(Eina_List *list)
 {
    int ret;
 
@@ -348,7 +348,7 @@ edata_list_index(Edata_List *list)
  * @return The number of nodes in the list.
  */
 EAPI int 
-edata_list_count(Edata_List *list)
+eina_list_count(Eina_List *list)
 {
    int ret = 0;
 
@@ -360,9 +360,9 @@ edata_list_count(Edata_List *list)
 }
 
 /**
-@defgroup Edata_Data_List_Add_Item_Group List Item Adding Functions
+@defgroup Eina_Data_List_Add_Item_Group List Item Adding Functions
 
-Functions that are used to add nodes to an Edata_List.
+Functions that are used to add nodes to an Eina_List.
 */
 
 /**
@@ -370,27 +370,27 @@ Functions that are used to add nodes to an Edata_List.
  * @param   list The list.
  * @param   data The data to append.
  * @return  @c FALSE if an error occurs, @c TRUE if appended successfully
- * @ingroup Edata_Data_List_Add_Item_Group
+ * @ingroup Eina_Data_List_Add_Item_Group
  */
 EAPI inline int 
-edata_list_append(Edata_List *list, void *data)
+eina_list_append(Eina_List *list, void *data)
 {
    int ret;
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   node = edata_list_node_new();
+   node = eina_list_node_new();
    node->data = data;
 
-   ret = _edata_list_append_0(list, node);
+   ret = _eina_list_append_0(list, node);
 
    return ret;
 }
 
 /* For adding items to the end of the list */
 static int 
-_edata_list_append_0(Edata_List *list, Edata_List_Node *end)
+_eina_list_append_0(Eina_List *list, Eina_List_Node *end)
 {
    if (list->last)
      list->last->next = end;
@@ -417,27 +417,27 @@ _edata_list_append_0(Edata_List *list, Edata_List_Node *end)
  * @param  list The list.
  * @param  data The data to prepend.
  * @return @c FALSE if an error occurs, @c TRUE if prepended successfully.
- * @ingroup Edata_Data_List_Add_Item_Group
+ * @ingroup Eina_Data_List_Add_Item_Group
  */
 EAPI inline int 
-edata_list_prepend(Edata_List *list, void *data)
+eina_list_prepend(Eina_List *list, void *data)
 {
    int ret;
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   node = edata_list_node_new();
+   node = eina_list_node_new();
    node->data = data;
 
-   ret = _edata_list_prepend_0(list, node);
+   ret = _eina_list_prepend_0(list, node);
 
    return ret;
 }
 
 /* For adding items to the beginning of the list */
 static int 
-_edata_list_prepend_0(Edata_List *list, Edata_List_Node *start)
+_eina_list_prepend_0(Eina_List *list, Eina_List_Node *start)
 {
    /* Put it at the beginning of the list */
    start->next = list->first;
@@ -459,40 +459,40 @@ _edata_list_prepend_0(Edata_List *list, Edata_List_Node *start)
  * @param   list The list to hold the inserted @p data.
  * @param   data The data to insert into @p list.
  * @return  @c FALSE if there is an error, @c TRUE on success
- * @ingroup Edata_Data_List_Add_Item_Group
+ * @ingroup Eina_Data_List_Add_Item_Group
  */
 EAPI inline int 
-edata_list_insert(Edata_List *list, void *data)
+eina_list_insert(Eina_List *list, void *data)
 {
    int ret;
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   node = edata_list_node_new();
+   node = eina_list_node_new();
    node->data = data;
 
-   ret = _edata_list_insert(list, node);
+   ret = _eina_list_insert(list, node);
 
    return ret;
 }
 
 /* For adding items in front of the current position in the list */
 static int 
-_edata_list_insert(Edata_List *list, Edata_List_Node *new_node)
+_eina_list_insert(Eina_List *list, Eina_List_Node *new_node)
 {
    /*
     * If the current point is at the beginning of the list, then it's the
     * same as prepending it to the list.
     */
    if (list->current == list->first)
-     return _edata_list_prepend_0(list, new_node);
+     return _eina_list_prepend_0(list, new_node);
 
    if (list->current == NULL)
      {
 	int ret_value;
 
-	ret_value = _edata_list_append_0(list, new_node);
+	ret_value = _eina_list_append_0(list, new_node);
 	list->current = list->last;
 
 	return ret_value;
@@ -502,7 +502,7 @@ _edata_list_insert(Edata_List *list, Edata_List_Node *new_node)
    new_node->next = list->current;
 
    /* And hook the node into the list */
-   _edata_list_index_goto(list, edata_list_index(list) - 1);
+   _eina_list_index_goto(list, eina_list_index(list) - 1);
 
    list->current->next = new_node;
 
@@ -517,18 +517,18 @@ _edata_list_insert(Edata_List *list, Edata_List_Node *new_node)
  * @param   list The list.
  * @param   append The list to append.
  * @return  @c FALSE if an error occurs, @c TRUE if appended successfully
- * @ingroup Edata_Data_List_Add_Item_Group
+ * @ingroup Eina_Data_List_Add_Item_Group
  */
 
 EAPI int 
-edata_list_append_list(Edata_List *list, Edata_List *append)
+eina_list_append_list(Eina_List *list, Eina_List *append)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
    CHECK_PARAM_POINTER_RETURN("append", append, FALSE);
 
-   if (edata_list_empty_is(append)) return TRUE;
+   if (eina_list_empty_is(append)) return TRUE;
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      {
 	list->first = append->first;
 	list->current = NULL;
@@ -541,7 +541,7 @@ edata_list_append_list(Edata_List *list, Edata_List *append)
 	list->last = append->last;
 	list->nodes += append->nodes;
      }
-   edata_list_init(append);
+   eina_list_init(append);
    return TRUE;
 }
 
@@ -550,17 +550,17 @@ edata_list_append_list(Edata_List *list, Edata_List *append)
  * @param  list The list.
  * @param  prepend The list to prepend.
  * @return @c FALSE if an error occurs, @c TRUE if prepended successfully.
- * @ingroup Edata_Data_List_Add_Item_Group
+ * @ingroup Eina_Data_List_Add_Item_Group
  */
 EAPI int 
-edata_list_prepend_list(Edata_List *list, Edata_List *prepend)
+eina_list_prepend_list(Eina_List *list, Eina_List *prepend)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
    CHECK_PARAM_POINTER_RETURN("prepend", prepend, FALSE);
 
-   if (edata_list_empty_is(prepend)) return TRUE;
+   if (eina_list_empty_is(prepend)) return TRUE;
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      {
 	list->first = prepend->first;
 	list->current = NULL;
@@ -574,68 +574,68 @@ edata_list_prepend_list(Edata_List *list, Edata_List *prepend)
 	list->nodes += prepend->nodes;
 	list->index += prepend->nodes;
      }
-   edata_list_init(prepend);
+   eina_list_init(prepend);
    return TRUE;
 }
 
 /**
-@defgroup Edata_Data_List_Remove_Item_Group List Item Removing Functions
+@defgroup Eina_Data_List_Remove_Item_Group List Item Removing Functions
 
-Functions that remove nodes from an Edata_List.
+Functions that remove nodes from an Eina_List.
 */
 
 /**
  * Remove the current item from the list.
  * @param   list The list to remove the current item
  * @return  A pointer to the removed data on success, @c NULL on failure.
- * @ingroup Edata_Data_List_Remove_Item_Group
+ * @ingroup Eina_Data_List_Remove_Item_Group
  */
 EAPI inline void *
-edata_list_remove(Edata_List *list)
+eina_list_remove(Eina_List *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_remove_0(list);
+   ret = _eina_list_remove_0(list);
 
    return ret;
 }
 
 /* Remove the current item from the list */
 static void *
-_edata_list_remove_0(Edata_List *list)
+_eina_list_remove_0(Eina_List *list)
 {
    void *ret = NULL;
-   Edata_List_Node *old;
+   Eina_List_Node *old;
 
    if (!list)
      return NULL;
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      return NULL;
 
    if (!list->current)
      return NULL;
 
    if (list->current == list->first)
-     return _edata_list_first_remove(list);
+     return _eina_list_first_remove(list);
 
    if (list->current == list->last)
-     return _edata_list_last_remove(list);
+     return _eina_list_last_remove(list);
 
    old = list->current;
 
-   _edata_list_index_goto(list, list->index - 1);
+   _eina_list_index_goto(list, list->index - 1);
 
    list->current->next = old->next;
    old->next = NULL;
    ret = old->data;
    old->data = NULL;
 
-   _edata_list_next(list);
+   _eina_list_next(list);
 
-   edata_list_node_destroy(old, NULL);
+   eina_list_node_destroy(old, NULL);
    list->nodes--;
 
    return ret;
@@ -645,16 +645,16 @@ _edata_list_remove_0(Edata_List *list)
  * Remove and free the data in lists current position.
  * @param   list The list to remove and free the current item.
  * @return  @c TRUE on success, @c FALSE on error
- * @ingroup Edata_Data_List_Remove_Item_Group
+ * @ingroup Eina_Data_List_Remove_Item_Group
  */
 EAPI int 
-edata_list_remove_destroy(Edata_List *list)
+eina_list_remove_destroy(Eina_List *list)
 {
    void *data;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   data = _edata_list_remove_0(list);
+   data = _eina_list_remove_0(list);
    if (list->free_func)
      list->free_func(data);
 
@@ -666,31 +666,31 @@ edata_list_remove_destroy(Edata_List *list)
  * @param   list The list to remove the current item
  * @return  Returns a pointer to the removed data on success, @c NULL on
  *          failure.
- * @ingroup Edata_Data_List_Remove_Item_Group
+ * @ingroup Eina_Data_List_Remove_Item_Group
  */
 EAPI inline void *
-edata_list_first_remove(Edata_List *list)
+eina_list_first_remove(Eina_List *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_first_remove(list);
+   ret = _eina_list_first_remove(list);
 
    return ret;
 }
 
 /* Remove the first item from the list */
 static void *
-_edata_list_first_remove(Edata_List *list)
+_eina_list_first_remove(Eina_List *list)
 {
    void *ret = NULL;
-   Edata_List_Node *old;
+   Eina_List_Node *old;
 
    if (!list)
      return NULL;
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      return NULL;
 
    old = list->first;
@@ -708,7 +708,7 @@ _edata_list_first_remove(Edata_List *list)
    ret = old->data;
    old->data = NULL;
 
-   edata_list_node_destroy(old, NULL);
+   eina_list_node_destroy(old, NULL);
    list->nodes--;
 
    return ret;
@@ -718,31 +718,31 @@ _edata_list_first_remove(Edata_List *list)
  * Remove the last item from the list.
  * @param   list The list to remove the last node from
  * @return  A pointer to the removed data on success, @c NULL on failure.
- * @ingroup Edata_Data_List_Remove_Item_Group
+ * @ingroup Eina_Data_List_Remove_Item_Group
  */
 EAPI inline void *
-edata_list_last_remove(Edata_List *list)
+eina_list_last_remove(Eina_List *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_last_remove(list);
+   ret = _eina_list_last_remove(list);
 
    return ret;
 }
 
 /* Remove the last item from the list */
 static void *
-_edata_list_last_remove(Edata_List *list)
+_eina_list_last_remove(Eina_List *list)
 {
    void *ret = NULL;
-   Edata_List_Node *old, *prev;
+   Eina_List_Node *old, *prev;
 
    if (!list)
      return NULL;
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      return NULL;
 
    old = list->last;
@@ -760,16 +760,16 @@ _edata_list_last_remove(Edata_List *list)
    ret = old->data;
    old->data = NULL;
 
-   edata_list_node_destroy(old, NULL);
+   eina_list_node_destroy(old, NULL);
    list->nodes--;
 
    return ret;
 }
 
 /**
-@defgroup Edata_Data_List_Traverse_Group List Traversal Functions
+@defgroup Eina_Data_List_Traverse_Group List Traversal Functions
 
-Functions that can be used to traverse an Edata_List.
+Functions that can be used to traverse an Eina_List.
 */
 
 /**
@@ -777,16 +777,16 @@ Functions that can be used to traverse an Edata_List.
  * @param   list  The list.
  * @param   index The position to move the current item.
  * @return  A pointer to new current item on success, @c NULL on failure.
- * @ingroup Edata_Data_List_Traverse_Group
+ * @ingroup Eina_Data_List_Traverse_Group
  */
 EAPI inline void *
-edata_list_index_goto(Edata_List *list, int index)
+eina_list_index_goto(Eina_List *list, int index)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_index_goto(list, index);
+   ret = _eina_list_index_goto(list, index);
 
    return ret;
 }
@@ -794,28 +794,28 @@ edata_list_index_goto(Edata_List *list, int index)
 /* This is the non-threadsafe version, use this inside internal functions that
  * already lock the list */
 static void *
-_edata_list_index_goto(Edata_List *list, int index)
+_eina_list_index_goto(Eina_List *list, int index)
 {
    int i;
 
    if (!list)
      return NULL;
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      return NULL;
 
-   if (index > edata_list_count(list) || index < 0)
+   if (index > eina_list_count(list) || index < 0)
      return NULL;
 
    if (index < list->index) 
      {
-	_edata_list_first_goto(list);
+	_eina_list_first_goto(list);
 	i = 0;
      }
    else
      i = list->index;
 
-   for (; i < index && _edata_list_next(list); i++);
+   for (; i < index && _eina_list_next(list); i++);
 
    if (i >= list->nodes)
      return NULL;
@@ -830,26 +830,26 @@ _edata_list_index_goto(Edata_List *list, int index)
  * @param   list The list.
  * @param   data The data to find.
  * @return  A pointer to @p data on success, @c NULL on failure.
- * @ingroup Edata_Data_List_Traverse_Group
+ * @ingroup Eina_Data_List_Traverse_Group
  */
 EAPI inline void *
-edata_list_goto(Edata_List *list, const void *data)
+eina_list_goto(Eina_List *list, const void *data)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_goto(list, data);
+   ret = _eina_list_goto(list, data);
 
    return ret;
 }
 
 /* Set the current position to the node containing data */
 static void *
-_edata_list_goto(Edata_List *list, const void *data)
+_eina_list_goto(Eina_List *list, const void *data)
 {
    int index;
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    if (!list)
      return NULL;
@@ -859,7 +859,7 @@ _edata_list_goto(Edata_List *list, const void *data)
    node = list->first;
    while (node && node->data)
      {
-	Edata_List_Node *next;
+	Eina_List_Node *next;
 
 	if (node->data == data)
 	  break;
@@ -884,23 +884,23 @@ _edata_list_goto(Edata_List *list, const void *data)
  * Make the current item the first item in the list
  * @param   list The list.
  * @return  A pointer to the first item on success, @c NULL on failure
- * @ingroup Edata_Data_List_Traverse_Group
+ * @ingroup Eina_Data_List_Traverse_Group
  */
 EAPI inline void *
-edata_list_first_goto(Edata_List *list)
+eina_list_first_goto(Eina_List *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_first_goto(list);
+   ret = _eina_list_first_goto(list);
 
    return ret;
 }
 
 /* Set the current position to the start of the list */
 static void *
-_edata_list_first_goto(Edata_List *list)
+_eina_list_first_goto(Eina_List *list)
 {
    if (!list || !list->first)
      return NULL;
@@ -915,23 +915,23 @@ _edata_list_first_goto(Edata_List *list)
  * Make the current item the last item in the list.
  * @param   list The list.
  * @return  A pointer to the last item on success, @c NULL on failure.
- * @ingroup Edata_Data_List_Traverse_Group
+ * @ingroup Eina_Data_List_Traverse_Group
  */
 EAPI inline void *
-edata_list_last_goto(Edata_List *list)
+eina_list_last_goto(Eina_List *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_last_goto(list);
+   ret = _eina_list_last_goto(list);
 
    return ret;
 }
 
 /* Set the current position to the end of the list */
 static void *
-_edata_list_last_goto(Edata_List *list)
+_eina_list_last_goto(Eina_List *list)
 {
    if (!list || !list->last)
      return NULL;
@@ -948,11 +948,11 @@ _edata_list_last_goto(Edata_List *list)
  * @return Returns the data at current position, can be @c NULL.
  */
 EAPI inline void *
-edata_list_current(Edata_List *list)
+eina_list_current(Eina_List *list)
 {
    void *ret;
 
-   ret = _edata_list_current(list);
+   ret = _eina_list_current(list);
 
    return ret;
 }
@@ -963,7 +963,7 @@ edata_list_current(Edata_List *list)
  * @return Returns the data at current position, can be @c NULL.
  */
 EAPI inline void *
-edata_list_first(Edata_List *list)
+eina_list_first(Eina_List *list)
 {
    void *ret;
 
@@ -980,7 +980,7 @@ edata_list_first(Edata_List *list)
  * @return Returns the data at current position, can be @c NULL.
  */
 EAPI inline void *
-edata_list_last(Edata_List *list)
+eina_list_last(Eina_List *list)
 {
    void *ret;
 
@@ -993,7 +993,7 @@ edata_list_last(Edata_List *list)
 
 /* Return the data of the current node without incrementing */
 static void *
-_edata_list_current(Edata_List *list)
+_eina_list_current(Eina_List *list)
 {
    void *ret;
 
@@ -1012,24 +1012,24 @@ _edata_list_current(Edata_List *list)
  * @return  The current item in the list on success, @c NULL on failure.
  */
 EAPI inline void *
-edata_list_next(Edata_List *list)
+eina_list_next(Eina_List *list)
 {
    void *data;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   data = _edata_list_next(list);
+   data = _eina_list_next(list);
 
    return data;
 }
 
 /* Return the data contained in the current node and go to the next node */
 static void *
-_edata_list_next(Edata_List *list)
+_eina_list_next(Eina_List *list)
 {
    void *data;
-   Edata_List_Node *ret;
-   Edata_List_Node *next;
+   Eina_List_Node *ret;
+   Eina_List_Node *next;
 
    if (!list->current)
      return NULL;
@@ -1050,15 +1050,15 @@ _edata_list_next(Edata_List *list)
  * @param  list The list.
  * @return Returns @c TRUE on success, @c FALSE on error.
  * @note The data for each item on the list is not freed by
- *       @c edata_list_clear().
+ *       @c eina_list_clear().
  */
 EAPI int 
-edata_list_clear(Edata_List *list)
+eina_list_clear(Eina_List *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   while (!edata_list_empty_is(list))
-     _edata_list_first_remove(list);
+   while (!eina_list_empty_is(list))
+     _eina_list_first_remove(list);
 
    return TRUE;
 }
@@ -1068,31 +1068,31 @@ edata_list_clear(Edata_List *list)
  * @param   list     The list.
  * @param   function The function to pass each node from @p list to.
  * @return  Returns @c TRUE on success, @c FALSE on failure.
- * @ingroup Edata_Data_List_Traverse_Group
+ * @ingroup Eina_Data_List_Traverse_Group
  */
 EAPI int 
-edata_list_for_each(Edata_List *list, Edata_For_Each function, void *user_data)
+eina_list_for_each(Eina_List *list, Eina_For_Each function, void *user_data)
 {
    int ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   ret = _edata_list_for_each(list, function, user_data);
+   ret = _eina_list_for_each(list, function, user_data);
 
    return ret;
 }
 
 /* The real meat of executing the function for each data node */
 static int 
-_edata_list_for_each(Edata_List *list, Edata_For_Each function, void *user_data)
+_eina_list_for_each(Eina_List *list, Eina_For_Each function, void *user_data)
 {
    void *value;
 
    if (!list || !function)
      return FALSE;
 
-   _edata_list_first_goto(list);
-   while ((value = _edata_list_next(list)) != NULL)
+   _eina_list_first_goto(list);
+   while ((value = _eina_list_next(list)) != NULL)
      function(value, user_data);
 
    return TRUE;
@@ -1106,25 +1106,25 @@ _edata_list_for_each(Edata_List *list, Edata_For_Each function, void *user_data)
  * @return the first matching data node, or NULL if none match
  */
 EAPI void *
-edata_list_find(Edata_List *list, Edata_Compare_Cb function, const void *user_data)
+eina_list_find(Eina_List *list, Eina_Compare_Cb function, const void *user_data)
 {
   CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-  return _edata_list_find(list, function, user_data);
+  return _eina_list_find(list, function, user_data);
 }
 
 /* The real meat of finding a node via a compare cb */
 static void *
-_edata_list_find(Edata_List *list, Edata_Compare_Cb function, const void *user_data)
+_eina_list_find(Eina_List *list, Eina_Compare_Cb function, const void *user_data)
 {
   void *value;
   if (!list || !function) return NULL;
 
-  _edata_list_first_goto(list);
-  while ((value = _edata_list_current(list)) != NULL)
+  _eina_list_first_goto(list);
+  while ((value = _eina_list_current(list)) != NULL)
   {
     if (!function(value, user_data)) return value;
-    edata_list_next(list);
+    eina_list_next(list);
   }
 
   return NULL;
@@ -1143,16 +1143,16 @@ _edata_list_find(Edata_List *list, Edata_Compare_Cb function, const void *user_d
  * number of notes. Note: The sort may be unstable.
  */
 EAPI int
-edata_list_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
+eina_list_sort(Eina_List *list, Eina_Compare_Cb compare, char order)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, 0);
    
    if (list->nodes < 2)
      return 1;
    if (list->nodes < EDATA_MERGESORT_LIMIT)
-     return edata_list_mergesort(list, compare, order);
-   if (!edata_list_heapsort(list, compare, order))
-     return edata_list_mergesort(list, compare, order);
+     return eina_list_mergesort(list, compare, order);
+   if (!eina_list_heapsort(list, compare, order))
+     return eina_list_mergesort(list, compare, order);
   
    return 1;
 }
@@ -1168,9 +1168,9 @@ edata_list_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
  * Mergesort is a stable, in-place sorting algorithm 
  */
 EAPI int
-edata_list_mergesort(Edata_List *list, Edata_Compare_Cb compare, char order)
+eina_list_mergesort(Eina_List *list, Eina_Compare_Cb compare, char order)
 {
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, 0);
    if (list->nodes < 2)
@@ -1181,7 +1181,7 @@ edata_list_mergesort(Edata_List *list, Edata_Compare_Cb compare, char order)
    else
      order = -1;
 
-   node = _edata_list_node_mergesort(list->first, list->nodes, compare, order);
+   node = _eina_list_node_mergesort(list->first, list->nodes, compare, order);
    list->first = node;
 
    /* maybe there is a better way to do that but our last node has changed */
@@ -1189,18 +1189,18 @@ edata_list_mergesort(Edata_List *list, Edata_Compare_Cb compare, char order)
      node = node->next;
    list->last = node;
 
-   _edata_list_first_goto(list);
+   _eina_list_first_goto(list);
 
    return 1;
 }
 
 /* this is the internal recrusive function for the merge sort */
-static Edata_List_Node *
-_edata_list_node_mergesort(Edata_List_Node *first, int n,
-                           Edata_Compare_Cb compare, int order)
+static Eina_List_Node *
+_eina_list_node_mergesort(Eina_List_Node *first, int n,
+                           Eina_Compare_Cb compare, int order)
 {
-   Edata_List_Node *middle;
-   Edata_List_Node *premid;
+   Eina_List_Node *middle;
+   Eina_List_Node *premid;
    int mid;
    int i;
 
@@ -1230,19 +1230,19 @@ _edata_list_node_mergesort(Edata_List_Node *first, int n,
    premid->next = NULL;
 
    /* sort the the partial lists */
-   first = _edata_list_node_mergesort(first, mid, compare, order);
-   middle = _edata_list_node_mergesort(middle, n - mid, compare, order);
+   first = _eina_list_node_mergesort(first, mid, compare, order);
+   middle = _eina_list_node_mergesort(middle, n - mid, compare, order);
 
-   return _edata_list_node_merge(first, middle, compare, order);
+   return _eina_list_node_merge(first, middle, compare, order);
 }
 
 /* this function is used to merge the partial sorted lists */
-static Edata_List_Node *
-_edata_list_node_merge(Edata_List_Node *first, Edata_List_Node *second,
-                       Edata_Compare_Cb compare, int order)
+static Eina_List_Node *
+_eina_list_node_merge(Eina_List_Node *first, Eina_List_Node *second,
+                       Eina_Compare_Cb compare, int order)
 {
-   Edata_List_Node *list;
-   Edata_List_Node *l;
+   Eina_List_Node *list;
+   Eina_List_Node *l;
 
    /* select the first node outside the loop, because we need to keep
     * a pointer to it */
@@ -1295,25 +1295,25 @@ _edata_list_node_merge(Edata_List_Node *first, Edata_List_Node *second,
  * but there for it is for a great number of nodes faster than mergesort
  */
 EAPI int
-edata_list_heapsort(Edata_List *list, Edata_Compare_Cb compare, char order)
+eina_list_heapsort(Eina_List *list, Eina_Compare_Cb compare, char order)
 {
-   Edata_Sheap *heap;
-   Edata_List_Node *node;
+   Eina_Sheap *heap;
+   Eina_List_Node *node;
    void *data;
 
    CHECK_PARAM_POINTER_RETURN("list", list, 0);
    /*
     * Push the data into a heap.
     */
-   heap = edata_sheap_new(compare, list->nodes);
+   heap = eina_sheap_new(compare, list->nodes);
    if (!heap)
      return 0;
 
-   edata_sheap_order_set(heap, order);
-   _edata_list_first_goto(list);
-   while ((data = _edata_list_next(list)))
+   eina_sheap_order_set(heap, order);
+   _eina_list_first_goto(list);
+   while ((data = _eina_list_next(list)))
      {
-	edata_sheap_insert(heap, data);
+	eina_sheap_insert(heap, data);
      }
 
    /*
@@ -1322,19 +1322,19 @@ edata_list_heapsort(Edata_List *list, Edata_Compare_Cb compare, char order)
    node = list->first;
    while (node)
      {
-	node->data = edata_sheap_extract(heap);
+	node->data = eina_sheap_extract(heap);
 	node = node->next;
      }
 
-   edata_sheap_destroy(heap);
+   eina_sheap_destroy(heap);
 
-   _edata_list_first_goto(list);
+   _eina_list_first_goto(list);
    return 1;
 }
 
 /* Initialize a node to starting values */
 EAPI int 
-edata_list_node_init(Edata_List_Node *node)
+eina_list_node_init(Eina_List_Node *node)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -1345,25 +1345,25 @@ edata_list_node_init(Edata_List_Node *node)
 }
 
 /**
-@defgroup Edata_Data_List_Node_Group List Node Functions
+@defgroup Eina_Data_List_Node_Group List Node Functions
 
 Functions that are used in the creation, maintenance and destruction of
-Edata_List nodes.
+Eina_List nodes.
 */
 
 /**
  * Allocates and initializes a new list node.
- * @return  A new Edata_List_Node on success, @c NULL otherwise.
- * @ingroup Edata_Data_List_Node_Group
+ * @return  A new Eina_List_Node on success, @c NULL otherwise.
+ * @ingroup Eina_Data_List_Node_Group
  */
-EAPI Edata_List_Node *
-edata_list_node_new()
+EAPI Eina_List_Node *
+eina_list_node_new()
 {
-   Edata_List_Node *new_node;
+   Eina_List_Node *new_node;
 
-   new_node = malloc(sizeof(Edata_List_Node));
+   new_node = malloc(sizeof(Eina_List_Node));
 
-   if (!edata_list_node_init(new_node))
+   if (!eina_list_node_init(new_node))
      {
 	FREE(new_node);
 	return NULL;
@@ -1377,10 +1377,10 @@ edata_list_node_new()
  * @param   node      Node to destroy.
  * @param   free_func Function to call if @p node points to data to free.
  * @return  @c TRUE.
- * @ingroup Edata_Data_List_Node_Group
+ * @ingroup Eina_Data_List_Node_Group
  */
 EAPI int 
-edata_list_node_destroy(Edata_List_Node *node, Edata_Free_Cb free_func)
+eina_list_node_destroy(Eina_List_Node *node, Eina_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -1393,27 +1393,27 @@ edata_list_node_destroy(Edata_List_Node *node, Edata_Free_Cb free_func)
 }
 
 /**
- * @defgroup Edata_Data_DList_Creation_Group Doubly Linked List Creation/Destruction Functions
+ * @defgroup Eina_Data_DList_Creation_Group Doubly Linked List Creation/Destruction Functions
  *
- * Functions used to create, initialize and destroy @c Edata_DLists.
+ * Functions used to create, initialize and destroy @c Eina_DLists.
  */
 
 /**
  * Creates and initialises a new doubly linked list.
  * @return  A new initialised doubly linked list on success, @c NULL
  *          on failure.
- * @ingroup Edata_Data_DList_Creation_Group
+ * @ingroup Eina_Data_DList_Creation_Group
  */
-EAPI Edata_DList *
-edata_dlist_new()
+EAPI Eina_DList *
+eina_dlist_new()
 {
-   Edata_DList *list = NULL;
+   Eina_DList *list = NULL;
 
-   list = (Edata_DList *)malloc(sizeof(Edata_DList));
+   list = (Eina_DList *)malloc(sizeof(Eina_DList));
    if (!list)
      return NULL;
 
-   if (!edata_dlist_init(list))
+   if (!eina_dlist_init(list))
      {
 	IF_FREE(list);
 	return NULL;
@@ -1426,14 +1426,14 @@ edata_dlist_new()
  * Initialises a list to some sane starting values.
  * @param   list The doubly linked list to initialise.
  * @return  @c TRUE if successful, @c FALSE if an error occurs.
- * @ingroup Edata_Data_DList_Creation_Group
+ * @ingroup Eina_Data_DList_Creation_Group
  */
 EAPI int 
-edata_dlist_init(Edata_DList *list)
+eina_dlist_init(Eina_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   memset(list, 0, sizeof(Edata_DList));
+   memset(list, 0, sizeof(Eina_DList));
 
    return TRUE;
 }
@@ -1441,17 +1441,17 @@ edata_dlist_init(Edata_DList *list)
 /**
  * Frees a doubly linked list and all of its nodes.
  * @param   list The doubly linked list to be freed.
- * @ingroup Edata_Data_DList_Creation_Group
+ * @ingroup Eina_Data_DList_Creation_Group
  */
 EAPI void 
-edata_dlist_destroy(Edata_DList *list)
+eina_dlist_destroy(Eina_DList *list)
 {
    void *data;
    CHECK_PARAM_POINTER("list", list);
 
    while (list->first)
      {
-	data = _edata_dlist_first_remove(list);
+	data = _eina_dlist_first_remove(list);
 	if (list->free_func)
 	  list->free_func(data);
      }
@@ -1465,14 +1465,14 @@ edata_dlist_destroy(Edata_DList *list)
  *                    nodes are destroyed.
  * @param   free_func The function that will free the key data
  * @return  @c TRUE on success, @c FALSE on failure.
- * @ingroup Edata_Data_DList_Creation_Group
+ * @ingroup Eina_Data_DList_Creation_Group
  */
 EAPI int 
-edata_dlist_free_cb_set(Edata_DList *list, Edata_Free_Cb free_func)
+eina_dlist_free_cb_set(Eina_DList *list, Eina_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   return edata_list_free_cb_set(EDATA_LIST(list), free_func);
+   return eina_list_free_cb_set(EDATA_LIST(list), free_func);
 }
 
 /**
@@ -1481,11 +1481,11 @@ edata_dlist_free_cb_set(Edata_DList *list, Edata_Free_Cb free_func)
  * @return @c TRUE if there are nodes, @c FALSE otherwise.
  */
 EAPI int 
-edata_dlist_empty_is(Edata_DList *list)
+eina_dlist_empty_is(Eina_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   return edata_list_empty_is(EDATA_LIST(list));
+   return eina_list_empty_is(EDATA_LIST(list));
 }
 
 /**
@@ -1494,17 +1494,17 @@ edata_dlist_empty_is(Edata_DList *list)
  * @return The index of the current node.
  */
 EAPI inline int 
-edata_dlist_index(Edata_DList *list)
+eina_dlist_index(Eina_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   return edata_list_index(EDATA_LIST(list));
+   return eina_list_index(EDATA_LIST(list));
 }
 
 /**
- * @defgroup Edata_Data_DList_Add_Item_Group Doubly Linked List Adding Functions
+ * @defgroup Eina_Data_DList_Add_Item_Group Doubly Linked List Adding Functions
  *
- * Functions that are used to add nodes to an Edata_DList.
+ * Functions that are used to add nodes to an Eina_DList.
  */
 
 /**
@@ -1512,22 +1512,22 @@ edata_dlist_index(Edata_DList *list)
  * @param   list The given doubly linked list.
  * @param   data The data to append.
  * @return  @c TRUE if the data is successfully appended, @c FALSE otherwise.
- * @ingroup Edata_Data_DList_Add_Item_Group
+ * @ingroup Eina_Data_DList_Add_Item_Group
  */
 EAPI int 
-edata_dlist_append(Edata_DList *list, void *data)
+eina_dlist_append(Eina_DList *list, void *data)
 {
    int ret;
-   Edata_DList_Node *prev;
-   Edata_DList_Node *node;
+   Eina_DList_Node *prev;
+   Eina_DList_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   node = edata_dlist_node_new();
+   node = eina_dlist_node_new();
    EDATA_LIST_NODE(node)->data = data;
 
    prev = EDATA_DLIST_NODE(EDATA_LIST(list)->last);
-   ret = _edata_list_append_0(EDATA_LIST(list), EDATA_LIST_NODE(node));
+   ret = _eina_list_append_0(EDATA_LIST(list), EDATA_LIST_NODE(node));
    if (ret)
      node->previous = prev;
 
@@ -1539,22 +1539,22 @@ edata_dlist_append(Edata_DList *list, void *data)
  * @param   list The given doubly linked list.
  * @param   data The data to prepend.
  * @return  @c TRUE if the data is successfully prepended, @c FALSE otherwise.
- * @ingroup Edata_Data_DList_Add_Item_Group
+ * @ingroup Eina_Data_DList_Add_Item_Group
  */
 EAPI int 
-edata_dlist_prepend(Edata_DList *list, void *data)
+eina_dlist_prepend(Eina_DList *list, void *data)
 {
    int ret;
-   Edata_DList_Node *prev;
-   Edata_DList_Node *node;
+   Eina_DList_Node *prev;
+   Eina_DList_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   node = edata_dlist_node_new();
+   node = eina_dlist_node_new();
    EDATA_LIST_NODE(node)->data = data;
 
    prev = EDATA_DLIST_NODE(EDATA_LIST(list)->first);
-   ret = _edata_list_prepend_0(EDATA_LIST(list), EDATA_LIST_NODE(node));
+   ret = _eina_list_prepend_0(EDATA_LIST(list), EDATA_LIST_NODE(node));
    if (ret && prev)
      prev->previous = node;
 
@@ -1566,14 +1566,14 @@ edata_dlist_prepend(Edata_DList *list, void *data)
  * @param   list The given doubly linked list.
  * @param   data The data to be inserted.
  * @return  @c TRUE on success, @c FALSE otherwise.
- * @ingroup Edata_Data_DList_Add_Item_Group
+ * @ingroup Eina_Data_DList_Add_Item_Group
  */
 EAPI int 
-edata_dlist_insert(Edata_DList *list, void *data)
+eina_dlist_insert(Eina_DList *list, void *data)
 {
    int ret = TRUE;
-   Edata_DList_Node *prev;
-   Edata_DList_Node *node;
+   Eina_DList_Node *prev;
+   Eina_DList_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
@@ -1581,11 +1581,11 @@ edata_dlist_insert(Edata_DList *list, void *data)
     * Identify and shortcut the end cases.
     */
    if (!EDATA_LIST(list)->current)
-     return edata_dlist_append(list, data);
+     return eina_dlist_append(list, data);
    if (EDATA_LIST(list)->current == EDATA_LIST(list)->first)
-     return edata_dlist_prepend(list, data);
+     return eina_dlist_prepend(list, data);
 
-   node = edata_dlist_node_new();
+   node = eina_dlist_node_new();
    EDATA_LIST_NODE(node)->data = data;
 
    /* Setup the fields of the new node */
@@ -1609,17 +1609,17 @@ edata_dlist_insert(Edata_DList *list, void *data)
  * @param   list The given doubly linked list.
  * @param   append The list to append.
  * @return  @c TRUE if the data is successfully appended, @c FALSE otherwise.
- * @ingroup Edata_Data_DList_Add_Item_Group
+ * @ingroup Eina_Data_DList_Add_Item_Group
  */
 EAPI int 
-edata_dlist_append_list(Edata_DList *list, Edata_DList *append)
+eina_dlist_append_list(Eina_DList *list, Eina_DList *append)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
    CHECK_PARAM_POINTER_RETURN("append", append, FALSE);
 
-   if (edata_dlist_empty_is(append)) return TRUE;
+   if (eina_dlist_empty_is(append)) return TRUE;
 
-   if (edata_dlist_empty_is(list))
+   if (eina_dlist_empty_is(list))
      {
 	list->first = append->first;
 	list->current = NULL;
@@ -1633,7 +1633,7 @@ edata_dlist_append_list(Edata_DList *list, Edata_DList *append)
 	list->last = append->last;
 	list->nodes += append->nodes;
      }
-   edata_dlist_init(append);
+   eina_dlist_init(append);
    return TRUE;
 }
 
@@ -1642,17 +1642,17 @@ edata_dlist_append_list(Edata_DList *list, Edata_DList *append)
  * @param   list The given doubly linked list.
  * @param   prepend The list to prepend.
  * @return  @c TRUE if the data is successfully prepended, @c FALSE otherwise.
- * @ingroup Edata_Data_DList_Add_Item_Group
+ * @ingroup Eina_Data_DList_Add_Item_Group
  */
 EAPI int 
-edata_dlist_prepend_list(Edata_DList *list, Edata_DList *prepend)
+eina_dlist_prepend_list(Eina_DList *list, Eina_DList *prepend)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
    CHECK_PARAM_POINTER_RETURN("prepend", prepend, FALSE);
 
-   if (edata_dlist_empty_is(prepend)) return TRUE;
+   if (eina_dlist_empty_is(prepend)) return TRUE;
 
-   if (edata_dlist_empty_is(list))
+   if (eina_dlist_empty_is(list))
      {
 	list->first = prepend->first;
 	list->current = NULL;
@@ -1667,28 +1667,28 @@ edata_dlist_prepend_list(Edata_DList *list, Edata_DList *prepend)
 	list->nodes += prepend->nodes;
 	list->index += prepend->nodes;
      }
-   edata_dlist_init(prepend);
+   eina_dlist_init(prepend);
    return TRUE;
 }
 
 /**
- * @defgroup Edata_Data_DList_Remove_Item_Group Doubly Linked List Removing Functions
+ * @defgroup Eina_Data_DList_Remove_Item_Group Doubly Linked List Removing Functions
  *
- * Functions that remove nodes from an @c Edata_DList.
+ * Functions that remove nodes from an @c Eina_DList.
  */
 
 /**
  * Removes the current item from the given doubly linked list.
  * @param   list The given doubly linked list.
  * @return  A pointer to the removed data on success, @c NULL otherwise.
- * @ingroup Edata_Data_DList_Remove_Item_Group
+ * @ingroup Eina_Data_DList_Remove_Item_Group
  */
 EAPI void *
-edata_dlist_remove(Edata_DList *list)
+eina_dlist_remove(Eina_DList *list)
 {
    void *ret;
-   Edata_List *l2 = EDATA_LIST(list);
-   Edata_DList_Node *node;
+   Eina_List *l2 = EDATA_LIST(list);
+   Eina_DList_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
@@ -1698,7 +1698,7 @@ edata_dlist_remove(Edata_DList *list)
 	if (node)
 	  node->previous = EDATA_DLIST_NODE(l2->current)->previous;
      }
-   ret = _edata_list_remove_0(list);
+   ret = _eina_list_remove_0(list);
 
    return ret;
 }
@@ -1707,16 +1707,16 @@ edata_dlist_remove(Edata_DList *list)
  * Removes the first item from the given doubly linked list.
  * @param   list The given doubly linked list.
  * @return  A pointer to the removed data on success, @c NULL on failure.
- * @ingroup Edata_Data_DList_Remove_Item_Group
+ * @ingroup Eina_Data_DList_Remove_Item_Group
  */
 EAPI void *
-edata_dlist_first_remove(Edata_DList *list)
+eina_dlist_first_remove(Eina_DList *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_dlist_first_remove(list);
+   ret = _eina_dlist_first_remove(list);
 
    return ret;
 }
@@ -1726,16 +1726,16 @@ edata_dlist_first_remove(Edata_DList *list)
  * linked list.
  * @param   list The given doubly linked list.
  * @return  @c TRUE on success, @c FALSE otherwise.
- * @ingroup Edata_Data_DList_Remove_Item_Group
+ * @ingroup Eina_Data_DList_Remove_Item_Group
  */
 EAPI int 
-edata_dlist_remove_destroy(Edata_DList *list)
+eina_dlist_remove_destroy(Eina_DList *list)
 {
    void *data;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   data = edata_dlist_remove(list);
+   data = eina_dlist_remove(list);
    if (!data)
      return FALSE;
 
@@ -1746,14 +1746,14 @@ edata_dlist_remove_destroy(Edata_DList *list)
 }
 
 static void *
-_edata_dlist_first_remove(Edata_DList *list)
+_eina_dlist_first_remove(Eina_DList *list)
 {
    void *ret;
 
    if (!list)
      return NULL;
 
-   ret = _edata_list_first_remove(list);
+   ret = _eina_list_first_remove(list);
    if (ret && EDATA_LIST(list)->first)
      EDATA_DLIST_NODE(EDATA_LIST(list)->first)->previous = NULL;
 
@@ -1764,17 +1764,17 @@ _edata_dlist_first_remove(Edata_DList *list)
  * Removes the last item from the given doubly linked list.
  * @param   list The given doubly linked list.
  * @return  A pointer to the removed data on success, @c NULL otherwise.
- * @ingroup Edata_Data_DList_Remove_Item_Group
+ * @ingroup Eina_Data_DList_Remove_Item_Group
  */
 EAPI void *
-edata_dlist_last_remove(Edata_DList *list)
+eina_dlist_last_remove(Eina_DList *list)
 {
    void *ret;
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   if (edata_list_empty_is(list))
+   if (eina_list_empty_is(list))
      return NULL;
 
    node = list->last;
@@ -1787,7 +1787,7 @@ edata_dlist_last_remove(Edata_DList *list)
      list->current = NULL;
 
    ret = node->data;
-   edata_list_node_destroy(node, NULL);
+   eina_list_node_destroy(node, NULL);
 
    list->nodes--;
    if (list->index >= list->nodes)
@@ -1803,13 +1803,13 @@ edata_dlist_last_remove(Edata_DList *list)
  * @return The node at specified index on success, @c NULL on error.
  */
 EAPI void *
-edata_dlist_index_goto(Edata_DList *list, int index)
+eina_dlist_index_goto(Eina_DList *list, int index)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_dlist_index_goto(list, index);
+   ret = _eina_dlist_index_goto(list, index);
 
    return ret;
 }
@@ -1817,21 +1817,21 @@ edata_dlist_index_goto(Edata_DList *list, int index)
 /* This is the non-threadsafe version, use this inside internal functions that
  * already lock the list */
 static void *
-_edata_dlist_index_goto(Edata_DList *list, int index)
+_eina_dlist_index_goto(Eina_DList *list, int index)
 {
    int i, increment;
 
    if (!list)
      return NULL;
 
-   if (edata_list_empty_is(EDATA_LIST(list)))
+   if (eina_list_empty_is(EDATA_LIST(list)))
      return NULL;
 
-   if (index > edata_list_count(EDATA_LIST(list)) || index < 0)
+   if (index > eina_list_count(EDATA_LIST(list)) || index < 0)
      return NULL;
 
    if (EDATA_LIST(list)->index >= EDATA_LIST(list)->nodes)
-     _edata_list_last_goto(EDATA_LIST(list));
+     _eina_list_last_goto(EDATA_LIST(list));
 
    if (index < EDATA_LIST(list)->index)
      increment = -1;
@@ -1841,12 +1841,12 @@ _edata_dlist_index_goto(Edata_DList *list, int index)
    for (i = EDATA_LIST(list)->index; i != index; i += increment)
      {
 	if (increment > 0)
-	  _edata_list_next(list);
+	  _eina_list_next(list);
 	else
-	  _edata_dlist_previous(list);
+	  _eina_dlist_previous(list);
      }
 
-   return _edata_list_current(list);
+   return _eina_list_current(list);
 }
 
 /**
@@ -1857,13 +1857,13 @@ _edata_dlist_index_goto(Edata_DList *list, int index)
  * @return Returns specified data on success, NULL on error
  */
 EAPI void *
-edata_dlist_goto(Edata_DList *list, void *data)
+eina_dlist_goto(Eina_DList *list, void *data)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_goto(EDATA_LIST(list), data);
+   ret = _eina_list_goto(EDATA_LIST(list), data);
 
    return ret;
 }
@@ -1875,13 +1875,13 @@ edata_dlist_goto(Edata_DList *list, void *data)
  * @return Returns a pointer to the first item on success, NULL on failure.
  */
 EAPI void *
-edata_dlist_first_goto(Edata_DList *list)
+eina_dlist_first_goto(Eina_DList *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_first_goto(list);
+   ret = _eina_list_first_goto(list);
 
    return ret;
 }
@@ -1892,13 +1892,13 @@ edata_dlist_first_goto(Edata_DList *list)
  * @return Returns a pointer to the last item in the list , NULL if empty.
  */
 EAPI void *
-edata_dlist_last_goto(Edata_DList *list)
+eina_dlist_last_goto(Eina_DList *list)
 {
    void *ret;
 
    CHECK_PARAM_POINTER_RETURN("list", list, NULL);
 
-   ret = _edata_list_last_goto(EDATA_LIST(list));
+   ret = _eina_list_last_goto(EDATA_LIST(list));
 
    return ret;
 }
@@ -1909,11 +1909,11 @@ edata_dlist_last_goto(Edata_DList *list)
  * @return Returns value of the current data item, NULL if no current item
  */
 EAPI void *
-edata_dlist_current(Edata_DList *list)
+eina_dlist_current(Eina_DList *list)
 {
    void *ret;
 
-   ret = _edata_list_current(EDATA_LIST(list));
+   ret = _eina_list_current(EDATA_LIST(list));
 
    return ret;
 }
@@ -1924,11 +1924,11 @@ edata_dlist_current(Edata_DList *list)
  * @return Returns data in the current list node, or NULL on error
  */
 EAPI void *
-edata_dlist_next(Edata_DList *list)
+eina_dlist_next(Eina_DList *list)
 {
    void *data;
 
-   data = _edata_list_next(list);
+   data = _eina_list_next(list);
 
    return data;
 }
@@ -1939,17 +1939,17 @@ edata_dlist_next(Edata_DList *list)
  * @return Returns data in the current list node, or NULL on error
  */
 EAPI void *
-edata_dlist_previous(Edata_DList *list)
+eina_dlist_previous(Eina_DList *list)
 {
    void *data;
 
-   data = _edata_dlist_previous(list);
+   data = _eina_dlist_previous(list);
 
    return data;
 }
 
 static void *
-_edata_dlist_previous(Edata_DList *list)
+_eina_dlist_previous(Eina_DList *list)
 {
    void *data = NULL;
 
@@ -1964,7 +1964,7 @@ _edata_dlist_previous(Edata_DList *list)
 	EDATA_LIST(list)->index--;
      }
    else
-     _edata_list_last_goto(EDATA_LIST(list));
+     _eina_list_last_goto(EDATA_LIST(list));
 
    return data;
 }
@@ -1976,11 +1976,11 @@ _edata_dlist_previous(Edata_DList *list)
  * @return Returns TRUE on success, FALSE on errors
  */
 EAPI int 
-edata_dlist_clear(Edata_DList *list)
+eina_dlist_clear(Eina_DList *list)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
-   edata_list_clear(EDATA_LIST(list));
+   eina_list_clear(EDATA_LIST(list));
 
    return TRUE;
 }
@@ -1998,16 +1998,16 @@ edata_dlist_clear(Edata_DList *list)
  * number of notes. Note: The sort may be unstable.
  */
 EAPI int
-edata_dlist_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
+eina_dlist_sort(Eina_List *list, Eina_Compare_Cb compare, char order)
 {
    CHECK_PARAM_POINTER_RETURN("list", list, 0);
    
    if (list->nodes < 2)
      return 1;
    if (list->nodes < EDATA_MERGESORT_LIMIT)
-     return edata_dlist_mergesort(list, compare, order);
-   if (!edata_dlist_heapsort(list, compare, order))
-     return edata_dlist_mergesort(list, compare, order);
+     return eina_dlist_mergesort(list, compare, order);
+   if (!eina_dlist_heapsort(list, compare, order))
+     return eina_dlist_mergesort(list, compare, order);
   
    return 1;
 }
@@ -2023,9 +2023,9 @@ edata_dlist_sort(Edata_List *list, Edata_Compare_Cb compare, char order)
  * Mergesort is a stable, in-place sorting algorithm 
  */
 EAPI int
-edata_dlist_mergesort(Edata_DList *list, Edata_Compare_Cb compare, char order)
+eina_dlist_mergesort(Eina_DList *list, Eina_Compare_Cb compare, char order)
 {
-   Edata_List_Node *node;
+   Eina_List_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, 0);
    if (list->nodes < 2)
@@ -2036,7 +2036,7 @@ edata_dlist_mergesort(Edata_DList *list, Edata_Compare_Cb compare, char order)
    else
      order = -1;
 
-   node = _edata_dlist_node_mergesort(list->first, list->nodes, compare, order);
+   node = _eina_dlist_node_mergesort(list->first, list->nodes, compare, order);
    list->first = node;
 
    /* maybe there is a better way to do that but our last node has changed */
@@ -2044,18 +2044,18 @@ edata_dlist_mergesort(Edata_DList *list, Edata_Compare_Cb compare, char order)
      node = node->next;
    list->last = node;
 
-   _edata_list_first_goto(list);
+   _eina_list_first_goto(list);
 
    return 1;
 }
 
 /* this is the internal recrusive function for the merge sort */
-static Edata_List_Node *
-_edata_dlist_node_mergesort(Edata_List_Node *first, int n,
-                           Edata_Compare_Cb compare, int order)
+static Eina_List_Node *
+_eina_dlist_node_mergesort(Eina_List_Node *first, int n,
+                           Eina_Compare_Cb compare, int order)
 {
-   Edata_List_Node *middle;
-   Edata_List_Node *premid;
+   Eina_List_Node *middle;
+   Eina_List_Node *premid;
    int mid;
    int i;
 
@@ -2086,19 +2086,19 @@ _edata_dlist_node_mergesort(Edata_List_Node *first, int n,
    EDATA_DLIST_NODE(middle)->previous = NULL;
 
    /* sort the the partial lists */
-   first = _edata_dlist_node_mergesort(first, mid, compare, order);
-   middle = _edata_dlist_node_mergesort(middle, n - mid, compare, order);
+   first = _eina_dlist_node_mergesort(first, mid, compare, order);
+   middle = _eina_dlist_node_mergesort(middle, n - mid, compare, order);
 
-   return _edata_dlist_node_merge(first, middle, compare, order);
+   return _eina_dlist_node_merge(first, middle, compare, order);
 }
 
 /* this function is used to merge the partial sorted lists */
-static Edata_List_Node *
-_edata_dlist_node_merge(Edata_List_Node *first, Edata_List_Node *second,
-                       Edata_Compare_Cb compare, int order)
+static Eina_List_Node *
+_eina_dlist_node_merge(Eina_List_Node *first, Eina_List_Node *second,
+                       Eina_Compare_Cb compare, int order)
 {
-   Edata_List_Node *list;
-   Edata_List_Node *l;
+   Eina_List_Node *list;
+   Eina_List_Node *l;
 
    /* select the first node outside the loop, because we need to keep
     * a pointer to it */
@@ -2153,13 +2153,13 @@ _edata_dlist_node_merge(Edata_List_Node *first, Edata_List_Node *second,
  * @return Returns TRUE on success, FALSE on errors
  */
 EAPI int 
-edata_dlist_node_init(Edata_DList_Node *node)
+eina_dlist_node_init(Eina_DList_Node *node)
 {
    int ret;
 
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
-   ret = edata_list_node_init(EDATA_LIST_NODE(node));
+   ret = eina_list_node_init(EDATA_LIST_NODE(node));
    if (ret)
      node->previous = NULL;
 
@@ -2170,17 +2170,17 @@ edata_dlist_node_init(Edata_DList_Node *node)
  * @brief Allocate and initialize a new list node
  * @return Returns NULL on error, new list node on success
  */
-EAPI Edata_DList_Node *
-edata_dlist_node_new()
+EAPI Eina_DList_Node *
+eina_dlist_node_new()
 {
-   Edata_DList_Node *new_node;
+   Eina_DList_Node *new_node;
 
-   new_node = malloc(sizeof(Edata_DList_Node));
+   new_node = malloc(sizeof(Eina_DList_Node));
 
    if (!new_node)
      return NULL;
 
-   if (!edata_dlist_node_init(new_node))
+   if (!eina_dlist_node_init(new_node))
      {
 	FREE(new_node);
 	return NULL;
@@ -2196,9 +2196,9 @@ edata_dlist_node_new()
  * @return Returns TRUE on success, FALSE on error
  */
 EAPI int 
-edata_dlist_node_destroy(Edata_DList_Node * node, Edata_Free_Cb free_func)
+eina_dlist_node_destroy(Eina_DList_Node * node, Eina_Free_Cb free_func)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
-   return edata_list_node_destroy(EDATA_LIST_NODE(node), free_func);
+   return eina_list_node_destroy(EDATA_LIST_NODE(node), free_func);
 }

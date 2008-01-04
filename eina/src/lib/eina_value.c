@@ -1,4 +1,4 @@
-/* edata_value.c
+/* eina_value.c
 
 Copyright (C) 2001 Christopher Rosendahl    <smugg@fatelabs.com>
                    Nathan Ingersoll         <ningerso@d.umn.edu>
@@ -24,10 +24,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-#include "edata_private.h"
-#include "Edata.h"
+#include "eina_private.h"
+#include "Eina.h"
 
-EAPI const unsigned int edata_prime_table[] =
+EAPI const unsigned int eina_prime_table[] =
 {
    17, 31, 61, 127, 257, 509, 1021,
      2053, 4093, 8191, 16381, 32771, 65537, 131071, 262147, 524287, 1048573,
@@ -35,7 +35,7 @@ EAPI const unsigned int edata_prime_table[] =
 };
 
 inline void 
-edata_print_warning(const char *function, const char *sparam)
+eina_print_warning(const char *function, const char *sparam)
 {
    fprintf(stderr, "***** Developer Warning ***** :\n"
 	   "\tThis program is calling:\n\n"
@@ -52,7 +52,7 @@ edata_print_warning(const char *function, const char *sparam)
  * @return The key cast to an unsigned int.
  */
 EAPI unsigned int 
-edata_direct_hash(const void *key)
+eina_direct_hash(const void *key)
 {
    return ((unsigned int) key);
 }
@@ -63,7 +63,7 @@ edata_direct_hash(const void *key)
  * @return A computed hash value for @a key.
  */
 EAPI unsigned int 
-edata_str_hash(const void *key)
+eina_str_hash(const void *key)
 {
    int i;
    unsigned int mask;
@@ -90,7 +90,7 @@ edata_str_hash(const void *key)
  * @return A strcmp style value to indicate the larger key
  */
 EAPI int 
-edata_direct_compare(const void *key1, const void *key2)
+eina_direct_compare(const void *key1, const void *key2)
 {
    unsigned int k1, k2;
 
@@ -113,12 +113,12 @@ edata_direct_compare(const void *key1, const void *key2)
  * @return A strcmp style value to indicate the larger key
  */
 EAPI int 
-edata_str_compare(const void *key1, const void *key2)
+eina_str_compare(const void *key1, const void *key2)
 {
    const char *k1, *k2;
 
    if (!key1 || !key2)
-     return edata_direct_compare(key1, key2);
+     return eina_direct_compare(key1, key2);
    else if (key1 == key2)
      return 0;
 

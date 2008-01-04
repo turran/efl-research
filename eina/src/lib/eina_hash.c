@@ -1,5 +1,5 @@
-#include "edata_private.h"
-#include "Edata.h"
+#include "eina_private.h"
+#include "Eina.h"
 
 #define PRIME_TABLE_MAX 21
 #define PRIME_MIN 17
@@ -8,30 +8,30 @@
 #define EDATA_HASH_CHAIN_MAX 3
 
 #define EDATA_COMPUTE_HASH(hash, key) hash->hash_func(key) % \
-					edata_prime_table[hash->size];
+					eina_prime_table[hash->size];
 
-#define EDATA_HASH_INCREASE(hash) ((hash && edata_prime_table[hash->size] < PRIME_MAX) ? \
-		(hash->nodes / edata_prime_table[hash->size]) > \
+#define EDATA_HASH_INCREASE(hash) ((hash && eina_prime_table[hash->size] < PRIME_MAX) ? \
+		(hash->nodes / eina_prime_table[hash->size]) > \
 		EDATA_HASH_CHAIN_MAX : FALSE)
-#define EDATA_HASH_REDUCE(hash) ((hash && edata_prime_table[hash->size] > PRIME_MIN) ? \
-		(double)hash->nodes / (double)edata_prime_table[hash->size-1] \
+#define EDATA_HASH_REDUCE(hash) ((hash && eina_prime_table[hash->size] > PRIME_MIN) ? \
+		(double)hash->nodes / (double)eina_prime_table[hash->size-1] \
 		< ((double)EDATA_HASH_CHAIN_MAX * 0.375) : FALSE)
 
 /* Private hash manipulation functions */
-static int _edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node);
-static Edata_Hash_Node * _edata_hash_get_node(Edata_Hash *hash, const void *key);
-static int _edata_hash_increase(Edata_Hash *hash);
-static int _edata_hash_decrease(Edata_Hash *hash);
-inline int _edata_hash_rehash(Edata_Hash *hash, Edata_Hash_Node **old_table, int old_size);
-static int _edata_hash_bucket_destroy(Edata_Hash_Node *list, Edata_Free_Cb keyd,
-				      Edata_Free_Cb valued);
-inline Edata_Hash_Node * _edata_hash_get_bucket(Edata_Hash *hash,
-						Edata_Hash_Node *bucket, const void *key);
+static int _eina_hash_add_node(Eina_Hash *hash, Eina_Hash_Node *node);
+static Eina_Hash_Node * _eina_hash_get_node(Eina_Hash *hash, const void *key);
+static int _eina_hash_increase(Eina_Hash *hash);
+static int _eina_hash_decrease(Eina_Hash *hash);
+inline int _eina_hash_rehash(Eina_Hash *hash, Eina_Hash_Node **old_table, int old_size);
+static int _eina_hash_bucket_destroy(Eina_Hash_Node *list, Eina_Free_Cb keyd,
+				      Eina_Free_Cb valued);
+inline Eina_Hash_Node * _eina_hash_get_bucket(Eina_Hash *hash,
+						Eina_Hash_Node *bucket, const void *key);
 
-static Edata_Hash_Node *_edata_hash_node_new(void *key, void *value);
-static int _edata_hash_node_init(Edata_Hash_Node *node, void *key, void *value);
-static int _edata_hash_node_destroy(Edata_Hash_Node *node, Edata_Free_Cb keyd,
-				    Edata_Free_Cb valued);
+static Eina_Hash_Node *_eina_hash_node_new(void *key, void *value);
+static int _eina_hash_node_init(Eina_Hash_Node *node, void *key, void *value);
+static int _eina_hash_node_destroy(Eina_Hash_Node *node, Eina_Free_Cb keyd,
+				    Eina_Free_Cb valued);
 
 /**
  * Creates and initializes a new hash
@@ -39,14 +39,14 @@ static int _edata_hash_node_destroy(Edata_Hash_Node *node, Edata_Free_Cb keyd,
  * @param compare   The function for comparing node keys.
  * @return @c NULL on error, a new hash on success.
  */
-EAPI Edata_Hash *
-edata_hash_new(Edata_Hash_Cb hash_func, Edata_Compare_Cb compare)
+EAPI Eina_Hash *
+eina_hash_new(Eina_Hash_Cb hash_func, Eina_Compare_Cb compare)
 {
-   Edata_Hash *new_hash = (Edata_Hash *)malloc(sizeof(Edata_Hash));
+   Eina_Hash *new_hash = (Eina_Hash *)malloc(sizeof(Eina_Hash));
    if (!new_hash)
      return NULL;
 
-   if (!edata_hash_init(new_hash, hash_func, compare))
+   if (!eina_hash_init(new_hash, hash_func, compare))
      {
 	FREE(new_hash);
 	return NULL;
@@ -63,17 +63,17 @@ edata_hash_new(Edata_Hash_Cb hash_func, Edata_Compare_Cb compare)
  * @return  @c TRUE on success, @c FALSE on an error.
  */
 EAPI int
-edata_hash_init(Edata_Hash *hash, Edata_Hash_Cb hash_func, Edata_Compare_Cb compare)
+eina_hash_init(Eina_Hash *hash, Eina_Hash_Cb hash_func, Eina_Compare_Cb compare)
 {
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 
-   memset(hash, 0, sizeof(Edata_Hash));
+   memset(hash, 0, sizeof(Eina_Hash));
 
    hash->hash_func = hash_func;
    hash->compare = compare;
 
-   hash->buckets = (Edata_Hash_Node **)calloc(edata_prime_table[0],
-					      sizeof(Edata_Hash_Node *));
+   hash->buckets = (Eina_Hash_Node **)calloc(eina_prime_table[0],
+					      sizeof(Eina_Hash_Node *));
 
    return TRUE;
 }
@@ -87,7 +87,7 @@ edata_hash_init(Edata_Hash *hash, Edata_Hash_Cb hash_func, Edata_Compare_Cb comp
  * @return  @c TRUE on success, @c FALSE on error.
  */
 EAPI int
-edata_hash_free_key_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
+eina_hash_free_key_cb_set(Eina_Hash *hash, Eina_Free_Cb function)
 {
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 
@@ -104,7 +104,7 @@ edata_hash_free_key_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
  * @return  @c TRUE on success, @c FALSE on error
  */
 EAPI int
-edata_hash_free_value_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
+eina_hash_free_value_cb_set(Eina_Hash *hash, Eina_Free_Cb function)
 {
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 
@@ -121,14 +121,14 @@ edata_hash_free_value_cb_set(Edata_Hash *hash, Edata_Free_Cb function)
  * @return  @c TRUE if successful, @c FALSE if not.
  */
 EAPI int
-edata_hash_set(Edata_Hash *hash, void *key, void *value)
+eina_hash_set(Eina_Hash *hash, void *key, void *value)
 {
    int ret = FALSE;
-   Edata_Hash_Node *node;
+   Eina_Hash_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 
-   node = _edata_hash_get_node(hash, key);
+   node = _eina_hash_get_node(hash, key);
    if (node)
      {
 	if (hash->free_key) hash->free_key(key);
@@ -138,9 +138,9 @@ edata_hash_set(Edata_Hash *hash, void *key, void *value)
      }
    else
      {
-	node = _edata_hash_node_new(key, value);
+	node = _eina_hash_node_new(key, value);
 	if (node)
-	  ret = _edata_hash_add_node(hash, node);
+	  ret = _eina_hash_add_node(hash, node);
      }
 
    return ret;
@@ -153,22 +153,22 @@ edata_hash_set(Edata_Hash *hash, void *key, void *value)
  * @return  @c TRUE if successful, @c FALSE if not.
  */
 EAPI int
-edata_hash_hash_set(Edata_Hash *hash, Edata_Hash *set)
+eina_hash_hash_set(Eina_Hash *hash, Eina_Hash *set)
 {
    unsigned int i;
-   Edata_Hash_Node *node, *old;
+   Eina_Hash_Node *node, *old;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
    CHECK_PARAM_POINTER_RETURN("set", set, FALSE);
 
-   for (i = 0; i < edata_prime_table[set->size]; i++)
+   for (i = 0; i < eina_prime_table[set->size]; i++)
      {
 	/* Hash into a new list to avoid loops of rehashing the same nodes */
 	while ((old = set->buckets[i]))
 	  {
 	     set->buckets[i] = old->next;
 	     old->next = NULL;
-	     node = _edata_hash_get_node(hash, old->key);
+	     node = _eina_hash_get_node(hash, old->key);
 	     if (node)
 	       {
 		  /* This key already exists. Delete the old and add the new
@@ -180,11 +180,11 @@ edata_hash_hash_set(Edata_Hash *hash, Edata_Hash *set)
 		  free(old);
 	       }
 	     else
-	       _edata_hash_add_node(hash, old);
+	       _eina_hash_add_node(hash, old);
 	  }
      }
    FREE(set->buckets);
-   edata_hash_init(set, set->hash_func, set->compare);
+   eina_hash_init(set, set->hash_func, set->compare);
    return TRUE;
 }
 
@@ -194,7 +194,7 @@ edata_hash_hash_set(Edata_Hash *hash, Edata_Hash *set)
  * @return  @c TRUE on success, @c FALSE on error.
  */
 EAPI void 
-edata_hash_destroy(Edata_Hash *hash)
+eina_hash_destroy(Eina_Hash *hash)
 {
    unsigned int i = 0;
 
@@ -202,11 +202,11 @@ edata_hash_destroy(Edata_Hash *hash)
 
    if (hash->buckets)
      {
-	while (i < edata_prime_table[hash->size])
+	while (i < eina_prime_table[hash->size])
 	  {
 	     if (hash->buckets[i])
 	       {
-		  Edata_Hash_Node *bucket;
+		  Eina_Hash_Node *bucket;
 
 				/*
 				 * Remove the bucket list to avoid possible recursion
@@ -214,7 +214,7 @@ edata_hash_destroy(Edata_Hash *hash)
 				 */
 		  bucket = hash->buckets[i];
 		  hash->buckets[i] = NULL;
-		  _edata_hash_bucket_destroy(bucket,
+		  _eina_hash_bucket_destroy(bucket,
 					     hash->free_key,
 					     hash->free_value);
 	       }
@@ -235,7 +235,7 @@ edata_hash_destroy(Edata_Hash *hash)
  * @return  The number of nodes in the hash.
  */
 EAPI int
-edata_hash_count(Edata_Hash *hash)
+eina_hash_count(Eina_Hash *hash)
 {
    CHECK_PARAM_POINTER_RETURN("hash", hash, 0);
 
@@ -250,18 +250,18 @@ edata_hash_count(Edata_Hash *hash)
  * @return  TRUE on success, FALSE otherwise.
  */
 EAPI int 
-edata_hash_for_each_node(Edata_Hash *hash, Edata_For_Each for_each_func, void *user_data)
+eina_hash_for_each_node(Eina_Hash *hash, Eina_For_Each for_each_func, void *user_data)
 {
    unsigned int i = 0;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
    CHECK_PARAM_POINTER_RETURN("for_each_func", for_each_func, FALSE);
 
-   while (i < edata_prime_table[hash->size])
+   while (i < eina_prime_table[hash->size])
      {
 	if (hash->buckets[i])
 	  {
-	     Edata_Hash_Node *node;
+	     Eina_Hash_Node *node;
 
 	     for (node = hash->buckets[i]; node; node = node->next)
 	       {
@@ -275,33 +275,33 @@ edata_hash_for_each_node(Edata_Hash *hash, Edata_For_Each for_each_func, void *u
 }
 
 /**
- * Retrieves an edata_list of all keys in the given hash.
+ * Retrieves an eina_list of all keys in the given hash.
  * @param   hash          The given hash.
- * @return  new edata_list on success, NULL otherwise
+ * @return  new eina_list on success, NULL otherwise
  */
-EAPI Edata_List *
-edata_hash_keys(Edata_Hash *hash)
+EAPI Eina_List *
+eina_hash_keys(Eina_Hash *hash)
 {
    unsigned int i = 0;
-   Edata_List *keys;
+   Eina_List *keys;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, NULL);
 
-   keys = edata_list_new();
-   while (i < edata_prime_table[hash->size])
+   keys = eina_list_new();
+   while (i < eina_prime_table[hash->size])
      {
 	if (hash->buckets[i])
 	  {
-	     Edata_Hash_Node *node;
+	     Eina_Hash_Node *node;
 
 	     for (node = hash->buckets[i]; node; node = node->next)
 	       {
-		  edata_list_append(keys, node->key);
+		  eina_list_append(keys, node->key);
 	       }
 	  }
 	i++;
      }
-   edata_list_first_goto(keys);
+   eina_list_first_goto(keys);
 
    return keys;
 }
@@ -311,15 +311,15 @@ edata_hash_keys(Edata_Hash *hash)
  * @param hash The given hash table.
  */
 EAPI void
-edata_hash_dump_graph(Edata_Hash *hash)
+eina_hash_dump_graph(Eina_Hash *hash)
 {
    unsigned int i;
 
-   for (i = 0; i < edata_prime_table[hash->size]; i++)
+   for (i = 0; i < eina_prime_table[hash->size]; i++)
      if (hash->buckets[i])
        {
 	  int n = 0;
-	  Edata_Hash_Node *node;
+	  Eina_Hash_Node *node;
 	  for (node = hash->buckets[i]; node; node = node->next)
 	    n++;
 	  printf("%d\t%u\n", i, n);
@@ -333,17 +333,17 @@ edata_hash_dump_graph(Edata_Hash *hash)
  * @param hash The given hash table.
  */
 EAPI void
-edata_hash_dump_stats(Edata_Hash *hash)
+eina_hash_dump_stats(Eina_Hash *hash)
 {
    unsigned int i;
    double variance, sum_n_2 = 0, sum_n = 0;
 
-   for (i = 0; i < edata_prime_table[hash->size]; i++)
+   for (i = 0; i < eina_prime_table[hash->size]; i++)
      {
 	if (hash->buckets[i])
 	  {
 	     int n = 0;
-	     Edata_Hash_Node *node;
+	     Eina_Hash_Node *node;
 	     for (node = hash->buckets[i]; node; node = node->next)
 	       n++;
 	     sum_n_2 += ((double)n * (double)n);
@@ -356,16 +356,16 @@ edata_hash_dump_stats(Edata_Hash *hash)
 }
 
 static int
-_edata_hash_bucket_destroy(Edata_Hash_Node *list, Edata_Free_Cb keyd, Edata_Free_Cb valued)
+_eina_hash_bucket_destroy(Eina_Hash_Node *list, Eina_Free_Cb keyd, Eina_Free_Cb valued)
 {
-   Edata_Hash_Node *node;
+   Eina_Hash_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("list", list, FALSE);
 
    for (node = list; node; node = list)
      {
 	list = list->next;
-	_edata_hash_node_destroy(node, keyd, valued);
+	_eina_hash_node_destroy(node, keyd, valued);
      }
 
    return TRUE;
@@ -378,7 +378,7 @@ _edata_hash_bucket_destroy(Edata_Hash_Node *list, Edata_Free_Cb keyd, Edata_Free
  * @return Returns FALSE on error, TRUE on success
  */
 static int
-_edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node)
+_eina_hash_add_node(Eina_Hash *hash, Eina_Hash_Node *node)
 {
    unsigned int hash_val;
 
@@ -387,11 +387,11 @@ _edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node)
 
    /* Check to see if the hash needs to be resized */
    if (EDATA_HASH_INCREASE(hash))
-     _edata_hash_increase(hash);
+     _eina_hash_increase(hash);
 
    /* Compute the position in the table */
    if (!hash->hash_func)
-     hash_val = (unsigned int)node->key % edata_prime_table[hash->size];
+     hash_val = (unsigned int)node->key % eina_prime_table[hash->size];
    else
      hash_val = EDATA_COMPUTE_HASH(hash, node->key);
 
@@ -411,14 +411,14 @@ _edata_hash_add_node(Edata_Hash *hash, Edata_Hash_Node *node)
  * @return  The value corresponding to key on success, @c NULL otherwise.
  */
 EAPI void *
-edata_hash_get(Edata_Hash *hash, const void *key)
+eina_hash_get(Eina_Hash *hash, const void *key)
 {
    void *data;
-   Edata_Hash_Node *node;
+   Eina_Hash_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, NULL);
 
-   node = _edata_hash_get_node(hash, key);
+   node = _eina_hash_get_node(hash, key);
    if (!node)
      return NULL;
 
@@ -436,10 +436,10 @@ edata_hash_get(Edata_Hash *hash, const void *key)
  *          returned if there is an error.
  */
 EAPI void *
-edata_hash_remove(Edata_Hash *hash, const void *key)
+eina_hash_remove(Eina_Hash *hash, const void *key)
 {
-   Edata_Hash_Node *node = NULL;
-   Edata_Hash_Node *list;
+   Eina_Hash_Node *node = NULL;
+   Eina_Hash_Node *list;
    unsigned int hash_val;
    void *ret = NULL;
 
@@ -447,7 +447,7 @@ edata_hash_remove(Edata_Hash *hash, const void *key)
 
    /* Compute the position in the table */
    if (!hash->hash_func)
-     hash_val = (unsigned int )key % edata_prime_table[hash->size];
+     hash_val = (unsigned int )key % eina_prime_table[hash->size];
    else
      hash_val = EDATA_COMPUTE_HASH(hash, key);
 
@@ -491,13 +491,13 @@ edata_hash_remove(Edata_Hash *hash, const void *key)
 	       list->next = node->next;
 	     ret = node->value;
 	     node->value = NULL;
-	     _edata_hash_node_destroy(node, hash->free_key, NULL);
+	     _eina_hash_node_destroy(node, hash->free_key, NULL);
 	     hash->nodes--;
 	  }
      }
 
    if (EDATA_HASH_REDUCE(hash))
-     _edata_hash_decrease(hash);
+     _eina_hash_decrease(hash);
 
    return ret;
 }
@@ -510,7 +510,7 @@ edata_hash_remove(Edata_Hash *hash, const void *key)
  * @return  The value corresponding to key on success, @c NULL otherwise.
  */
 EAPI void *
-edata_hash_find(Edata_Hash *hash, Edata_Compare_Cb compare, const void *value)
+eina_hash_find(Eina_Hash *hash, Eina_Compare_Cb compare, const void *value)
 {
    unsigned int i = 0;
 
@@ -518,11 +518,11 @@ edata_hash_find(Edata_Hash *hash, Edata_Compare_Cb compare, const void *value)
    CHECK_PARAM_POINTER_RETURN("compare", compare, NULL);
    CHECK_PARAM_POINTER_RETURN("value", value, NULL);
 
-   while (i < edata_prime_table[hash->size])
+   while (i < eina_prime_table[hash->size])
      {
 	if (hash->buckets[i])
 	  {
-	     Edata_Hash_Node *node;
+	     Eina_Hash_Node *node;
 
 	     for (node = hash->buckets[i]; node; node = node->next)
 	       {
@@ -541,11 +541,11 @@ edata_hash_find(Edata_Hash *hash, Edata_Compare_Cb compare, const void *value)
  * @param key: the key to search for in the hash table
  * @return Returns NULL on error, node corresponding to key on success
  */
-static Edata_Hash_Node *
-_edata_hash_get_node(Edata_Hash *hash, const void *key)
+static Eina_Hash_Node *
+_eina_hash_get_node(Eina_Hash *hash, const void *key)
 {
    unsigned int hash_val;
-   Edata_Hash_Node *node = NULL;
+   Eina_Hash_Node *node = NULL;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, NULL);
 
@@ -556,14 +556,14 @@ _edata_hash_get_node(Edata_Hash *hash, const void *key)
 
    /* Compute the position in the table */
    if (!hash->hash_func)
-     hash_val = (unsigned int )key % edata_prime_table[hash->size];
+     hash_val = (unsigned int )key % eina_prime_table[hash->size];
    else
      hash_val = EDATA_COMPUTE_HASH(hash, key);
 
    /* Grab the bucket at the specified position */
    if (hash->buckets[hash_val])
      {
-	node = _edata_hash_get_bucket(hash, hash->buckets[hash_val], key);
+	node = _eina_hash_get_bucket(hash, hash->buckets[hash_val], key);
 	/*
 	 * Move matched node to the front of the list as it's likely
 	 * to be searched for again soon.
@@ -585,11 +585,11 @@ _edata_hash_get_node(Edata_Hash *hash, const void *key)
  * @param key: the key to search for in the list
  * @return Returns NULL on error or not found, the found node on success
  */
-inline Edata_Hash_Node *
-_edata_hash_get_bucket(Edata_Hash *hash, Edata_Hash_Node *bucket, const void *key)
+inline Eina_Hash_Node *
+_eina_hash_get_bucket(Eina_Hash *hash, Eina_Hash_Node *bucket, const void *key)
 {
-   Edata_Hash_Node *prev = NULL;
-   Edata_Hash_Node *node = NULL;
+   Eina_Hash_Node *prev = NULL;
+   Eina_Hash_Node *node = NULL;
 
    /*
     * Traverse the list to find the desired node, if the node is in the
@@ -632,14 +632,14 @@ _edata_hash_get_bucket(Edata_Hash *hash, Edata_Hash_Node *bucket, const void *ke
  * @return Returns TRUE on success, FALSE on error
  */
 static int
-_edata_hash_increase(Edata_Hash *hash)
+_eina_hash_increase(Eina_Hash *hash)
 {
    void *old;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 
    /* Max size reached so return FALSE */
-   if ((edata_prime_table[hash->size] == PRIME_MAX) || (hash->size == PRIME_TABLE_MAX))
+   if ((eina_prime_table[hash->size] == PRIME_MAX) || (hash->size == PRIME_TABLE_MAX))
      return FALSE;
 
    /*
@@ -651,7 +651,7 @@ _edata_hash_increase(Edata_Hash *hash)
    /*
     * Allocate a new bucket area, of the new larger size
     */
-   hash->buckets = calloc(edata_prime_table[hash->size], sizeof(Edata_Hash_Node *));
+   hash->buckets = calloc(eina_prime_table[hash->size], sizeof(Eina_Hash_Node *));
 
    /*
     * Make sure the allocation succeeded, if not replace the old data and
@@ -668,7 +668,7 @@ _edata_hash_increase(Edata_Hash *hash)
    /*
     * Now move all of the old data into the new bucket area
     */
-   if (_edata_hash_rehash(hash, old, hash->size - 1))
+   if (_eina_hash_rehash(hash, old, hash->size - 1))
      {
 	FREE(old);
 	return TRUE;
@@ -688,13 +688,13 @@ _edata_hash_increase(Edata_Hash *hash)
  * @return Returns TRUE on success, FALSE on error
  */
 static int
-_edata_hash_decrease(Edata_Hash *hash)
+_eina_hash_decrease(Eina_Hash *hash)
 {
-   Edata_Hash_Node **old;
+   Eina_Hash_Node **old;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 
-   if (edata_prime_table[hash->size] == PRIME_MIN)
+   if (eina_prime_table[hash->size] == PRIME_MIN)
      return FALSE;
 
    /*
@@ -706,8 +706,8 @@ _edata_hash_decrease(Edata_Hash *hash)
    /*
     * Allocate a new area to store the data
     */
-   hash->buckets = (Edata_Hash_Node **)calloc(edata_prime_table[hash->size],
-					      sizeof(Edata_Hash_Node *));
+   hash->buckets = (Eina_Hash_Node **)calloc(eina_prime_table[hash->size],
+					      sizeof(Eina_Hash_Node *));
 
    /*
     * Make sure allocation succeeded otherwise rreturn to the previous
@@ -722,7 +722,7 @@ _edata_hash_decrease(Edata_Hash *hash)
 
    hash->nodes = 0;
 
-   if (_edata_hash_rehash(hash, old, hash->size + 1))
+   if (_eina_hash_rehash(hash, old, hash->size + 1))
      {
 	FREE(old);
 	return TRUE;
@@ -738,22 +738,22 @@ _edata_hash_decrease(Edata_Hash *hash)
  * @return Returns TRUE on success, FALSE on error
  */
 inline int
-_edata_hash_rehash(Edata_Hash *hash, Edata_Hash_Node **old_table, int old_size)
+_eina_hash_rehash(Eina_Hash *hash, Eina_Hash_Node **old_table, int old_size)
 {
    unsigned int i;
-   Edata_Hash_Node *old;
+   Eina_Hash_Node *old;
 
    CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
    CHECK_PARAM_POINTER_RETURN("old_table", old_table, FALSE);
 
-   for (i = 0; i < edata_prime_table[old_size]; i++)
+   for (i = 0; i < eina_prime_table[old_size]; i++)
      {
 	/* Hash into a new list to avoid loops of rehashing the same nodes */
 	while ((old = old_table[i]))
 	  {
 	     old_table[i] = old->next;
 	     old->next = NULL;
-	     _edata_hash_add_node(hash, old);
+	     _eina_hash_add_node(hash, old);
 	  }
      }
 
@@ -766,16 +766,16 @@ _edata_hash_rehash(Edata_Hash *hash, Edata_Hash_Node **old_table, int old_size)
  * @param value: the value that the key references
  * @return Returns NULL on error, a new hash node on success
  */
-static Edata_Hash_Node *
-_edata_hash_node_new(void *key, void *value)
+static Eina_Hash_Node *
+_eina_hash_node_new(void *key, void *value)
 {
-   Edata_Hash_Node *node;
+   Eina_Hash_Node *node;
 
-   node = (Edata_Hash_Node *)malloc(sizeof(Edata_Hash_Node));
+   node = (Eina_Hash_Node *)malloc(sizeof(Eina_Hash_Node));
    if (!node)
      return NULL;
 
-   if (!_edata_hash_node_init(node, key, value))
+   if (!_eina_hash_node_init(node, key, value))
      {
 	FREE(node);
 	return NULL;
@@ -792,7 +792,7 @@ _edata_hash_node_new(void *key, void *value)
  * @return Returns TRUE on success, FALSE on error
  */
 static int
-_edata_hash_node_init(Edata_Hash_Node *node, void *key, void *value)
+_eina_hash_node_init(Eina_Hash_Node *node, void *key, void *value)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -810,7 +810,7 @@ _edata_hash_node_init(Edata_Hash_Node *node, void *key, void *value)
  * @return Returns TRUE on success, FALSE on error
  */
 static int
-_edata_hash_node_destroy(Edata_Hash_Node *node, Edata_Free_Cb keyd, Edata_Free_Cb valued)
+_eina_hash_node_destroy(Eina_Hash_Node *node, Eina_Free_Cb keyd, Eina_Free_Cb valued)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 

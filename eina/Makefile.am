@@ -17,8 +17,8 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-edata.pc \
-edata_docs.tar.gz
+eina.pc \
+eina_docs.tar.gz
 
 EXTRA_DIST = \
 AUTHORS \
@@ -26,8 +26,8 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-edata.pc 
+eina.pc 
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = edata.pc
+pkgconfig_DATA = eina.pc
 ACLOCAL_AMFLAGS = -I m4

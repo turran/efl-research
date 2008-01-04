@@ -1,41 +1,41 @@
-#include "edata_private.h"
-#include "Edata.h"
+#include "eina_private.h"
+#include "Eina.h"
 
 /* A macro for determining the highest node at given branch */
 #define MAX_HEIGHT(node) (node ? MAX(node->max_left, node->max_right) : 0)
 
 /* Utility functions for searching the tree and returning a node, or its
  * parent */
-static Edata_Tree_Node *tree_node_find(Edata_Tree * tree, const void *key);
-static Edata_Tree_Node *tree_node_find_parent(Edata_Tree * tree, const void *key);
+static Eina_Tree_Node *tree_node_find(Eina_Tree * tree, const void *key);
+static Eina_Tree_Node *tree_node_find_parent(Eina_Tree * tree, const void *key);
 
 /* Balancing functions, keep the tree balanced within a one node height
  * difference */
-static int tree_node_balance(Edata_Tree * Tree, Edata_Tree_Node * top_node);
-static int tree_node_rotate_right(Edata_Tree * tree, Edata_Tree_Node * top_node);
-static int tree_node_rotate_left(Edata_Tree * tree, Edata_Tree_Node * top_node);
+static int tree_node_balance(Eina_Tree * Tree, Eina_Tree_Node * top_node);
+static int tree_node_rotate_right(Eina_Tree * tree, Eina_Tree_Node * top_node);
+static int tree_node_rotate_left(Eina_Tree * tree, Eina_Tree_Node * top_node);
 
 /* Fucntions for executing a specified function on each node of a tree */
-static int tree_for_each_node(Edata_Tree_Node * node, Edata_For_Each for_each_func,
+static int tree_for_each_node(Eina_Tree_Node * node, Eina_For_Each for_each_func,
 			      void *user_data);
-static int tree_for_each_node_value(Edata_Tree_Node * node,
-				    Edata_For_Each for_each_func, void *user_data);
+static int tree_for_each_node_value(Eina_Tree_Node * node,
+				    Eina_For_Each for_each_func, void *user_data);
 
 /**
  * @brief Allocate a new tree structure.
  * @param compare_func: function used to compare the two values
  * @return Returns NULL if the operation fails, otherwise the new tree
  */
-EAPI Edata_Tree *
-edata_tree_new(Edata_Compare_Cb compare_func)
+EAPI Eina_Tree *
+eina_tree_new(Eina_Compare_Cb compare_func)
 {
-   Edata_Tree *new_tree;
+   Eina_Tree *new_tree;
 
-   new_tree = EDATA_TREE(malloc(sizeof(Edata_Tree)));
+   new_tree = EDATA_TREE(malloc(sizeof(Eina_Tree)));
    if (!new_tree)
      return NULL;
 
-   if (!edata_tree_init(new_tree, compare_func))
+   if (!eina_tree_init(new_tree, compare_func))
      {
 	IF_FREE(new_tree);
 	return NULL;
@@ -51,14 +51,14 @@ edata_tree_new(Edata_Compare_Cb compare_func)
  * @return Returns TRUE on successful initialization, FALSE on an error
  */
 EAPI int 
-edata_tree_init(Edata_Tree *new_tree, Edata_Compare_Cb compare_func)
+eina_tree_init(Eina_Tree *new_tree, Eina_Compare_Cb compare_func)
 {
    CHECK_PARAM_POINTER_RETURN("new_tree", new_tree, FALSE);
 
-   memset(new_tree, 0, sizeof(Edata_Tree));
+   memset(new_tree, 0, sizeof(Eina_Tree));
 
    if (!compare_func)
-     new_tree->compare_func = edata_direct_compare;
+     new_tree->compare_func = eina_direct_compare;
    else
      new_tree->compare_func = compare_func;
 
@@ -72,7 +72,7 @@ edata_tree_init(Edata_Tree *new_tree, Edata_Compare_Cb compare_func)
  * @return Returns TRUE on successful set, FALSE otherwise.
  */
 EAPI int 
-edata_tree_free_value_cb_set(Edata_Tree *tree, Edata_Free_Cb free_value)
+eina_tree_free_value_cb_set(Eina_Tree *tree, Eina_Free_Cb free_value)
 {
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
 
@@ -88,7 +88,7 @@ edata_tree_free_value_cb_set(Edata_Tree *tree, Edata_Free_Cb free_value)
  * @return Returns TRUE on successful set, FALSE otherwise.
  */
 EAPI int 
-edata_tree_free_key_cb_set(Edata_Tree *tree, Edata_Free_Cb free_key)
+eina_tree_free_key_cb_set(Eina_Tree *tree, Eina_Free_Cb free_key)
 {
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
 
@@ -102,7 +102,7 @@ edata_tree_free_key_cb_set(Edata_Tree *tree, Edata_Free_Cb free_key)
  * @return Returns FALSE if the operation fails, otherwise TRUE
  */
 EAPI int 
-edata_tree_node_init(Edata_Tree_Node *new_node)
+eina_tree_node_init(Eina_Tree_Node *new_node)
 {
    CHECK_PARAM_POINTER_RETURN("new_node", new_node, FALSE);
 
@@ -122,16 +122,16 @@ edata_tree_node_init(Edata_Tree_Node *new_node)
  * @brief Allocate a new tree node
  * @return Returns NULL if the operation fails, otherwise the new node.
  */
-EAPI Edata_Tree_Node *
-edata_tree_node_new()
+EAPI Eina_Tree_Node *
+eina_tree_node_new()
 {
-   Edata_Tree_Node *new_node;
+   Eina_Tree_Node *new_node;
 
-   new_node = EDATA_TREE_NODE(malloc(sizeof(Edata_Tree_Node)));
+   new_node = EDATA_TREE_NODE(malloc(sizeof(Eina_Tree_Node)));
    if (!new_node)
      return NULL;
 
-   if (!edata_tree_node_init(new_node))
+   if (!eina_tree_node_init(new_node))
      {
 	IF_FREE(new_node);
 	return NULL;
@@ -149,7 +149,7 @@ edata_tree_node_new()
  * If you don't want the children free'd then you need to remove the node first.
  */
 EAPI int 
-edata_tree_node_destroy(Edata_Tree_Node *node, Edata_Free_Cb value_free, Edata_Free_Cb key_free)
+eina_tree_node_destroy(Eina_Tree_Node *node, Eina_Free_Cb value_free, Eina_Free_Cb key_free)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -170,7 +170,7 @@ edata_tree_node_destroy(Edata_Tree_Node *node, Edata_Free_Cb value_free, Edata_F
  * @return Returns TRUE if the node is set successfully, FALSE if not.
  */
 EAPI int 
-edata_tree_node_value_set(Edata_Tree_Node *node, void *value)
+eina_tree_node_value_set(Eina_Tree_Node *node, void *value)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -185,7 +185,7 @@ edata_tree_node_value_set(Edata_Tree_Node *node, void *value)
  * @return Returns NULL if an error, otherwise the value associated with node
  */
 EAPI void *
-edata_tree_node_value_get(Edata_Tree_Node *node)
+eina_tree_node_value_get(Eina_Tree_Node *node)
 {
    void *ret;
 
@@ -202,7 +202,7 @@ edata_tree_node_value_get(Edata_Tree_Node *node)
  * @return Returns TRUE if the node is set successfully, FALSE if not.
  */
 EAPI int 
-edata_tree_node_key_set(Edata_Tree_Node *node, void *key)
+eina_tree_node_key_set(Eina_Tree_Node *node, void *key)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -218,7 +218,7 @@ edata_tree_node_key_set(Edata_Tree_Node *node, void *key)
  * @return Returns NULL if an error occurs, otherwise the key is returned
  */
 EAPI void *
-edata_tree_node_key_get(Edata_Tree_Node *node)
+eina_tree_node_key_get(Eina_Tree_Node *node)
 {
    void *ret;
 
@@ -235,16 +235,16 @@ edata_tree_node_key_get(Edata_Tree_Node *node)
  * @return Returns TRUE if tree destroyed successfully, FALSE if not.
  */
 EAPI int 
-edata_tree_destroy(Edata_Tree *tree)
+eina_tree_destroy(Eina_Tree *tree)
 {
-   Edata_Tree_Node *node;
+   Eina_Tree_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
 
    while ((node = tree->tree))
      {
-	edata_tree_node_remove(tree, node);
-	edata_tree_node_destroy(node, tree->free_value, tree->free_key);
+	eina_tree_node_remove(tree, node);
+	eina_tree_node_destroy(node, tree->free_value, tree->free_key);
      }
 
    FREE(tree);
@@ -259,10 +259,10 @@ edata_tree_destroy(Edata_Tree *tree)
  *
  * @return Returns the node corresponding to the key if found, otherwise NULL.
  */
-EAPI Edata_Tree_Node *
-edata_tree_get_node(Edata_Tree *tree, const void *key)
+EAPI Eina_Tree_Node *
+eina_tree_get_node(Eina_Tree *tree, const void *key)
 {
-   Edata_Tree_Node *ret;
+   Eina_Tree_Node *ret;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, NULL);
 
@@ -278,10 +278,10 @@ edata_tree_get_node(Edata_Tree *tree, const void *key)
  * @return Returns the value corresponding to the key if found, otherwise NULL.
  */
 EAPI void *
-edata_tree_get(Edata_Tree *tree, const void *key)
+eina_tree_get(Eina_Tree *tree, const void *key)
 {
    void *ret;
-   Edata_Tree_Node *node;
+   Eina_Tree_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, NULL);
 
@@ -299,9 +299,9 @@ edata_tree_get(Edata_Tree *tree, const void *key)
  *         equal to the key
  */
 EAPI void *
-edata_tree_closest_larger_get(Edata_Tree *tree, const void *key)
+eina_tree_closest_larger_get(Eina_Tree *tree, const void *key)
 {
-   Edata_Tree_Node *node;
+   Eina_Tree_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, NULL);
 
@@ -326,9 +326,9 @@ edata_tree_closest_larger_get(Edata_Tree *tree, const void *key)
  * @return Returns NULL if no valid nodes, otherwise the node <= key
  */
 EAPI void *
-edata_tree_closest_smaller_get(Edata_Tree *tree, const void *key)
+eina_tree_closest_smaller_get(Eina_Tree *tree, const void *key)
 {
-   Edata_Tree_Node *node;
+   Eina_Tree_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, NULL);
 
@@ -351,18 +351,18 @@ edata_tree_closest_smaller_get(Edata_Tree *tree, const void *key)
  * @return TRUE if successful, FALSE if not.
  */
 EAPI int 
-edata_tree_set(Edata_Tree *tree, void *key, void *value)
+eina_tree_set(Eina_Tree *tree, void *key, void *value)
 {
-   Edata_Tree_Node *node = NULL;
+   Eina_Tree_Node *node = NULL;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
 
    node = tree_node_find(tree, key);
    if (!node)
      {
-	node = edata_tree_node_new();
-	edata_tree_node_key_set(node, key);
-	if (!edata_tree_node_add(tree, node))
+	node = eina_tree_node_new();
+	eina_tree_node_key_set(node, key);
+	if (!eina_tree_node_add(tree, node))
 	  return FALSE;
      }
    else 
@@ -373,7 +373,7 @@ edata_tree_set(Edata_Tree *tree, void *key, void *value)
 	  tree->free_value(node->value);
      }
 
-   edata_tree_node_value_set(node, value);
+   eina_tree_node_value_set(node, value);
 
    for (; node; node = node->parent)
      tree_node_balance(tree, node);
@@ -388,9 +388,9 @@ edata_tree_set(Edata_Tree *tree, void *key, void *value)
  * @return TRUE on a successful add, FALSE otherwise.
  */
 EAPI int 
-edata_tree_node_add(Edata_Tree *tree, Edata_Tree_Node *node)
+eina_tree_node_add(Eina_Tree *tree, Eina_Tree_Node *node)
 {
-   Edata_Tree_Node *travel = NULL;
+   Eina_Tree_Node *travel = NULL;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
@@ -427,9 +427,9 @@ edata_tree_node_add(Edata_Tree *tree, Edata_Tree_Node *node)
  * @return TRUE on a successful remove, FALSE otherwise.
  */
 EAPI int 
-edata_tree_node_remove(Edata_Tree *tree, Edata_Tree_Node *node)
+eina_tree_node_remove(Eina_Tree *tree, Eina_Tree_Node *node)
 {
-   Edata_Tree_Node *traverse;
+   Eina_Tree_Node *traverse;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
@@ -546,9 +546,9 @@ edata_tree_node_remove(Edata_Tree *tree, Edata_Tree_Node *node)
  * @return TRUE on a successful remove, FALSE otherwise.
  */
 EAPI int 
-edata_tree_remove(Edata_Tree *tree, const void *key)
+eina_tree_remove(Eina_Tree *tree, const void *key)
 {
-   Edata_Tree_Node *node;
+   Eina_Tree_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
    if (!tree->tree)
@@ -559,10 +559,10 @@ edata_tree_remove(Edata_Tree *tree, const void *key)
    if (!node)
      return FALSE;
 
-   if (!edata_tree_node_remove(tree, node))
+   if (!eina_tree_node_remove(tree, node))
      return FALSE;
 
-   edata_tree_node_destroy(node, tree->free_value, tree->free_key);
+   eina_tree_node_destroy(node, tree->free_value, tree->free_key);
 
    return TRUE;
 }
@@ -573,7 +573,7 @@ edata_tree_remove(Edata_Tree *tree, const void *key)
  * @return Returns TRUE if no nodes exist, FALSE otherwise
  */
 EAPI int 
-edata_tree_empty_is(Edata_Tree *tree)
+eina_tree_empty_is(Eina_Tree *tree)
 {
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
 
@@ -591,7 +591,7 @@ edata_tree_empty_is(Edata_Tree *tree)
  * @return Returns TRUE on success, FALSE on failure.
  */
 EAPI int 
-edata_tree_for_each_node_value(Edata_Tree *tree, Edata_For_Each for_each_func, void *user_data)
+eina_tree_for_each_node_value(Eina_Tree *tree, Eina_For_Each for_each_func, void *user_data)
 {
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
    CHECK_PARAM_POINTER_RETURN("for_each_func", for_each_func, FALSE);
@@ -610,7 +610,7 @@ edata_tree_for_each_node_value(Edata_Tree *tree, Edata_For_Each for_each_func, v
  * @return Returns TRUE on success, FALSE on failure.
  */
 EAPI int 
-edata_tree_for_each_node(Edata_Tree *tree, Edata_For_Each for_each_func, void *user_data)
+eina_tree_for_each_node(Eina_Tree *tree, Eina_For_Each for_each_func, void *user_data)
 {
    CHECK_PARAM_POINTER_RETURN("tree", tree, FALSE);
    CHECK_PARAM_POINTER_RETURN("for_each_func", for_each_func, FALSE);
@@ -622,10 +622,10 @@ edata_tree_for_each_node(Edata_Tree *tree, Edata_For_Each for_each_func, void *u
 }
 
 /* Find the parent for the key */
-static Edata_Tree_Node *
-tree_node_find_parent(Edata_Tree *tree, const void *key)
+static Eina_Tree_Node *
+tree_node_find_parent(Eina_Tree *tree, const void *key)
 {
-   Edata_Tree_Node *parent, *travel;
+   Eina_Tree_Node *parent, *travel;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, NULL);
 
@@ -659,11 +659,11 @@ tree_node_find_parent(Edata_Tree *tree, const void *key)
 }
 
 /* Search for the node with a specified key */
-static Edata_Tree_Node *
-tree_node_find(Edata_Tree *tree, const void *key)
+static Eina_Tree_Node *
+tree_node_find(Eina_Tree *tree, const void *key)
 {
    int compare;
-   Edata_Tree_Node *node;
+   Eina_Tree_Node *node;
 
    CHECK_PARAM_POINTER_RETURN("tree", tree, NULL);
 
@@ -692,7 +692,7 @@ tree_node_find(Edata_Tree *tree, const void *key)
 
 /* Balance the tree with respect to node */
 static int 
-tree_node_balance(Edata_Tree *tree, Edata_Tree_Node *top_node)
+tree_node_balance(Eina_Tree *tree, Eina_Tree_Node *top_node)
 {
    int balance;
 
@@ -725,9 +725,9 @@ tree_node_balance(Edata_Tree *tree, Edata_Tree_Node *top_node)
 
 /* Tree is overbalanced to the left, so rotate nodes to the right. */
 static int 
-tree_node_rotate_right(Edata_Tree *tree, Edata_Tree_Node *top_node)
+tree_node_rotate_right(Eina_Tree *tree, Eina_Tree_Node *top_node)
 {
-   Edata_Tree_Node *temp;
+   Eina_Tree_Node *temp;
 
    CHECK_PARAM_POINTER_RETURN("top_node", top_node, FALSE);
 
@@ -761,9 +761,9 @@ tree_node_rotate_right(Edata_Tree *tree, Edata_Tree_Node *top_node)
 
 /* The tree is overbalanced to the right, so we rotate nodes to the left */
 static int 
-tree_node_rotate_left(Edata_Tree *tree, Edata_Tree_Node *top_node)
+tree_node_rotate_left(Eina_Tree *tree, Eina_Tree_Node *top_node)
 {
-   Edata_Tree_Node *temp;
+   Eina_Tree_Node *temp;
 
    CHECK_PARAM_POINTER_RETURN("top_node", top_node, FALSE);
 
@@ -804,7 +804,7 @@ tree_node_rotate_left(Edata_Tree *tree, Edata_Tree_Node *top_node)
  * @return Returns FALSE if an error condition occurs, otherwise TRUE
  */
 static int 
-tree_for_each_node(Edata_Tree_Node * node, Edata_For_Each for_each_func, void *user_data)
+tree_for_each_node(Eina_Tree_Node * node, Eina_For_Each for_each_func, void *user_data)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 
@@ -826,7 +826,7 @@ tree_for_each_node(Edata_Tree_Node * node, Edata_For_Each for_each_func, void *u
  * @return Returns FALSE if an error condition occurs, otherwise TRUE
  */
 static int 
-tree_for_each_node_value(Edata_Tree_Node *node, Edata_For_Each for_each_func, void *user_data)
+tree_for_each_node_value(Eina_Tree_Node *node, Eina_For_Each for_each_func, void *user_data)
 {
    CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
 

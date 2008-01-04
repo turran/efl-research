@@ -89,11 +89,11 @@
 #define EDATA_MAGIC_EVENT           0xf77119fe
 #define EDATA_MAGIC_ANIMATOR        0xf7643ea5
 
-#define EDATA_MAGIC                 Edata_Magic  __magic
+#define EDATA_MAGIC                 Eina_Magic  __magic
 
 #define EDATA_MAGIC_SET(d, m)       (d)->__magic = (m)
 #define EDATA_MAGIC_CHECK(d, m)     ((d) && ((d)->__magic == (m)))
-#define EDATA_MAGIC_FAIL(d, m, fn)  _edata_magic_fail((d), (d) ? (d)->__magic : 0, (m), (fn));
+#define EDATA_MAGIC_FAIL(d, m, fn)  _eina_magic_fail((d), (d) ? (d)->__magic : 0, (m), (fn));
 
 /* undef the following, we want out version */
 #undef FREE
@@ -105,14 +105,14 @@
 #undef IF_FN_DEL
 #define IF_FN_DEL(_fn, ptr) if (ptr) { _fn(ptr); ptr = NULL; }
 
-inline void edata_print_warning(const char *function, const char *sparam);
+inline void eina_print_warning(const char *function, const char *sparam);
 
 /* convenience macros for checking pointer parameters for non-NULL */
 #undef CHECK_PARAM_POINTER_RETURN
 #define CHECK_PARAM_POINTER_RETURN(sparam, param, ret) \
      if (!(param)) \
 	 { \
-	    edata_print_warning(__FUNCTION__, sparam); \
+	    eina_print_warning(__FUNCTION__, sparam); \
 	    return ret; \
 	 }
 
@@ -120,24 +120,24 @@ inline void edata_print_warning(const char *function, const char *sparam);
 #define CHECK_PARAM_POINTER(sparam, param) \
      if (!(param)) \
 	 { \
-	    edata_print_warning(__FUNCTION__, sparam); \
+	    eina_print_warning(__FUNCTION__, sparam); \
 	    return; \
 	 }
 
-typedef unsigned int              Edata_Magic;
+typedef unsigned int              Eina_Magic;
 
-typedef struct _Edata_List2       Edata_List2;
-typedef struct _Edata_List2_Data  Edata_List2_Data;
+typedef struct _Eina_List2       Eina_List2;
+typedef struct _Eina_List2_Data  Eina_List2_Data;
 
-struct _Edata_List2
+struct _Eina_List2
 {
-   Edata_List2  *next, *prev;
-   Edata_List2  *last;
+   Eina_List2  *next, *prev;
+   Eina_List2  *last;
 };
 
-struct _Edata_List2_Data
+struct _Eina_List2_Data
 {
-   Edata_List2   __list_data;
+   Eina_List2   __list_data;
    void *data;
 };
 
@@ -145,21 +145,21 @@ struct _Edata_List2_Data
 
 #endif
 
-EAPI void          _edata_magic_fail(void *d, Edata_Magic m, Edata_Magic req_m, const char *fname);
+EAPI void          _eina_magic_fail(void *d, Eina_Magic m, Eina_Magic req_m, const char *fname);
 
-EAPI void         *_edata_list2_append           (void *in_list, void *in_item);
-EAPI void         *_edata_list2_prepend          (void *in_list, void *in_item);
-EAPI void         *_edata_list2_append_relative  (void *in_list, void *in_item, void *in_relative);
-EAPI void         *_edata_list2_prepend_relative (void *in_list, void *in_item, void *in_relative);
-EAPI void         *_edata_list2_remove           (void *in_list, void *in_item);
-EAPI void         *_edata_list2_find             (void *in_list, void *in_item);
+EAPI void         *_eina_list2_append           (void *in_list, void *in_item);
+EAPI void         *_eina_list2_prepend          (void *in_list, void *in_item);
+EAPI void         *_eina_list2_append_relative  (void *in_list, void *in_item, void *in_relative);
+EAPI void         *_eina_list2_prepend_relative (void *in_list, void *in_item, void *in_relative);
+EAPI void         *_eina_list2_remove           (void *in_list, void *in_item);
+EAPI void         *_eina_list2_find             (void *in_list, void *in_item);
 
-void          _edata_fps_debug_init(void);
-void          _edata_fps_debug_shutdown(void);
-void          _edata_fps_debug_runtime_add(double t);
+void          _eina_fps_debug_init(void);
+void          _eina_fps_debug_shutdown(void);
+void          _eina_fps_debug_runtime_add(double t);
 
 
 
-extern int    _edata_fps_debug;
+extern int    _eina_fps_debug;
 
 #endif
