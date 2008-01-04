@@ -9,7 +9,7 @@
  */
 EAPI Eina_Canvas * eina_canvas_new(int w, int h)
 {
-	
+	/* define a new tiler for the canvas */
 }
 /**
  * To be documented
