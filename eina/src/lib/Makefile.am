@@ -3,13 +3,24 @@ MAINTAINERCLEANFILES = Makefile.in
 INCLUDES = \
 -I.
 
+EINAHEADERS = \
+Eina.h \
+eina_hash.h \
+eina_lalloc.h \
+eina_list.h \
+eina_sheap.h \
+eina_tree.h \
+eina_rectangle.h
+
+installed_headersdir = $(prefix)/include/edata
+installed_headers_DATA = $(EINAHEADERS)
+
+
 lib_LTLIBRARIES = libeina.la
-include_HEADERS = \
-Eina.h
 
 libeina_la_SOURCES = \
-eina_array.c \
 eina_hash.c \
+eina_lalloc.c \
 eina_list.c \
 eina_sheap.c \
 eina_tree.c \

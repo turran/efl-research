@@ -24,8 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-#include "eina_private.h"
 #include "Eina.h"
+#include "eina_private.h"
 
 EAPI const unsigned int eina_prime_table[] =
 {
@@ -34,96 +34,13 @@ EAPI const unsigned int eina_prime_table[] =
      2097143, 4194301, 8388617, 16777213
 };
 
-inline void 
-eina_print_warning(const char *function, const char *sparam)
+inline void eina_print_warning(const char *function, const char *sparam)
 {
-   fprintf(stderr, "***** Developer Warning ***** :\n"
-	   "\tThis program is calling:\n\n"
-	   "\t%s();\n\n"
-	   "\tWith the parameter:\n\n"
-	   "\t%s\n\n"
-	   "\tbeing NULL. Please fix your program.\n", function, sparam);
-   fflush(stderr);
-}
-
-/**
- * Just casts the key to an unsigned int
- * @param  key The key to return compute a hash value
- * @return The key cast to an unsigned int.
- */
-EAPI unsigned int 
-eina_direct_hash(const void *key)
-{
-   return ((unsigned int) key);
-}
-
-/**
- * Compute the hash value of a string
- * @param  key A pointer to the string to compute a hash value
- * @return A computed hash value for @a key.
- */
-EAPI unsigned int 
-eina_str_hash(const void *key)
-{
-   int i;
-   unsigned int mask;
-   unsigned int value = 0;
-   const char *k = key;
-
-   if (!k)
-     return 0;
-
-   mask = (sizeof(unsigned int) * 8) - 1;
-
-   for (i = 0; k[i] != '\0'; i++)
-     {
-	value ^= ((unsigned int) k[i] << ((i * 5) & mask));
-     }
-
-   return value;
-}
-
-/**
- * Perform a direct comparison of two keys' values
- * @param  key1 The first key to compare
- * @param  key2 The second key to compare
- * @return A strcmp style value to indicate the larger key
- */
-EAPI int 
-eina_direct_compare(const void *key1, const void *key2)
-{
-   unsigned int k1, k2;
-
-   k1 = (unsigned int) key1;
-   k2 = (unsigned int) key2;
-
-   if (k1 > k2)
-     return 1;
-
-   if (k1 < k2)
-     return -1;
-
-   return 0;
-}
-
-/**
- * Perform a string comparison of two keys values
- * @param  key1 The first key to compare
- * @param  key2 The second key to compare
- * @return A strcmp style value to indicate the larger key
- */
-EAPI int 
-eina_str_compare(const void *key1, const void *key2)
-{
-   const char *k1, *k2;
-
-   if (!key1 || !key2)
-     return eina_direct_compare(key1, key2);
-   else if (key1 == key2)
-     return 0;
-
-   k1 = key1;
-   k2 = key2;
-
-   return strcmp(k1, k2);
+	fprintf(stderr, "***** Developer Warning ***** :\n"
+		"\tThis program is calling:\n\n"
+		"\t%s();\n\n"
+		"\tWith the parameter:\n\n"
+		"\t%s\n\n"
+		"\tbeing NULL. Please fix your program.\n", function, sparam);
+	fflush(stderr);
 }

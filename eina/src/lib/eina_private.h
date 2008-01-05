@@ -1,11 +1,12 @@
-#ifndef _EDATA_PRIVATE_H
-#define _EDATA_PRIVATE_H
+#ifndef EINA_PRIVATE_H_
+#define EINA_PRIVATE_H_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <stddef.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>
@@ -21,33 +22,6 @@
 # include <config.h>
 #endif
 
-#ifdef EAPI
-# undef EAPI
-#endif
-#ifdef _MSC_VER
-# ifdef BUILDING_DLL
-#  define EAPI __declspec(dllexport)
-# else
-#  define EAPI __declspec(dllimport)
-# endif
-#else
-# ifdef __GNUC__
-#  if __GNUC__ >= 4
-#   define EAPI __attribute__ ((visibility("default")))
-#  else
-#   define EAPI
-#  endif
-# else
-#  define EAPI
-# endif
-#endif
-
-#ifdef __GNUC__
-# if __GNUC__ >= 4
-// BROKEN in gcc 4 on amd64
-//#  pragma GCC visibility push(hidden)
-# endif
-#endif
 
 #if HAVE___ATTRIBUTE__
 # define __UNUSED__ __attribute__((unused))
@@ -77,23 +51,23 @@
 
 #define READBUFSIZ 65536
 
-#define EDATA_MAGIC_NONE            0x1234fedc
-#define EDATA_MAGIC_EXE             0xf7e812f5
-#define EDATA_MAGIC_TIMER           0xf7d713f4
-#define EDATA_MAGIC_IDLER           0xf7c614f3
-#define EDATA_MAGIC_IDLE_ENTERER    0xf7b515f2
-#define EDATA_MAGIC_IDLE_EXITER     0xf7601afd
-#define EDATA_MAGIC_FD_HANDLER      0xf7a416f1
-#define EDATA_MAGIC_EVENT_HANDLER   0xf79317f0
-#define EDATA_MAGIC_EVENT_FILTER    0xf78218ff
-#define EDATA_MAGIC_EVENT           0xf77119fe
-#define EDATA_MAGIC_ANIMATOR        0xf7643ea5
+#define EINA_MAGIC_NONE            0x1234fedc
+#define EINA_MAGIC_EXE             0xf7e812f5
+#define EINA_MAGIC_TIMER           0xf7d713f4
+#define EINA_MAGIC_IDLER           0xf7c614f3
+#define EINA_MAGIC_IDLE_ENTERER    0xf7b515f2
+#define EINA_MAGIC_IDLE_EXITER     0xf7601afd
+#define EINA_MAGIC_FD_HANDLER      0xf7a416f1
+#define EINA_MAGIC_EVENT_HANDLER   0xf79317f0
+#define EINA_MAGIC_EVENT_FILTER    0xf78218ff
+#define EINA_MAGIC_EVENT           0xf77119fe
+#define EINA_MAGIC_ANIMATOR        0xf7643ea5
 
-#define EDATA_MAGIC                 Eina_Magic  __magic
+#define EINA_MAGIC                 Eina_Magic  __magic
 
-#define EDATA_MAGIC_SET(d, m)       (d)->__magic = (m)
-#define EDATA_MAGIC_CHECK(d, m)     ((d) && ((d)->__magic == (m)))
-#define EDATA_MAGIC_FAIL(d, m, fn)  _eina_magic_fail((d), (d) ? (d)->__magic : 0, (m), (fn));
+#define EINA_MAGIC_SET(d, m)       (d)->__magic = (m)
+#define EINA_MAGIC_CHECK(d, m)     ((d) && ((d)->__magic == (m)))
+#define EINA_MAGIC_FAIL(d, m, fn)  _eina_magic_fail((d), (d) ? (d)->__magic : 0, (m), (fn));
 
 /* undef the following, we want out version */
 #undef FREE
@@ -141,7 +115,7 @@ struct _Eina_List2_Data
    void *data;
 };
 
-#ifndef _EDATA_H
+#ifndef EINA_H
 
 #endif
 

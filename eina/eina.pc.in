@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Edata 
-Description: Edata
+Name: Eina
+Description: Eina
 Requires: 
 Version: @VERSION@
-Libs: -L${libdir} -ledata
+Libs: -L${libdir} -leina
 Cflags: -I${includedir}
