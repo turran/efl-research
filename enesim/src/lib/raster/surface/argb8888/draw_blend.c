@@ -12,8 +12,8 @@
 #define ARGB8888_CONVOLUTION_CALL \
 	argb8888_c_2x2conv_normal(sp, d, sxx, syy, srect->w, srect->h);
 #define ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO \
-	argb8888_c_draw_blend_affine_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect, \
-			Enesim_Surface *ds, Enesim_Rectangle *drect, enesim_16p16_t *t)
+	argb8888_c_draw_blend_affine_no_no(Enesim_Surface *ss, Eina_Rectangle *srect, \
+			Enesim_Surface *ds, Eina_Rectangle *drect, enesim_16p16_t *t)
 
 #include "_2x2conv.h"
 #include "_noscale_affine.h"
@@ -32,8 +32,8 @@
 #define ARGB8888_CONVOLUTION_CALL \
 	argb8888_c_2x2conv_mul(sp, d, sxx, syy, srect->w, srect->h, mul_color);
 #define ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO \
-	argb8888_c_draw_blend_mul_affine_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect, \
-			Enesim_Surface *ds, Enesim_Rectangle *drect, enesim_16p16_t *t, DATA32 mul_color)
+	argb8888_c_draw_blend_mul_affine_no_no(Enesim_Surface *ss, Eina_Rectangle *srect, \
+			Enesim_Surface *ds, Eina_Rectangle *drect, enesim_16p16_t *t, DATA32 mul_color)
 #include "_2x2conv.h"
 #include "_noscale_affine.h"
 
@@ -44,6 +44,6 @@
 
 #define RENDER_OP_CALL pt_pixel_blend(dp, *sp);
 #define ARGB8888_NOSCALE_IDENTITY_ITERATOR_PROTO \
-	argb8888_c_draw_blend_identity_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect,\
-			Enesim_Surface *ds, Enesim_Rectangle *drect)
+	argb8888_c_draw_blend_identity_no_no(Enesim_Surface *ss, Eina_Rectangle *srect,\
+			Enesim_Surface *ds, Eina_Rectangle *drect)
 #include "_noscale_identity.h"

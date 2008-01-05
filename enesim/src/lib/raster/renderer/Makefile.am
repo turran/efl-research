@@ -6,7 +6,7 @@ INCLUDES = -I. \
 -I$(top_srcdir)/src/lib/raster/scanline \
 -I$(top_srcdir)/src/lib/raster/surface \
 -I$(top_srcdir)/src/lib/util \
-@EDATA_CFLAGS@
+@EINA_CFLAGS@
 
 noinst_LTLIBRARIES = libenesim_renderer.la
 

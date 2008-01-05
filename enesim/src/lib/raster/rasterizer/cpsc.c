@@ -2,7 +2,6 @@
 #include <string.h>
 #include <math.h>
 
-#include "Edata.h"
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "rasterizer.h"
@@ -33,7 +32,7 @@ typedef struct _Cpsc_Edge
 
 typedef struct _Cpsc
 {
-	Edata_Array	*a;
+	Eina_Array	*a;
 	Enesim_Rasterizer *r;
 	Cpsc_Vertex 	*vertices;
 	int 		num_vertices;
@@ -121,7 +120,7 @@ static void _vertex_add(Cpsc *r, float x, float y)
 {
 	int n = r->num_vertices;
 
-	edata_array_element_add(r->a);
+	eina_array_element_add(r->a);
 	r->vertices[n].x = x;
 	r->vertices[n].y = y;
 	r->vertices[n].i = n;
@@ -240,14 +239,14 @@ static Enesim_Rasterizer_Func cpsc_func = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Enesim_Rectangle boundaries)
+EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Eina_Rectangle boundaries)
 {
 	Enesim_Rasterizer *r;
 	Cpsc *c;
 
 	c = calloc(1, sizeof(Cpsc));
-	c->a = edata_array_new(c, EDATA_ARRAY_ALLOC(_a_alloc),
-		EDATA_ARRAY_FREE(_a_free), 0);
+	c->a = eina_array_new(c, EINA_ARRAY_ALLOC(_a_alloc),
+		EINA_ARRAY_FREE(_a_free), 0);
 	r = enesim_rasterizer_new(c, &cpsc_func, boundaries, ENESIM_SCANLINE_ALIAS);
 	c->r = r;
 	return r;

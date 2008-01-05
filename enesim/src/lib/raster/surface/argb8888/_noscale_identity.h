@@ -1,9 +1,9 @@
 /**
  * parameters:
  * Enesim_Surface *ss
- * Enesim_Rectangle *srect
+ * Eina_Rectangle *srect
  * Enesim_Surface *ds
- * Enesim_Rectangle *drect
+ * Eina_Rectangle *drect
  * * macros:
  * RENDER_OP_CALL
  */

@@ -1,5 +1,5 @@
-#include "Eina.h"
-#include "private.h"
+#include "Ekeko.h"
+#include "ekeko_private.h"
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -7,7 +7,7 @@
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Object * eina_object_add(Eina_Canvas *c)
+EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c)
 {
 	
 }
@@ -15,7 +15,7 @@ EAPI Eina_Object * eina_object_add(Eina_Canvas *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eina_object_move(Eina_Object *o, int x, int y)
+EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 {
 	
 }
@@ -23,7 +23,7 @@ EAPI void eina_object_move(Eina_Object *o, int x, int y)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eina_object_show(Eina_Object *o)
+EAPI void ekeko_object_show(Ekeko_Object *o)
 {
 	
 }
@@ -31,7 +31,7 @@ EAPI void eina_object_show(Eina_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eina_object_hide(Eina_Object *o)
+EAPI void ekeko_object_hide(Ekeko_Object *o)
 {
 	
 }
@@ -39,7 +39,7 @@ EAPI void eina_object_hide(Eina_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eina_object_resize(Eina_Object *o, int w, int h)
+EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 {
 	
 }
@@ -47,7 +47,7 @@ EAPI void eina_object_resize(Eina_Object *o, int w, int h)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eina_object_stack_above(Eina_Object *o, Eina_Object *object_rel)
+EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel)
 {
 	
 }
@@ -55,7 +55,7 @@ EAPI void eina_object_stack_above(Eina_Object *o, Eina_Object *object_rel)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void eina_object_stack_below(Eina_Object *o, Eina_Object *object_rel)
+EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel)
 {
 	
 }

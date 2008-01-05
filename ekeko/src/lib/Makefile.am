@@ -2,17 +2,17 @@ MAINTAINERCLEANFILES = Makefile.in
 
 INCLUDES = \
 -I. \
-@EDATA_CFLAGS@
+@EINA_CFLAGS@
 
-lib_LTLIBRARIES = libeina.la
+lib_LTLIBRARIES = libekeko.la
 include_HEADERS = \
-Eina.h
+Ekeko.h
 
-libeina_la_SOURCES = \
-canvas.c \
-object.c
+libekeko_la_SOURCES = \
+ekeko_canvas.c \
+ekeko_object.c
 
-libeina_la_LIBADD = \
-@EDATA_LIBS@
+libekeko_la_LIBADD = \
+@EINA_LIBS@
 
-libeina_la_LDFLAGS = -version-info 1:0:0
+libekeko_la_LDFLAGS = -version-info 1:0:0

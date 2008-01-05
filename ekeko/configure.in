@@ -5,7 +5,7 @@ AC_INIT(configure.in)
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
-AM_INIT_AUTOMAKE(eina, 0.0.1)
+AM_INIT_AUTOMAKE(ekeko, 0.0.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_C_BIGENDIAN
@@ -122,13 +122,13 @@ case "$host_os" in
     ;;
 esac
 
-PKG_CHECK_MODULES(EDATA, [edata >= 0.0.1])
+PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
 
 ## Make the debug preprocessor configurable
 
 AC_OUTPUT([
 Makefile
-eina.pc
+ekeko.pc
 src/Makefile
 src/lib/Makefile
 ],[

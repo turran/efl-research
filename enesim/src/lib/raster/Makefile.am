@@ -5,7 +5,7 @@ Makefile.in
 
 INCLUDES = -I. \
 -I$(top_srcdir)/src/lib \
-@EDATA_CFLAGS@
+@EINA_CFLAGS@
 
 noinst_LTLIBRARIES = libenesim_raster.la
 

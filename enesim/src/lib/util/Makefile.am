@@ -2,8 +2,8 @@ MAINTAINERCLEANFILES = \
 Makefile.in
 
 ENESIM_UTILHEADERS = \
+enesim_rectangle.h \
 curve.h \
-rectangle.h \
 extender_int.h \
 extender_float.h \
 fixed_16p16.h \

@@ -17,7 +17,7 @@ struct _Enesim_Component
 {
 	Enesim_Container		*path; 		/**< Main temporal data */
 	Enesim_Component_Reader 	*src; 		/**< Source data */
-	Edata_List		*readers;
+	Eina_List		*readers;
 	int 			has_changed; 	/**< Forward notification */
 	int 			type;
 	/* component specific data */

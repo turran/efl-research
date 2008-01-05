@@ -6,7 +6,7 @@ Makefile.in
 INCLUDES = -I. \
 -I$(top_srcdir)/src/lib \
 -I$(top_srcdir)/src/lib/util \
-@EDATA_CFLAGS@
+@EINA_CFLAGS@
 
 noinst_LTLIBRARIES = libenesim_vector.la
 

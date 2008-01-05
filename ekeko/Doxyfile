@@ -1,4 +1,4 @@
-PROJECT_NAME           = Ecore Linux Input
+PROJECT_NAME           = Ekeko
 PROJECT_NUMBER         =
 OUTPUT_DIRECTORY       = doc
 INPUT                  = ./src/lib

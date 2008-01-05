@@ -1,7 +1,7 @@
-#ifndef PRIVATE_H_
-#define PRIVATE_H_
+#ifndef EKEKO_PRIVATE_H_
+#define EKEKO_PRIVATE_H_
 
-struct _Eina_Object
+struct _Ekeko_Object
 {
 	int x;
 	int y;
@@ -14,7 +14,7 @@ struct _Eina_Object
 	// generate: make the object generate itself
 };
 
-struct _Eina_Canvas
+struct _Ekeko_Canvas
 {
 	int w;
 	int h;
@@ -24,4 +24,4 @@ struct _Eina_Canvas
 };
 
 
-#endif /*PRIVATE_H_*/
+#endif /*EKEKO_PRIVATE_H_*/

@@ -13,8 +13,8 @@ static void _alloc_cb(void *data)
 	Enesim_Component_Reader *r;
 	Enesim_Component *c = data;
 	
-	edata_list_first_goto(c->readers);
-	while ((r = edata_list_next(c->readers)))
+	eina_list_first_goto(c->readers);
+	while ((r = eina_list_next(c->readers)))
 	{
 		enesim_reader_reference_update(r);
 	}
@@ -31,7 +31,7 @@ Enesim_Component * enesim_component_new(int num_vertices)
 	Enesim_Component *c;
 
 	c = calloc(1, sizeof(Enesim_Component));
-	c->readers = edata_list_new();
+	c->readers = eina_list_new();
 	c->path = enesim_container_new(c, num_vertices);
 	/* ABSTRACT THIS */
 	c->path->alloc_cb = _alloc_cb;
@@ -49,8 +49,8 @@ void enesim_component_notify(Enesim_Component *c)
 	if (c->has_changed) return;
 	
 	c->has_changed = 1;
-	edata_list_first_goto(c->readers);
-	while ((r = edata_list_next(c->readers)))
+	eina_list_first_goto(c->readers);
+	while ((r = eina_list_next(c->readers)))
 	{
 		enesim_reader_notify(r);
 	}

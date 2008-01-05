@@ -8,4 +8,4 @@ Description: Eina
 Requires: 
 Version: @VERSION@
 Libs: -L${libdir} -leina
-Cflags: -I${includedir}
+Cflags: -I${includedir}/eina

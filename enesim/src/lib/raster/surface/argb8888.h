@@ -81,12 +81,12 @@ static inline void pt_pixel_fill(DATA32 *d, DATA32 s)
 void argb8888_c_color(Enesim_Surface_Data *data, int off, DATA32 c, int len);
 void argb8888_c_color_mask(Enesim_Surface_Data *data, int off, DATA32 c, int len, DATA8 *mask);
 
-void argb8888_c_draw_blend_affine_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect,
-			Enesim_Surface *ds, Enesim_Rectangle *drect, enesim_16p16_t *t);
-void argb8888_c_draw_fill_affine_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect,
-			Enesim_Surface *ds, Enesim_Rectangle *drect, enesim_16p16_t *t);
-void argb8888_c_draw_blend_identity_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect);
-void argb8888_c_draw_blend_mul_affine_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect,
-			Enesim_Surface *ds, Enesim_Rectangle *drect, enesim_16p16_t *t, DATA32 mul_color);
-void argb8888_c_draw_fill_identity_no_no(Enesim_Surface *ss, Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect);
+void argb8888_c_draw_blend_affine_no_no(Enesim_Surface *ss, Eina_Rectangle *srect,
+			Enesim_Surface *ds, Eina_Rectangle *drect, enesim_16p16_t *t);
+void argb8888_c_draw_fill_affine_no_no(Enesim_Surface *ss, Eina_Rectangle *srect,
+			Enesim_Surface *ds, Eina_Rectangle *drect, enesim_16p16_t *t);
+void argb8888_c_draw_blend_identity_no_no(Enesim_Surface *ss, Eina_Rectangle *srect, Enesim_Surface *ds, Eina_Rectangle *drect);
+void argb8888_c_draw_blend_mul_affine_no_no(Enesim_Surface *ss, Eina_Rectangle *srect,
+			Enesim_Surface *ds, Eina_Rectangle *drect, enesim_16p16_t *t, DATA32 mul_color);
+void argb8888_c_draw_fill_identity_no_no(Enesim_Surface *ss, Eina_Rectangle *srect, Enesim_Surface *ds, Eina_Rectangle *drect);
 #endif

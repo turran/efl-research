@@ -1,28 +1,7 @@
 #ifndef _ENESIM_H
 #define _ENESIM_H
 
-#ifdef EAPI
-#undef EAPI
-#endif
-#ifdef _MSC_VER
-# ifdef BUILDING_DLL
-#  define EAPI __declspec(dllexport)
-# else
-#  define EAPI __declspec(dllimport)
-# endif
-#else
-# ifdef __GNUC__
-#  if __GNUC__ >= 4
-#   define EAPI __attribute__ ((visibility("default")))
-#  else
-#   define EAPI
-#  endif
-# else
-#  define EAPI
-# endif
-#endif
-
-#include "rectangle.h"
+#include <Eina.h>
 
 /**
  * @mainpage Enesim
@@ -124,7 +103,7 @@ EAPI int enesim_rasterizer_generate(Enesim_Rasterizer *r, Enesim_Scanline_Callba
 EAPI void enesim_rasterizer_delete(Enesim_Rasterizer *r);
 EAPI void enesim_rasterizer_fill_rule_set(Enesim_Rasterizer *r, Enesim_Rasterizer_Fill_Rule rule);
 
-EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Enesim_Rectangle boundaries);
+EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Eina_Rectangle boundaries);
 
 typedef enum
 {
@@ -135,7 +114,7 @@ typedef enum
 } Enesim_Rasterizer_Kiia_Count;
 
 EAPI Enesim_Rasterizer * enesim_rasterizer_kiia_new(Enesim_Rasterizer_Kiia_Count count,
-		Enesim_Rectangle boundaries);
+		Eina_Rectangle boundaries);
 
 /** @} */ //End of Enesim_Rasterizer_Group
 
@@ -167,7 +146,7 @@ EAPI int enesim_surface_flag_get(Enesim_Surface *s);
 EAPI void enesim_surface_flag_set(Enesim_Surface *s, Enesim_Surface_Flag flags);
 EAPI void enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...);
 EAPI void enesim_surface_delete(Enesim_Surface *s);
-EAPI void enesim_surface_draw(Enesim_Surface *s, Enesim_Rectangle *srect, Enesim_Surface *d, Enesim_Rectangle *drect, int mode, int smooth);
+EAPI void enesim_surface_draw(Enesim_Surface *s, Eina_Rectangle *srect, Enesim_Surface *d, Eina_Rectangle *drect, int mode, int smooth);
 /** @} */ //End of Enesim_Surface_Group
 
 /**

@@ -3,7 +3,6 @@
 #include <string.h>
 #include <math.h>
 
-#include "Edata.h"
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "rasterizer.h"
@@ -70,7 +69,7 @@ static Enesim_Rasterizer_Func kiia16_func = {
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Enesim_Rasterizer * enesim_rasterizer_kiia16_new(Enesim_Rectangle boundaries)
+Enesim_Rasterizer * enesim_rasterizer_kiia16_new(Eina_Rectangle boundaries)
 {
 	Enesim_Rasterizer *r;
 	r = _new(&kiia16_func, boundaries);

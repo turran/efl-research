@@ -15,7 +15,7 @@ libenesim_la_LIBADD = \
 raster/libenesim_raster.la \
 util/libenesim_util.la \
 vector/libenesim_vector.la \
-@EDATA_LIBS@
+@EINA_LIBS@
 
 libenesim_la_DEPENDENCIES = \
 raster/libenesim_raster.la \

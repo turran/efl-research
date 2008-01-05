@@ -14,8 +14,8 @@ typedef struct _Fill_Surface
 {
 	Enesim_Surface *s;
 	int mode;
-	Enesim_Rectangle sarea;
-	Enesim_Rectangle darea;
+	Eina_Rectangle sarea;
+	Eina_Rectangle darea;
 } Fill_Surface;
 
 #define DRECT f->darea

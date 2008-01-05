@@ -10,9 +10,10 @@ eina_lalloc.h \
 eina_list.h \
 eina_sheap.h \
 eina_tree.h \
+eina_types.h \
 eina_rectangle.h
 
-installed_headersdir = $(prefix)/include/edata
+installed_headersdir = $(prefix)/include/eina
 installed_headers_DATA = $(EINAHEADERS)
 
 

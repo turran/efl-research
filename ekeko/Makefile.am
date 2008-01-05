@@ -17,7 +17,7 @@ stamp-h.in \
 build-stamp \
 configure-stamp \
 depcomp \
-eina.pc 
+ekeko.pc 
 
 EXTRA_DIST = \
 AUTHORS \
@@ -25,8 +25,8 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-eina.pc.in
+ekeko.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = eina.pc
+pkgconfig_DATA = ekeko.pc
 ACLOCAL_AMFLAGS = -I m4

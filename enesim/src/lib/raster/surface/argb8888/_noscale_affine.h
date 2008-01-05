@@ -1,9 +1,9 @@
 /**
  * parameters:
  * Enesim_Surface *ss
- * Enesim_Rectangle *srect
+ * Eina_Rectangle *srect
  * Enesim_Surface *ds
- * Enesim_Rectangle *drect
+ * Eina_Rectangle *drect
  * enesim_16p16_t *t
  * macros:
  * ARGB8888_CONVOLUTION_CALL

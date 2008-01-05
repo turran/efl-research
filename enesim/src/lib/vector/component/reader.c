@@ -60,7 +60,7 @@ EAPI Enesim_Component_Reader * enesim_reader_new(Enesim_Component *c)
 	 * if we add a reader to a component that has changed
 	 * propagate that change to the other end of the reader
 	 */
-	edata_list_append(c->readers, r);
+	eina_list_append(c->readers, r);
 	return r;
 }
 
