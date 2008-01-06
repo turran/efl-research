@@ -1,5 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
+SUBDIRS = tiler
+
 INCLUDES = \
 -I. \
 @EINA_CFLAGS@

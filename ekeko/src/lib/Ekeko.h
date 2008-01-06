@@ -11,6 +11,12 @@
 typedef struct _Ekeko_Canvas Ekeko_Canvas;
 typedef struct _Ekeko_Object Ekeko_Object;
 
+enum
+{
+	EKEKO_TILER_SPLIT_RECTANGLE,
+	EKEKO_TILERS
+};
+
 /* possible canvas api */
 EAPI Ekeko_Canvas * ekeko_canvas_new(int w, int h);
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, int x, int y, int w, int h);
