@@ -18,23 +18,11 @@
  * listeners.
  * 
  */
+#include <stdlib.h>
+#include <stdio.h>
 
-/*
- * Tiler class functions
- * tile_size_set
- * rect_del
- * rect_add
- * clear
- * rects_get
- * rects_free
- * new
- * free 
- */
+#include "ekeko_tiler.h"
 
-typedef struct _Ekeko_Tiler
-{
-	
-} Ekeko_Tiler;
 
 /* every object should receive the area or areas to draw based on their
  * boundings
@@ -42,11 +30,8 @@ typedef struct _Ekeko_Tiler
 
 struct _Ekeko_Object
 {
-	int x;
-	int y;
-	int w;
-	int h;
-	
+	Eina_Inlist list;
+	Eina_Rectangle r;
 	/* possible callbacks */
 	// pre?
 	// post?
@@ -60,7 +45,7 @@ struct _Ekeko_Canvas
 	/* possible callbacks */
 	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
 	// what about post processing of the canvas??
-	Ekeko_Tiler t;
+	Ekeko_Tiler tiler;
 };
 
 

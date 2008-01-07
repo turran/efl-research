@@ -12,6 +12,7 @@ Ekeko.h
 
 libekeko_la_SOURCES = \
 ekeko_canvas.c \
+ekeko_tiler.c \
 ekeko_object.c
 
 libekeko_la_LIBADD = \
