@@ -40,6 +40,12 @@ EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
 
 /* possible object api */
+typedef struct _Ekeko_Object_Class
+{
+
+} Ekeko_Object_Class;
+
+
 EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c);
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y);
 EAPI void ekeko_object_show(Ekeko_Object *o);

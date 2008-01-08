@@ -22,6 +22,8 @@
 # endif
 #endif
 
+/* remove this TRUE/FALSE redifinitions */
+
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -29,6 +31,11 @@
 #ifndef FALSE
 #define FALSE 0
 #endif
+
+typedef enum {
+	EINA_FALSE = 0,
+	EINA_TRUE = 1
+} Eina_Bool;
 
 EAPI extern const unsigned int eina_prime_table[];
 

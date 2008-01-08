@@ -28,7 +28,8 @@ Ekeko_Tiler *ekeko_tiler_new(int type, int w, int h)
 		t->data = c->new(w, h);
 	t->canvas.w = w;
 	t->canvas.h = h;
-	
+	t->tile.w = 8;
+	t->tile.h = 8;
 	return t;
 }
 void ekeko_tiler_free(Ekeko_Tiler *t)
