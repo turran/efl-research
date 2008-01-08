@@ -47,3 +47,19 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 {
 	
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_canvas_data_set(Ekeko_Canvas *c, void *data)
+{
+	c->data = data;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c)
+{
+	return c->data;
+}

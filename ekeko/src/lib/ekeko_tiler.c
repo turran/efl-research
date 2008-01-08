@@ -32,13 +32,20 @@ Ekeko_Tiler *ekeko_tiler_new(int type, int w, int h)
 	t->tile.h = 8;
 	return t;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 void ekeko_tiler_free(Ekeko_Tiler *t)
 {
 	if (t->class->free)
 		t->class->free(t);
 	free(t);
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 void ekeko_tiler_tile_size_set(Ekeko_Tiler *t, int w, int h)
 {
 	if ((w <= 0) || (h <= 0)) return;
@@ -48,7 +55,10 @@ void ekeko_tiler_tile_size_set(Ekeko_Tiler *t, int w, int h)
 	if (t->class->tile_size_set)
 		t->class->tile_size_set(t, w, h);
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 int ekeko_tiler_rect_add(Ekeko_Tiler *t, Eina_Rectangle *r)
 {
 	if (t->class->rect_add)
@@ -57,7 +67,10 @@ int ekeko_tiler_rect_add(Ekeko_Tiler *t, Eina_Rectangle *r)
 		return 0;
 
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 int ekeko_tiler_rect_del(Ekeko_Tiler *t, Eina_Rectangle *r)
 {
 	if (t->class->rect_del)
@@ -65,13 +78,19 @@ int ekeko_tiler_rect_del(Ekeko_Tiler *t, Eina_Rectangle *r)
 	else
 		return 0;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 void ekeko_tiler_clear(Ekeko_Tiler *t)
 {
 	if (t->class->clear)
 		t->class->clear(t);
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 Ekeko_Rectangle * ekeko_tiler_rects_get(Ekeko_Tiler *t)
 {
 	if (t->class->rects_get)
@@ -79,7 +98,10 @@ Ekeko_Rectangle * ekeko_tiler_rects_get(Ekeko_Tiler *t)
 	else
 		return NULL;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 void ekeko_tiler_rects_free(Ekeko_Rectangle *rects)
 {
 	while (rects)
@@ -91,4 +113,3 @@ void ekeko_tiler_rects_free(Ekeko_Rectangle *rects)
 		free(r);
 	}
 }
-

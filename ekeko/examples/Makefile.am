@@ -5,7 +5,8 @@ EXTRA_DIST =
 INCLUDES = \
 -I. \
 -I$(top_srcdir)/src/lib \
-@EINA_CFLAGS@ 
+@EINA_CFLAGS@ \
+@SDL_CFLAGS@
 
 bin_PROGRAMS = ekeko_test
 
@@ -16,4 +17,6 @@ ekeko_test.c
 
 ekeko_test_LDADD = \
 $(top_builddir)/src/lib/libekeko.la \
-@EINA_LIBS@
+@EINA_LIBS@ \
+@SDL_LIBS@
+

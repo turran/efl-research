@@ -38,6 +38,8 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
+EAPI void ekeko_canvas_data_set(Ekeko_Canvas *c, void *data);
+EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c);
 
 /* possible object api */
 typedef struct _Ekeko_Object_Class
@@ -53,6 +55,9 @@ EAPI void ekeko_object_hide(Ekeko_Object *o);
 EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h);
 EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel);
 EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel);
+EAPI void ekeko_object_data_set(Ekeko_Object *o, void *data);
+EAPI void * ekeko_object_data_get(Ekeko_Object *o);
+EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o);
 /* 
  * invalidate all the object, what about invalidating only a part of it? pass a
  * list of rectangles?
