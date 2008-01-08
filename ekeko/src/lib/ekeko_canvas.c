@@ -7,23 +7,19 @@
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ekeko_Canvas * ekeko_canvas_new(int w, int h)
+EAPI Ekeko_Canvas * ekeko_canvas_new(int type, int w, int h)
 {
-	/* define a new tiler for the canvas */
+	Ekeko_Canvas *c;
+
+	c = calloc(1, sizeof(Ekeko_Canvas));
+	c->tiler = ekeko_tiler_new(type, w, h);
+	return c;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, int x, int y, int w, int h)
-{
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, int x, int y, int w, int h)
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	
 }
@@ -31,7 +27,15 @@ EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, int x, int y, int w, int h)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, int x, int y, int w, int h)
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
+{
+	
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	
 }

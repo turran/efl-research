@@ -9,7 +9,11 @@
  */
 EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c)
 {
-	
+	Ekeko_Object *o;
+
+	o = calloc(1, sizeof(Ekeko_Object));
+	eina_inlist_append(c->objects, o);
+	return o;
 }
 /**
  * To be documented

@@ -5,6 +5,7 @@
  * @mainpage Eina
  * @file Eina.h
  * @brief Contains list, hash, debugging and tree functions.
+ * TODO move rectangle back to enesim and make ekeko depend on it
  */
 
 #ifdef __cplusplus

@@ -16,6 +16,11 @@ ekeko_tiler.c \
 ekeko_object.c
 
 libekeko_la_LIBADD = \
+tiler/libekeko_tiler.la \
 @EINA_LIBS@
+
+libekeko_la_DEPENDENCIES = \
+tiler/libekeko_tiler.la 
+
 
 libekeko_la_LDFLAGS = -version-info 1:0:0
