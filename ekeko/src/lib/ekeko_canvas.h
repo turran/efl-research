@@ -10,6 +10,8 @@ struct _Ekeko_Canvas
 	// what about post processing of the canvas??
 	Ekeko_Tiler *tiler;
 	Ekeko_Object *objects;
+	// damages
+	// obscures
 	void *data;
 };
 

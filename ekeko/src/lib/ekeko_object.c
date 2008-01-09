@@ -1,18 +1,39 @@
 #include "Ekeko.h"
 #include "ekeko_private.h"
 /*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void ekeko_object_changed(Ekeko_Object *o)
+{
+
+}
+
+
+/*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c)
+EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass)
 {
 	Ekeko_Object *o;
 
 	o = calloc(1, sizeof(Ekeko_Object));
-	eina_inlist_append(c->objects, o);
+	o->canvas = c;
+	
+	/* default object properties */
+	o->curr.visible = EINA_FALSE; 
+	
+	/* TODO check the class */
+	o->oclass = oclass;
+	o->oclass->create(o);
+	c->objects = eina_inlist_append(c->objects, o);
 	return o;
 }
 /**
@@ -63,3 +84,28 @@ EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel)
 {
 	
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_object_data_set(Ekeko_Object *o, void *data)
+{
+	o->data = data;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void * ekeko_object_data_get(Ekeko_Object *o)
+{
+	return o->data;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
+{
+	return o->canvas;
+}
+

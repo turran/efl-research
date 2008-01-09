@@ -44,11 +44,22 @@ EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c);
 /* possible object api */
 typedef struct _Ekeko_Object_Class
 {
+	void (*create)(Ekeko_Object *o);
+	void (*free)(void *data);
+	void (*pre_process)(void *data);
+	void (*process)(void *data);
+	void (*post_process)(void *data);
 
+	/* possible callbacks */
+	// pre?
+	// post?
+	// generate: make the object generate itself?
+	// make objects have two states? previous and current? and also user
+	// provided calls to check if the state is the same
 } Ekeko_Object_Class;
 
 
-EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c);
+EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass);
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y);
 EAPI void ekeko_object_show(Ekeko_Object *o);
 EAPI void ekeko_object_hide(Ekeko_Object *o);
