@@ -15,7 +15,7 @@
  * FIXME: To be fixed
  */
 EAPI Enesim_Rasterizer * enesim_rasterizer_kiia_new(Enesim_Rasterizer_Kiia_Count
-		count, Eina_Rectangle boundaries)
+		count, Enesim_Rectangle boundaries)
 {
 	Enesim_Rasterizer *r = NULL;
 	switch (count)

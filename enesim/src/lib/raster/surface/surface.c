@@ -262,9 +262,9 @@ enesim_surface_transformation_set(Enesim_Surface *s, float *t)
  * FIXME: To be fixed
  */
 EAPI void
-enesim_surface_draw(Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d, Eina_Rectangle *dr, int mode, int smooth)
+enesim_surface_draw(Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, Enesim_Rectangle *dr, int mode, int smooth)
 {
-	Eina_Rectangle csr, cdr;
+	Enesim_Rectangle csr, cdr;
 	enesim_16p16_t ft[MATRIX_SIZE];
 		
 	assert(s);
@@ -278,7 +278,7 @@ enesim_surface_draw(Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d, Ei
 	if (sr)
 	{
 		enesim_rectangle_rectangle_intersection_get(&cdr, dr);
-		if (eina_rectangle_is_empty(&cdr))
+		if (enesim_rectangle_is_empty(&cdr))
 			return;
 	}
 	/* setup the source clipping */
@@ -289,7 +289,7 @@ enesim_surface_draw(Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d, Ei
 	if (dr)
 	{
 		enesim_rectangle_rectangle_intersection_get(&csr, sr);
-		if (eina_rectangle_is_empty(&csr))
+		if (enesim_rectangle_is_empty(&csr))
 			return;
 	}
 	/* if we need to do some calcs with the matrix, transform it */

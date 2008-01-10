@@ -50,7 +50,7 @@ static Enesim_Rasterizer_Func kiia8_func = {
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Enesim_Rasterizer * enesim_rasterizer_kiia8_new(Eina_Rectangle boundaries)
+Enesim_Rasterizer * enesim_rasterizer_kiia8_new(Enesim_Rectangle boundaries)
 {
 	Enesim_Rasterizer *r;
 	r = _new(&kiia8_func, boundaries);

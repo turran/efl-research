@@ -120,8 +120,8 @@ static void transformation_identity(float *t)
 void test3(void)
 {
 	Enesim_Surface *dst, *src;
-	Eina_Rectangle srect;
-	Eina_Rectangle drect;
+	Enesim_Rectangle srect;
+	Enesim_Rectangle drect;
 	float m1[9], m2[9];
 
 	src = tiger_draw();

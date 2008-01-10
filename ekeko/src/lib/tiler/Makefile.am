@@ -5,7 +5,8 @@ noinst_LTLIBRARIES   = libekeko_tiler.la
 INCLUDES = \
 -I. \
 -I$(top_srcdir)/src/lib \
-@EINA_CFLAGS@
+@EINA_CFLAGS@ \
+@ENESIM_CFLAGS@
 
 libekeko_tiler_la_SOURCES = \
 tiler_rect_splitter.c

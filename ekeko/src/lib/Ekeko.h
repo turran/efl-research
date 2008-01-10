@@ -2,6 +2,7 @@
 #define EKEKO_H_
 
 #include <Eina.h>
+#include <Enesim.h>
 /* 
  * The idea behind this library is to code abstract objects, so any other canvas
  * libraries like evas itself can be built on top of this, the engine + objects (both)
@@ -30,7 +31,7 @@ typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
 struct _Ekeko_Rectangle
 {
 	Eina_Inlist list;
-	Eina_Rectangle r;
+	Enesim_Rectangle r;
 };
 
 enum
@@ -41,9 +42,9 @@ enum
 
 /* possible canvas api */
 EAPI Ekeko_Canvas * ekeko_canvas_new(int type, int w, int h);
-EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r);
-EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
-EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r);
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
+EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Enesim_Rectangle *r);
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
 EAPI void ekeko_canvas_data_set(Ekeko_Canvas *c, void *data);
 EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c);
@@ -58,7 +59,7 @@ typedef struct _Ekeko_Object_Class
 	/* once the object is going to be processed, first this is called */
 	void (*pre_process)(void *data);
 	/* the actual process has to be done here receiving the rectangle */
-	void (*process)(void *data, Eina_Rectangle *r);
+	void (*process)(void *data, Enesim_Rectangle *r);
 	/* after the process this is called */
 	void (*post_process)(void *data);
 	/* return a list of rectangles in case something inside the object has

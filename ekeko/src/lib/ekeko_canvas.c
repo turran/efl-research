@@ -56,7 +56,7 @@ EAPI Ekeko_Canvas * ekeko_canvas_new(int type, int w, int h)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r)
 {
 	
 }
@@ -64,7 +64,7 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Enesim_Rectangle *r)
 {
 	
 }
@@ -72,7 +72,7 @@ EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Enesim_Rectangle *r)
 {
 	
 }
@@ -105,7 +105,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 			Ekeko_Object *o;
 
 			o = (Ekeko_Object *)lo;
-			if (ekeko_object_rect_inside(o, r) == EINA_TRUE)
+			if (ekeko_object_is_inside(o, r) == EINA_TRUE)
 			{
 				/* FIXME 
 				 * the rect should be clipped to 

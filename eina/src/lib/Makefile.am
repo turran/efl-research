@@ -11,8 +11,7 @@ eina_inlist.h \
 eina_list.h \
 eina_sheap.h \
 eina_tree.h \
-eina_types.h \
-eina_rectangle.h
+eina_types.h
 
 installed_headersdir = $(prefix)/include/eina
 installed_headers_DATA = $(EINAHEADERS)

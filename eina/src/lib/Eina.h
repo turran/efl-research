@@ -13,7 +13,6 @@ extern "C" {
 #endif
 
 #include "eina_types.h"
-#include "eina_rectangle.h"
 #include "eina_inlist.h"
 #include "eina_list.h"
 #include "eina_hash.h"

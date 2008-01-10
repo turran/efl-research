@@ -31,7 +31,7 @@ static void sdl_rect_pre_process(void *data)
 	//printf("pre\n");
 }
 
-static void sdl_rect_process(void *data, Eina_Rectangle *r)
+static void sdl_rect_process(void *data, Enesim_Rectangle *r)
 {
 	Rectangle *sdl_rect;
 	Ekeko_Canvas *canvas;

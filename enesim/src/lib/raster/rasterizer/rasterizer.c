@@ -12,7 +12,7 @@
  * FIXME: To be fixed
  */
 Enesim_Rasterizer * enesim_rasterizer_new(void *data, Enesim_Rasterizer_Func
-		*funcs, Eina_Rectangle boundaries, int types)
+		*funcs, Enesim_Rectangle boundaries, int types)
 {
 	Enesim_Rasterizer *r;
 

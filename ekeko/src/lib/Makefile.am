@@ -4,7 +4,8 @@ SUBDIRS = tiler
 
 INCLUDES = \
 -I. \
-@EINA_CFLAGS@
+@EINA_CFLAGS@ \
+@ENESIM_CFLAGS@
 
 lib_LTLIBRARIES = libekeko.la
 include_HEADERS = \
@@ -17,7 +18,8 @@ ekeko_object.c
 
 libekeko_la_LIBADD = \
 tiler/libekeko_tiler.la \
-@EINA_LIBS@
+@EINA_LIBS@ \
+@ENESIM_LIBS@
 
 libekeko_la_DEPENDENCIES = \
 tiler/libekeko_tiler.la 

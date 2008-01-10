@@ -445,7 +445,7 @@ static void _delete(Kiia *k)
 	free(k);
 }
 
-static inline Enesim_Rasterizer * _new(Enesim_Rasterizer_Func *func, Eina_Rectangle boundaries)
+static inline Enesim_Rasterizer * _new(Enesim_Rasterizer_Func *func, Enesim_Rectangle boundaries)
 {
 	Kiia *k;
 	Enesim_Rasterizer *r;
