@@ -11,6 +11,14 @@ void ekeko_object_changed(Ekeko_Object *o)
 {
 
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+Eina_Bool ekeko_object_rect_inside(Ekeko_Object *o, Ekeko_Rectangle *r)
+{
+	return EINA_TRUE;
+}
 
 
 /*============================================================================*
@@ -42,7 +50,9 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
  */
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 {
-	
+	// FIXME check states
+	o->curr.geometry.x = x;
+	o->curr.geometry.y = y;
 }
 /**
  * To be documented
@@ -66,7 +76,9 @@ EAPI void ekeko_object_hide(Ekeko_Object *o)
  */
 EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 {
-	
+	// FIXME check states
+	o->curr.geometry.w = w;
+	o->curr.geometry.h = h;
 }
 /**
  * To be documented

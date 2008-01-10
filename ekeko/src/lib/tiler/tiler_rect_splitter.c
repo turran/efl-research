@@ -934,6 +934,9 @@ static void * _new(int w, int h)
 	splitter_t *sp;
 
 	sp = malloc(sizeof(splitter_t));
+	sp->rects = list_zeroed;
+	sp->need_merge = 0;
+	
 	return sp;
 }
 

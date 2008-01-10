@@ -7,7 +7,12 @@
 static void _object_changed(Ekeko_Canvas *c, Ekeko_Object *o)
 {
 	/* check if the object has changed */
+	/* first the common state */
+	/* now the private state */
 	/* call the pre process function if so */
+	// FIXME for now
+	ekeko_tiler_rect_add(c->tiler, &o->curr.geometry);
+	o->oclass->pre_process(o->data);
 }
 
 static void _objects_changed(Ekeko_Canvas *c)
@@ -78,6 +83,7 @@ EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r)
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 {
 	Ekeko_Rectangle *redraws;
+	Eina_Inlist *lr, *lo;
 
 	/* 1. check changed objects */
 	_objects_changed(c);
@@ -86,8 +92,29 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	/* 3. remove obscures */
 	_obscures_remove(c);
 	/* 4. get all rectangles to redraw */
-	//redraws = ekeko_tiler_rects_get(c->tiler);
+	redraws = ekeko_tiler_rects_get(c->tiler);
 	/* 5. process al objects that intersect with the rects */
+	for (lr = (Eina_Inlist *)redraws; lr; lr = lr->next)
+	{
+		Ekeko_Rectangle *r;
+
+		r = (Ekeko_Rectangle *)lr;
+		//printf("%d %d %d %d\n", r->r.x, r->r.y, r->r.w, r->r.h);
+		for (lo = (Eina_Inlist *)c->objects; lo; lo = lo->next)
+		{
+			Ekeko_Object *o;
+
+			o = (Ekeko_Object *)lo;
+			if (ekeko_object_rect_inside(o, r) == EINA_TRUE)
+			{
+				/* FIXME 
+				 * the rect should be clipped to 
+				 * the bounding box of the object
+				 */
+				o->oclass->process(o->data, &r->r);
+			}
+		}
+	}
 	/* 6. delete all objects that should be deleted */
 }
 /**

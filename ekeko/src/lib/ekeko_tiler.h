@@ -1,15 +1,8 @@
 #ifndef EKEKO_TILER_H_
 #define EKEKO_TILER_H_
 
-typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
 typedef struct _Ekeko_Tiler Ekeko_Tiler;
 typedef struct _Ekeko_Tiler_Class Ekeko_Tiler_Class;
-
-struct _Ekeko_Rectangle
-{
-	Eina_Inlist list;
-	Eina_Rectangle r;
-};
 
 struct _Ekeko_Tiler
 {

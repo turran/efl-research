@@ -25,6 +25,13 @@
 
 typedef struct _Ekeko_Canvas Ekeko_Canvas;
 typedef struct _Ekeko_Object Ekeko_Object;
+typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
+
+struct _Ekeko_Rectangle
+{
+	Eina_Inlist list;
+	Eina_Rectangle r;
+};
 
 enum
 {
@@ -44,20 +51,20 @@ EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c);
 /* possible object api */
 typedef struct _Ekeko_Object_Class
 {
-	void (*create)(Ekeko_Object *o);
-	void (*free)(void *data);
+	/* object is created after object_new */
+	void (*create)(Ekeko_Object *o); 
+	/* object is freed */
+	void (*free)(void *data); 
+	/* once the object is going to be processed, first this is called */
 	void (*pre_process)(void *data);
-	void (*process)(void *data);
+	/* the actual process has to be done here receiving the rectangle */
+	void (*process)(void *data, Eina_Rectangle *r);
+	/* after the process this is called */
 	void (*post_process)(void *data);
-
-	/* possible callbacks */
-	// pre?
-	// post?
-	// generate: make the object generate itself?
-	// make objects have two states? previous and current? and also user
-	// provided calls to check if the state is the same
+	/* return a list of rectangles in case something inside the object has
+	 * changed */
+	//Ekeko_Rectangle * (*state_changed)(void *data);
 } Ekeko_Object_Class;
-
 
 EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass);
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y);

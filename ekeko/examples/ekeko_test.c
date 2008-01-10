@@ -4,6 +4,9 @@
 #define CANVAS_W 640
 #define CANVAS_H 480
 
+#define RGBA(r, g, b, a)                                                \
+    (((r) << 24) | ((g) << 16) | ((b) << 8) | (a))
+
 typedef struct _Rectangle
 {
 	Ekeko_Object *object;
@@ -25,12 +28,24 @@ static void sdl_rect_free(void *data)
 
 static void sdl_rect_pre_process(void *data)
 {
-
+	//printf("pre\n");
 }
 
-static void sdl_rect_process(void *data)
+static void sdl_rect_process(void *data, Eina_Rectangle *r)
 {
+	Rectangle *sdl_rect;
+	Ekeko_Canvas *canvas;
+	SDL_Rect rect;
+	SDL_Surface *surface;
 
+	sdl_rect = data;
+	canvas = ekeko_object_canvas_get(sdl_rect->object);
+	surface = ekeko_canvas_data_get(canvas);
+	rect.x = 10;
+	rect.y = 10;
+	rect.w = 50;
+	rect.h = 50;
+	SDL_FillRect(surface, &rect, RGBA(255, 255, 255, 255));
 }
 
 static void sdl_rect_post_process(void *data)
@@ -49,6 +64,7 @@ Ekeko_Object_Class sdl_rectangle = {
 int main(int argc, char **argv)
 {
 	Ekeko_Canvas *c;
+	Ekeko_Object *o;
 	SDL_Event event;
 	SDL_Surface *surface;
 	int end = 0;
@@ -64,7 +80,9 @@ int main(int argc, char **argv)
 	
 	c = ekeko_canvas_new(EKEKO_TILER_SPLITTER, CANVAS_W, CANVAS_H);
 	ekeko_canvas_data_set(c, surface);
-	ekeko_object_add(c, &sdl_rectangle);
+	o = ekeko_object_add(c, &sdl_rectangle);
+	ekeko_object_move(o, 10, 10);
+	ekeko_object_resize(o, 50, 50);
 	while (!end)
 	{
 		while (SDL_PollEvent(&event))

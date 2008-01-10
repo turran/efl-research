@@ -27,4 +27,6 @@ struct _Ekeko_Object
 	void *data;
 };
 
+Eina_Bool ekeko_object_rect_inside(Ekeko_Object *o, Ekeko_Rectangle *r);
+
 #endif
