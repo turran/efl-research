@@ -277,6 +277,7 @@ enesim_surface_draw(Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, 
 	cdr.h = d->h;
 	if (sr)
 	{
+		/* FIXME chec the return value of the intersection */
 		enesim_rectangle_rectangle_intersection_get(&cdr, dr);
 		if (enesim_rectangle_is_empty(&cdr))
 			return;
@@ -288,6 +289,7 @@ enesim_surface_draw(Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, 
 	csr.h = s->h;
 	if (dr)
 	{
+		/* FIXME chec the return value of the intersection */
 		enesim_rectangle_rectangle_intersection_get(&csr, sr);
 		if (enesim_rectangle_is_empty(&csr))
 			return;

@@ -27,6 +27,6 @@ struct _Ekeko_Object
 	void *data;
 };
 
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r);
+Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Enesim_Rectangle *drect);
 
 #endif

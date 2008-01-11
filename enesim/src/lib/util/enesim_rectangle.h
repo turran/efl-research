@@ -87,49 +87,37 @@ enesim_rectangle_ycoord_inside(Enesim_Rectangle *r, int y)
  * To be documented
  * FIXME: To be fixed
  */
-#if 0
 static inline Eina_Bool
-enesim_rectangle_rectangle_intersection_get(Enesim_Rectangle *r1, Enesim_Rectangle *r2, Enesim_Rectangle *res)
+enesim_rectangle_rectangle_intersection_get(Enesim_Rectangle *r1, Enesim_Rectangle *r2)
 {
-	if (!(enesim_rectangles_intersect(r1, r2))
-			return EINA_FALSE;
+	if (!(enesim_rectangles_intersect(r1, r2)))
+		return EINA_FALSE;
 	
-	
+	/* left */
+	if (r1->x < r2->x)
+	{
+		r1->w += r1->x - r2->x;
+		r1->x = r2->x;
+		if (r1->w < 0)
+			r1->w = 0;
+	}
+	/* right */
+	if ((r1->x + r1->w) > (r2->x + r2->w))
+	{
+		r1->w = r2->x +r2->w - r1->x;
+	}
+	/* top */
+	if (r1->y < r2->y)
+	{
+		r1->h += r1->y - r2->y;
+		r1->y = r2->y;
+		if (r1->h < 0)
+			r1->h = 0;
+	}
+	/* bottom */
+	if ((r1->y + r1->h) > (r2->y + r2->h))
+		r1->h = r2->y + r2->h - r1->y;
 	return EINA_TRUE;
-}
-#endif
-static inline void
-enesim_rectangle_rectangle_intersection_get(Enesim_Rectangle *d, Enesim_Rectangle *s)
-{
-	if (enesim_rectangles_intersect(d, s))
-	{
-		if (d->x < s->x)
-		{
-			d->x = s->x;
-			d->w += d->x - s->x;
-			if (d->w < 0)
-				d->w = 0;
-		}
-		if ((d->x + d->w) > (s->x + s->w))
-		{
-			d->w = s->x +s->w - d->x;
-			if (d->y < s->y)
-			{
-				d->h += d->y - s->y;
-				d->y = s->y;
-				if (d->h < 0)
-					d->h = 0;
-			
-			}
-			if ((d->y + d->h) > (s->y + s->h))
-				d->h = s->y + s->h - d->y;
-		}
-	}
-	else
-	{
-		d->w = 0;
-		d->h = 0;
-	}
 }
 
 /**

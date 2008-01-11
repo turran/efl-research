@@ -41,10 +41,10 @@ static void sdl_rect_process(void *data, Enesim_Rectangle *r)
 	sdl_rect = data;
 	canvas = ekeko_object_canvas_get(sdl_rect->object);
 	surface = ekeko_canvas_data_get(canvas);
-	rect.x = 10;
-	rect.y = 10;
-	rect.w = 50;
-	rect.h = 50;
+	rect.x = r->x;
+	rect.y = r->y;
+	rect.w = r->w;
+	rect.h = r->h;
 	SDL_FillRect(surface, &rect, RGBA(255, 255, 255, 255));
 }
 

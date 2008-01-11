@@ -15,20 +15,14 @@ Eina_Bool ekeko_object_changed(Ekeko_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-#if 0
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Enesim_Rectangle *irect)
+Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Enesim_Rectangle *drect)
 {
-	return enesim_rectangle_rectangle_intersection_get(&o->curr.geometry, &r->r, irect);
-}
-#endif
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r)
-{
-	// FIX the enesim code
-	// enesim_rectangle_rectangle_intersection_get(Enesim_Rectangle *d, Enesim_Rectangle *s)
-	// to receive a bool if those intersect
-	// and change the prototype to receive also an enesim rectangle to place the intersection
-	
-	return EINA_TRUE;
+	drect->x = o->curr.geometry.x;
+	drect->y = o->curr.geometry.y;
+	drect->w = o->curr.geometry.w;
+	drect->h = o->curr.geometry.h;
+
+	return enesim_rectangle_rectangle_intersection_get(drect, &r->r);
 }
 
 

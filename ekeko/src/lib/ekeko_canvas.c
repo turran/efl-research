@@ -103,15 +103,16 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 		for (lo = (Eina_Inlist *)c->objects; lo; lo = lo->next)
 		{
 			Ekeko_Object *o;
+			Enesim_Rectangle orect;
 
 			o = (Ekeko_Object *)lo;
-			if (ekeko_object_is_inside(o, r) == EINA_TRUE)
+			if (ekeko_object_is_inside(o, r, &orect) == EINA_TRUE)
 			{
 				/* FIXME 
 				 * the rect should be clipped to 
 				 * the bounding box of the object
 				 */
-				o->oclass->process(o->data, &r->r);
+				o->oclass->process(o->data, &orect);
 			}
 		}
 	}
