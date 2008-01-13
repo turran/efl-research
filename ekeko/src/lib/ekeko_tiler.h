@@ -22,7 +22,7 @@ struct _Ekeko_Tiler
 
 struct _Ekeko_Tiler_Class
 {
-	void * (*new)(int w, int h);
+	void * (*new)(Ekeko_Tiler *t);
 	void (*free)(Ekeko_Tiler *t);
 	void (*tile_size_set)(Ekeko_Tiler *t, int w, int h);
 	int (*rect_add)(Ekeko_Tiler *t, Enesim_Rectangle *r);
@@ -41,6 +41,43 @@ Ekeko_Rectangle * ekeko_tiler_rects_get(Ekeko_Tiler *t);
 void ekeko_tiler_rects_free(Ekeko_Rectangle *rects);
 
 extern Ekeko_Tiler_Class tiler_rect_splitter;
+extern Ekeko_Tiler_Class tiler_tilebuf;
+
+/* refactor this */
+#define UNLIKELY(x) (x)
+#define SPANS_COMMON(x1, w1, x2, w2) \
+(!((((x2) + (w2)) <= (x1)) || ((x2) >= ((x1) + (w1)))))
+
+#define RECTS_INTERSECT(x, y, w, h, xx, yy, ww, hh) \
+((SPANS_COMMON((x), (w), (xx), (ww))) && (SPANS_COMMON((y), (h), (yy), (hh))))
+
+#define RECTS_CLIP_TO_RECT(_x, _y, _w, _h, _cx, _cy, _cw, _ch) \
+{ \
+   if (RECTS_INTERSECT(_x, _y, _w, _h, _cx, _cy, _cw, _ch)) \
+     { \
+	if (_x < (_cx)) \
+	  { \
+	     _w += _x - (_cx); \
+	     _x = (_cx); \
+	     if (_w < 0) _w = 0; \
+	  } \
+	if ((_x + _w) > ((_cx) + (_cw))) \
+	  _w = (_cx) + (_cw) - _x; \
+	if (_y < (_cy)) \
+	  { \
+	     _h += _y - (_cy); \
+	     _y = (_cy); \
+	     if (_h < 0) _h = 0; \
+	  } \
+	if ((_y + _h) > ((_cy) + (_ch))) \
+	  _h = (_cy) + (_ch) - _y; \
+     } \
+   else \
+     { \
+	_w = 0; _h = 0; \
+     } \
+}
+
 
 #endif
 

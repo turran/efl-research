@@ -1,5 +1,10 @@
 #include "Ekeko.h"
-#include <SDL.h>
+#include "ekeko_test.h"
+
+/**
+ * TODO
+ * clean up the sdl_rectangle[class] code, abstract correctly the ekeko_object
+ */
 
 #define CANVAS_W 640
 #define CANVAS_H 480
@@ -7,98 +12,82 @@
 #define RGBA(r, g, b, a)                                                \
     (((r) << 24) | ((g) << 16) | ((b) << 8) | (a))
 
-typedef struct _Rectangle
-{
-	Ekeko_Object *object;
-} Rectangle;
 
-static void sdl_rect_create(Ekeko_Object *o)
+void init(void)
 {
-	Rectangle *rect;
-
-	rect = malloc(sizeof(Rectangle));
-	rect->object = o;
-	ekeko_object_data_set(o, rect);
+	Canvas *c;
+	
+	c = canvas_new();
+	/* background */
+#if 0
+	o = ekeko_object_add(c, &sdl_rectangle_class);
+	enesim_rectangle_coords_from(&rect, 0, 0, CANVAS_W, CANVAS_H);
+	ekeko_object_move(o, rect.x, rect.y);
+	ekeko_object_resize(o, rect.w, rect.h);
+	sdl_rect = ekeko_object_data_get(o);
+	sdl_rect->color = RGBA(255, 255, 255, 255);
+	printf("background = %d\n", sdl_rect->color);
+	/* object moving */
+	o = ekeko_object_add(c, &sdl_rectangle_class);
+	enesim_rectangle_coords_from(&rect, 10, 10, 50, 50);
+	ekeko_object_move(o, rect.x, rect.y);
+	ekeko_object_resize(o, rect.w, rect.h);
+	sdl_rect = ekeko_object_data_get(o);
+	sdl_rect->color = RGBA(255, 0, 0, 255);
+	printf("object = %d\n", sdl_rect->color);
+#endif
 }
 
-static void sdl_rect_free(void *data)
+void shutdown(void)
 {
-	free(data);
+	
 }
 
-static void sdl_rect_pre_process(void *data)
+
+void loop(void)
 {
-	//printf("pre\n");
-}
-
-static void sdl_rect_process(void *data, Enesim_Rectangle *r)
-{
-	Rectangle *sdl_rect;
-	Ekeko_Canvas *canvas;
-	SDL_Rect rect;
-	SDL_Surface *surface;
-
-	sdl_rect = data;
-	canvas = ekeko_object_canvas_get(sdl_rect->object);
-	surface = ekeko_canvas_data_get(canvas);
-	rect.x = r->x;
-	rect.y = r->y;
-	rect.w = r->w;
-	rect.h = r->h;
-	SDL_FillRect(surface, &rect, RGBA(255, 255, 255, 255));
-}
-
-static void sdl_rect_post_process(void *data)
-{
-
-}
-
-Ekeko_Object_Class sdl_rectangle = {
-	.create = sdl_rect_create,
-	.free = sdl_rect_free,
-	.pre_process = sdl_rect_pre_process,
-	.process = sdl_rect_process,
-	.post_process = sdl_rect_post_process,
-};
-
-int main(int argc, char **argv)
-{
-	Ekeko_Canvas *c;
-	Ekeko_Object *o;
 	SDL_Event event;
-	SDL_Surface *surface;
 	int end = 0;
+	int i = 0;
 	
-	SDL_Init(SDL_INIT_VIDEO);
-	
-	if (!(surface = SDL_SetVideoMode(CANVAS_W, CANVAS_H, 32, SDL_RESIZABLE)))
-	{
-		fprintf(stderr, "%s\n", SDL_GetError());
-		SDL_Quit();
-		return 1;
-	}
-	
-	c = ekeko_canvas_new(EKEKO_TILER_SPLITTER, CANVAS_W, CANVAS_H);
-	ekeko_canvas_data_set(c, surface);
-	o = ekeko_object_add(c, &sdl_rectangle);
-	ekeko_object_move(o, 10, 10);
-	ekeko_object_resize(o, 50, 50);
 	while (!end)
 	{
 		while (SDL_PollEvent(&event))
 		{
 			switch (event.type)
 			{
-				default:
+			default:
 				break;
 				//case SDL_VIDEORESIZE:
 
-				case SDL_QUIT:
+			case SDL_QUIT:
 				end = 1;
 				break;
 			}
 		}
+#if 0
 		ekeko_canvas_process(c);
+		
+		i++;
+		if (i > 10000)
+		{
+			rect.x = (rect.x + 1) % CANVAS_W;
+			if (rect.x == 0)
+			{
+				rect.y = (rect.y + 1) % CANVAS_H;
+			}
+			ekeko_object_move(o, rect.x, rect.y);
+			i = 0;
+		}
+#endif
 	}
 	SDL_Quit();
+}
+
+
+int main(int argc, char **argv)
+{
+	init();
+	loop();
+	return 0;
 }

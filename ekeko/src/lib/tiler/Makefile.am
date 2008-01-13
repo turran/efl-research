@@ -9,7 +9,8 @@ INCLUDES = \
 @ENESIM_CFLAGS@
 
 libekeko_tiler_la_SOURCES = \
-tiler_rect_splitter.c
+tiler_rect_splitter.c \
+tiler_tilebuf.c
 
 libekeko_tiler_la_DEPENDENCIES = 
 

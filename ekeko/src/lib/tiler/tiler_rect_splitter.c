@@ -1,11 +1,8 @@
 #include "Ekeko.h"
 #include "ekeko_private.h"
 
-#define UNLIKELY(x) (x)
-#define RECTS_CLIP_TO_RECT
-
-/* refactor this */
 /* old code */
+
 typedef struct list_node list_node_t;
 typedef struct list list_t;
 typedef struct rect rect_t;
@@ -929,7 +926,7 @@ evas_common_tilebuf_add_motion_vector(Tilebuf *tb, int x, int y, int w, int h, i
 #endif
 
 /* Tiler Class API */
-static void * _new(int w, int h)
+static void * _new(Ekeko_Tiler *t)
 {
 	splitter_t *sp;
 

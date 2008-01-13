@@ -37,6 +37,7 @@ struct _Ekeko_Rectangle
 enum
 {
 	EKEKO_TILER_SPLITTER,
+	EKEKO_TILER_TILEBUF,
 	EKEKO_TILERS
 };
 
@@ -58,7 +59,7 @@ typedef struct _Ekeko_Object_Class
 	void (*free)(void *data); 
 	/* once the object is going to be processed, first this is called */
 	void (*pre_process)(void *data);
-	/* the actual process has to be done here receiving the rectangle */
+	/* the actual process has to be done here receiving the rectangle, FIXME maybe return a value to stop checking this object? */
 	void (*process)(void *data, Enesim_Rectangle *r);
 	/* after the process this is called */
 	void (*post_process)(void *data);

@@ -19,17 +19,21 @@ Ekeko_Tiler *ekeko_tiler_new(int type, int w, int h)
 		c = &tiler_rect_splitter;
 		break;
 
+		case EKEKO_TILER_TILEBUF:
+		c = &tiler_tilebuf;
+		break;
+		
 		default:
 		return NULL;
 	}
 	t = calloc(1, sizeof(Ekeko_Tiler));
-	t->class = c;
-	if (c->new)
-		t->data = c->new(w, h);
 	t->canvas.w = w;
 	t->canvas.h = h;
 	t->tile.w = 8;
 	t->tile.h = 8;
+	t->class = c;
+	if (c->new)
+		t->data = c->new(t);
 	return t;
 }
 /**
