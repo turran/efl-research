@@ -1,9 +1,16 @@
 #include "Ekeko.h"
 #include "ekeko_test.h"
 
+
+Canvas *c;
+Object *rectangle;
+
 /**
  * TODO
- * clean up the sdl_rectangle[class] code, abstract correctly the ekeko_object
+ * clean up the sdl_rectangle[class] code, abstract correctly the ekeko_object (WIP)
+ * make this app test different things evas can't handle, like new object types (filters, subcanvas, mirror objects, etc)
+ * add support for benchmarking different tilers (rect_splitter, tilebuf, etc)
+ * 
  */
 
 #define CANVAS_W 640
@@ -15,27 +22,19 @@
 
 void init(void)
 {
-	Canvas *c;
-	
-	c = canvas_new();
+	c = canvas_new(CANVAS_W, CANVAS_H);
 	/* background */
-#if 0
-	o = ekeko_object_add(c, &sdl_rectangle_class);
-	enesim_rectangle_coords_from(&rect, 0, 0, CANVAS_W, CANVAS_H);
-	ekeko_object_move(o, rect.x, rect.y);
-	ekeko_object_resize(o, rect.w, rect.h);
-	sdl_rect = ekeko_object_data_get(o);
-	sdl_rect->color = RGBA(255, 255, 255, 255);
-	printf("background = %d\n", sdl_rect->color);
+	rectangle = rectangle_new(c);
+	object_move(rectangle, 0, 0);
+	object_resize(rectangle, CANVAS_W, CANVAS_H);
+	object_color_set(rectangle, RGBA(255, 255, 255, 255));
+	
 	/* object moving */
-	o = ekeko_object_add(c, &sdl_rectangle_class);
-	enesim_rectangle_coords_from(&rect, 10, 10, 50, 50);
-	ekeko_object_move(o, rect.x, rect.y);
-	ekeko_object_resize(o, rect.w, rect.h);
-	sdl_rect = ekeko_object_data_get(o);
-	sdl_rect->color = RGBA(255, 0, 0, 255);
-	printf("object = %d\n", sdl_rect->color);
-#endif
+	rectangle = rectangle_new(c);
+	object_move(rectangle, 0, 0);
+	object_resize(rectangle, 50, 50);
+	object_color_set(rectangle, RGBA(255, 255, 0, 255));
+
 }
 
 void shutdown(void)
@@ -46,10 +45,15 @@ void shutdown(void)
 
 void loop(void)
 {
+	Enesim_Rectangle r;
 	SDL_Event event;
 	int end = 0;
 	int i = 0;
 	
+	r.x = 0;
+	r.y = 0;
+	r.w = 50;
+	r.h = 50;
 	while (!end)
 	{
 		while (SDL_PollEvent(&event))
@@ -65,21 +69,18 @@ void loop(void)
 				break;
 			}
 		}
-#if 0
-		ekeko_canvas_process(c);
-		
+		canvas_process(c);
 		i++;
-		if (i > 10000)
+		if (i > 1000)
 		{
-			rect.x = (rect.x + 1) % CANVAS_W;
-			if (rect.x == 0)
+			r.x = (r.x + 1) % CANVAS_W;
+			if (r.x == 0)
 			{
-				rect.y = (rect.y + 1) % CANVAS_H;
+				r.y = (r.y + 1) % CANVAS_H;
 			}
-			ekeko_object_move(o, rect.x, rect.y);
+			object_move(rectangle, r.x, r.y);
 			i = 0;
 		}
-#endif
 	}
 	SDL_Quit();
 }

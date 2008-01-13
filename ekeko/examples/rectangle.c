@@ -4,7 +4,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void rectangle_class_create(Ekeko_Object *o)
+static void _create(Ekeko_Object *o)
 {
 #if 0
 	Rectangle *rect;
@@ -15,51 +15,51 @@ static void rectangle_class_create(Ekeko_Object *o)
 #endif
 }
 
-static void rectangle_class_free(void *data)
+static void _free(void *data)
 {
 #if 0
 	free(data);
 #endif
 }
 
-static void rectangle_class_pre_process(void *data)
+static void _pre_process(void *data)
 {
 	//printf("pre\n");
 }
 
-static void rectangle_class_process(void *data, Enesim_Rectangle *r)
+static void _process(void *data, Enesim_Rectangle *r)
 {
-#if 0
-	Rectangle *rectangle;
+	Object *o;
+	
 	Ekeko_Canvas *canvas;
-	SDL_Rect rect;
+		
 	SDL_Surface *surface;
-
-	rectangle = data;
-	canvas = ekeko_object_canvas_get(rectangle->object);
-	surface = ekeko_canvas_data_get(canvas);
-	//printf("(%d) %d %d %d %d\n", rectangle->color, r->x, r->y, r->w, r->h);
+	SDL_Rect rect;
+	
+	o = data;
+	canvas = o->canvas->canvas;
+	surface = ekeko_canvas_data_get(o->canvas->canvas);
+	//printf("(%d) %d %d %d %d\n", o->color, r->x, r->y, r->w, r->h);
 	rect.x = r->x;
 	rect.y = r->y;
 	rect.w = r->w;
 	rect.h = r->h;
-	SDL_FillRect(surface, &rect, rectangle->color);
+	SDL_FillRect(surface, &rect, o->color);
 	// FIXME for now, update the rect like this, it should be on the canvas callback */
 	SDL_UpdateRect(surface, rect.x, rect.y, rect.w, rect.h);
-#endif
 }
 
-static void rectangle_class_post_process(void *data)
+static void _post_process(void *data)
 {
 
 }
 
 Ekeko_Object_Class rectangle_class = {
-	.create = rectangle_class_create,
-	.free = rectangle_class_free,
-	.pre_process = rectangle_class_pre_process,
-	.process = rectangle_class_process,
-	.post_process = rectangle_class_post_process,
+	.create = _create,
+	.free = _free,
+	.pre_process = _pre_process,
+	.process = _process,
+	.post_process = _post_process,
 };
 
 

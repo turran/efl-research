@@ -41,6 +41,15 @@ enum
 	EKEKO_TILERS
 };
 
+typedef struct _Ekeko_Canvas_Class
+{
+	/* possible callbacks:
+	 * flush(Ekeko_Rectangle *r)
+	 * idle ?
+	 */ 
+} Ekeko_Canvas_Class;
+
+
 /* possible canvas api */
 EAPI Ekeko_Canvas * ekeko_canvas_new(int type, int w, int h);
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
@@ -67,6 +76,9 @@ typedef struct _Ekeko_Object_Class
 	 * changed */
 	//Ekeko_Rectangle * (*state_changed)(void *data);
 } Ekeko_Object_Class;
+
+
+
 
 EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass);
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y);

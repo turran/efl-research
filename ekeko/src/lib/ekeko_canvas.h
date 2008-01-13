@@ -12,6 +12,7 @@ struct _Ekeko_Canvas
 	Ekeko_Object *objects;
 	// damages
 	// obscures
+	Ekeko_Canvas_Class *cclass;
 	void *data;
 };
 

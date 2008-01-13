@@ -12,6 +12,7 @@ Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *data)
 	o->canvas = c;
 	o->object = ekeko_object_add(c->canvas, class);
 	o->data = data;
+	ekeko_object_data_set(o->object, o);
 	
 	return o;
 }

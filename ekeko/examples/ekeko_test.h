@@ -11,8 +11,8 @@ struct _Object
 {
 	Ekeko_Object *object;
 	Canvas *canvas;
-	void *data;
 	int color;
+	void *data;
 };
 
 struct _Canvas
@@ -21,7 +21,8 @@ struct _Canvas
 };
 
 
-Canvas * canvas_new(void);
+Canvas * canvas_new(int w, int h);
+void canvas_process(Canvas *c);
 
 Subcanvas * subcanvas_new(Canvas *c);
 Canvas * subcanvas_canvas_get(Subcanvas *s);
