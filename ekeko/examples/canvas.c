@@ -16,6 +16,7 @@ static void _flush(void *data, Ekeko_Rectangle *rects)
 		// FIXME for now, update the rect like this, maybe call the
 		// UpdateRects directly? */
 		SDL_UpdateRect(c->surface, r->r.x, r->r.y, r->r.w, r->r.h);
+		//SDL_Flip(c->surface);
 	}
 }
 
@@ -35,7 +36,7 @@ Canvas * canvas_new(int w, int h)
 	
 	SDL_Init(SDL_INIT_VIDEO);
 
-	if (!(surface = SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE)))
+	if (!(surface = SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA | SDL_DOUBLEBUF)))
 	{
 		fprintf(stderr, "%s\n", SDL_GetError());
 		SDL_Quit();

@@ -124,10 +124,19 @@ enesim_rectangle_rectangle_intersection_get(Enesim_Rectangle *r1, Enesim_Rectang
  * Rescale the coordinates from @in as if it where relative to @out
  */
 static inline void
-enesim_rectangle_rescale(Enesim_Rectangle *out, Enesim_Rectangle *in, Enesim_Rectangle *res)
+enesim_rectangle_rescale_in(Enesim_Rectangle *out, Enesim_Rectangle *in, Enesim_Rectangle *res)
 {
 	res->x = in->x - out->x;
 	res->y = in->y - out->y;
+}
+/**
+ * 
+ */
+static inline void
+enesim_rectangle_rescale_out(Enesim_Rectangle *out, Enesim_Rectangle *in, Enesim_Rectangle *res)
+{
+	res->x = out->x + in->x;
+	res->y = out->y + in->y;
 }
 
 

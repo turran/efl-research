@@ -3,6 +3,10 @@
 
 #include <SDL.h>
 
+#define RGBA(r, g, b, a)                                                \
+    (((r) << 24) | ((g) << 16) | ((b) << 8) | (a))
+
+
 typedef struct _Subcanvas Subcanvas;
 typedef struct _Canvas Canvas;
 typedef struct _Object Object;

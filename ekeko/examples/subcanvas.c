@@ -20,13 +20,18 @@ static void _flush(void *data, Ekeko_Rectangle *rects)
 	for (l = (Eina_Inlist *)rects; l; l = l->next)
 	{
 		Ekeko_Rectangle *r;
+		Enesim_Rectangle geometry;
+		Enesim_Rectangle rscaled;
 		SDL_Rect rect;
 
 		r = (Ekeko_Rectangle *)l;
-		rect.x = r->r.x;
-		rect.y = r->r.y;
-		rect.w = r->r.w;
-		rect.h = r->r.h;
+		ekeko_object_geometry_get(s->object->object, &geometry);
+		enesim_rectangle_rescale_out(&geometry, &r->r, &rscaled);
+		
+		rect.x = rscaled.x;
+		rect.y = rscaled.y;
+		rect.w = rscaled.w;
+		rect.h = rscaled.h;
 
 		/* transform this rectangle relative to the upper canvas
 		 * and blit between the two surfaces */

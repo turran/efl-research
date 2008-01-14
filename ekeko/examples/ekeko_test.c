@@ -20,9 +20,6 @@ Object *rectangle2;
 #define CANVAS_W 640
 #define CANVAS_H 480
 
-#define RGBA(r, g, b, a)                                                \
-    (((r) << 24) | ((g) << 16) | ((b) << 8) | (a))
-
 
 void init(void)
 {
@@ -36,7 +33,7 @@ void init(void)
 	rectangle1 = rectangle_new(c);
 	object_move(rectangle1, 0, 0);
 	object_resize(rectangle1, 50, 50);
-	object_color_set(rectangle1, RGBA(255, 255, 0, 255));
+	object_color_set(rectangle1, RGBA(255, 0, 0, 255));
 	/* subcanvas */
 #if 1
 	subcanvas = subcanvas_new(c, 319, 239, 320, 240);

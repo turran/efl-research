@@ -165,3 +165,14 @@ EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
 {
 	return o->canvas;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Enesim_Rectangle *r)
+{
+	r->x = o->curr.geometry.x;
+	r->y = o->curr.geometry.y;
+	r->w = o->curr.geometry.w;
+	r->h = o->curr.geometry.h;
+}
