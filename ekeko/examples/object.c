@@ -4,15 +4,17 @@
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *data)
+Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *cdata)
 {
 	Object *o;
 	
 	o = calloc(1, sizeof(Object));
 	o->canvas = c;
-	o->object = ekeko_object_add(c->canvas, class);
-	o->data = data;
-	ekeko_object_data_set(o->object, o);
+	/* if cdata then pass it, else use the default */
+	if (cdata)
+		o->object = ekeko_object_add(c->canvas, class, cdata);
+	else
+		o->object = ekeko_object_add(c->canvas, class, o);
 	
 	return o;
 }

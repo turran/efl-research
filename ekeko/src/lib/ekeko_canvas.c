@@ -39,12 +39,16 @@ static void _obscures_remove(Ekeko_Canvas *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ekeko_Canvas * ekeko_canvas_new(int type, int w, int h)
+EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
+		int type, int w, int h)
 {
 	Ekeko_Canvas *c;
 
 	c = calloc(1, sizeof(Ekeko_Canvas));
 	c->tiler = ekeko_tiler_new(type, w, h);
+	c->cclass = cclass;
+	c->cdata = cdata;
+
 	return c;
 }
 /**
@@ -112,23 +116,17 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 		}
 		i++;
 	}
-	/* 6. clear the rectangles */
+	/* 6. flush the rectangles on the canvas */
+	c->cclass->flush(c->cdata, redraws);
+	/* 7. clear the rectangles */
 	ekeko_tiler_clear(c->tiler);
-	/* 7. delete all objects that should be deleted */
+	/* 8. delete all objects that should be deleted */
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_data_set(Ekeko_Canvas *c, void *data)
+EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
 {
-	c->data = data;
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c)
-{
-	return c->data;
+	return c->cdata;
 }

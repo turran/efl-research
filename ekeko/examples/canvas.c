@@ -1,5 +1,28 @@
 #include "Ekeko.h"
 #include "ekeko_test.h"
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static void _flush(void *data, Ekeko_Rectangle *rects)
+{
+	Canvas *c = data;
+	Eina_Inlist *l;
+
+	for (l = (Eina_Inlist *)rects; l; l = l->next)
+	{
+		Ekeko_Rectangle *r;
+		r = (Ekeko_Rectangle *)l;
+		//printf("RECT! %d %d %d %d\n", r->r.x, r->r.y, r->r.w, r->r.h);
+		// FIXME for now, update the rect like this, maybe call the
+		// UpdateRects directly? */
+		SDL_UpdateRect(c->surface, r->r.x, r->r.y, r->r.w, r->r.h);
+	}
+}
+
+static Ekeko_Canvas_Class _canvas_class = {
+	.flush = _flush,
+};
+
 
 /*============================================================================*
  *                                 Global                                     * 
@@ -20,14 +43,17 @@ Canvas * canvas_new(int w, int h)
 	}
 	
 	c = calloc(1, sizeof(Canvas));
-	c->canvas = ekeko_canvas_new(EKEKO_TILER_TILEBUF, w, h);
-	//c->canvas = ekeko_canvas_new(EKEKO_TILER_SPLITTER, w, h);
-	ekeko_canvas_data_set(c->canvas, surface);
+	//c->canvas = ekeko_canvas_new(&_canvas_class, c, EKEKO_TILER_TILEBUF, w, h);
+	c->surface = surface;
+	c->canvas = ekeko_canvas_new(&_canvas_class, c, EKEKO_TILER_SPLITTER, w, h);
 	
 	return c;
 }
 
 void canvas_process(Canvas *c)
 {
+	/* first process the canvas */
 	ekeko_canvas_process(c->canvas);
+	/* then the list of subcanvas */
 }
+

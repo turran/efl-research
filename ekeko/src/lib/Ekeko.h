@@ -24,6 +24,25 @@
  * 
  */
 
+
+/**
+ * TODO: fix this create, data_set mess
+ * 1. we should set some object/canvas class data inside the object/class
+ * 2. if we use a void * create(Ekeko_Object *) alike function to do it, then:
+ *  a. all private data should have a pointer to Ekeko_Object
+ *  b. the returned value should be placed as the o->priv_data
+ *  c. THIS WONT WORK, for example how to pass a wrapper of the object to
+ *  the class functions, like in the case of the subcanvas?? there's no way
+ *  BAD BAD BAD
+ * 3. Use ekeko_object_add(Canvas *c, Object_Class *cl, void *cdata) where
+ * cdata will be the class data passed to every callback like:
+ * Ekeko_Object *o;
+ * MyObject *myObject;
+ *
+ * myObject = calloc(1, sizeof(MyObject));
+ * myObject->object = ekeko_object_add(c, &myclass, myObject);
+ * if so, do we need a create method?
+ */
 typedef struct _Ekeko_Canvas Ekeko_Canvas;
 typedef struct _Ekeko_Object Ekeko_Object;
 typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
@@ -43,27 +62,24 @@ enum
 
 typedef struct _Ekeko_Canvas_Class
 {
+	void (*flush)(void *data, Ekeko_Rectangle *r);
 	/* possible callbacks:
-	 * flush(Ekeko_Rectangle *r)
 	 * idle ?
 	 */ 
 } Ekeko_Canvas_Class;
 
 
 /* possible canvas api */
-EAPI Ekeko_Canvas * ekeko_canvas_new(int type, int w, int h);
+EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata, int type, int w, int h);
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
 EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
 EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Enesim_Rectangle *r);
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
-EAPI void ekeko_canvas_data_set(Ekeko_Canvas *c, void *data);
-EAPI void * ekeko_canvas_data_get(Ekeko_Canvas *c);
+EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c);
 
 /* possible object api */
 typedef struct _Ekeko_Object_Class
 {
-	/* object is created after object_new */
-	void (*create)(Ekeko_Object *o); 
 	/* object is freed */
 	void (*free)(void *data); 
 	/* once the object is going to be processed, first this is called */
@@ -77,27 +93,15 @@ typedef struct _Ekeko_Object_Class
 	//Ekeko_Rectangle * (*state_changed)(void *data);
 } Ekeko_Object_Class;
 
-
-
-
-EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass);
+EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass, void *cdata);
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y);
 EAPI void ekeko_object_show(Ekeko_Object *o);
 EAPI void ekeko_object_hide(Ekeko_Object *o);
 EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h);
 EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel);
 EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel);
-EAPI void ekeko_object_data_set(Ekeko_Object *o, void *data);
-EAPI void * ekeko_object_data_get(Ekeko_Object *o);
+EAPI void * ekeko_object_class_data_get(Ekeko_Object *o);
 EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o);
-/* 
- * invalidate all the object, what about invalidating only a part of it? pass a
- * list of rectangles?
- * what about objects that obscure completely whats behind, so we skip the object
- * list below, use some object property? 
- */
-EAPI void ekeko_object_invalidate(Ekeko_Object *o);
-
 /* possible event api */
 /* interceptors */
 

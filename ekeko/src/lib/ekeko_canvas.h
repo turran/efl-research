@@ -13,7 +13,7 @@ struct _Ekeko_Canvas
 	// damages
 	// obscures
 	Ekeko_Canvas_Class *cclass;
-	void *data;
+	void *cdata;
 };
 
 #endif

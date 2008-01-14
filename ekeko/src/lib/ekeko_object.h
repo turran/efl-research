@@ -25,7 +25,7 @@ struct _Ekeko_Object
 	Ekeko_Object_State prev;
 	Eina_Bool delete_me;
 	Eina_Bool changed;
-	void *data;
+	void *cdata;
 };
 
 Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Enesim_Rectangle *drect);

@@ -49,7 +49,7 @@ void ekeko_object_pre_process(Ekeko_Object *o)
 	return;
 	/* call class function */
 ok:
-	o->oclass->pre_process(o->data);
+	o->oclass->pre_process(o->cdata);
 }
 /**
  * To be documented
@@ -58,7 +58,7 @@ ok:
 void ekeko_object_process(Ekeko_Object *o, Enesim_Rectangle *r)
 {
 	/* call class function */
-	o->oclass->process(o->data, r);
+	o->oclass->process(o->cdata, r);
 }
 /**
  * To be documented
@@ -68,7 +68,7 @@ void ekeko_object_post_process(Ekeko_Object *o)
 {	
 	/* call class function */
 	o->changed = EINA_FALSE;
-	o->oclass->post_process(o->data);
+	o->oclass->post_process(o->cdata);
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -78,7 +78,7 @@ void ekeko_object_post_process(Ekeko_Object *o)
  * FIXME: To be fixed
  * FIXME this function and the object class create aren't too good, refactor them :)
  */
-EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass)
+EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass, void *cdata)
 {
 	Ekeko_Object *o;
 
@@ -90,7 +90,8 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
 	
 	/* TODO check the class */
 	o->oclass = oclass;
-	o->oclass->create(o);
+	o->cdata = cdata;
+	
 	c->objects = eina_inlist_append(c->objects, o);
 	return o;
 }
@@ -152,17 +153,9 @@ EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_data_set(Ekeko_Object *o, void *data)
+EAPI void * ekeko_object_class_data_get(Ekeko_Object *o)
 {
-	o->data = data;
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void * ekeko_object_data_get(Ekeko_Object *o)
-{
-	return o->data;
+	return o->cdata;
 }
 /**
  * To be documented

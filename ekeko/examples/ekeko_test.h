@@ -18,20 +18,20 @@ struct _Object
 struct _Canvas
 {
 	Ekeko_Canvas *canvas;
+	SDL_Surface *surface;
+	/* TODO list of subcanvas */
 };
-
 
 Canvas * canvas_new(int w, int h);
 void canvas_process(Canvas *c);
 
-Subcanvas * subcanvas_new(Canvas *c);
+Subcanvas * subcanvas_new(Canvas *c, int x, int y, int w, int h);
 Canvas * subcanvas_canvas_get(Subcanvas *s);
 Object * subcanvas_object_get(Subcanvas *s);
 
 
 Object * rectangle_new(Canvas *c);
-
-Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *data);
+Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *cdata);
 void object_move(Object *o, int x, int y);
 void object_resize(Object *o, int w, int h);
 void object_color_set(Object *o, int color);
