@@ -35,13 +35,11 @@ void init(void)
 	object_resize(rectangle1, 50, 50);
 	object_color_set(rectangle1, RGBA(255, 0, 0, 255));
 	/* subcanvas */
-#if 1
-	subcanvas = subcanvas_new(c, 319, 239, 320, 240);
+	subcanvas = subcanvas_new(c, 120, 10, 320, 240);
 	background2 = rectangle_new(subcanvas_canvas_get(subcanvas));
 	object_move(background2, 0, 0);
 	object_resize(background2, 320, 240);
 	object_color_set(background2, RGBA(0, 255, 255, 255));
-#endif
 }
 
 void shutdown(void)
@@ -57,11 +55,8 @@ void loop(void)
 	SDL_Event event;
 	int end = 0;
 	int i = 0;
+	int j = 0;
 	
-	r.x = 0;
-	r.y = 0;
-	r.w = 50;
-	r.h = 50;
 	while (!end)
 	{
 		while (SDL_PollEvent(&event))
@@ -77,12 +72,16 @@ void loop(void)
 				break;
 			}
 		}
-		canvas_process(c);
 		/* TODO this should inside canvas process, do we actually need to call it? */
 		canvas_process(subcanvas_canvas_get(subcanvas));
+		canvas_process(c);
 		i++;
+		j++;
+		/* move rectangle1 */
 		if (i > 1000)
 		{
+			/* FIXME abstract this */
+			ekeko_object_geometry_get(rectangle1->object, &r);
 			r.x = (r.x + 1) % CANVAS_W;
 			if (r.x == 0)
 			{
@@ -91,6 +90,20 @@ void loop(void)
 			object_move(rectangle1, r.x, r.y);
 			i = 0;
 		}
+		/* move subcanvas (we need to implement the damages first) */
+#if 0
+		if (j > 2000)
+		{
+			/* FIXME abstract this */
+			ekeko_object_geometry_get(rectangle1->object, &r);
+			r.y = (r.y + 1) % CANVAS_H;
+			if (r.x == 0) {
+				r.x = (r.x + 1) % CANVAS_W;
+			}
+			object_move(subcanvas_object_get(subcanvas), r.x, r.y);
+			j = 0;
+		}
+#endif
 	}
 	SDL_Quit();
 }

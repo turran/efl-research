@@ -40,9 +40,15 @@ void ekeko_object_pre_process(Ekeko_Object *o)
 			(o->curr.geometry.h != o->prev.geometry.h))
 	{
 		/* add both rectangles, previous and new */
-		//printf("%d %d %d %d\n", o->curr.geometry.x, o->curr.geometry.y, o->curr.geometry.w, o->curr.geometry.h);
+		//printf("adding[1] %d %d %d %d\n", o->prev.geometry.x, o->prev.geometry.y, o->prev.geometry.w, o->prev.geometry.h);
 		ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
+		//printf("adding[2] %d %d %d %d\n", o->curr.geometry.x, o->curr.geometry.y, o->curr.geometry.w, o->curr.geometry.h);
 		ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
+		/* update the geometry */
+		o->prev.geometry.x = o->curr.geometry.x;
+		o->prev.geometry.y = o->curr.geometry.y;
+		o->prev.geometry.w = o->curr.geometry.w;
+		o->prev.geometry.h = o->curr.geometry.h;
 		goto ok;
 			
 	}

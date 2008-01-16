@@ -53,8 +53,8 @@ Canvas * canvas_new(int w, int h)
 
 void canvas_process(Canvas *c)
 {
-	/* first process the canvas */
+	/* first process the list of subcanvas */
+	/* then the canvas*/
 	ekeko_canvas_process(c->canvas);
-	/* then the list of subcanvas */
 }
 

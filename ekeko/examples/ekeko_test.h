@@ -41,4 +41,10 @@ void object_resize(Object *o, int w, int h);
 void object_color_set(Object *o, int color);
 Canvas * object_canvas_get(Object *o);
 
+
+static inline void rectangle_print(Enesim_Rectangle *r)
+{
+	printf("%d %d %d %d\n", r->x, r->y, r->w, r->h);
+}
+
 #endif /*EKEKO_TEST_H_*/

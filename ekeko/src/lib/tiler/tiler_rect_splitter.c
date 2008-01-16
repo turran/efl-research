@@ -887,6 +887,7 @@ _add_redraw(list_t *rects, int max_w, int max_h, int x, int y, int w, int h)
    RECTS_CLIP_TO_RECT(x, y, w, h, 0, 0, max_w, max_h);
    if ((w <= 0) || (h <= 0)) return 0;
 
+   //printf("ACCOUNTING[1]: add_redraw: %4d,%4d %3dx%3d\n", x, y, w, h);
    x >>= 1;
    y >>= 1;
    w += 2;
@@ -897,7 +898,7 @@ _add_redraw(list_t *rects, int max_w, int max_h, int x, int y, int w, int h)
    rn = (rect_node_t *)rect_list_node_pool_get();
    rn->_lst = list_node_zeroed;
    rect_init(&rn->rect, x, y, w, h);
-   //fprintf(stderr, "ACCOUNTING: add_redraw: %4d,%4d %3dx%3d\n", x, y, w, h);
+   //printf("ACCOUNTING[2]: add_redraw: %4d,%4d %3dx%3d\n", x, y, w, h);
    //testing on my core2 duo desktop - fuzz of 32 or 48 is best.
 #define FUZZ 32
    rect_list_add_split_fuzzy_and_merge(rects, (list_node_t *)rn,

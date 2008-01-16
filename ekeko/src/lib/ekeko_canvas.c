@@ -126,6 +126,17 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Enesim_Rectangle *r)
+{
+	r->x = 0;
+	r->y = 0;
+	r->w = c->w;
+	r->h = c->h;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
 {
 	return c->cdata;

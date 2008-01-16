@@ -4,7 +4,9 @@
  *                                  Local                                     * 
  *============================================================================*/
 /* A subcanvas implements both interfaces: Object and Canvas,
- * so the object_ canvas_ functions are still available
+ * so the object_ canvas_ functions are still available.
+ * TODO We should do it in the inverse way, the flush should notify damage rectangles
+ * and the process_whatever should blit 
  */
 struct _Subcanvas
 {
@@ -22,21 +24,13 @@ static void _flush(void *data, Ekeko_Rectangle *rects)
 		Ekeko_Rectangle *r;
 		Enesim_Rectangle geometry;
 		Enesim_Rectangle rscaled;
-		SDL_Rect rect;
 
 		r = (Ekeko_Rectangle *)l;
+		/* transform this rectangle relative to the upper canvas */ 
 		ekeko_object_geometry_get(s->object->object, &geometry);
 		enesim_rectangle_rescale_out(&geometry, &r->r, &rscaled);
-		
-		rect.x = rscaled.x;
-		rect.y = rscaled.y;
-		rect.w = rscaled.w;
-		rect.h = rscaled.h;
-
-		/* transform this rectangle relative to the upper canvas
-		 * and blit between the two surfaces */
-		SDL_BlitSurface(s->canvas->surface, NULL, s->object->canvas->surface, &rect);
-		printf("SUBCANVAS FLUSH %p\n", s->canvas->surface);
+		/* and mark those rectangles as a damage */
+		ekeko_canvas_damage_add(s->object->canvas->canvas, &rscaled);
 	}
 }
 
@@ -55,10 +49,31 @@ static void _pre_process(void *data)
 static void _process(void *data, Enesim_Rectangle *r)
 {
 	Subcanvas *s = data;
+	Enesim_Rectangle geometry;
+	Enesim_Rectangle rscaled;
+	SDL_Rect srect;
+	SDL_Rect drect;
+	
 	/* the rectangle received is relative to the upper canvas
 	 * transform it to the local coordinates */
-	/* pass this rectangle as a damage */
-	printf("processing subcanvas\n");
+	ekeko_object_geometry_get(s->object->object, &geometry);
+	enesim_rectangle_rescale_in(&geometry, r, &rscaled);
+	/* blit the rectangle on the upper canvas */
+	srect.x = rscaled.x;
+	srect.y = rscaled.y;
+	srect.w = rscaled.w;
+	srect.h = rscaled.h;
+	
+	drect.x = r->x;
+	drect.y = r->y;
+	drect.w = r->w;
+	drect.h = r->h;
+	
+	//printf("SRC = ");
+	//rectangle_print(&rscaled);
+	//printf("DST = ");
+	//rectangle_print(r);
+	SDL_BlitSurface(s->canvas->surface, &srect, s->object->canvas->surface, &drect);
 }
 
 static void _post_process(void *data)

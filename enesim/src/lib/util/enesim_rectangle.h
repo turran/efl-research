@@ -128,6 +128,8 @@ enesim_rectangle_rescale_in(Enesim_Rectangle *out, Enesim_Rectangle *in, Enesim_
 {
 	res->x = in->x - out->x;
 	res->y = in->y - out->y;
+	res->w = in->w;
+	res->h = in->h;
 }
 /**
  * 
@@ -137,6 +139,8 @@ enesim_rectangle_rescale_out(Enesim_Rectangle *out, Enesim_Rectangle *in, Enesim
 {
 	res->x = out->x + in->x;
 	res->y = out->y + in->y;
+	res->w = out->w;
+	res->h = out->h;
 }
 
 
