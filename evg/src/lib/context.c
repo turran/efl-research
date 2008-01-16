@@ -61,9 +61,9 @@ typedef struct _Evg_Context
 	/* Error */
 	VGErrorCode err;
 	/* implementation */
-	Edata_Hash *path_hash;
-	Edata_Hash *image_hash;
-	Edata_Hash *paint_hash;
+	Eina_Hash *path_hash;
+	Eina_Hash *image_hash;
+	Eina_Hash *paint_hash;
 	
 } Evg_Context;
 
@@ -94,7 +94,7 @@ void evgSetError(VGErrorCode err)
  */
 void evgCreatePath(VGPath p)
 {
-	edata_hash_set(_context->path_hash, (void *)p, (void *)p);
+	eina_hash_set(_context->path_hash, (void *)p, (void *)p);
 }
 /**
  * To be documented
@@ -102,7 +102,7 @@ void evgCreatePath(VGPath p)
  */
 void evgCreateImage(VGImage i)
 {
-	edata_hash_set(_context->image_hash, (void *)i, (void *)i);
+	eina_hash_set(_context->image_hash, (void *)i, (void *)i);
 }
 /**
  * To be documented
@@ -110,7 +110,7 @@ void evgCreateImage(VGImage i)
  */
 void evgCreatePaint(VGPaint p)
 {
-	edata_hash_set(_context->paint_hash, (void *)p, (void *)p);
+	eina_hash_set(_context->paint_hash, (void *)p, (void *)p);
 }
 /**
  * To be documented
@@ -119,7 +119,7 @@ void evgCreatePaint(VGPaint p)
 /* if dstPath is not a valid path handle, or is not shared with the current context */
 VGboolean evgPathExists(VGPath p)
 {
-	if (edata_hash_get(_context->path_hash, (void *)p))
+	if (eina_hash_get(_context->path_hash, (void *)p))
 		return VG_TRUE;
 	else
 		return VG_FALSE;
@@ -130,7 +130,7 @@ VGboolean evgPathExists(VGPath p)
  */
 VGboolean evgImageExists(VGImage i)
 {
-	if (edata_hash_get(_context->image_hash, (void *)i))
+	if (eina_hash_get(_context->image_hash, (void *)i))
 		return VG_TRUE;
 	else
 		return VG_FALSE;	
@@ -141,7 +141,7 @@ VGboolean evgImageExists(VGImage i)
  */
 VGboolean evgPaintExists(VGPaint p)
 {
-	if (edata_hash_get(_context->paint_hash, (void *)p))
+	if (eina_hash_get(_context->paint_hash, (void *)p))
 		return VG_TRUE;
 	else
 		return VG_FALSE;
@@ -468,9 +468,9 @@ VG_API_CALL EVGContext evgContextNew(void)
 	/* implementation */
 	/******************/
 	/* setup hashes */
-	e->path_hash = edata_hash_new(edata_direct_hash, edata_direct_compare);
-	e->image_hash = edata_hash_new(edata_direct_hash, edata_direct_compare);
-	e->paint_hash = edata_hash_new(edata_direct_hash, edata_direct_compare);
+	e->path_hash = eina_hash_new(eina_direct_hash, eina_direct_compare);
+	e->image_hash = eina_hash_new(eina_direct_hash, eina_direct_compare);
+	e->paint_hash = eina_hash_new(eina_direct_hash, eina_direct_compare);
 	/* setup the renderer */
 
 	return ((EVGContext)e);

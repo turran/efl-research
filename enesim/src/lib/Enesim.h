@@ -1,7 +1,6 @@
 #ifndef _ENESIM_H
 #define _ENESIM_H
 
-#include <Eina.h>
 #include "enesim_rectangle.h"
 
 /**

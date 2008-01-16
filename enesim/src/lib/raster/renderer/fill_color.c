@@ -1,5 +1,4 @@
-#include <stdlib.h>
-
+#include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "renderer.h"

@@ -124,7 +124,7 @@ esac
 
 ## Make the debug preprocessor configurable
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
-PKG_CHECK_MODULES(EDATA, [edata >= 0.0.1])
+PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
 
 AC_OUTPUT([
 Makefile

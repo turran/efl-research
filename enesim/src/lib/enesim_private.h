@@ -10,10 +10,6 @@
  * @{
  */
 
-#include <stdlib.h>
-#include <limits.h>
-#include "enesim_rectangle.h"
-
 #define DEBUG
 
 #ifndef DEBUG

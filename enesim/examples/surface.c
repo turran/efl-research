@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "Eina.h"
 #include "Enesim.h"
 
 Enesim_Surface * surface_new(int w, int h, Enesim_Surface_Format fmt)

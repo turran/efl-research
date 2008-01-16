@@ -3,8 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "Eina.h"
 #include "Enesim.h"
-#include "Edata.h"
+
+
 
 /**
  * @todo

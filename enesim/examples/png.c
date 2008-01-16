@@ -3,6 +3,7 @@
 #include <alloca.h>
 #include <stdlib.h>
 
+#include "Eina.h"
 #include "Enesim.h"
 
 #define PNG_BYTES_TO_CHECK 4

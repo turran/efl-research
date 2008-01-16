@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "Eina.h"
+#include "Evg.h"
 #include "Enesim.h"
 #include "EXML.h"
 

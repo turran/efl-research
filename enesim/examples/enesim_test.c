@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "Eina.h"
 #include "Enesim.h"
 #include "fixed_16p16.h"
 #include "enesim_test.h"

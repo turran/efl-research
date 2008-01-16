@@ -12,11 +12,11 @@ typedef struct _Evg_Path
 	VGbyte *segments;
 	void *coords;
 	/* implementation */
-	Edata_Array *coord_allocator;
+	Eina_Array *coord_allocator;
 	int coord_num;
-	Edata_Array *segment_allocator;
+	Eina_Array *segment_allocator;
 	int segment_num;
-	Edata_Array *fcoords_allocator;
+	Eina_Array *fcoords_allocator;
 	int flat_coords_num;
 	float *flat_coords;
 	char *flat_coords_type;
@@ -141,10 +141,10 @@ VG_API_CALL VGPath vgCreatePath(VGint pathFormat,
 	/* implementation */
 	/******************/
 	/* create the vertex container */
-	p->segment_allocator = edata_array_new(p, EDATA_ARRAY_ALLOC(_segment_alloc),
-			EDATA_ARRAY_FREE(_segment_free), segmentCapacityHint);
-	p->coord_allocator = edata_array_new(p, EDATA_ARRAY_ALLOC(_coord_alloc),
-			EDATA_ARRAY_FREE(_coord_free), coordCapacityHint);
+	p->segment_allocator = eina_array_new(p, EINA_ARRAY_ALLOC(_segment_alloc),
+			EINA_ARRAY_FREE(_segment_free), segmentCapacityHint);
+	p->coord_allocator = eina_array_new(p, EINA_ARRAY_ALLOC(_coord_alloc),
+			EINA_ARRAY_FREE(_coord_free), coordCapacityHint);
 	
 	return ((VGPath)p);
 }
@@ -222,8 +222,8 @@ VG_API_CALL void vgAppendPathData(VGPath dstPath,
 	/******************/
 	/* resize segment types and data */
 	/* TODO check that we actually alloc the space */
-	edata_array_elements_add(p->segment_allocator, count);
-	edata_array_elements_add(p->coord_allocator, count);
+	eina_array_elements_add(p->segment_allocator, count);
+	eina_array_elements_add(p->coord_allocator, count);
 	
 	/* copy data */
 	memcpy(p->segments + p->segment_num, pathSegments, numSegments);

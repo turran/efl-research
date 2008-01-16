@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
+#include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "rasterizer.h"

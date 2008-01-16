@@ -1,11 +1,8 @@
+#include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "surface.h"
 #include "fixed_16p16.h"
-
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdio.h>
 
 // for now
 #include "argb8888.h"

@@ -1,7 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
+#include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
 #include "enesim_vector.h"
