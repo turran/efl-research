@@ -11,12 +11,12 @@ lib_LTLIBRARIES = libesvg.la
 include_HEADERS = \
 ESVG.h
 
-libesvg_la_SOURCES = \
-main.c \
-units.c \
-polygon.c \
-group.c \
-document.c
+libesvg_la_SOURCES =
+#main.c \
+#units.c \
+#polygon.c \
+#group.c \
+#document.c
  
 libesvg_la_LIBADD = @create_shared_lib@ \
 @EINA_LIBS@ \

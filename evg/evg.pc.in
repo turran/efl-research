@@ -3,9 +3,9 @@ exec_prefix=${prefix}
 libdir=/usr/local/lib
 includedir=${prefix}/include
 
-Name: etc
-Description: Etc
+Name: EVG
+Description: EVG
 Requires: 
 Version: 0.0.1
-Libs: -L${libdir} -letc
+Libs: -L${libdir} -lopenvg
 Cflags: -I${includedir}
