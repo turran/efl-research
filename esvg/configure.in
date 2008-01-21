@@ -107,6 +107,7 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
+PKG_CHECK_MODULES(EKEKO, [ekeko >= 0.0.1])
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
 PKG_CHECK_MODULES(EVG, [evg >= 0.0.1])
 PKG_CHECK_MODULES(EXML, [exml >= 0.1.1])
@@ -116,8 +117,10 @@ PKG_CHECK_MODULES(EXML, [exml >= 0.1.1])
 AC_OUTPUT([
 Makefile
 esvg.pc
+examples/Makefile
 src/Makefile
 src/lib/Makefile
+src/lib/draw/Makefile
 ],[
 ])
 

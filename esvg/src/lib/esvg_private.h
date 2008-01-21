@@ -1,12 +1,11 @@
 #ifndef _ESVG_PRIVATE_H
 #define _ESVG_PRIVATE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "Eina.h"
-#include "Evg.h"
-#include "Enesim.h"
-#include "EXML.h"
+#include "esvg_draw_private.h"
+
+
+/* old code */
+#if 0
 
 /* 
  * define attribute collections
@@ -64,3 +63,5 @@ typedef struct _ESVG_Attribute
 extern ESVG_Element esvg_elements[ESVG_ELEMENTS];
 #endif
 #endif
+#endif
+

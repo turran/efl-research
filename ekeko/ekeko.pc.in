@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: eina
-Description: Eina
-Requires: ecore edata 
+Name: Ekeko
+Description: Ekeko
+Requires: eina enesim
 Version: @VERSION@
-Libs: -L${libdir} -leina
+Libs: -L${libdir} -lekeko
 Cflags: -I${includedir}
