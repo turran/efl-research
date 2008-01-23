@@ -2,12 +2,13 @@ MAINTAINERCLEANFILES = Makefile.in
 
 SUBDIRS = tiler
 
-INCLUDES = \
+AM_CPPFLAGS = \
 -I. \
 @EINA_CFLAGS@ \
 @ENESIM_CFLAGS@
 
 lib_LTLIBRARIES = libekeko.la
+
 include_HEADERS = \
 Ekeko.h
 
@@ -22,7 +23,6 @@ tiler/libekeko_tiler.la \
 @ENESIM_LIBS@
 
 libekeko_la_DEPENDENCIES = \
-tiler/libekeko_tiler.la 
+tiler/libekeko_tiler.la
 
-
-libekeko_la_LDFLAGS = -version-info 1:0:0
+libekeko_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

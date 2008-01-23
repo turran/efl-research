@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-INCLUDES = -Wall -g \
+AM_CPPFLAGS = \
 -I$(top_srcdir)/src/lib \
 @ENESIM_CFLAGS@ \
 @EINA_CFLAGS@

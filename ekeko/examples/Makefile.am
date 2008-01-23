@@ -1,13 +1,13 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-EXTRA_DIST =
-
-INCLUDES = \
+AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/lib \
 @EINA_CFLAGS@ \
 @ENESIM_CFLAGS@ \
 @SDL_CFLAGS@
+
+if HAVE_SDL
 
 bin_PROGRAMS = ekeko_test
 
@@ -26,3 +26,4 @@ $(top_builddir)/src/lib/libekeko.la \
 @ENESIM_LIBS@ \
 @SDL_LIBS@
 
+endif
