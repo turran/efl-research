@@ -95,6 +95,6 @@ EAPI void eina_hash_dump_stats(Eina_Hash *hash);
 EAPI int eina_str_compare(const void *key1, const void *key2);
 EAPI int eina_direct_compare(const void *key1, const void *key2);
 EAPI unsigned int eina_str_hash(const void *key);
-EAPI unsigned int eina_direct_hash(const void *key);
+EAPI unsigned long eina_direct_hash(const void *key);
 
 #endif /* EINA_HASH_H */

@@ -1,9 +1,9 @@
 SUBDIRS = component 
 
-MAINTAINERCLEANFILES = \
-Makefile.in
+MAINTAINERCLEANFILES = Makefile.in
 
-INCLUDES = -I. \
+AM_CPPFLAGS = \
+-I. \
 -I$(top_srcdir)/src/lib \
 -I$(top_srcdir)/src/lib/util \
 @EINA_CFLAGS@

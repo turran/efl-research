@@ -368,7 +368,7 @@ static int _eina_hash_bucket_destroy(Eina_Hash_Node *list,
  */
 static int _eina_hash_add_node(Eina_Hash *hash, Eina_Hash_Node *node)
 {
-	unsigned int hash_val;
+	unsigned long hash_val;
 
 	CHECK_PARAM_POINTER_RETURN("hash", hash, FALSE);
 	CHECK_PARAM_POINTER_RETURN("node", node, FALSE);
@@ -379,7 +379,7 @@ static int _eina_hash_add_node(Eina_Hash *hash, Eina_Hash_Node *node)
 
 	/* Compute the position in the table */
 	if (!hash->hash_func)
-		hash_val = (unsigned int)node->key % eina_prime_table[hash->size];
+		hash_val = (unsigned long)node->key % eina_prime_table[hash->size];
 	else
 		hash_val = EINA_COMPUTE_HASH(hash, node->key);
 
@@ -426,14 +426,14 @@ EAPI void * eina_hash_remove(Eina_Hash *hash, const void *key)
 {
 	Eina_Hash_Node *node = NULL;
 	Eina_Hash_Node *list;
-	unsigned int hash_val;
+	unsigned long hash_val;
 	void *ret = NULL;
 
 	CHECK_PARAM_POINTER_RETURN("hash", hash, NULL);
 
 	/* Compute the position in the table */
 	if (!hash->hash_func)
-		hash_val = (unsigned int )key % eina_prime_table[hash->size];
+		hash_val = (unsigned long)key % eina_prime_table[hash->size];
 	else
 		hash_val = EINA_COMPUTE_HASH(hash, key);
 
@@ -530,7 +530,7 @@ EAPI void * eina_hash_find(Eina_Hash *hash, Eina_Compare_Cb compare,
  */
 static Eina_Hash_Node * _eina_hash_get_node(Eina_Hash *hash, const void *key)
 {
-	unsigned int hash_val;
+	unsigned long hash_val;
 	Eina_Hash_Node *node = NULL;
 
 	CHECK_PARAM_POINTER_RETURN("hash", hash, NULL);
@@ -542,7 +542,7 @@ static Eina_Hash_Node * _eina_hash_get_node(Eina_Hash *hash, const void *key)
 
 	/* Compute the position in the table */
 	if (!hash->hash_func)
-		hash_val = (unsigned int )key % eina_prime_table[hash->size];
+		hash_val = (unsigned long)key % eina_prime_table[hash->size];
 	else
 		hash_val = EINA_COMPUTE_HASH(hash, key);
 
@@ -814,9 +814,9 @@ static int _eina_hash_node_destroy(Eina_Hash_Node *node, Eina_Free_Cb keyd,
  * @param  key The key to return compute a hash value
  * @return The key cast to an unsigned int.
  */
-EAPI unsigned int eina_direct_hash(const void *key)
+EAPI unsigned long eina_direct_hash(const void *key)
 {
-	return ((unsigned int) key);
+	return ((unsigned long) key);
 }
 /**
  * Compute the hash value of a string
@@ -851,10 +851,10 @@ EAPI unsigned int eina_str_hash(const void *key)
  */
 EAPI int eina_direct_compare(const void *key1, const void *key2)
 {
-	unsigned int k1, k2;
+	unsigned long k1, k2;
 
-	k1 = (unsigned int) key1;
-	k2 = (unsigned int) key2;
+	k1 = (unsigned long) key1;
+	k2 = (unsigned long) key2;
 
 	if (k1 > k2)
 		return 1;

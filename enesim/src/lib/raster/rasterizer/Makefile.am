@@ -1,7 +1,8 @@
 MAINTAINERCLEANFILES = \
 Makefile.in
 
-INCLUDES = -I. \
+AM_CPPFLAGS = \
+-I. \
 -I$(top_srcdir)/src/lib/ \
 -I$(top_srcdir)/src/lib/util \
 -I$(top_srcdir)/src/lib/raster \
@@ -17,8 +18,4 @@ kiia.c \
 kiia8.c \
 kiia16.c
 
-libenesim_rasterizer_la_LIBADD = 
-
-libenesim_rasterizer_la_DEPENDENCIES =
-
-libenesim_rasterizer_la_LDFLAGS      = 
+libenesim_rasterizer_la_LIBADD = -lm

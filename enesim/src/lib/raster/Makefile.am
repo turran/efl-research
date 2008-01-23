@@ -3,7 +3,8 @@ SUBDIRS = rasterizer renderer surface
 MAINTAINERCLEANFILES = \
 Makefile.in
 
-INCLUDES = -I. \
+AM_CPPFLAGS = \
+-I. \
 -I$(top_srcdir)/src/lib \
 @EINA_CFLAGS@
 

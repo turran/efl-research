@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src 
+SUBDIRS = src
 
 MAINTAINERCLEANFILES = \
 Makefile.in \
@@ -26,8 +26,7 @@ COPYING \
 gendoc \
 Doxyfile \
 README \
-eina.pc 
+eina.pc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = eina.pc
-ACLOCAL_AMFLAGS = -I m4

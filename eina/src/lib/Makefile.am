@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-INCLUDES = \
+AM_CPPFLAGS = \
 -I.
 
 EINAHEADERS = \
@@ -28,5 +28,5 @@ eina_sheap.c \
 eina_tree.c \
 eina_value.c
 
-libeina_la_LIBADD = -lm @dlopen_libs@ @create_shared_lib@
-libeina_la_LDFLAGS = -version-info 1:0:0
+libeina_la_LIBADD = -lm
+libeina_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

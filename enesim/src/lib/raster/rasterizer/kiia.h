@@ -1,6 +1,8 @@
 #ifndef _KIIA_H
 #define _KIIA_H
 
+#include <math.h>
+
 #include "fixed_16p16.h"
 
 /*

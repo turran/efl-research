@@ -22,13 +22,6 @@
 # include <config.h>
 #endif
 
-
-#if HAVE___ATTRIBUTE__
-# define __UNUSED__ __attribute__((unused))
-#else
-# define __UNUSED__
-#endif
-
 #ifndef PATH_MAX
 # define PATH_MAX 4096
 #endif

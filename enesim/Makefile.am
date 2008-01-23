@@ -30,4 +30,3 @@ enesim.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = enesim.pc
-ACLOCAL_AMFLAGS = -I m4

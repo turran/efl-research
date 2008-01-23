@@ -1,14 +1,15 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-EXTRA_DIST =
-
-INCLUDES	= \
+AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir) \
 -I$(top_srcdir)/src/lib \
 -I$(top_srcdir)/src/lib/util \
+-DPACKAGE_DATA_DIR=\"$(datadir)/$(PACKAGE)\" \
 @EINA_CFLAGS@ \
 @PNG_CFLAGS@
+
+if HAVE_PNG
 
 bin_PROGRAMS = enesim_test
 
@@ -23,3 +24,5 @@ enesim_test_LDADD = \
 $(top_builddir)/src/lib/libenesim.la \
 @EINA_LIBS@ \
 @PNG_LIBS@
+
+endif
