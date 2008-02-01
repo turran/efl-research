@@ -57,4 +57,3 @@ void canvas_process(Canvas *c)
 	/* then the canvas*/
 	ekeko_canvas_process(c->canvas);
 }
-

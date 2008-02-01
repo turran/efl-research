@@ -8,6 +8,7 @@ Object *background1;
 Object *background2;
 Object *rectangle1;
 Object *rectangle2;
+Object *filter1;
 
 /**
  * TODO
@@ -40,6 +41,12 @@ void init(void)
 	object_move(background2, 0, 0);
 	object_resize(background2, 320, 240);
 	object_color_set(background2, RGBA(0, 255, 255, 255));
+	/* filter moving */
+	filter1 = filter_new(c);
+	//filter1 = rectangle_new(c);
+	object_move(filter1, 10, 10);
+	object_resize(filter1, 50, 50);
+	object_color_set(filter1, RGBA(16, 123, 255, 255));
 }
 
 void shutdown(void)
@@ -56,6 +63,7 @@ void loop(void)
 	int end = 0;
 	int i = 0;
 	int j = 0;
+	int k = 0;
 	
 	while (!end)
 	{
@@ -77,8 +85,9 @@ void loop(void)
 		canvas_process(c);
 		i++;
 		j++;
+		k++;
 		/* move rectangle1 */
-		if (i > 1000)
+		if (i > 10000)
 		{
 			/* FIXME abstract this */
 			ekeko_object_geometry_get(rectangle1->object, &r);
@@ -90,9 +99,23 @@ void loop(void)
 			object_move(rectangle1, r.x, r.y);
 			i = 0;
 		}
+#if 1
+		/* move filter1 */
+		if (k > 4000)
+		{
+			/* FIXME abstract this */
+			ekeko_object_geometry_get(filter1->object, &r);
+			r.x = (r.x + 1) % CANVAS_W;
+			if (r.x == 0) {
+				r.y = (r.y + 1) % CANVAS_H;
+			}
+			object_move(filter1, r.x, r.y);
+			k = 0;
+		}
+#endif
 		/* move subcanvas (we need to implement the damages first) */
 #if 0
-		if (j > 2000)
+		if (j > 20000)
 		{
 			/* FIXME abstract this */
 			ekeko_object_geometry_get(rectangle1->object, &r);

@@ -17,6 +17,7 @@ ekeko_test_SOURCES = \
 ekeko_test.c \
 subcanvas.c \
 canvas.c \
+filter.c \
 object.c \
 rectangle.c
 
