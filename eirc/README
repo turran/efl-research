@@ -1,0 +1,6 @@
+Eirc
+====
+
+Eirc is an Ecore friendly library that uses libircclient to provide
+Ecore applications with the ability to interact with IRC servers.
+
