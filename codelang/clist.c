@@ -32,6 +32,14 @@ CList *clist_append(CList *list, void *data)
 	return list;
 }
 
+int clist_count(CList *list)
+{
+	if (!list || !list->acct)
+		return 0;
+
+	return list->acct->count;
+}
+
 CList *clist_delete(CList *list, void *data)
 {
 	CList *l;
@@ -70,5 +78,89 @@ CList *clist_delete_list(CList *list, CList *remove_list)
 		free(list->acct);
 	free(remove_list);
 	return return_l;
+}
+
+void *clist_get_at(CList *list, int place)
+{
+	CList *l;
+
+	l = clist_get_list_at(list, place);
+	return l ? l->data : NULL;
+}
+
+CList *clist_get_list_at(CList *list, int place)
+{
+	int i;
+	const CList *l;
+
+	/* check for non-existing nodes */
+	if ((!list) || (place < 0) ||
+			(place > (list->acct->count - 1)))
+		return NULL;
+
+	/* if the node is in the 2nd half of the list, search from the end
+	 * else, search from the beginning.
+	 */
+	if (place > (list->acct->count / 2))
+	{
+		for (i = list->acct->count - 1,
+				l = list->acct->end;
+				l;
+				l = l->prev, i--)
+		{
+			if (i == place) return (CList *)l;
+		}
+	}
+	else
+	{
+		for (i = 0, l = list; l; l = l->next, i++)
+		{
+			if (i == place) return (CList *)l;
+		}
+	}
+	return NULL;
+}
+
+void *clist_replace_at(CList *list, int place, void *data)
+{
+	int i;
+	CList *l;
+
+	/* check for non-existing nodes */
+	if ((!list) || (place < 0) ||
+			(place > (list->acct->count - 1)))
+		return NULL;
+
+	/* if the node is in the 2nd half of the list, search from the end
+	 * else, search from the beginning.
+	 */
+	if (place > (list->acct->count / 2))
+	{
+		for (i = list->acct->count - 1,
+				l = list->acct->end;
+				l;
+				l = l->prev, i--)
+		{
+			if (i == place) 
+			{
+				void *tmp = l->data;
+				l->data = data;
+				return tmp;
+			}
+		}
+	}
+	else
+	{
+		for (i = 0, l = list; l; l = l->next, i++)
+		{
+			if (i == place) 
+			{
+				void *tmp = l->data;
+				l->data = data;
+				return tmp;
+			}
+		}
+	}
+	return NULL;
 }
 

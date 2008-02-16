@@ -32,6 +32,18 @@ int main(int argc, char **argv)
 		OBJECT_CLASS.null(&object);
 	}
 
+	{
+		String *s1, *s2;
+		Array *a1;
+
+		s1 = string_new();
+		s2 = string_new();
+
+		a1 = ARRAY_CLASS.new();
+		ARRAY_CLASS.append(a1, OBJECT(s1));
+		ARRAY_CLASS.append(a1, OBJECT(s2));
+	}
+
 	for(;;)
 	{
 		sleep(2);
