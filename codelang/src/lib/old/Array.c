@@ -1,3 +1,4 @@
+#include "objects_list.h"
 #include "Array.h"
 
 static void array_append(Array *self, Object *object);

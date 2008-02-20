@@ -1,7 +1,8 @@
 #include <unistd.h>
 
-#include <Code.h>
+#include "Codelang.h"
 
+char *filename = NULL;
 static int loop = 0;
 
 int main(int argc, char **argv)

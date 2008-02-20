@@ -1,5 +1,5 @@
-#ifndef _CODE_MEMALLOC_H
-#define _CODE_MEMALLOC_H
+#ifndef _CODELANG_MEMALLOC_H
+#define _CODELANG_MEMALLOC_H
 
 #include <stdlib.h>
 

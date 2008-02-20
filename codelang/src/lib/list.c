@@ -1,26 +1,25 @@
 #include <stdlib.h>
 
-#include "Object.h"
-#include "clist.h"
+#include "list.h"
 
-CList *clist_append(CList *list, void *data)
+list_t *list_append(list_t *list, void *data)
 {
 	if (!data)
 		return list;
 
 	if (!list)
 	{
-		list = calloc(1, sizeof(CList));
+		list = calloc(1, sizeof(list_t));
 		list->prev = NULL;
 		list->next = NULL;
 		list->data = data;
-		list->acct = calloc(1, sizeof(CList_Acct));
+		list->acct = calloc(1, sizeof(list_acct_t));
 		list->acct->end = list;
 		list->acct->count = 1;
 	}
 	else
 	{
-		list->acct->end->next = calloc(1, sizeof(CList));
+		list->acct->end->next = calloc(1, sizeof(list_t));
 		list->acct->end->next->next = NULL;
 		list->acct->end->next->prev = list->acct->end;
 		list->acct->end->next->data = data;
@@ -32,7 +31,7 @@ CList *clist_append(CList *list, void *data)
 	return list;
 }
 
-int clist_count(CList *list)
+int list_count(list_t *list)
 {
 	if (!list || !list->acct)
 		return 0;
@@ -40,9 +39,9 @@ int clist_count(CList *list)
 	return list->acct->count;
 }
 
-CList *clist_delete(CList *list, void *data)
+list_t *list_delete(list_t *list, void *data)
 {
-	CList *l;
+	list_t *l;
 
 	if (!list || !data)
 		return list;
@@ -50,14 +49,14 @@ CList *clist_delete(CList *list, void *data)
 	for (l = list; l; l = l->next)
 	{
 		if (l->data == data)
-			return clist_delete_list(list, l);
+			return list_delete_list(list, l);
 	}
 	return list;	
 }
 
-CList *clist_delete_list(CList *list, CList *remove_list)
+list_t *list_delete_list(list_t *list, list_t *remove_list)
 {
-	CList *return_l;
+	list_t *return_l;
 
 	if (!list) return NULL;
 	if (!remove_list) return list;
@@ -80,18 +79,18 @@ CList *clist_delete_list(CList *list, CList *remove_list)
 	return return_l;
 }
 
-void *clist_get_at(CList *list, int place)
+void *list_get_at(list_t *list, int place)
 {
-	CList *l;
+	list_t *l;
 
-	l = clist_get_list_at(list, place);
+	l = list_get_list_at(list, place);
 	return l ? l->data : NULL;
 }
 
-CList *clist_get_list_at(CList *list, int place)
+list_t *list_get_list_at(list_t *list, int place)
 {
 	int i;
-	const CList *l;
+	const list_t *l;
 
 	/* check for non-existing nodes */
 	if ((!list) || (place < 0) ||
@@ -108,23 +107,23 @@ CList *clist_get_list_at(CList *list, int place)
 				l;
 				l = l->prev, i--)
 		{
-			if (i == place) return (CList *)l;
+			if (i == place) return (list_t *)l;
 		}
 	}
 	else
 	{
 		for (i = 0, l = list; l; l = l->next, i++)
 		{
-			if (i == place) return (CList *)l;
+			if (i == place) return (list_t *)l;
 		}
 	}
 	return NULL;
 }
 
-void *clist_replace_at(CList *list, int place, void *data)
+void *list_replace_at(list_t *list, int place, void *data)
 {
 	int i;
-	CList *l;
+	list_t *l;
 
 	/* check for non-existing nodes */
 	if ((!list) || (place < 0) ||
