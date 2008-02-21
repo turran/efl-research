@@ -20,6 +20,7 @@ typedef enum
 	CLASS_NOERROR
 } class_error_t;
 
-int parse_class(char *name);
+int class_parse(char *name);
+void class_access_set(class_t class, access_t access);
 
 #endif

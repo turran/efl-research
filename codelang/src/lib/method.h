@@ -10,7 +10,8 @@ struct method_s
 	char *name;
 	type_t ret_type;
 	access_t access;
-	list_t *params;
+	hash_t *params;
+	hash_t *vars;
 	list_t *modifiers;
 	code_t code;
 };

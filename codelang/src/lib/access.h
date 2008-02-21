@@ -1,6 +1,8 @@
 #ifndef _CODELANG_ACCESS_H
 #define _CODELANG_ACCESS_H
 
+#include "Codelang.h"
+
 typedef enum 
 {
 	ACCESS_PUBLIC,
@@ -14,6 +16,6 @@ typedef enum
 	ACCESS_NOERROR
 } access_error_t;
 
-int parse_access(char *name);
+int access_parse(char *name, in_t section);
 
 #endif

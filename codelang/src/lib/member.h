@@ -1,6 +1,8 @@
 #ifndef _CODE_MEMBER_H
 #define _CODE_MEMBER_H
 
+typedef struct member_s member_t;
+
 typedef enum
 {
 	MEMBER_ALREADY_DEFINED,
@@ -8,6 +10,14 @@ typedef enum
 	MEMBER_NOERROR
 } member_error_t;  
 
-int parse_member(char *name);
+struct member_s
+{
+	char *name;
+	type_t type;
+	access_t access;
+};
+
+int member_parse(char *name);
+void member_access_set(member_t member, access_t access);
 
 #endif

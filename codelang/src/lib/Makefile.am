@@ -22,13 +22,14 @@ CODELANGHEADERS = \
 	memory_allocator.h \
 	parser.h \
 	type.h \
-	variable.h \
-	member.h
+	var.h \
+	member.h \
+	hash.h
 
 
 CODELANGFILES = \
-	codelang.l \
 	codelang.y \
+	codelang.l \
 	access.c \
 	class.c \
 	method.c \
@@ -36,8 +37,9 @@ CODELANGFILES = \
 	memory_allocator.c \
 	parser.c \
 	type.c \
-	variable.c \
+	var.c \
 	member.c \
+	hash.c \
 	$(CODELANGHEADERS)
 
 libcodelang_la_SOURCES = $(CODELANGFILES)

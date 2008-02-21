@@ -1,8 +1,8 @@
 #include "Codelang.h"
 
-int parse_type(char *name)
+int type_parse(char *name)
 {
-	printf("parse_type: %s\n", name);
+	printf("type_parse: %s\n", name);
 	return 1;
 }
 

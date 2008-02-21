@@ -7,6 +7,6 @@ typedef enum
 	TYPE_CHAR
 } type_t;
 
-int parse_type(char *name);
+int type_parse(char *name);
 
 #endif
