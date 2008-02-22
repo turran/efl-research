@@ -16,6 +16,8 @@ struct var_s
 	type_t type;
 };
 
-int var_parse(char *name, type_t type);
+var_t *var_new();
+int var_parse(char *name);
+int var_type_set(var_t var, type_t type);
 
 #endif

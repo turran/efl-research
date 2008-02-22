@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "Codelang.h"
 
 static inline int _hash_gen(const char *key);
@@ -22,20 +24,20 @@ hash_t *
 hash_add(hash_t *hash, const char *key, const void *data)
 {
    int hash_num;
-   hash_t_El *el;
+   hash_el_t *el;
 
    if ((!key) || (!data)) return hash;
    _hash_alloc_error = 0;
    if (!hash)
      {
-	hash = calloc(1, sizeof(struct _hash_t));
+	hash = calloc(1, sizeof(hash_t));
 	if (!hash)
 	  {
 	     _hash_alloc_error = 1;
 	     return NULL;
 	  }
      }
-   if (!(el = malloc(sizeof(struct _hash_t_El) + strlen(key) + 1)))
+   if (!(el = malloc(sizeof(hash_el_t) + strlen(key) + 1)))
      {
         if (hash->population <= 0)
 	  {
@@ -45,14 +47,14 @@ hash_add(hash_t *hash, const char *key, const void *data)
 	_hash_alloc_error = 1;
 	return hash;
      };
-   el->key = ((char *)el) + sizeof(struct _hash_t_El);
+   el->key = ((char *)el) + sizeof(hash_el_t);
    strcpy((char *) el->key, key);
    el->data = (void *)data;
    hash_num = _hash_gen(key);
    hash->buckets[hash_num] = list_prepend(hash->buckets[hash_num], el);
-   if (evas_list_alloc_error())
-     {
-	_hash_alloc_error = 1;
+   if (list_alloc_error())
+   {
+		_hash_alloc_error = 1;
 	free(el);
 	return hash;
      }
@@ -64,20 +66,20 @@ hash_t *
 hash_direct_add(hash_t *hash, const char *key, const void *data)
 {
    int hash_num;
-   hash_t_El *el;
+   hash_el_t *el;
 
    if ((!key) || (!data)) return hash;
    _hash_alloc_error = 0;
    if (!hash)
      {
-	hash = calloc(1, sizeof(struct _hash_t));
+	hash = calloc(1, sizeof(hash_t));
 	if (!hash)
 	  {
 	     _hash_alloc_error = 1;
 	     return NULL;
 	  }
      }
-   if (!(el = malloc(sizeof(struct _hash_t_El))))
+   if (!(el = malloc(sizeof(hash_el_t))))
      {
         if (hash->population <= 0)
 	  {
@@ -91,7 +93,7 @@ hash_direct_add(hash_t *hash, const char *key, const void *data)
    el->data = (void *)data;
    hash_num = _hash_gen(key);
    hash->buckets[hash_num] = list_prepend(hash->buckets[hash_num], el);
-   if (evas_list_alloc_error())
+   if (list_alloc_error())
      {
 	_hash_alloc_error = 1;
 	free(el);
@@ -105,7 +107,7 @@ hash_t *
 hash_del(hash_t *hash, const char *key, const void *data)
 {
    int hash_num;
-   hash_t_El *el;
+   hash_el_t *el;
    list_t *l;
 
    if (!hash) return NULL;
@@ -117,7 +119,7 @@ hash_del(hash_t *hash, const char *key, const void *data)
 	  {
 	     for (l = hash->buckets[hash_num]; l; l = l->next)
 	       {
-		  el = (hash_t_El *)l;
+		  el = (hash_el_t *)l;
 		  if (el->data == data)
 		    {
 		       hash->buckets[hash_num] = list_remove(hash->buckets[hash_num], el);
@@ -138,7 +140,7 @@ hash_del(hash_t *hash, const char *key, const void *data)
 	hash_num = _hash_gen(key);
 	for (l = hash->buckets[hash_num]; l; l = l->next)
 	  {
-	     el = (hash_t_El *)l;
+	     el = (hash_el_t *)l;
 	     if (!strcmp(el->key, key))
 	       {
 		  hash->buckets[hash_num] = list_remove(hash->buckets[hash_num], el);
@@ -157,10 +159,10 @@ hash_del(hash_t *hash, const char *key, const void *data)
 }
 
 void *
-hash_find(const hash_t *hash, const char *key)
+hash_find(hash_t *hash, const char *key)
 {
    int hash_num;
-   hash_t_El *el;
+   hash_el_t *el;
    list_t *l;
 
    _hash_alloc_error = 0;
@@ -168,7 +170,7 @@ hash_find(const hash_t *hash, const char *key)
    hash_num = _hash_gen(key);
    for (l = hash->buckets[hash_num]; l; l = l->next)
      {
-	el = (hash_t_El *)l;
+	el = (hash_el_t *)l;
 	if (!strcmp(el->key, key))
 	  {
 	     if (l != hash->buckets[hash_num])
@@ -190,7 +192,7 @@ void *
 hash_modify(hash_t *hash, const char *key, const void *data)
 {
    int hash_num;
-   hash_t_El *el;
+   hash_el_t *el;
    list_t *l;
 
    _hash_alloc_error = 0;
@@ -198,7 +200,7 @@ hash_modify(hash_t *hash, const char *key, const void *data)
    hash_num = _hash_gen(key);
    for (l = hash->buckets[hash_num]; l; l = l->next)
      {
-	el = (hash_t_El *)l;
+	el = (hash_el_t *)l;
 	if ((key) && (!strcmp(el->key, key)))
 	  {
 	     void *old_data;
@@ -217,7 +219,7 @@ hash_modify(hash_t *hash, const char *key, const void *data)
 }
 
 int
-hash_size(const hash_t *hash)
+hash_size(hash_t *hash)
 {
    if (!hash) return 0;
    return 256;
@@ -234,9 +236,9 @@ hash_free(hash_t *hash)
      {
 	while (hash->buckets[i])
 	  {
-	     hash_t_El *el;
+	     hash_el_t *el;
 
-	     el = (hash_t_El *)hash->buckets[i];
+	     el = (hash_el_t *)hash->buckets[i];
 	     hash->buckets[i] = list_remove(hash->buckets[i], el);
 	     free(el);
 	  }
@@ -245,7 +247,7 @@ hash_free(hash_t *hash)
 }
 
 void
-hash_foreach(const hash_t *hash, Evas_Bool (*func) (const hash_t *hash, const char *key, void *data, void *fdata), const void *fdata)
+hash_foreach(const hash_t *hash, int (*func) (const hash_t *hash, const char *key, void *data, void *fdata), const void *fdata)
 {
    int i, size;
 
@@ -257,10 +259,10 @@ hash_foreach(const hash_t *hash, Evas_Bool (*func) (const hash_t *hash, const ch
 
 	for (l = hash->buckets[i]; l;)
 	  {
-	     hash_t_El *el;
+	     hash_el_t *el;
 
 	     next_l = l->next;
-	     el = (hash_t_El *)l;
+	     el = (hash_el_t *)l;
 	     if (!func(hash, el->key, el->data, (void *)fdata)) return;
 	     l = next_l;
 	  }

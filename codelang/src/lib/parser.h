@@ -7,6 +7,7 @@ typedef enum
 {
 	IN_CLASS,
 	IN_MEMBER,
+	IN_METHOD,
 	IN_VAR
 } in_t;
 

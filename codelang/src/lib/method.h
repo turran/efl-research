@@ -24,5 +24,6 @@ typedef enum
 } method_error_t;
 
 int method_parse(char *name);
+int method_type_set(method_t method, type_t type);
 
 #endif

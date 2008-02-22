@@ -17,4 +17,12 @@ struct hash_el_s
 	void *data;
 };
 
+hash_t *hash_add(hash_t *hash, const char *key, const void *data);
+hash_t *hash_direct_add(hash_t *hash, const char *key, const void *data);
+hash_t *hash_del(hash_t *hash, const char *key, const void *data);
+void *hash_find(hash_t *hash, const char *key);
+void *hash_modify(hash_t *hash, const char *key, const void *data);
+int hash_size(hash_t *hash);
+void hash_free(hash_t *hash);
+
 #endif

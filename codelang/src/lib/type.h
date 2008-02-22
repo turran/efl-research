@@ -3,6 +3,7 @@
 
 typedef enum
 {
+	TYPE_UNKOWN,
 	TYPE_INT,
 	TYPE_CHAR
 } type_t;

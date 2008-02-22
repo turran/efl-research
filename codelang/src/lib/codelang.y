@@ -16,7 +16,7 @@ extern member_t last_member;
 int yylex(void);   
 void yyerror(char *format, ...);
 void parse_error(void);
-extern char *cur_file;                                          
+extern char *file_in;                                          
 extern int lnum;
 extern int col;
 static int section;
@@ -34,7 +34,7 @@ void yyerror(char *format, ...)
 void parse_error()
 {
    fprintf(stderr, "file: %s, line: %d, column: %d\n\n",
-	   cur_file, lnum, col);
+	   file_in, lnum, col);
    exit(-1);                                                               
 } 
    
@@ -55,8 +55,9 @@ code: /* empty */
 	| code class
 	;
 
-class: { section = IN_CLASS;  } access CLASS_TOK WORD O_BRACE class_code C_BRACE
+class: access CLASS_TOK WORD O_BRACE class_code C_BRACE
 	{
+		printf("parsing class...\n");
 		int ret = class_parse($3);
 		if (ret == CLASS_ALREADY_DEFINED)
 			yyerror("Class '%s' already defined.\n", $2);		
@@ -64,15 +65,15 @@ class: { section = IN_CLASS;  } access CLASS_TOK WORD O_BRACE class_code C_BRACE
 	;
 
 class_code: /* empty */
-	| method
-	| member
+	| class_code member method
 	;
 
-member: { section = IN_MEMBER; } access type WORD SEMICOLON
+member: { section = IN_MEMBER; } access  { section = IN_MEMBER; } type WORD SEMICOLON
 	{
-		int ret = member_parse($3);
+		printf("parsing member %s\n", $5);
+		int ret = member_parse($5);
 		if (ret == MEMBER_ALREADY_DEFINED)
-			yyerror("Member '%s' already defined.\n", $3);
+			yyerror("Member '%s' already defined.\n", $5);
 	}
 	;
 
@@ -88,48 +89,56 @@ access: /* empty */
 	}
 	;
 
-declarations: /* empty */
-	| declarations declaration
-	;
-
-declaration:
-	| variable
-	| method
-	;
-
 variable: { section = IN_VAR; } type WORD SEMICOLON 
 	{
-		int ret = var_parse($2);
+		printf("parseing var %s\n", $3);
+		int ret = var_parse($3);
 		if (ret == VAR_ILLEGAL_NAME)
-			yyerror("Illegal variable name: '%s'\n", $2);
+			yyerror("Illegal variable name: '%s'\n", $3);
 		else if (ret == VAR_ALREADY_DEFINED)
-			yyerror("Variable '%s' is already defined in this scope.\n", $2);
+			yyerror("Variable '%s' is already defined in this scope.\n", $3);
 	}
 	;
 
 type: WORD 
 	{		
-		if (!type_parse($1))
+		int type = type_parse($1);
+		printf("parsing type %s\n", $1);
+		if (type == TYPE_UNKOWN)
 			yyerror("Type not found: '%s'\n", $1);
 
 		switch(section)
 		{
 			case IN_METHOD:
-				method_type_set(last_method, $1);
+				method_type_set(last_method, type);
 				break;
 
 			case IN_VAR:
-				var_type_set(last_var, $1);
+				var_type_set(last_var, type);
+				break;
+
+			case IN_MEMBER:
+				member_type_set(last_member, type);
 				break;
 
 			default:
-				yyerror("Trying to set a type where a type does not belong.\n");
+				yyerror("Trying to set a type where a type does not belong (%d %d).\n",
+				section, IN_METHOD);
 				break;
 		}
 	}
 	;
 
-method: access type WORD O_PAREN C_PAREN O_BRACE method_body C_BRACE
+method: { section = IN_METHOD; } access { section = IN_METHOD; } type WORD
+O_PAREN C_PAREN O_BRACE method_body C_BRACE
+	{
+		printf("parseing method %s\n", $5);
+		int ret = method_parse($5);
+		if (ret == METHOD_ALREADY_DEFINED)
+			yyerror("Method already defined '%s'\n", $5);
+		else if (ret == METHOD_INVALID_NAME)
+			yyerror("Invalid name for method '%s'\n", $5);
+	}
 	;
 
 method_body: /* empty */

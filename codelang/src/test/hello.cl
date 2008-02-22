@@ -1,10 +1,12 @@
 public class Main
 {
-	public int main ()
+	private String m_strFoo;
+
+	public Integer main ()
 	{
-		Integer i1;
-		Integer i2;
-		Integer i3;
+		Array i1;
+		String i2;
+		Long i3;
 	}
 }
 
