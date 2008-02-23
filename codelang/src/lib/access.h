@@ -7,15 +7,11 @@ typedef enum
 {
 	ACCESS_PUBLIC,
 	ACCESS_PROTECTED,
-	ACCESS_PRIVATE
-} access_t;
-
-typedef enum
-{
+	ACCESS_PRIVATE,
 	ACCESS_INVALID_NAME,
 	ACCESS_NOERROR
-} access_error_t;
+} access_t;
 
-int access_parse(char *name, in_t section);
+access_t access_parse(char *name);
 
 #endif

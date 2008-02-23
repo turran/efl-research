@@ -25,5 +25,6 @@ typedef enum
 
 int method_parse(char *name);
 int method_type_set(method_t method, type_t type);
+int method_access_set(method_t method, access_t access);
 
 #endif

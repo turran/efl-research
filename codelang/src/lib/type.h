@@ -5,9 +5,10 @@ typedef enum
 {
 	TYPE_UNKOWN,
 	TYPE_INT,
-	TYPE_CHAR
+	TYPE_CHAR,
+	TYPE_UNKNOWN
 } type_t;
 
-int type_parse(char *name);
+type_t type_parse(char *name);
 
 #endif

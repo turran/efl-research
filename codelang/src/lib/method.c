@@ -16,3 +16,9 @@ int method_type_set(method_t method, type_t type)
 	method.ret_type = type;
 	return 1;
 }
+
+int method_access_set(method_t method, access_t access)
+{
+	method.access = access;
+	return 1;
+}

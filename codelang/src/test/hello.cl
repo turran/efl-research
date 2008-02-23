@@ -1,7 +1,5 @@
 public class Main
 {
-	private String m_strFoo;
-
 	public Integer main ()
 	{
 		Array i1;
