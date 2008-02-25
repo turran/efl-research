@@ -1,0 +1,13 @@
+* Function aliasing:
+
+Being able to do:
+
+public void Foo(Integer blah) alias Bar
+{
+	...
+}
+
+and this will alias Bar(i) to Foo(i)
+
+
+
