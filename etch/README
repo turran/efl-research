@@ -12,3 +12,8 @@ Etch abstraction layer.
 3) Eventually have a designer application build on top of Etch that allows
 the user to create and live preview Etch gui's.
 
+4) Support random objects using interfaces and object querying to determine
+what an object can and cant do. This can be done via xml / wbxml
+specifications for objects.
+
+
