@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Equanime
-Description: Equanime
+Name: Etch
+Description: Etch
 Requires:
 Version: @VERSION@
-Libs: -L${libdir} -lequanime
+Libs: -L${libdir} -letch
 Cflags: -I${includedir}
