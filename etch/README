@@ -1,0 +1,14 @@
+Etch is an abstract canvas and object layout library that supports
+aribitrary object types, aimations, timelines, and events.
+
+Etch's primary goals are:
+
+1) Abstract layout engine that has canvases and sub-canvases, objects,
+moving around, resizing, animating, timeline support, and events.
+
+2) Support multiple display / rendering technologies that can tie into the
+Etch abstraction layer.
+
+3) Eventually have a designer application build on top of Etch that allows
+the user to create and live preview Etch gui's.
+
