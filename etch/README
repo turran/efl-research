@@ -16,4 +16,14 @@ the user to create and live preview Etch gui's.
 what an object can and cant do. This can be done via xml / wbxml
 specifications for objects.
 
+5) Object creation is done using object classes.
+Etch_Object *etch_object_new(Etch_Object_Class *class);
+
+An Etch_Object_Class defines the required functions for objects to implement
+and has a pointer that can point to arbitrary data that the object can use
+to set data and properties (this can be done using a populater function)
+TODO: decide on what an object class should contain.
+
+6) Canvas creation is done using a similar idea to object creation.
+TODO: decide on what a canvas class should be.
 
