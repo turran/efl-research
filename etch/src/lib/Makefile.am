@@ -5,9 +5,12 @@ AM_CPPFLAGS = \
 
 lib_LTLIBRARIES = libetch.la
 
-include_HEADERS = 
+include_HEADERS = Etch.h 
 
-libetch_la_SOURCES = 
+libetch_la_SOURCES = \
+etch.c \
+etch_data.c \
+etch_object.c
 
 libetch_la_LIBADD =
 
