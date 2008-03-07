@@ -65,5 +65,15 @@ typedef struct _Etch_Object_Class
 
 EAPI Etch * etch_new(void);
 EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *id, void *data);
+EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data);
+EAPI void * etch_object_property_get(Etch_Object *eo, int prop);
+
+/* TODO some more functions
+ * etch_timer_tick(Etch *e) increment by one frame? ms? s? the internal counter
+ * etch_timer_goto(Etch *e, unsigned long time) go to the specified time
+ * etch_object_animation_enable(Etch_Object *o, int disable) dont/do calculate this animation?
+ * etch_object_animation_set(Etch_Object *o, int property, XXX, XXX, XXX) how to specify an animation?
+ */
+
 
 #endif /*ETCH_H_*/

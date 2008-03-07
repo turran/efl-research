@@ -1,11 +1,24 @@
 #include "Etch.h"
 #include "etch_private.h"
 
-/* TODO
- * do a list of types, size in bytes, and alignement in case it needs we need
- * like:
- * UINT32, 4, 4
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+/* this lsit specifies the length and alignment of each data type, keeps the
+ * same order as the enum on Etch.h
  */
+static int _data_info[][2] = {
+	{4, 4}, /* ETCH_UINT32 */
+	{4, 4}, /* ETCH_INT32 */
+	{4, 4}, /* ETCH_FLOAT */
+	{8, 8}, /* ETCH_DOUBLE */
+	{4, 4}, /* ETCH_ARGB */
+};
+
+#define DATA_LENGTH 0
+#define DATA_ALIGNMENT 1
+
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -21,11 +34,12 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 	Etch_Object *o;
 	Etch_Object_Property *p;
 	int i = 0;
+	int length = 0;
 	
 	o = malloc(sizeof(Etch_Object));
 	
-	/* FIXME count the number of properties, maybe the class could have a variable
-	 * called props_num */
+	/* TODO maybe the class could have a variable called props_num ? */
+	/* count the number of properties */
 	p = oc->props;
 	while (p->set)
 	{
@@ -35,28 +49,24 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 	/* get the offsets for each element */
 	o->offsets = malloc(sizeof(int) * i);
 	p = oc->props;
+	i = 0;
 	while (p->set)
 	{
 		int type;
 		
 		/* get the type and incrment the offset */
 		type = ETCH_PROPERTY_DATATYPE_GET(p->type);
-		switch (type)
-		{
-			case ETCH_UINT32:
-			case ETCH_INT32:
-			case ETCH_FLOAT:
-			case ETCH_DOUBLE:
-			case ETCH_ARGB:
-				/* TODO add the correct offset */
-				break;
-			default:
-				/* bad type, not supported class */
-				break;
-				
-		}
+		/* add the correct offset */
+		length += _data_info[type][DATA_LENGTH];
+		/* TODO check the alignment */
+		o->offsets[i] = length;
 		p++;
+		i++;
 	}
+	/* allocate the properties */
+	o->props = malloc(length);
+	
+	return o;
 }
 
 /**
@@ -72,16 +82,49 @@ EAPI Etch_Object * etch_object_get_by_id(Etch *e, const char *id)
 /**
  * 
  */
-EAPI void * etch_object_property_get(Etch_Object *eo, int type)
+EAPI void * etch_object_property_get(Etch_Object *eo, int prop)
 {
-	/* search in the description the index i of the matching property */
-	/* return (char *)eo->props + eo->offsets[i] */ 
+	Etch_Object_Property *p;
+	int i = 0;
+	
+	/* search in the description the index of the matching property */
+	p = eo->oclass->props;
+	while (p->set)
+	{
+		if (ETCH_PROPERTY_TYPE_GET(p->type) == prop)
+		{
+			goto ok;
+		}
+		i++;
+		p++;
+	}
+	return NULL;
+ok:
+	return (char *)eo->props + eo->offsets[i]; 
 }
 
 /**
  * sets a value into the specified
  */
-EAPI void * etch_object_property_set(Etch_Object *eo, int prop, void *data)
+EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data)
 {
-	/* same as the get function but set the value with the data passed */
+	Etch_Object_Property *p;
+	int i = 0;
+	int dtype;
+	
+	/* search in the description the index of the matching property */
+	p = eo->oclass->props;
+	while (p->set)
+	{
+		if (ETCH_PROPERTY_TYPE_GET(p->type) == prop)
+		{
+			dtype = ETCH_PROPERTY_DATATYPE_GET(p->type);
+			goto ok;
+		}
+		i++;
+		p++;
+	}
+	return;
+ok:
+	memcpy((void *)((char *)eo->props + eo->offsets[i]), data, _data_info[dtype][DATA_LENGTH]);
 }
