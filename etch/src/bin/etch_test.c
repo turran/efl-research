@@ -7,6 +7,8 @@
 
 /* Helper utility to test properties, animations, etc */
 
+int _true = 1; /* flag to finish the program */
+
 /* Properties callbacks */
 void _position_x_uint32(void *odata, void *pdata)
 {
@@ -41,6 +43,7 @@ void signal_timer_cb(int s)
 	printf("timer cb called\n");
 	/* TODO to exit the main loop we should check that the etch
 	 * animation has finished */
+	_true = 0;
 }
 
 
@@ -74,9 +77,8 @@ int main(void)
 	setitimer(ITIMER_REAL, &value, NULL);
 	
 	/* iterate forever until some timer event gets triggered */
-	while (1);
+	while (true);
 
-	
 	etch_object_delete(eo);
 	etch_free(e);
 
