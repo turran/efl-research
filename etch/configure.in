@@ -44,6 +44,7 @@ Makefile
 etch.pc
 src/Makefile
 src/lib/Makefile
+src/bin/Makefile
 ],[
 ])
 

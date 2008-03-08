@@ -65,8 +65,23 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 	}
 	/* allocate the properties */
 	o->props = malloc(length);
+	/* setup the common object values */
+	o->id = strdup(id);
+	o->oclass = oc;
+	o->etch = e;
+	o->data = data;
 	
 	return o;
+}
+
+/**
+ * 
+ */
+EAPI void etch_object_delete(Etch_Object *o)
+{
+	free(o->offsets);
+	free(o->props);
+	free(o);
 }
 
 /**
@@ -79,13 +94,16 @@ EAPI Etch_Object * etch_object_get_by_id(Etch *e, const char *id)
 	 */
 }
 
+/* TODO split the get/set into a common function */ 
+
 /**
  * 
  */
-EAPI void * etch_object_property_get(Etch_Object *eo, int prop)
+EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data)
 {
 	Etch_Object_Property *p;
 	int i = 0;
+	int dtype;
 	
 	/* search in the description the index of the matching property */
 	p = eo->oclass->props;
@@ -93,14 +111,15 @@ EAPI void * etch_object_property_get(Etch_Object *eo, int prop)
 	{
 		if (ETCH_PROPERTY_TYPE_GET(p->type) == prop)
 		{
+			dtype = ETCH_PROPERTY_DATATYPE_GET(p->type);
 			goto ok;
 		}
 		i++;
 		p++;
 	}
-	return NULL;
+	return;
 ok:
-	return (char *)eo->props + eo->offsets[i]; 
+	memcpy(data, (void *)((char *)eo->props + eo->offsets[i]), _data_info[dtype][DATA_LENGTH]); 
 }
 
 /**

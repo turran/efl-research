@@ -20,3 +20,8 @@ EAPI Etch * etch_new(void)
 	return e;
 }
 
+EAPI void etch_free(Etch *e)
+{
+	free(e);
+}
+

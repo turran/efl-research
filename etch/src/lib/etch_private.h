@@ -25,10 +25,12 @@ struct _Etch
  */
 struct _Etch_Object
 {
+	Etch *etch; /** Etch container */
 	const char *id; /** A way to identify the object */
 	Etch_Object_Class *oclass; /** Object Class */
 	void *props; /** Where all the properties are saved */
-	int *offsets; /* For each property on the object class we store here the offset */
+	int *offsets; /** For each property on the object class we store here the offset */
+	void *data; /** User defined data */ 
 	/* TODO place here an animation for each property? */
 };
 

@@ -64,9 +64,14 @@ typedef struct _Etch_Object_Class
 } Etch_Object_Class;
 
 EAPI Etch * etch_new(void);
+EAPI void etch_free(Etch *e);
 EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *id, void *data);
+EAPI void etch_object_delete(Etch_Object *o);
+/* TODO This functions are really needed to be exported? if so, on the get we must pass
+ * the void * to not make the user modify the value ? or maybe return a const void *?
+ * for internal usage we can make it return the offset directly */
 EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data);
-EAPI void * etch_object_property_get(Etch_Object *eo, int prop);
+EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data);
 
 /* TODO some more functions
  * etch_timer_tick(Etch *e) increment by one frame? ms? s? the internal counter
