@@ -147,3 +147,11 @@ EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data)
 ok:
 	memcpy((void *)((char *)eo->props + eo->offsets[i]), data, _data_info[dtype][DATA_LENGTH]);
 }
+
+/**
+ * 
+ */
+EAPI void etch_object_animation_set(Etch_Object *eo, Etch_Animation *a)
+{
+	
+}

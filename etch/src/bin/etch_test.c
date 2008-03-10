@@ -40,7 +40,7 @@ Etch_Object_Class oclass = {
 void signal_timer_cb(int s)
 {
 	/* TODO send a tick to etch :) and wait for events */
-	printf("timer cb called\n");
+	//printf("timer cb called\n");
 	/* TODO to exit the main loop we should check that the etch
 	 * animation has finished */
 	_true = 0;
@@ -70,14 +70,14 @@ int main(void)
 	sact.sa_handler = signal_timer_cb;
 	
 	value.it_interval.tv_sec = 0;
-	value.it_interval.tv_usec = 20000;
+	value.it_interval.tv_usec = 33333; /* every 33333 (1/30fps) usecs */
 	value.it_value.tv_sec = 0;
-	value.it_value.tv_usec = 500000;
+	value.it_value.tv_usec = 500000; /* wait 500 usecs, before triggering the first event */
 	sigaction(SIGALRM, &sact, NULL);
 	setitimer(ITIMER_REAL, &value, NULL);
 	
 	/* iterate forever until some timer event gets triggered */
-	while (true);
+	while (_true);
 
 	etch_object_delete(eo);
 	etch_free(e);

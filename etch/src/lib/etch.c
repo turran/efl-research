@@ -28,20 +28,21 @@ EAPI void etch_free(Etch *e)
 	free(e);
 }
 
+
 /**
  * 
  */
-EAPI void etch_timer_fps_set(Etch *e, int fps)
+EAPI void etch_timer_fps_set(Etch *e, unsigned int fps)
 {
-	
+	e->fps = fps;
 }
 
 /**
  * 
  */
-EAPI int etch_timer_fps_get(Etch *e)
+EAPI unsigned int etch_timer_fps_get(Etch *e)
 {
-	
+	return e->fps;
 }
 
 /**
@@ -49,7 +50,8 @@ EAPI int etch_timer_fps_get(Etch *e)
  */
 EAPI void etch_timer_tick(Etch *e)
 {
-	/* increment the frame */
+	/* increment the frame, TODO check for overflow */
+	e->frame++;
 	/* iterate over the list of objects to get the animations */
 	/* iterate over the list of animations */
 	/* check that the animation is between the two markers */

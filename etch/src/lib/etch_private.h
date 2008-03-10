@@ -15,9 +15,13 @@ struct _Etch
 	 * int (2^32) =  4 294 967 296 frames / fps (30) = 143 165 577 s
 	 * ~39 768 hours, i guess is enough; but if we use milliseconds ?
 	 */
-	
+	unsigned long frame; /** current frame */
+	unsigned int fps; /** number of frames per second */
+	unsigned long sec_start; /** initial second where an animation starts */
+	unsigned long sec_end; /** last second where all anymations end */ 
 	/* we will also need function to set the time then, so we can forward,
 	 * rewind, restart, etc */
+	
 };
 
 /**

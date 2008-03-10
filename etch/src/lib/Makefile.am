@@ -9,6 +9,7 @@ include_HEADERS = Etch.h
 
 libetch_la_SOURCES = \
 etch.c \
+etch_animation.c \
 etch_data.c \
 etch_object.c
 
