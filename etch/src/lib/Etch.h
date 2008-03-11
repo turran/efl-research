@@ -1,6 +1,11 @@
 #ifndef ETCH_H_
 #define ETCH_H_
 
+/**
+ * TODO normalize the nomenclature for the properties on all the code:
+ * property is composed by its type and its data type
+ */
+
 /* for now */
 #define EAPI
 
@@ -41,6 +46,12 @@ enum
 {
 	ETCH_POSITION_X_UINT32 = (ETCH_POSITION_X << 16) | (ETCH_UINT32),
 	ETCH_POSITION_Y_UINT32 = (ETCH_POSITION_Y << 16) | (ETCH_UINT32),
+};
+
+enum
+{
+	ETCH_ANIMATION_LINEAR,
+	ETCH_ANIMATION_COSIN,
 };
 
 typedef void (*Etch_Property_Set)(void *odata, void *pdata);

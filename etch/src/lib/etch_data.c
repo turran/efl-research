@@ -21,7 +21,13 @@ typedef void (*Etch_Interpolator)(void *data, double m, void *res);
 
 static void _linear_uint32(void *data, double m, unsigned int a, unsigned int b, void *res)
 {
-	/* return(a*(1-m)+b*m); where m = [0,1] */
+	double r;
+	
+	/* handle specific case where a and b are equal (constant) */
+	if (a == b)
+		*(unsigned int *)res = a;
+	r = (double)a * (1 - m) + (double)b * m;
+	*(unsigned int *)res = r;
 }
 
 static void _cosin_uint32(void *data, double m, unsigned int a, unsigned int b, void *res)
@@ -33,19 +39,38 @@ static void _cosin_uint32(void *data, double m, unsigned int a, unsigned int b, 
 	 */
 }
 
+static void _bquad_uint32(void *data, double m, unsigned int a, unsigned int b, void *res)
+{
+	/* 
+	 * p = bezier control point
+	 * return (1-m)²a + 2m(1 - m)p + t²b
+	 * where m = [0, 1]
+	 */
+}
+
+static void _bcubic_uint32(void *data, double m, unsigned int a, unsigned int b, void *res)
+{
+	/* 
+	 */
+}
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
 /**
  * 
  */
-void etch_data_interpolate(unsigned long time, Etch_Animation_Keyframe *start, Etch_Animation_Keyframe *end)
+void etch_data_interpolate(Etch_Object *eo, Etch_Animation_Keyframe *start, Etch_Animation_Keyframe *end, double t)
 {
+	Etch_Animation *a;
 	double m;
 	
-	/* TODO Fix how time will get passed */
 	/* get the interval between 0 and 1 based on current frame and two keyframes */
-	//m = (time - start->time)/(end->time - start->time);
+	m = (t - start->time)/(end->time - start->time);
+	/* accelerate the calculations if we get the same m as the previous call */
+	if (m == start->animation->m)
+		return;
+	
+	a = start->animation;
 	/* get the data offset */
 	/* call the desired function based on the start keyframe interpolation type */
 }

@@ -3,6 +3,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+
+typedef struct _Etch_Animation Etch_Animation; /** */
+typedef struct _Etch_Animation_Keyframe  Etch_Animation_Keyframe; /** */
 
 /**
  * 
@@ -17,11 +21,8 @@ struct _Etch
 	 */
 	unsigned long frame; /** current frame */
 	unsigned int fps; /** number of frames per second */
-	unsigned long sec_start; /** initial second where an animation starts */
-	unsigned long sec_end; /** last second where all anymations end */ 
-	/* we will also need function to set the time then, so we can forward,
-	 * rewind, restart, etc */
-	
+	struct timeval start; /** time where an animation starts */
+	struct timeval end; /** time where an animation ends */	
 };
 
 /**
@@ -34,31 +35,41 @@ struct _Etch_Object
 	Etch_Object_Class *oclass; /** Object Class */
 	void *props; /** Where all the properties are saved */
 	int *offsets; /** For each property on the object class we store here the offset */
-	void *data; /** User defined data */ 
-	/* TODO place here an animation for each property? */
+	void *data; /** User defined data */
+	Etch_Animation **animations; /** List of animation per property */
 };
-
 
 /**
  * An animation mark is a defined state on the timeline of an animation. It sets
  * that a given time a property should have the specified value.
  */
-typedef struct _Etch_Animation_Keyframe
+struct _Etch_Animation_Keyframe
 {
+	Etch_Animation *animation; /** reference to the animation */
 	void *value; /** the property value for this mark */
-	unsigned long time; /* what units use here? ms or s? better a TIMEVAL struct? */
-	/* TODO the way to interpolate between this mark and the next */
-} Etch_Animation_Keyframe;
+	double time; /** the time where the keyframe is already transformed to double */
+	int type; /** type of interpolation between this mark and the next */
+	void *data; /** interpolation specific data */
+};
 
 /**
- * 
+ * Many objects can use the same animation.
  */
-typedef struct _Etch_Animation
+struct _Etch_Animation
 {
 	Etch_Animation_Keyframe *marks;
-	unsigned long start; /** initial time */
-	unsigned long end; /** end time */
-	/* TODO we need to reference the property, do it here or in the object itself? */
-} Etch_Animation;
+	/* TODO if the marks are already ordered do we need to have the start
+	 * and end time duplicated here */
+	double start; /** initial time already transformed to double */
+	double end; /** end time already transformed to double */
+	double m; /** last interpolator value in the range [0,1] */
+	int dtype; /** animations only animates data types, no properties */
+};
+
+static inline double etch_timeval_to_double(struct timeval *t)
+{
+	return (double)t->tv_sec + (((double)t->tv_usec) / 1000000);
+	 
+}
 
 #endif /*ETCH_PRIVATE_H_*/

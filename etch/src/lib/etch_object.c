@@ -151,7 +151,13 @@ ok:
 /**
  * 
  */
-EAPI void etch_object_animation_set(Etch_Object *eo, Etch_Animation *a)
+EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a)
 {
-	
+	/* check that the data type of the property is the same */
+	if (ETCH_PROPERTY_DATATYPE_GET(prop) != a->dtype)
+		return;
+	/* check if there's already an animation for this property
+	 * if so replace it
+	 */
+	eo->animations[ETCH_PROPERTY_TYPE_GET(prop)] = a;
 }

@@ -5,10 +5,16 @@
  * TODO
  * + maybe a function to call whenever the fps timer has match? like:
  * etc_timer_notify(Etch *)
+ * + maybe remove the _timer_ prefix?
  */
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+static void _fps_to_time(unsigned long frame, unsigned long *time)
+{
+	/* giving a frame transform it to secs|usec representation */ 
+}
+
 static void _process(Etch *e)
 {
 	/* iterate over the list of objects to get the animations */
@@ -31,7 +37,7 @@ EAPI Etch * etch_new(void)
 }
 
 /**
- * 
+ * Delete the Etch instance
  */
 EAPI void etch_free(Etch *e)
 {
