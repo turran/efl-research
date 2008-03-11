@@ -7,6 +7,16 @@
  * etc_timer_notify(Etch *)
  */
 /*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static void _process(Etch *e)
+{
+	/* iterate over the list of objects to get the animations */
+	/* iterate over the list of animations */
+	/* check that the animation is between the two markers */
+	/* if it is, calculate the appropiate property and call the property set function */
+}
+/*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 /**
@@ -50,12 +60,9 @@ EAPI unsigned int etch_timer_fps_get(Etch *e)
  */
 EAPI void etch_timer_tick(Etch *e)
 {
-	/* increment the frame, TODO check for overflow */
+	/* TODO check for overflow */
 	e->frame++;
-	/* iterate over the list of objects to get the animations */
-	/* iterate over the list of animations */
-	/* check that the animation is between the two markers */
-	/* if it is, calculate the appropiate property and call the property set function */
+	_process(e);
 }
 
 /**
@@ -73,5 +80,6 @@ EAPI int etch_timer_has_end(Etch *e)
  */
 EAPI void etch_timer_goto(Etch *e, unsigned long frame)
 {
-	
+	e->frame = frame;
+	_process(e);
 }

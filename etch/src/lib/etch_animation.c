@@ -24,7 +24,7 @@ EAPI void etch_animation_free(Etch_Animation *a)
 /**
  * Add a new mark to the animation
  */
-EAPI void etch_animation_mark_add(Etch_Animation *a, Etch_Animation_Mark *m)
+EAPI void etch_animation_mark_add(Etch_Animation *a, Etch_Animation_Keyframe *m)
 {
 	/* check the mark's time and place it like start or end if necessary */
 }
@@ -32,7 +32,7 @@ EAPI void etch_animation_mark_add(Etch_Animation *a, Etch_Animation_Mark *m)
 /**
  * Delete the mark from the animation
  */
-EAPI void etch_animation_mark_del(Etch_Animation *a, Etch_Animation_Mark *m)
+EAPI void etch_animation_mark_del(Etch_Animation *a, Etch_Animation_Keyframe *m)
 {
 	/* remove the mark from the list and recalculate the start and end if necessary */
 }
@@ -42,7 +42,7 @@ EAPI void etch_animation_mark_del(Etch_Animation *a, Etch_Animation_Mark *m)
 /**
  * Set the time for a mark
  */
-EAPI void etch_animation_mark_time_set(Etch_Animation_Mark *m)
+EAPI void etch_animation_mark_time_set(Etch_Animation_Keyframe *m)
 {
 	
 }
@@ -50,7 +50,7 @@ EAPI void etch_animation_mark_time_set(Etch_Animation_Mark *m)
 /**
  * Set the value for a mark
  */
-EAPI void etch_animation_mark_value_set(Etch_Animation_Mark *m, int type)
+EAPI void etch_animation_mark_value_set(Etch_Animation_Keyframe *m, int type)
 {
 	
 }

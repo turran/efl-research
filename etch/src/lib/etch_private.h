@@ -43,19 +43,19 @@ struct _Etch_Object
  * An animation mark is a defined state on the timeline of an animation. It sets
  * that a given time a property should have the specified value.
  */
-typedef struct _Etch_Animation_Mark
+typedef struct _Etch_Animation_Keyframe
 {
 	void *value; /** the property value for this mark */
-	unsigned long time; /* what units use here? ms or s? */
+	unsigned long time; /* what units use here? ms or s? better a TIMEVAL struct? */
 	/* TODO the way to interpolate between this mark and the next */
-} Etch_Animation_Mark;
+} Etch_Animation_Keyframe;
 
 /**
  * 
  */
 typedef struct _Etch_Animation
 {
-	Etch_Animation_Mark *marks;
+	Etch_Animation_Keyframe *marks;
 	unsigned long start; /** initial time */
 	unsigned long end; /** end time */
 	/* TODO we need to reference the property, do it here or in the object itself? */
