@@ -13,7 +13,7 @@ int _timer_event = 0;
 void _position_x_uint32(void *odata, void *pdata)
 {
 	//printf("_position_x_uint32 callback: value = %d\n", *(unsigned int *)pdata);
-	printf("%d\n", *(unsigned int *)pdata);
+	printf("%d,\n", *(unsigned int *)pdata);
 }
 
 void _position_y_uint32(void *odata, void *pdata)
@@ -78,8 +78,14 @@ void object_animation_setup(Etch_Object *eo)
 	ea = etch_animation_new(ETCH_UINT32);
 	/* first keyframe */
 	ek = etch_animation_keyframe_add(ea);
+	/* quadratic example */
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 10, 15);
+	etch_animation_keyframe_time_set(ek, 3, 3015);
+	/* linear example */
+#if 0
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 10);
 	etch_animation_keyframe_time_set(ek, 3, 3015);
+#endif
 	/* second keyframe */
 	ek = etch_animation_keyframe_add(ea);
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 30);

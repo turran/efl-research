@@ -38,16 +38,15 @@ static void _cosin_uint32(void *data, double m, unsigned int *a, unsigned int *b
 	
 	m2 = (1 - cos(m * M_PI))/2;
 	
-	*(unsigned int *)res = lrint((*a * (1 - m2) + *b * m2));
+	*(unsigned int *)res = lrint((double)(*a * (1 - m2) + *b * m2));
 }
 
 static void _bquad_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
 {
-	/* 
-	 * p = bezier control point
-	 * return (1-m)²a + 2m(1 - m)p + t²b
-	 * where m = [0, 1]
-	 */
+	Etch_Animation_Quadratic *q = data;
+	
+	
+	*(unsigned int *)res =  (1 - m) * (1 - m) * *a + 2 * m * (1 - m) * *(unsigned int *)(q->cp1) + m * m * *b;
 }
 
 static void _bcubic_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
@@ -61,6 +60,7 @@ typedef void (*Etch_Interpolator)(void *data, double m, void *a, void *b, void *
 Etch_Interpolator _interpolators[ETCH_ANIMATIONS][ETCH_DATATYPES] = {
 		[ETCH_ANIMATION_LINEAR][ETCH_UINT32] = (Etch_Interpolator)_linear_uint32,
 		[ETCH_ANIMATION_COSIN][ETCH_UINT32] = (Etch_Interpolator)_cosin_uint32,
+		[ETCH_ANIMATION_QUADRATIC][ETCH_UINT32] = (Etch_Interpolator)_bquad_uint32,
 };
 /*============================================================================*
  *                                 Global                                     * 
@@ -143,6 +143,27 @@ EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a)
 		default:
 			break;
 	}
+	/* TODO allocate space for the specfic values */
+	switch (k->type)
+	{
+		case ETCH_ANIMATION_QUADRATIC:
+			k->data = malloc(sizeof(Etch_Animation_Quadratic));
+			switch(a->dtype)
+			{
+				case ETCH_UINT32:
+				((Etch_Animation_Quadratic *)k->data)->cp1 = malloc(sizeof(unsigned int));
+				break;
+					
+				default:
+				break;
+			}
+			break;
+		case ETCH_ANIMATION_CUBIC:
+			k->data = malloc(sizeof(Etch_Animation_Cubic));
+			break;
+		default:
+			break;
+	}
 	return k;
 }
 
@@ -192,14 +213,37 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, int type
 
 	m->type = type;
 	va_start(va, type);
-	switch (m->animation->dtype) {
+	
+	switch (m->animation->dtype)
+	{
 		case ETCH_UINT32:
 			*(unsigned int *)(m->value) = va_arg(va, unsigned int);
 			break;
 		default:
 			break;
 	}
-	/* TODO now get the type specific data
-	 * for example the bezier forms need control points, etc */
+	/* now get the type specific data, for example the bezier forms need 
+	 * control points, etc */
+	/* TODO fix this in case the keyframe already had a type (already allocated) */
+	switch (m->type)
+	{	
+		case ETCH_ANIMATION_QUADRATIC:
+		{
+			Etch_Animation_Quadratic *q;
+			
+			m->data = q = malloc(sizeof(Etch_Animation_Quadratic));
+			
+			switch (m->animation->dtype)
+			{	
+				case ETCH_UINT32:
+					q->cp1 = malloc(sizeof(unsigned int));
+					*(unsigned int *)(q->cp1) = va_arg(va, unsigned int);
+					break;
+				default:
+					break;
+			}
+			break;
+		}
+	}
 	va_end(va);
 }

@@ -47,7 +47,8 @@ struct _Etch_Object
  */
 typedef struct _Etch_Animation_Cubic
 {
-	
+	void *cp1;
+	void *cp2;
 } Etch_Animation_Cubic;
 
 /**
@@ -55,7 +56,7 @@ typedef struct _Etch_Animation_Cubic
  */
 typedef struct _Etch_Animation_Quadratic
 {
-	
+	void *cp1;
 } Etch_Animation_Quadratic;
 
 /**
@@ -88,7 +89,6 @@ struct _Etch_Animation
 static inline double etch_timeval_to_double(struct timeval *t)
 {
 	return (double)t->tv_sec + (((double)t->tv_usec) / 1000000);
-	 
 }
 
 void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr);
