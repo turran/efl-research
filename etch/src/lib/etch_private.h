@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <float.h>
+#include <stdarg.h>
+#include <math.h> 
 #include <sys/time.h>
 
 /**
@@ -41,6 +43,22 @@ struct _Etch_Object
 };
 
 /**
+ * Specific data needed for cubic bezier animations
+ */
+typedef struct _Etch_Animation_Cubic
+{
+	
+} Etch_Animation_Cubic;
+
+/**
+ * Specific data needed for quadratic bezier animations
+ */
+typedef struct _Etch_Animation_Quadratic
+{
+	
+} Etch_Animation_Quadratic;
+
+/**
  * An animation mark is a defined state on the timeline of an animation. It sets
  * that a given time a property should have the specified value.
  */
@@ -72,5 +90,7 @@ static inline double etch_timeval_to_double(struct timeval *t)
 	return (double)t->tv_sec + (((double)t->tv_usec) / 1000000);
 	 
 }
+
+void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr);
 
 #endif /*ETCH_PRIVATE_H_*/

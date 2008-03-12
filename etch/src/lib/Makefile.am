@@ -12,7 +12,7 @@ etch.c \
 etch_animation.c \
 etch_object.c
 
-libetch_la_LIBADD =
+libetch_la_LIBADD = -lm
 
 libetch_la_DEPENDENCIES =
 

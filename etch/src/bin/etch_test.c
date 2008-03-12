@@ -12,12 +12,13 @@ int _timer_event = 0;
 /* Properties callbacks */
 void _position_x_uint32(void *odata, void *pdata)
 {
-	printf("_position_x_uint32 callback: value = %d\n", *(int *)pdata);
+	//printf("_position_x_uint32 callback: value = %d\n", *(unsigned int *)pdata);
+	printf("%d\n", *(unsigned int *)pdata);
 }
 
 void _position_y_uint32(void *odata, void *pdata)
 {
-	printf("_position_y_uint32 callback: value = %d\n", *(int *)pdata);
+	printf("_position_y_uint32 callback: value = %d\n", *(unsigned int *)pdata);
 }
 
 /* Simple object class to test all properties */
@@ -82,7 +83,7 @@ void object_animation_setup(Etch_Object *eo)
 	/* second keyframe */
 	ek = etch_animation_keyframe_add(ea);
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 30);
-	etch_animation_keyframe_time_set(ek, 5, 2530);
+	etch_animation_keyframe_time_set(ek, 15, 2530);
 	/* append the animation to the object */
 	etch_object_animation_set(eo, ETCH_POSITION_X, ea);
 }

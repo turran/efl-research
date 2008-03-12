@@ -4,6 +4,7 @@
 /**
  * TODO normalize the nomenclature for the properties on all the code:
  * property is composed by its type and its data type
+ * TODO add the ability to make an object's property relative to other
  */
 
 /* for now */

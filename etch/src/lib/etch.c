@@ -33,8 +33,16 @@ static void _process(Etch *e)
 		a = _object->animations[i];
 		if ((e->curr >= a->start) && (e->curr <= a->end))
 		{
-			printf("curr = %g, start = %g, end = %g\n", e->curr, a->start, a->end);
-			etch_animation_object_animate(a, _object, e->curr);
+			void *pdata;
+			Etch_Property_Set setfnc;
+			
+			//printf("curr = %g, start = %g, end = %g\n", e->curr, a->start, a->end);
+			/* get the property offset */
+			pdata = ((char *)_object->props + _object->offsets[i]);
+			etch_animation_data_animate(a, pdata, e->curr);
+			/* once the value has been set, call the callback */
+			setfnc = _object->oclass->props[i].set;
+			setfnc(_object->data, pdata);
 		}
 	}	
 }
