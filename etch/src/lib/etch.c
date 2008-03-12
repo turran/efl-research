@@ -1,6 +1,9 @@
 #include "Etch.h"
 #include "etch_private.h"
 
+/* REMOVE THIS */
+extern Etch_Object *_object;
+
 /**
  * TODO
  * + maybe a function to call whenever the fps timer has match? like:
@@ -17,10 +20,23 @@ static void _fps_to_time(unsigned long frame, unsigned long *time)
 
 static void _process(Etch *e)
 {
+	int i;
 	/* iterate over the list of objects to get the animations */
+	/* TODO for now get the referenced object */
 	/* iterate over the list of animations */
-	/* check that the animation is between the two markers */
-	/* if it is, calculate the appropiate property and call the property set function */
+	for (i = 0; i < _object->nprops; i++)
+	{
+		Etch_Animation *a;
+		
+		if (!(_object->animations[i])) continue;
+		/* check that the animation start and end is between our time */
+		a = _object->animations[i];
+		if ((e->curr >= a->start) && (e->curr <= a->end))
+		{
+			printf("curr = %g, start = %g, end = %g\n", e->curr, a->start, a->end);
+			etch_animation_object_animate(a, _object, e->curr);
+		}
+	}	
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -41,6 +57,7 @@ EAPI Etch * etch_new(void)
  */
 EAPI void etch_free(Etch *e)
 {
+	/* remove every object */
 	free(e);
 }
 
@@ -68,6 +85,7 @@ EAPI void etch_timer_tick(Etch *e)
 {
 	/* TODO check for overflow */
 	e->frame++;
+	e->curr += (double)1/e->fps;
 	_process(e);
 }
 
@@ -79,6 +97,7 @@ EAPI int etch_timer_has_end(Etch *e)
 	/* we need a function to get the last frame/marker to know when the
 	 * animations have finished, on the application we can make it run again,
 	 * stop, whatever */
+	return 0;
 }
 
 /**
@@ -87,5 +106,6 @@ EAPI int etch_timer_has_end(Etch *e)
 EAPI void etch_timer_goto(Etch *e, unsigned long frame)
 {
 	e->frame = frame;
+	e->curr = (double)frame/e->fps;
 	_process(e);
 }

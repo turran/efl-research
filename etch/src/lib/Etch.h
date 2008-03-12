@@ -12,6 +12,8 @@
 
 typedef struct _Etch Etch; /** */
 typedef struct _Etch_Object Etch_Object; /** */
+typedef struct _Etch_Animation Etch_Animation; /** */
+typedef struct _Etch_Animation_Keyframe  Etch_Animation_Keyframe; /** */
 
 enum
 {
@@ -20,6 +22,7 @@ enum
 	ETCH_FLOAT,
 	ETCH_DOUBLE,
 	ETCH_ARGB,
+	ETCH_DATATYPES,
 };
 
 enum
@@ -52,6 +55,7 @@ enum
 {
 	ETCH_ANIMATION_LINEAR,
 	ETCH_ANIMATION_COSIN,
+	ETCH_ANIMATIONS
 };
 
 typedef void (*Etch_Property_Set)(void *odata, void *pdata);
@@ -76,6 +80,12 @@ typedef struct _Etch_Object_Class
 
 EAPI Etch * etch_new(void);
 EAPI void etch_free(Etch *e);
+EAPI void etch_timer_fps_set(Etch *e, unsigned int fps);
+EAPI unsigned int etch_timer_fps_get(Etch *e);
+EAPI void etch_timer_tick(Etch *e);
+EAPI int etch_timer_has_end(Etch *e);
+EAPI void etch_timer_goto(Etch *e, unsigned long frame);
+
 EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *id, void *data);
 EAPI void etch_object_delete(Etch_Object *o);
 /* TODO This functions are really needed to be exported? if so, on the get we must pass
@@ -83,13 +93,13 @@ EAPI void etch_object_delete(Etch_Object *o);
  * for internal usage we can make it return the offset directly */
 EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data);
 EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data);
+EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a);
 
-/* TODO some more functions
- * etch_timer_tick(Etch *e) increment by one frame? ms? s? the internal counter
- * etch_timer_goto(Etch *e, unsigned long time) go to the specified time
- * etch_object_animation_enable(Etch_Object *o, int disable) dont/do calculate this animation?
- * etch_object_animation_set(Etch_Object *o, int property, XXX, XXX, XXX) how to specify an animation?
- */
-
+EAPI Etch_Animation * etch_animation_new(int dtype);
+EAPI void etch_animation_free(Etch_Animation *a);
+EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a);
+EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *m);
+EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned long secs, unsigned long usecs);
+EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, int type, ...);
 
 #endif /*ETCH_H_*/

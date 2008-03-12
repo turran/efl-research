@@ -1,6 +1,9 @@
 #include "Etch.h"
 #include "etch_private.h"
 
+/* REMOVE THIS */
+Etch_Object *_object;
+
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
@@ -65,11 +68,16 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 	}
 	/* allocate the properties */
 	o->props = malloc(length);
+	/* initialize the animations */
+	o->animations = calloc(i, sizeof(Etch_Animation *));
 	/* setup the common object values */
 	o->id = strdup(id);
 	o->oclass = oc;
 	o->etch = e;
 	o->data = data;
+	o->nprops = i;
+	/* REMOVE THIS */
+	_object = o;
 	
 	return o;
 }

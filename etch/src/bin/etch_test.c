@@ -7,7 +7,7 @@
 
 /* Helper utility to test properties, animations, etc */
 
-int _true = 1; /* flag to finish the program */
+int _timer_event = 0;
 
 /* Properties callbacks */
 void _position_x_uint32(void *odata, void *pdata)
@@ -37,48 +37,80 @@ Etch_Object_Class oclass = {
 };
 
 /* Timer function */
-void signal_timer_cb(int s)
+void timer_signal_cb(int s)
 {
-	/* TODO send a tick to etch :) and wait for events */
-	//printf("timer cb called\n");
-	/* TODO to exit the main loop we should check that the etch
-	 * animation has finished */
-	_true = 0;
+	_timer_event = 1;
 }
 
-
-int main(void)
+void timer_setup(void)
 {
-	Etch *e;
-	Etch_Object *eo;
-	int vuint32;
 	struct sigaction sact;
 	struct itimerval value;
-	
-	
-	e = etch_new();
-	eo = etch_object_add(e, &oclass, "object1", NULL);
-
-	/* test simple set/get properties */
-	vuint32 = 10;
-	etch_object_property_set(eo, ETCH_POSITION_X_UINT32, &vuint32);
-	etch_object_property_get(eo, ETCH_POSITION_X_UINT32, &vuint32);
-	printf("property = %d\n", vuint32);
-
+			
 	/* create the timer callback */
 	sact.sa_flags = 0;
-	sact.sa_handler = signal_timer_cb;
+	sact.sa_handler = timer_signal_cb;
 	
 	value.it_interval.tv_sec = 0;
 	value.it_interval.tv_usec = 33333; /* every 33333 (1/30fps) usecs */
 	value.it_value.tv_sec = 0;
 	value.it_value.tv_usec = 500000; /* wait 500 usecs, before triggering the first event */
 	sigaction(SIGALRM, &sact, NULL);
-	setitimer(ITIMER_REAL, &value, NULL);
-	
-	/* iterate forever until some timer event gets triggered */
-	while (_true);
+	setitimer(ITIMER_REAL, &value, NULL);	
+}
 
+/* test simple set/get properties */
+void object_property_test(Etch_Object *eo)
+{
+	int vuint32 = 10;
+	
+	etch_object_property_set(eo, ETCH_POSITION_X_UINT32, &vuint32);
+	etch_object_property_get(eo, ETCH_POSITION_X_UINT32, &vuint32);
+	printf("property = %d\n", vuint32);	
+}
+
+void object_animation_setup(Etch_Object *eo)
+{
+	Etch_Animation *ea;
+	Etch_Animation_Keyframe *ek;
+	
+	ea = etch_animation_new(ETCH_UINT32);
+	/* first keyframe */
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 10);
+	etch_animation_keyframe_time_set(ek, 3, 3015);
+	/* second keyframe */
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 30);
+	etch_animation_keyframe_time_set(ek, 5, 2530);
+	/* append the animation to the object */
+	etch_object_animation_set(eo, ETCH_POSITION_X, ea);
+}
+
+int main(void)
+{
+	Etch *e;
+	Etch_Object *eo;
+	
+	e = etch_new();
+	etch_timer_fps_set(e, 30);
+	
+	eo = etch_object_add(e, &oclass, "object1", NULL);
+
+	object_property_test(eo);
+	object_animation_setup(eo);
+	
+	timer_setup();
+	/* to exit the main loop we should check that the etch animation has finished */
+	while (!(etch_timer_has_end(e)))
+	{
+		if (_timer_event)
+		{
+			/* send a tick to etch :) and wait for events */
+			etch_timer_tick(e);
+			_timer_event = 0;
+		}
+	}
 	etch_object_delete(eo);
 	etch_free(e);
 
