@@ -1,9 +1,6 @@
 #include "Etch.h"
 #include "etch_private.h"
 
-/* REMOVE THIS */
-Etch_Object *_object;
-
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
@@ -79,8 +76,9 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 	o->etch = e;
 	o->data = data;
 	o->nprops = i;
-	/* REMOVE THIS */
-	_object = o;
+	
+	/* append the object to the list of objects */
+	e->objects = eina_inlist_append(e->objects, o);
 	
 	return o;
 }

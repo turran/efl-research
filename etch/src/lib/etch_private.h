@@ -9,22 +9,19 @@
 #include <math.h> 
 #include <sys/time.h>
 
+#include "Eina.h"
+
 /**
  * 
  */
 struct _Etch
 {
-	/* list of objects? */
-	
-	/* how to store the time ? better count frames right?
-	 * int (2^32) =  4 294 967 296 frames / fps (30) = 143 165 577 s
-	 * ~39 768 hours, i guess is enough; but if we use milliseconds ?
-	 */
-	unsigned long frame; /** current frame */
-	unsigned int fps; /** number of frames per second */
-	double curr; /** current time in seconds */
-	double start; /** time where an animation starts in seconds */
-	double end; /** time where an animation ends in seconds */	
+	Etch_Object *objects; /** List of objects */
+	unsigned long frame; /** Current frame */
+	unsigned int fps; /** Number of frames per second */
+	double curr; /** Current time in seconds */
+	double start; /** Time where an animation starts in seconds */
+	double end; /** Time where an animation ends in seconds */	
 };
 
 /**
@@ -32,14 +29,15 @@ struct _Etch
  */
 struct _Etch_Object
 {
+	Eina_Inlist list; /** Internal list */ 
 	Etch *etch; /** Etch container */
 	const char *id; /** A way to identify the object */
 	Etch_Object_Class *oclass; /** Object Class */
 	void *props; /** Where all the properties are saved */
 	int *offsets; /** For each property on the object class we store here the offset */
 	void *data; /** User defined data */
-	int nprops; /** number of properties */
-	Etch_Animation **animations; /** List of animation per property */
+	int nprops; /** Number of properties */
+	Etch_Animation **animations; /** Array of animation per property */
 };
 
 /**
@@ -65,6 +63,7 @@ typedef struct _Etch_Animation_Quadratic
  */
 struct _Etch_Animation_Keyframe
 {
+	Eina_Inlist list; /** A keyframe is always a list */
 	Etch_Animation *animation; /** reference to the animation */
 	void *value; /** the property value for this mark */
 	double time; /** the time where the keyframe is, already transformed to seconds */
@@ -79,7 +78,7 @@ struct _Etch_Animation
 {
 	Etch_Animation_Keyframe *marks;
 	/* TODO if the marks are already ordered do we need to have the start
-	 * and end time duplicated here */
+	 * and end time duplicated here? */
 	double start; /** initial time already transformed to seconds */
 	double end; /** end time already transformed to seconds */
 	double m; /** last interpolator value in the range [0,1] */

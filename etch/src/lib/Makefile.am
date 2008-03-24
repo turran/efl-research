@@ -1,7 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CPPFLAGS = \
--I.
+-I. \
+@EINA_CFLAGS@
 
 lib_LTLIBRARIES = libetch.la
 
@@ -12,7 +13,7 @@ etch.c \
 etch_animation.c \
 etch_object.c
 
-libetch_la_LIBADD = -lm
+libetch_la_LIBADD = -lm @EINA_LIBS@
 
 libetch_la_DEPENDENCIES =
 

@@ -14,7 +14,7 @@
 typedef struct _Etch Etch; /** */
 typedef struct _Etch_Object Etch_Object; /** */
 typedef struct _Etch_Animation Etch_Animation; /** */
-typedef struct _Etch_Animation_Keyframe  Etch_Animation_Keyframe; /** */
+typedef struct _Etch_Animation_Keyframe Etch_Animation_Keyframe; /** */
 
 enum
 {
