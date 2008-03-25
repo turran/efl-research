@@ -88,6 +88,7 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
  */
 EAPI void etch_object_delete(Etch_Object *o)
 {
+	o->etch->objects = eina_inlist_remove(o->etch->objects, o);
 	free(o->offsets);
 	free(o->props);
 	free(o);
