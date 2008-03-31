@@ -43,6 +43,7 @@ AC_OUTPUT([
 Makefile
 eina.pc
 src/Makefile
+src/include/Makefile
 src/lib/Makefile
 ])
 
