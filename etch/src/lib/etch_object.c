@@ -82,9 +82,9 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 	
 	return o;
 }
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_object_delete(Etch_Object *o)
 {
@@ -93,9 +93,9 @@ EAPI void etch_object_delete(Etch_Object *o)
 	free(o->props);
 	free(o);
 }
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI Etch_Object * etch_object_get_by_id(Etch *e, const char *id)
 {
@@ -107,7 +107,8 @@ EAPI Etch_Object * etch_object_get_by_id(Etch *e, const char *id)
 /* TODO split the get/set into a common function */ 
 
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data)
 {
@@ -133,7 +134,8 @@ ok:
 }
 
 /**
- * sets a value into the specified
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data)
 {
@@ -159,7 +161,8 @@ ok:
 }
 
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a)
 {

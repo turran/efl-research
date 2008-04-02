@@ -8,4 +8,5 @@ Description: Etch
 Requires:
 Version: @VERSION@
 Libs: -L${libdir} -letch
+Libs.private: -lm
 Cflags: -I${includedir}

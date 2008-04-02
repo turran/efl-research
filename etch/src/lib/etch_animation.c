@@ -46,7 +46,7 @@ static void _bquad_uint32(void *data, double m, unsigned int *a, unsigned int *b
 	Etch_Animation_Quadratic *q = data;
 	
 	
-	*(unsigned int *)res =  (1 - m) * (1 - m) * *a + 2 * m * (1 - m) * *(unsigned int *)(q->cp1) + m * m * *b;
+	*(unsigned int *)res =  (1 - m) * (1 - m) * *a + 2 * m * (1 - m) * (q->cp.u32) + m * m * *b;
 }
 
 static void _bcubic_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
@@ -57,7 +57,7 @@ static void _bcubic_uint32(void *data, double m, unsigned int *a, unsigned int *
 /* prototype of the function table */
 typedef void (*Etch_Interpolator)(void *data, double m, void *a, void *b, void *res);
 
-Etch_Interpolator _interpolators[ETCH_ANIMATIONS][ETCH_DATATYPES] = {
+Etch_Interpolator _interpolators[ETCH_ANIMATION_TYPES][ETCH_DATATYPES] = {
 		[ETCH_ANIMATION_LINEAR][ETCH_UINT32] = (Etch_Interpolator)_linear_uint32,
 		[ETCH_ANIMATION_COSIN][ETCH_UINT32] = (Etch_Interpolator)_cosin_uint32,
 		[ETCH_ANIMATION_QUADRATIC][ETCH_UINT32] = (Etch_Interpolator)_bquad_uint32,
@@ -66,7 +66,8 @@ Etch_Interpolator _interpolators[ETCH_ANIMATIONS][ETCH_DATATYPES] = {
  *                                 Global                                     * 
  *============================================================================*/
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 {
@@ -75,8 +76,12 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 	 * like a circular list */
 	
 	/* check that the time is between two keyframes */
+	if (!a->keys)
+		return;
+#if 0
 	/* REMOVE THIS, we are assuming that k2 is after k1, only for testing */
 	if ((curr >= k1->time) && (curr <= k2->time))
+#endif
 	{
 		Etch_Interpolator ifnc;
 		double m;
@@ -91,7 +96,7 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 		}
 		/* interpolate the new value */
 		ifnc = _interpolators[k1->type][a->dtype];
-		ifnc(k1->data, m, k1->value, k2->value, pdata);
+		ifnc(&k1->data, m, &k1->value, &k2->value, pdata);
 	}
 }
 /*============================================================================*
@@ -112,13 +117,15 @@ EAPI Etch_Animation * etch_animation_new(int dtype)
 	
 	return a;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void etch_animation_free(Etch_Animation *a)
 {
 	/* TODO delete the list of keyframes */
 	free(a);
 }
-
 /**
  * Add a new mark to the animation
  */
@@ -129,56 +136,41 @@ EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a)
 	k = calloc(1, sizeof(Etch_Animation_Keyframe));
 	k->animation = a;
 
+	/* add the new keyframe to the list of keyframes */
+	a->keys = eina_inlist_append(a->keys, k);
+#if 0
 	/* REMOVE THIS */
 	if (!k1)
 		k1 = k;
 	else if (!k2)
 		k2 = k;
-	/* allocate the space for the value */
-	switch(a->dtype)
-	{
-		case ETCH_UINT32:
-			k->value = malloc(sizeof(unsigned int));
-			break;
-		default:
-			break;
-	}
-	/* TODO allocate space for the specfic values */
-	switch (k->type)
-	{
-		case ETCH_ANIMATION_QUADRATIC:
-			k->data = malloc(sizeof(Etch_Animation_Quadratic));
-			switch(a->dtype)
-			{
-				case ETCH_UINT32:
-				((Etch_Animation_Quadratic *)k->data)->cp1 = malloc(sizeof(unsigned int));
-				break;
-					
-				default:
-				break;
-			}
-			break;
-		case ETCH_ANIMATION_CUBIC:
-			k->data = malloc(sizeof(Etch_Animation_Cubic));
-			break;
-		default:
-			break;
-	}
+#endif
 	return k;
 }
-
 /**
  * Delete the mark from the animation
  */
-EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *m)
+EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *k)
 {
-	/* remove the mark from the list and recalculate the start and end if necessary */
-	free(m->value);
+	/* remove the keyframe from the list */
+	a->keys = eina_inlist_remove(a->keys, k);
+	/* TODO recalculate the start and end if necessary */
 	free(m);
 }
-
-/* TODO do we need to be this finegrained? */
-
+/**
+ * Set the type of animation keyframe
+ */
+EAPI void etch_animation_keyframe_type_set(Etch_Animation_Keyframe *m, Etch_Animation_Type t)
+{
+	m->type = t;
+}
+/**
+ * Get the type of animation keyframe
+ */
+EAPI Etch_Animation_Type etch_animation_keyframe_type_get(Etch_Animation_Keyframe *m)
+{
+	return m->type;
+}
 /**
  * Set the time for a mark
  */
@@ -186,13 +178,22 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned 
 {
 	Etch_Animation *a;
 	struct timeval t;
+	double new_time;
 	
 	t.tv_sec = secs;
 	t.tv_usec = usecs;
-	m->time = etch_timeval_to_double(&t);
+	new_time = etch_timeval_to_double(&t);
+	/* if the time is the same, do nothing */
+	if (new_time == m->time)
+		return;
 	a = m->animation;
 	
 	/* update the start and end values */
+	
+	/* TODO reorder the list of keyframes based on its time and then set
+	 * the start and end values? */
+	/* TODO if the start is already set by this key and we set a higher
+	 * value we should handle that case, the same for the end */
 	if (a->start > m->time)
 	{
 		a->start = m->time;
@@ -201,49 +202,69 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned 
 	{
 		a->end = m->time;
 	}
-	/* TODO reorder the list of keyframes based on its time */
+	
 }
-
+/**
+ * Get the value for a mark
+ */ 
+EAPI void etch_animation_keyframe_value_get(Etch_Animation_Keyframe *m, ...)
+{
+	
+	/* TODO */
+}
 /**
  * Set the value for a mark
  */
-EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, int type, ...)
+EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...)
 {
 	va_list va;
 
-	m->type = type;
-	va_start(va, type);
+	va_start(va, m);
 	
-	switch (m->animation->dtype)
-	{
-		case ETCH_UINT32:
-			*(unsigned int *)(m->value) = va_arg(va, unsigned int);
-			break;
-		default:
-			break;
-	}
 	/* now get the type specific data, for example the bezier forms need 
 	 * control points, etc */
-	/* TODO fix this in case the keyframe already had a type (already allocated) */
 	switch (m->type)
 	{	
-		case ETCH_ANIMATION_QUADRATIC:
+		case ETCH_ANIMATION_LINEAR:
 		{
-			Etch_Animation_Quadratic *q;
-			
-			m->data = q = malloc(sizeof(Etch_Animation_Quadratic));
-			
 			switch (m->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					q->cp1 = malloc(sizeof(unsigned int));
-					*(unsigned int *)(q->cp1) = va_arg(va, unsigned int);
+					m->value.u32 = va_arg(va, unsigned int);
+					break;
+				default:
+					break;
+			}
+		}
+		case ETCH_ANIMATION_QUADRATIC:
+		{
+			switch (m->animation->dtype)
+			{	
+				case ETCH_UINT32:
+					m->value.u32 = va_arg(va, unsigned int);
+					m->data.q.cp.u32 = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
 			}
 			break;
 		}
+		case ETCH_ANIMATION_CUBIC:
+		{
+			switch (m->animation->dtype)
+			{	
+				case ETCH_UINT32:
+					m->value.u32 = va_arg(va, unsigned int);
+					m->data.c.cp1.u32 = va_arg(va, unsigned int);
+					m->data.c.cp2.u32 = va_arg(va, unsigned int);
+					break;
+				default:
+					break;
+			}
+			break;
+		}
+		default:
+			break;
 	}
 	va_end(va);
 }

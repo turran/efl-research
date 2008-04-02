@@ -74,26 +74,25 @@ EAPI void etch_free(Etch *e)
 	/* remove every object */
 	free(e);
 }
-
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_timer_fps_set(Etch *e, unsigned int fps)
 {
 	e->fps = fps;
 }
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI unsigned int etch_timer_fps_get(Etch *e)
 {
 	return e->fps;
 }
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_timer_tick(Etch *e)
 {
@@ -102,9 +101,9 @@ EAPI void etch_timer_tick(Etch *e)
 	e->curr += (double)1/e->fps;
 	_process(e);
 }
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI int etch_timer_has_end(Etch *e)
 {
@@ -113,9 +112,9 @@ EAPI int etch_timer_has_end(Etch *e)
 	 * stop, whatever */
 	return 0;
 }
-
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void etch_timer_goto(Etch *e, unsigned long frame)
 {

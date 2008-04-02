@@ -12,6 +12,19 @@
 #include "Eina.h"
 
 /**
+ * Container of every property data type supported
+ */
+typedef struct _Etch_Data
+{
+	unsigned int u32;
+	int i32;
+	float f;
+	double d;
+	unsigned int argb;	
+} Etch_Data;
+
+
+/**
  * 
  */
 struct _Etch
@@ -45,8 +58,8 @@ struct _Etch_Object
  */
 typedef struct _Etch_Animation_Cubic
 {
-	void *cp1;
-	void *cp2;
+	Etch_Data cp1; /** First control point */
+	Etch_Data cp2; /** Second control point */
 } Etch_Animation_Cubic;
 
 /**
@@ -54,7 +67,7 @@ typedef struct _Etch_Animation_Cubic
  */
 typedef struct _Etch_Animation_Quadratic
 {
-	void *cp1;
+	Etch_Data cp; /** Control point */ 
 } Etch_Animation_Quadratic;
 
 /**
@@ -65,10 +78,13 @@ struct _Etch_Animation_Keyframe
 {
 	Eina_Inlist list; /** A keyframe is always a list */
 	Etch_Animation *animation; /** reference to the animation */
-	void *value; /** the property value for this mark */
+	Etch_Data value; /** the property value for this mark */
 	double time; /** the time where the keyframe is, already transformed to seconds */
-	int type; /** type of interpolation between this mark and the next */
-	void *data; /** interpolation specific data */
+	Etch_Animation_Type type; /** type of interpolation between this mark and the next */
+	union {
+		Etch_Animation_Quadratic q;
+		Etch_Animation_Cubic c;
+	} data; /** interpolation specific data */ 
 };
 
 /**
@@ -76,7 +92,7 @@ struct _Etch_Animation_Keyframe
  */
 struct _Etch_Animation
 {
-	Etch_Animation_Keyframe *marks;
+	Etch_Animation_Keyframe *keys;
 	/* TODO if the marks are already ordered do we need to have the start
 	 * and end time duplicated here? */
 	double start; /** initial time already transformed to seconds */

@@ -45,8 +45,9 @@ AC_OUTPUT([
 Makefile
 etch.pc
 src/Makefile
-src/lib/Makefile
 src/bin/Makefile
+src/lib/Makefile
+src/include/Makefile
 ],[
 ])
 
