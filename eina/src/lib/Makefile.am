@@ -15,5 +15,5 @@ eina_tree.c \
 eina_module.c \
 eina_value.c
 
-libeina_la_LIBADD = -lm
+libeina_la_LIBADD = -lm -ldl
 libeina_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

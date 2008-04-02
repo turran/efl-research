@@ -22,7 +22,8 @@ struct _Eina_Module
  *                                   API                                      * 
  *============================================================================*/
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI Eina_Module * eina_module_load(const char *name)
 {
@@ -38,7 +39,8 @@ EAPI Eina_Module * eina_module_load(const char *name)
 	return m;
 }
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI eina_module_load_all(const char *dir, Eina_Module_Load_Cb cb, void *data)
 {
@@ -70,7 +72,8 @@ EAPI eina_module_load_all(const char *dir, Eina_Module_Load_Cb cb, void *data)
 	closedir(d);
 }
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void eina_module_unload(Eina_Module *m)
 {
@@ -78,7 +81,8 @@ EAPI void eina_module_unload(Eina_Module *m)
 	free(m);
 }
 /**
- * 
+ * To be documented
+ * FIXME: To be fixed
  */
 EAPI void * eina_module_symbol_get(Eina_Module *m, const char *symbol)
 {
