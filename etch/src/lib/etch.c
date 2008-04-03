@@ -110,6 +110,7 @@ EAPI int etch_timer_has_end(Etch *e)
 	/* we need a function to get the last frame/marker to know when the
 	 * animations have finished, on the application we can make it run again,
 	 * stop, whatever */
+	
 	return 0;
 }
 /**

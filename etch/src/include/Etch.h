@@ -11,23 +11,37 @@
  * @defgroup Etch_Group API
  * @{
  * 
- * TODO normalize the nomenclature for the properties on all the code:
+ * @todo normalize the nomenclature for the properties on all the code:
  * property is composed by its type and its data type
- * TODO add the ability to make an object's property relative to other
+ * @todo add the ability to make an object's property relative to other
  */
 
 /* for now */
 #define EAPI
+
 /**
- * 
+ * @defgroup Etch_Core_Group Core
+ * @{
+ */
+typedef struct _Etch Etch; /**< Etch Opaque Handler */
+EAPI Etch * etch_new(void);
+EAPI void etch_free(Etch *e);
+EAPI void etch_timer_fps_set(Etch *e, unsigned int fps);
+EAPI unsigned int etch_timer_fps_get(Etch *e);
+EAPI void etch_timer_tick(Etch *e);
+EAPI int etch_timer_has_end(Etch *e);
+EAPI void etch_timer_goto(Etch *e, unsigned long frame);
+
+/**
+ * Data types for a property
  */
 typedef enum
 {
-	ETCH_UINT32,
-	ETCH_INT32,
-	ETCH_FLOAT,
-	ETCH_DOUBLE,
-	ETCH_ARGB,
+	ETCH_UINT32, /**< Unsigned integer of 32 bits */
+	ETCH_INT32, /**< Signed integer of 32 bits */
+	ETCH_FLOAT, /**< Single precision float */
+	ETCH_DOUBLE, /**< Double precision float */
+	ETCH_ARGB, /**< Color (Alpha, Red, Green, Blue) of 32 bits */
 	ETCH_DATATYPES,
 } Etch_Property_Data;
 /**
@@ -62,29 +76,6 @@ typedef enum
 	ETCH_POSITION_Y_UINT32 = (ETCH_POSITION_Y << 16) | (ETCH_UINT32),
 } Etch_Property;
 
-typedef void (*Etch_Property_Set)(void *odata, void *pdata);
-
-/**
- * 
- */
-typedef struct Etch_Object_Property
-{
-	int type; 
-	Etch_Property_Set set;
-} Etch_Object_Property;
-
-/**
- * @defgroup Etch_Core_Group Core
- * @{
- */
-typedef struct _Etch Etch; /**< Etch Opaque Handler */
-EAPI Etch * etch_new(void);
-EAPI void etch_free(Etch *e);
-EAPI void etch_timer_fps_set(Etch *e, unsigned int fps);
-EAPI unsigned int etch_timer_fps_get(Etch *e);
-EAPI void etch_timer_tick(Etch *e);
-EAPI int etch_timer_has_end(Etch *e);
-EAPI void etch_timer_goto(Etch *e, unsigned long frame);
 /** 
  * @}
  * @defgroup Etch_Animations_Group Animations
@@ -102,7 +93,7 @@ typedef enum
 	ETCH_ANIMATION_TYPES
 } Etch_Animation_Type;
 
-EAPI Etch_Animation * etch_animation_new(int dtype);
+EAPI Etch_Animation * etch_animation_new(Etch_Property_Data dtype);
 EAPI void etch_animation_free(Etch_Animation *a);
 EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a);
 EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *m);
@@ -119,17 +110,29 @@ EAPI void etch_animation_keyframe_value_get(Etch_Animation_Keyframe *m, ...);
 
 typedef struct _Etch_Object Etch_Object; /**< Etch Object Opaque Handler */
 
+/** Callback function used when a property value changes */
+typedef void (*Etch_Property_Set)(void *odata, void *pdata); 
 /**
- * A class should define the properties, the name? and the function callbacks
+ * A tuple composed of property type and it's callback
+ */
+typedef struct Etch_Object_Property
+{
+	int type; /**< The type of property */ 
+	Etch_Property_Set set; /**< The callback function when the property has changed */
+} Etch_Object_Property;
+
+/**
+ * An object class defines a new object
  */
 typedef struct _Etch_Object_Class
 {
-	Etch_Object_Property *props;
+	Etch_Object_Property *props; /**< Array of properties */
 } Etch_Object_Class;
 
 EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *id, void *data);
 EAPI void etch_object_delete(Etch_Object *o);
-/* TODO This functions are really needed to be exported? if so, on the get we must pass
+/**
+ * @todo This functions are really needed to be exported? if so, on the get we must pass
  * the void * to not make the user modify the value ? or maybe return a const void *?
  * for internal usage we can make it return the offset directly */
 EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data);

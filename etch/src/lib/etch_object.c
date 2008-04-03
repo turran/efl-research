@@ -27,10 +27,11 @@ static int _data_info[][2] = {
  *============================================================================*/
 /**
  * Adds an object to an Etch
- * e: Etch to add this object to
- * oc: object's class
- * id: the unique object's id 
- * data: be passed to every property set function 
+ * @param  e    Etch to add this object to
+ * @param  oc   Object's class
+ * @param  id   The unique object's id 
+ * @param  data Private data that will be passed to every property set function
+ * @return A new Etch_Object
  */
 EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *id, void *data)
 {
@@ -85,6 +86,7 @@ EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *i
 /**
  * To be documented
  * FIXME: To be fixed
+ * @param o Object to delete
  */
 EAPI void etch_object_delete(Etch_Object *o)
 {
@@ -96,6 +98,8 @@ EAPI void etch_object_delete(Etch_Object *o)
 /**
  * To be documented
  * FIXME: To be fixed
+ * @param e  Etch to find the object
+ * @param id Unique object's id
  */
 EAPI Etch_Object * etch_object_get_by_id(Etch *e, const char *id)
 {
@@ -109,6 +113,9 @@ EAPI Etch_Object * etch_object_get_by_id(Etch *e, const char *id)
 /**
  * To be documented
  * FIXME: To be fixed
+ * @param eo   Object to get the property from
+ * @param prop Property
+ * @param data Pointer to write the data
  */
 EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data)
 {
@@ -136,6 +143,9 @@ ok:
 /**
  * To be documented
  * FIXME: To be fixed
+ * @param eo   Object to set the property to
+ * @param prop Property
+ * @param data Pointer to read the data
  */
 EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data)
 {
@@ -163,6 +173,9 @@ ok:
 /**
  * To be documented
  * FIXME: To be fixed
+ * @param eo   Object to set the animation
+ * @param prop Property that will use this animation
+ * @param a    Animation to assign
  */
 EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a)
 {
