@@ -3,7 +3,9 @@
 
 #include <Eina.h>
 #include <Enesim.h>
-/* 
+/**
+ * @mainpage Ekeko
+ * @section intro Introduction
  * The idea behind this library is to code abstract objects, so any other canvas
  * libraries like evas itself can be built on top of this, the engine + objects (both)
  * must be coded on the upper library, this is just usefullnes without it.
@@ -20,7 +22,12 @@
  * 
  * 3. Mirror objects, i.e objects that resembles other objects
  * There might be some kind of callback definitions whenever an object changes, something like object
- * listeners.
+ * listeners. 
+ * 
+ * @file
+ * @brief Ekeko API
+ * @defgroup Ekeko_Group API
+ * @{
  * 
  */
 
@@ -99,5 +106,7 @@ EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Enesim_Rectangle *r);
 
 /* possible event api */
 /* interceptors */
-
+/** 
+ * @}
+ */
 #endif /*EKEKO_H_*/
