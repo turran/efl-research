@@ -38,6 +38,13 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
+PKG_CHECK_MODULES(EKEKO, [ekeko >= 0.0.1])
+PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
+
+EVAS_CFLAGS="$EINA_CFLAGS $EKEKO_CFLAGS $ENESIM_CFLAGS"
+EVAS_LIBS="$EINA_LIBS $EKEKO_LIBS $ENESIM_LIBS"
+AC_SUBST(EVAS_CFLAGS)
+AC_SUBST(EVAS_LIBS)
 
 ## Make the debug preprocessor configurable
 
@@ -46,12 +53,7 @@ Makefile
 evas.pc
 src/Makefile
 src/modules/Makefile
-src/modules/mp25xxf/Makefile
-src/modules/dm320/Makefile
-src/modules/dummy/Makefile
 src/lib/Makefile
-src/lib/hal/Makefile
-src/bin/Makefile
 src/include/Makefile
 ],[
 ])
