@@ -4,13 +4,11 @@ SUBDIRS = tiler
 
 AM_CPPFLAGS = \
 -I. \
+-I$(top_srcdir)/src/include \
 @EINA_CFLAGS@ \
 @ENESIM_CFLAGS@
 
 lib_LTLIBRARIES = libekeko.la
-
-include_HEADERS = \
-Ekeko.h
 
 libekeko_la_SOURCES = \
 ekeko_canvas.c \

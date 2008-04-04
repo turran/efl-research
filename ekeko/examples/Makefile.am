@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 AM_CPPFLAGS = \
 -I. \
--I$(top_srcdir)/src/lib \
+-I$(top_srcdir)/src/include \
 @EINA_CFLAGS@ \
 @ENESIM_CFLAGS@ \
 @SDL_CFLAGS@
