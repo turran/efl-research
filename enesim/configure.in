@@ -49,11 +49,12 @@ Makefile
 enesim.pc
 src/Makefile
 src/lib/Makefile
-src/lib/raster/Makefile
-src/lib/raster/rasterizer/Makefile
-src/lib/raster/renderer/Makefile
-src/lib/raster/surface/Makefile
-src/lib/raster/surface/argb8888/Makefile
+src/lib/rasterizer/Makefile
+src/lib/renderer/Makefile
+src/lib/surface/Makefile
+src/lib/converter/Makefile
+src/lib/drawer/Makefile
+src/lib/surface/argb8888/Makefile
 src/lib/util/Makefile
 src/lib/vector/Makefile
 src/lib/vector/component/Makefile
