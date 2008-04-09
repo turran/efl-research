@@ -42,6 +42,11 @@ PKG_CHECK_MODULES(PNG, [libpng >= 0.22], [have_png="yes"], [have_png="no"])
 
 AM_CONDITIONAL(HAVE_PNG, test "x$have_png" = "xyes")
 
+ENESIM_CFLAGS="$EINA_CFLAGS"
+ENESIM_LIBS="$EINA_LIBS"
+AC_SUBST(ENESIM_CFLAGS)
+AC_SUBST(ENESIM_LIBS)
+
 ## Make the debug preprocessor configurable
 
 AC_OUTPUT([

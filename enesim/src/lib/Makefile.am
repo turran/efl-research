@@ -1,26 +1,28 @@
-SUBDIRS = raster util vector
+SUBDIRS = converter drawer rasterizer renderer surface util
 
 MAINTAINERCLEANFILES = \
 Makefile.in
 
 AM_CPPFLAGS = \
 -I. \
--I$(top_srcdir)/src/lib
+-I$(top_srcdir)/src/include \
+@ENESIM_CFLAGS@
 
 lib_LTLIBRARIES = libenesim.la
 include_HEADERS = Enesim.h
 
-libenesim_la_SOURCES =
+libenesim_la_SOURCES = \
+enesim_converter.c \
+enesim_drawer.c \
+enesim_rasterizer.c \
+enesim_renderer.c \
+enesim_surface.c
 
 libenesim_la_LIBADD = \
-raster/libenesim_raster.la \
-util/libenesim_util.la \
-vector/libenesim_vector.la \
-@EINA_LIBS@
+@ENESIM_LIBS@
+
 
 libenesim_la_DEPENDENCIES = \
-raster/libenesim_raster.la \
-util/libenesim_util.la \
-vector/libenesim_vector.la 
+util/libenesim_util.la
 
 libenesim_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
