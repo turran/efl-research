@@ -1,7 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "surface.h"
 #include "fixed_16p16.h"
 
 // for now
@@ -115,8 +114,8 @@ enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag fl
 		break;
 	}
 	va_end(va);
-	if (!(s->flags & ENESIM_SURFACE_PREMUL))
-		_backends[s->format]->premul(&s->data, s->w * s->h);
+/*	if (!(s->flags & ENESIM_SURFACE_PREMUL))
+		_backends[s->format]->premul(&s->data, s->w * s->h);*/
 	/* setup the identity matrix */
 	s->transformation.matrix[MATRIX_XX] = 1;
 	s->transformation.matrix[MATRIX_YY] = 1;
@@ -233,8 +232,9 @@ enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...)
 		break;
 	}
 	va_end(va);
-	if (!(s->flags & ENESIM_SURFACE_PREMUL))
-		_backends[s->format]->premul(&s->data, s->w * s->h);
+	
+	/*if (!(s->flags & ENESIM_SURFACE_PREMUL))
+		_backends[s->format]->premul(&s->data, s->w * s->h);*/
 }
 /**
  * To be documented

@@ -3,15 +3,11 @@ Makefile.in
 
 AM_CPPFLAGS = \
 -I. \
--I$(top_srcdir)/src/lib \
--I$(top_srcdir)/src/lib/raster/scanline \
--I$(top_srcdir)/src/lib/raster/surface \
--I$(top_srcdir)/src/lib/util \
-@EINA_CFLAGS@
+-I$(top_srcdir)/src/include \
+@ENESIM_CFLAGS@
 
 noinst_LTLIBRARIES = libenesim_renderer.la
 
 libenesim_renderer_la_SOURCES = \
-renderer.c \
 fill_color.c
 # fill_surface.c

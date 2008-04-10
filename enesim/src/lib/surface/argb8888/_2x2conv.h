@@ -23,9 +23,9 @@ ARGB8888_CONVOLUTION_2X2_PROTO
 	sx = enesim_16p16_int_to(x);
 	sy = enesim_16p16_int_to(y);
 	
-	if ((sx > -1) && (sy> -1))
+	if ((sx > -1) && (sy > -1))
 		p0 = *p;
-	if ((sy> -1) & ((sx + 1) < sw))
+	if ((sy > -1) & ((sx + 1) < sw))
 		p1 = *(p + 1);
 	if ((sy + 1) < sh)
 	{

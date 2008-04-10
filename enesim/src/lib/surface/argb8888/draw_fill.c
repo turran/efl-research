@@ -1,7 +1,7 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "surface.h"
+
 #include "argb8888.h"
 /*============================================================================*
  *                  argb8888_c_draw_fill_affine_no_no                         * 

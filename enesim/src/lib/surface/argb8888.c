@@ -1,7 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "surface.h"
 #include "argb8888.h"
 
 static void argb8888_premul(Enesim_Surface_Data *sdata, int len)

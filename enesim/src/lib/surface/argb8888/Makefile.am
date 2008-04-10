@@ -2,10 +2,9 @@ MAINTAINERCLEANFILES = Makefile.in
 
 AM_CPPFLAGS = \
 -I. \
--I$(top_srcdir)/src/lib \
--I$(top_srcdir)/src/lib/raster/surface \
--I$(top_srcdir)/src/lib/util \
-@EINA_CFLAGS@
+-I$(top_srcdir)/src/include \
+-I$(top_srcdir)/src/lib/surface \
+@ENESIM_CFLAGS@
 
 noinst_LTLIBRARIES = libenesim_surface_argb8888.la
 

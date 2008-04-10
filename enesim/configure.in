@@ -53,6 +53,8 @@ AC_OUTPUT([
 Makefile
 enesim.pc
 src/Makefile
+src/include/Makefile
+src/bin/Makefile
 src/lib/Makefile
 src/lib/rasterizer/Makefile
 src/lib/renderer/Makefile

@@ -1,11 +1,46 @@
 #ifndef ENESIM_RASTERIZER_H_
 #define ENESIM_RASTERIZER_H_
 
-
 /**
  * @defgroup Enesim_Rasterizer_Group Rasterizer
  * @{
  */
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+typedef struct _Enesim_Scanline_Alias
+{
+	int y;
+	int x;
+	int w;
+} Enesim_Scanline_Alias;
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+typedef struct _Enesim_Scanline_Mask
+{
+	int y;
+	int x;
+	int w;
+	DATA8 *coverages;
+} Enesim_Scanline_Mask;
+
+enum {
+	ENESIM_SCANLINE_ALIAS  	    = (1 << 0),
+	ENESIM_SCANLINE_ANTIALIAS   = (1 << 1),
+	ENESIM_SCANLINE_MASK        = (1 << 2),
+	ENESIM_SCANLINES
+};
+
+typedef void (*Enesim_Scanline_Callback)(void *sl, int type, void *data);
+
+typedef struct _Enesim_Scanline Enesim_Scanline; /**< Scanline Handler */
+EAPI Enesim_Scanline 	*enesim_scanline_alias_new(void);
+EAPI void 		enesim_scanline_delete(Enesim_Scanline *sl);
 
 enum
 {

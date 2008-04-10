@@ -1,7 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "surface.h"
 #include "argb8888.h"
 
 void argb8888_c_color(Enesim_Surface_Data *data, int off, DATA32 c, int len)

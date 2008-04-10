@@ -10,12 +10,12 @@ typedef enum
 {
 	ENESIM_SURFACE_ALPHA =	(1 << 0),
 	ENESIM_SURFACE_DIRTY =	(1 << 1),
-	ENESIM_SURFACE_PREMUL =	(1 << 2)
 } Enesim_Surface_Flag;
 
 typedef enum
 {
 	ENESIM_SURFACE_ARGB8888,
+	ENESIM_SURFACE_ARGB8888_PRE,
 	ENESIM_SURFACE_RGB565,
 	ENESIM_SURFACE_FORMATS,
 } Enesim_Surface_Format;

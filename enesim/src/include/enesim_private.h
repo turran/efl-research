@@ -49,6 +49,10 @@ static inline int enesim_hline_cut(int x, int *w, int *rx, int *rw, int cx)
 	return 0;
 }
 
+#include "rasterizer.h"
+#include "renderer.h"
+#include "surface.h"
+
 /** @} */
 #endif
 

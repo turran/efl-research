@@ -1,8 +1,6 @@
 #ifndef _ENESIM_H
 #define _ENESIM_H
 
-#include "enesim_rectangle.h"
-
 /**
  * @mainpage Enesim
  * @section intro Introduction
@@ -15,69 +13,20 @@
  * @brief Enesim API
  * @defgroup Enesim_Group API
  * @{
- *
- * TODO normalize this errors
- *
  */
-enum
-{
-	ENESIM_ERROR_NONE 	= 1,
-	ENESIM_ERROR_INVAL,
-	ENESIM_ERROR_IO,
-	ENESIM_ERRORS
-};
-/**
- * @defgroup Enesim_Raster_Group Raster
- * @{
- */
-typedef unsigned int 		DATA32;
-typedef unsigned short int 	DATA16;
-typedef unsigned char 		DATA8;
 
+#include "enesim_core.h"
+#include "enesim_rectangle.h"
+#include "enesim_surface.h"
+#include "enesim_converter.h"
+#include "enesim_rasterizer.h"
+#include "enesim_renderer.h"
 
 /**
  * @defgroup Enesim_Scanline_Group Scanline
  * @{
  */
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-typedef struct _Enesim_Scanline_Alias
-{
-	int y;
-	int x;
-	int w;
-} Enesim_Scanline_Alias;
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-typedef struct _Enesim_Scanline_Mask
-{
-	int y;
-	int x;
-	int w;
-	DATA8 *coverages;
-} Enesim_Scanline_Mask;
-
-enum {
-	ENESIM_SCANLINE_ALIAS  	    = (1 << 0),
-	ENESIM_SCANLINE_ANTIALIAS   = (1 << 1),
-	ENESIM_SCANLINE_MASK        = (1 << 2),
-	ENESIM_SCANLINES
-};
-
-typedef void (*Enesim_Scanline_Callback)(void *sl, int type, void *data);
-
-typedef struct _Enesim_Scanline Enesim_Scanline; /**< Scanline Handler */
-EAPI Enesim_Scanline 	*enesim_scanline_alias_new(void);
-EAPI void 		enesim_scanline_delete(Enesim_Scanline *sl);
-
-/** @} */ //End of Enesim_Scanline_Group
-
+#if 0
 
 /** @} */ //End of Enesim_Raster_Group
 
@@ -145,5 +94,5 @@ EAPI int enesim_reader_vertex_get(Enesim_Component_Reader *r, float *x, float *y
 /** @} */ //End of Enesim_Vector_Group
 /** @} */ //End of Enesim_Group
 
-
+#endif
 #endif
