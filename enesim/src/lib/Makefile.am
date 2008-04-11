@@ -10,7 +10,6 @@ AM_CPPFLAGS = \
 @ENESIM_CFLAGS@
 
 lib_LTLIBRARIES = libenesim.la
-include_HEADERS = Enesim.h
 
 libenesim_la_SOURCES = \
 enesim_converter.c \
@@ -20,10 +19,13 @@ enesim_renderer.c \
 enesim_surface.c
 
 libenesim_la_LIBADD = \
+surface/libenesim_surface.la \
+util/libenesim_util.la \
 @ENESIM_LIBS@
 
 
 libenesim_la_DEPENDENCIES = \
+surface/libenesim_surface.la \
 util/libenesim_util.la
 
 libenesim_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
