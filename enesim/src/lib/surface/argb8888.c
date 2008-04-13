@@ -39,7 +39,7 @@ static void argb8888_unpremul(Enesim_Surface_Data *sdata, Enesim_Surface_Data *d
 
 Surface_Backend argb8888_backend = {
 		.rops = {
-				[ENESIM_RENDERER_BLEND] = {
+				[ENESIM_BLEND] = {
 						argb8888_c_color,
 						argb8888_c_color_mask,
 					},

@@ -45,22 +45,7 @@ typedef enum
 } Enesim_Surface_Quality;
 #endif
 
-typedef struct _Argb8888_Data
-{
-	DATA32	*data;
-} Argb8888_Data;
-
-typedef struct _Rgb565_Data
-{
-	DATA16	*data;
-	DATA8 	*alpha;
-} Rgb565_Data;
-
-typedef union _Enesim_Surface_Data
-{
-	Rgb565_Data 	rgb565;	
-	Argb8888_Data 	argb8888;	
-} Enesim_Surface_Data;
+/* TODO Move this code to the drawer exported defintions */
 
 typedef void (*Span_Color_Func) (Enesim_Surface_Data *data, int off, DATA32 c, int w);
 typedef void (*Span_Color_Mask_Func) (Enesim_Surface_Data *data, int off, DATA32 c, int w, DATA8 *m);
@@ -82,9 +67,9 @@ typedef void (*Surface_Conv_Func) (Enesim_Surface_Data *sdata, Enesim_Surface_Da
 
 typedef struct _Surface_Backend
 {
-	Surface_Rop_Func rops[ENESIM_RENDERER_ROPS];
+	Surface_Rop_Func rops[ENESIM_ROPS];
 	Surface_Conv_Func conv[ENESIM_SURFACE_FORMATS - 1];
-	Surface_Draw_Func draw[ENESIM_RENDERER_ROPS];
+	Surface_Draw_Func draw[ENESIM_ROPS];
 	void (*premul)(Enesim_Surface_Data *sdata, int len);
 	void (*unpremul)(Enesim_Surface_Data *sdata, Enesim_Surface_Data *ddata, int len);
 } Surface_Backend;

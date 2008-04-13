@@ -1,14 +1,4 @@
-#include <stdio.h>
-
-#define MAX_PLANES 4
-
-typedef enum
-{
-	TYPE_UINT8,
-	TYPE_UINT16,
-	TYPE_UINT32,
-	TYPES
-} Type;
+#include "enesim_generator.h"
 
 const char *type_names[TYPES] = {
 	"unsigned char",
@@ -16,14 +6,6 @@ const char *type_names[TYPES] = {
 	"unsigned int",
 };
 
-typedef enum
-{
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_BLUE,
-	COLOR_ALPHA,
-	COLORS
-} Color_Name;
 
 const char *color_names[COLORS] = {
 	"red",
@@ -32,28 +14,18 @@ const char *color_names[COLORS] = {
 	"alpha",
 };
 
-typedef struct _Color
-{
-	Color_Name name;
-	unsigned int offset;
-	unsigned int length;
-	unsigned int type;
-} Color;
+/* offset + length */
+const int argb_offsets[COLORS] = {
+	32,
+	24,
+	16,
+	8
+};
 
-typedef struct _Plane
-{
-	Color colors[COLORS];
-	unsigned int length;
-	unsigned int num_colors;
-	unsigned int type;
-} Plane;
-
-typedef struct _Format
-{
-	Plane planes[MAX_PLANES];
-	unsigned int num_planes;
-	const char *name;
-} Format;
+const char *rop_names[ROPS] = {
+	"blend",
+	"fill"
+};
 
 /*============================================================================*
  *                                  argb8888                                  * 
@@ -134,106 +106,50 @@ Format *formats[] = {
 /*============================================================================*
  *                           generator functions                              * 
  *============================================================================*/
-/* function to pack a pixel from its components */
-void plane_pack(const char *name, Plane *p, unsigned int num)
-{
-	int i;
-	
-	printf("static inline %s %s_plane%d_pack(", type_names[p->type], name, num);
-	for (i = 0; i < p->num_colors; i++)
-	{
-		Color *c;
-		
-		c = &p->colors[i];
-		if (i == p->num_colors - 1)
-		{
-			printf("%s %s)\n", type_names[c->type], color_names[c->name]);
-		}
-		else
-		{
-			printf("%s %s, ", type_names[c->type], color_names[c->name]);
-		}
-	}
-	printf("{\n");
-	printf("\treturn ");
-	for (i = 0; i < p->num_colors; i++)
-	{
-			Color *c;
-			
-			c = &p->colors[i];
-			if (i == p->num_colors - 1)
-			{
-				printf("(%s << %d);", color_names[c->name], c->offset);
-			}
-			else
-			{
-				printf("(%s << %d) | ", color_names[c->name], c->offset);
-			}
-	}
-	printf("\n");
-	printf("}\n");
-}
-/* function to get a color component */
-void color_get(const char *name, Color *c)
-{
-	printf("static inline uint8 %s_%s_get(uint32 c)\n", name, color_names[c->name]);
-	printf("{\n");
-	printf("\treturn ((c >> %d) & 0x%x);\n", c->offset, (1 << c->length) - 1);
-	printf("}\n");	
-}
-/* get the pointer for each plane */
-void pointer_get(Plane *p)
-{
-	
-}
-/* core functions for a pixel format */
-void core_functions(Format *f)
-{
-	int i;
-	int j;
-	
-	for (i = 0; i < f->num_planes; i++)
-	{
-		Plane *p;
-					
-		p = &f->planes[i];
-		for (j = 0; j < p->num_colors; j++)
-		{
-			Color *c;
-			
-			c = &p->colors[j];
-			color_get(f->name, c);
-		}
-		plane_pack(f->name, p, i);
-	}
-}
+
 
 /* iterators */
 void iterator(Plane *p)
 {
 	
+	/* iterate two surfaces */
+	/* we need source and destination's width, height, and len */
+#if 0
+	h = height;
+	while (h--)
+	{
+		/* rop a span */
+		DATA32 *d = dp;
+		DATA32 *s = sp;
+		DATA32 *e = d + length;
+
+		
+		while (d < e)
+		{
+			RENDER_OP_CALL
+			d++;
+			s++;
+		}
+		dp += dwidth;
+		sp += swidth;
+	}
+#endif
 }
-/* functions for any raster operation, blend, mul, etc but only for points
- * the format is:
- * sf_df_pt_rop_stype_dtype
- * sf, df: source and destination formats
- * rop: blend, etc
- * stype, dtype: opaque, transparent?
- * pixel, color, mask, etc
- */
-void rop_functions(Format *sf, Format *df)
+
+/* given a format generate the parameters for a function */
+void data_parameters(Format *f)
 {
-	/* point functions */
-	/* blend, d = d*(1 - sa) + s */
-	printf("static inline void %s_%s_pt_blend\n", sf->name, df->name);
-	printf("{\n");
-	printf("}\n");
-	/* fill, d = s */
-	printf("static inline void %s_%s_pt_fill\n", sf->name, df->name);
-	printf("{\n");
-	printf("}\n");
-	/* span functions */
+	int i;
 	
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		
+		if (i == f->num_planes - 1)
+			printf("%s data%d", type_names[p->type], i);
+		else
+			printf("%s data%d, ", type_names[p->type], i);
+	}
 }
 
 void converter_functions(Format *sf, Format *df)
@@ -241,34 +157,9 @@ void converter_functions(Format *sf, Format *df)
 	
 }
 
-void drawer_functions(Format *f)
-{
-	
-}
-
 int main(void)
 {
-	Format *sf;
-	int i = 0;
-	/* TODO what about indentation? before writing the file try to call
-	 * indent and write the final file like that?
-	 */
-	sf = formats[0];
-	while (sf)
-	{
-		Format *df;
-		int j = 0;
-		
-		printf("Parsing %s Pixel Format\n", sf->name);
-		core_functions(sf);
-		
-		df = formats[0];
-		while (df)
-		{
-			rop_functions(sf, df);
-			df = formats[++j];
-		}
-		sf = formats[++i];
-	}
+	core_functions();
+	drawer_functions();
 	return 0;
 }

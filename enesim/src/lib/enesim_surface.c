@@ -47,6 +47,7 @@ static void _transformation_to_fixed(float *t, enesim_16p16_t *td)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+/* Move the code below to the drawer as we will export those functions */
 /**
  * To be documented
  * FIXME: To be fixed
@@ -54,12 +55,12 @@ static void _transformation_to_fixed(float *t, enesim_16p16_t *td)
 Span_Color_Func enesim_surface_span_color_func_get(Enesim_Surface *s, int rop)
 {
 #if 0
-	if ((rop == ENESIM_RENDERER_BLEND) && (s->flags & ENESIM_SURFACE_DIRTY))
+	if ((rop == ENESIM_BLEND) && (s->flags & ENESIM_SURFACE_DIRTY))
 	{
 
 	}
 #endif
-	return _backends[s->format]->rops[ENESIM_RENDERER_BLEND].sp_color;
+	return _backends[s->format]->rops[ENESIM_BLEND].sp_color;
 }
 /**
  * To be documented
@@ -68,7 +69,7 @@ Span_Color_Func enesim_surface_span_color_func_get(Enesim_Surface *s, int rop)
 Span_Color_Mask_Func enesim_surface_span_color_mask_func_get(Enesim_Surface *s,
 		int rop)
 {
-	return _backends[s->format]->rops[ENESIM_RENDERER_BLEND].sp_color_mask;
+	return _backends[s->format]->rops[ENESIM_BLEND].sp_color_mask;
 }
 /**
  * To be documented
@@ -78,7 +79,7 @@ Span_Pixel_Func enesim_surface_pixel_func_get(Enesim_Surface *s, Enesim_Surface 
 		int rop)
 {
 	assert(s->format == src->format);
-	return _backends[s->format]->rops[ENESIM_RENDERER_BLEND].sp_pixel;
+	return _backends[s->format]->rops[ENESIM_BLEND].sp_pixel;
 }
 /*============================================================================*
  *                                   API                                      * 

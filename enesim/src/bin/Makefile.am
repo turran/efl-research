@@ -8,5 +8,8 @@ bin_PROGRAMS = enesim_generator
 
 enesim_generator_DEPENDENCIES =
 enesim_generator_SOURCES = \
-enesim_generator.c
+enesim_generator.c \
+core.c \
+drawer.c \
+rop.c
 

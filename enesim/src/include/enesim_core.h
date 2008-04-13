@@ -2,6 +2,14 @@
 #define ENESIM_CORE_H_
 
 /*
+ * 
+ */
+typedef enum
+{
+	ENESIM_BLEND,
+	ENESIM_ROPS
+} Enesim_Rop;
+/*
  * TODO normalize this errors
  *
  */

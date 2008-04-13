@@ -6,11 +6,7 @@
  * @{
  */
 typedef struct _Enesim_Renderer Enesim_Renderer; /**< Renderer Handler */
-typedef enum
-{
-	ENESIM_RENDERER_BLEND,
-	ENESIM_RENDERER_ROPS
-} Enesim_Renderer_Rop;
+
 EAPI void enesim_renderer_rop_set(Enesim_Renderer *r, int rop);
 EAPI void enesim_renderer_delete(Enesim_Renderer *r);
 EAPI void enesim_renderer_draw(Enesim_Renderer *r, int type, void *sl, Enesim_Surface *dst);

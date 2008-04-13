@@ -18,9 +18,11 @@
 #include "enesim_core.h"
 #include "enesim_rectangle.h"
 #include "enesim_surface.h"
+#include "enesim_drawer.h"
+#include "enesim_renderer.h"
 #include "enesim_converter.h"
 #include "enesim_rasterizer.h"
-#include "enesim_renderer.h"
+
 
 /**
  * @defgroup Enesim_Scanline_Group Scanline
