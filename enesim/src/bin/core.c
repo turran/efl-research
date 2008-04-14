@@ -1,5 +1,33 @@
 #include "enesim_generator.h"
 
+/* print the format plane's mask when converting the plane data into a 32bit
+ * value, like: rgb565 should be r5r5g6g6b5b5
+ */
+static void mask(Format *f)
+{
+	
+}
+
+/* function to blend a source pixel given an alpha value */
+static void blend(Format *f)
+{
+	int i;
+	/* for each component check the length and calculate how it can
+	 * be split on simd operations
+	 */
+	printf("static inline void %s_blend(", f->name);
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		printf("%s plane%d, ", type_names[p->type], i);
+	}
+	printf("unsigned char alpha)\n");
+	printf("{\n");
+	/* TODO check if its premul data */
+	/* for non premul data, we should mul every component */
+	printf("}\n");
+}
+
 /* function to pack a pixel from its components */
 static void plane_pack(const char *name, Plane *p, unsigned int num)
 {
@@ -125,7 +153,7 @@ void core_functions(void)
 		}
 		//plane_pack(sf->name, p, i);
 		argb_conv(sf);
-		
+		blend(sf);
 		sf = formats[++i];
 	}
 }
