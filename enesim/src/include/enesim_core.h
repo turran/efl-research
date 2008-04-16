@@ -7,6 +7,7 @@
 typedef enum
 {
 	ENESIM_BLEND,
+	ENESIM_FILL,
 	ENESIM_ROPS
 } Enesim_Rop;
 /*

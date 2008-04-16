@@ -1,11 +1,85 @@
 #include "enesim_generator.h"
 
+/* functions to inrement each of the data pointers the format data has */
+static void data_increment(Format *f)
+{
+	int i;
+
+	printf("static inline void %s_data_increment(Enesim_Surface_Data *d, unsigned int len)\n", f->name);
+	printf("{\n");
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		printf("\td->%s.plane%d += len;\n", f->name, i);
+	}
+	printf("}\n");
+}
+
+/* function to copy the data pointers */
+static void data_copy(Format *f)
+{
+	int i;
+	printf("static inline void %s_data_copy(Enesim_Surface_Data *s, Enesim_Surface_Data *d)\n", f->name);
+	printf("{\n");
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		printf("\td->%s.plane%d = s->%s.plane%d;\n", f->name, i, f->name, i);	
+	}
+	printf("}\n");
+}
+
+/* copy and increment at once */
+static void data_offset(Format *f)
+{
+	int i;
+	printf("static inline void %s_data_offset(Enesim_Surface_Data *s, Enesim_Surface_Data *d, unsigned int offset)\n", f->name);
+	printf("{\n");
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		printf("\td->%s.plane%d = s->%s.plane%d + offset;\n", f->name, i, f->name, i);	
+	}
+	printf("}\n");
+}
+
+/* return the alpha value as an unsigned char */
+static void data_alpha_get(Format *f)
+{
+	int i;
+	printf("static inline unsigned char %s_data_alpha_get(Enesim_Surface_Data *d)\n", f->name);
+	printf("{\n");
+	
+	/* find the alpha */
+	for (i = 0; i < f->num_planes; i++)
+	{
+		int j;
+		Plane *p = &f->planes[i];
+		
+		for (j = 0; j < p->num_colors; j++)
+		{
+			Color *c = &p->colors[j];
+
+			if (c->name == COLOR_ALPHA)
+			{
+				printf("\treturn (d->%s.plane%d >> %d) & 0x%x;\n", f->name, i, c->offset, (1 << c->length) - 1);
+				goto end;
+			}
+		}
+	}
+end:
+	printf("}\n");
+}
+
 /* print the format plane's mask when converting the plane data into a 32bit
  * value, like: rgb565 should be r5r5g6g6b5b5
  */
 static void mask(Format *f)
 {
-	
+	if (!(strcmp(f->name, "rgb565")))
+	{	
+		printf("#define MASK 0x\n");
+	}
 }
 
 /* function to blend a source pixel given an alpha value */
@@ -154,6 +228,11 @@ void core_functions(void)
 		//plane_pack(sf->name, p, i);
 		argb_conv(sf);
 		blend(sf);
+		/* data functions */
+		data_copy(sf);
+		data_increment(sf);
+		data_offset(sf);
+		data_alpha_get(sf);
 		sf = formats[++i];
 	}
 }

@@ -24,7 +24,6 @@ static void point_prototype(Format *f)
 {
 	printf("(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)\n");
 	printf("{\n");
-	src_data(f);
 }
 
 static void span_prototype(Format *f)
@@ -41,9 +40,13 @@ static void point_functions(Format *f, const char *rop)
 	printf("}\n");
 }
 
-static void span_functions(Format *f)
+static void span_functions(Format *f, const char *rop)
 {
-	
+	/* color */
+	printf("static void %s_%s_sp_color", f->name, rop);
+	span_prototype(f);
+	printf("}\n");
+	/* pixel */
 }
 
 void drawer_functions(void)
@@ -59,6 +62,7 @@ void drawer_functions(void)
 		for (rop = 0; rop < ROPS; rop++)
 		{
 			point_functions(f, rop_names[rop]);		
+			span_functions(f, rop_names[rop]);		
 		}
 		f = formats[++i];
 	}

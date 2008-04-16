@@ -31,7 +31,7 @@ const char *rop_names[ROPS] = {
  *                                  argb8888                                  * 
  *============================================================================*/
 Format argb8888 = {
-	.name = "argb888",
+	.name = "argb8888",
 	.planes[0] = {
 		.colors = {
 			{
@@ -94,7 +94,19 @@ Format rgb565 = {
 		.num_colors = 3,
 		.type = TYPE_UINT16,
 	},
-	.num_planes = 1,
+	.planes[1] = {
+		.colors = {
+			{
+				.offset = 0,
+				.length = 5,
+				.name = COLOR_ALPHA,
+				.type = TYPE_UINT8,
+			},
+		},
+		.num_colors = 1,
+		.type = TYPE_UINT8,
+	},
+	.num_planes = 2,
 };
 
 Format *formats[] = {
@@ -109,9 +121,34 @@ Format *formats[] = {
 
 
 /* iterators */
-void iterator(Plane *p)
+void iterator_single(Format *f)
 {
+	int i;
 	
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		
+		printf("%s *plane%d;\n", type_names[p->type], i);
+	}
+	printf("%s *end = plane0 + length\n", type_names[f->planes[0].type]);
+	/* place here more data definitions */
+
+	printf("while (plane0 < end)\n");
+	printf("{\n");
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		
+		/* place here the ROP */
+		printf("\tplane%d++;\n", i);
+	}
+	printf("}\n");
+}
+
+void iterator_double(Plane *p)
+{
+
 	/* iterate two surfaces */
 	/* we need source and destination's width, height, and len */
 #if 0
@@ -159,6 +196,16 @@ void converter_functions(Format *sf, Format *df)
 
 int main(void)
 {
+	Format *f;
+	int i = 0;
+
+	f = formats[0];
+	while (f)
+	{
+		iterator_single(f);
+		f = formats[++i];
+	}
+
 	core_functions();
 	drawer_functions();
 	return 0;
