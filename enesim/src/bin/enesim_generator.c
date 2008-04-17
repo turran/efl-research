@@ -122,15 +122,18 @@ Format *formats[] = {
 	NULL,
 };
 
-/*============================================================================*
- *                           generator functions                              * 
- *============================================================================*/
 
 static void help(void)
 {
 	printf("enesim_generator OPTION FORMAT FILE\n");
 	printf("OPTION: core, drawer\n");
 	printf("FORMAT: argb8888, rgb565\n");
+}
+
+/* helper function to make uppercase a string */
+void strupr(char *dst, const char *src)
+{
+	
 }
 
 int main(int argc, char **argv)
