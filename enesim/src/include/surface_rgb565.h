@@ -1,0 +1,4 @@
+#ifndef SURFACE_RGB565_H_
+#define SURFACE_RGB565_H_
+
+#endif /*SURFACE_RGB565_H_*/

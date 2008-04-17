@@ -19,8 +19,8 @@ ARGB8888_NOSCALE_IDENTITY_ITERATOR_PROTO
 	DATA32 *dp, *sp;
 	int h;
 	
-	dp = ds->data.argb8888.data + (drect->y * ds->w) + drect->x;
-	sp = ss->data.argb8888.data + (srect->y * ss->w) + srect->x; 
+	dp = ds->data.argb8888.plane0 + (drect->y * ds->w) + drect->x;
+	sp = ss->data.argb8888.plane0 + (srect->y * ss->w) + srect->x; 
 	h = drect->h;
 	while (h--)
 	{

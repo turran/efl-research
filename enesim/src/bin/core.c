@@ -1,5 +1,21 @@
 #include "enesim_generator.h"
 
+/* given a format generate the parameters for a function */
+void data_parameters(Format *f)
+{
+	int i;
+	
+	for (i = 0; i < f->num_planes; i++)
+	{
+		Plane *p = &f->planes[i];
+		
+		if (i == f->num_planes - 1)
+			fprintf(fout, "%s data%d", type_names[p->type], i);
+		else
+			fprintf(fout, "%s data%d, ", type_names[p->type], i);
+	}
+}
+
 /* functions to inrement each of the data pointers the format data has */
 static void data_increment(Format *f)
 {
@@ -206,11 +222,12 @@ static void pointer_get(Plane *p)
 	
 }
 /* core functions for a pixel format */
-void core_functions(void)
+void core_functions()
 {
 	Format *sf;
 	int i = 0;
 	
+	printf("Core functions!!!!\n");
 	/* single operations */
 	sf = formats[0];
 	while (sf)

@@ -6,7 +6,7 @@
 static void argb8888_premul(Enesim_Surface_Data *sdata, int len)
 {
 	DATA32  *d, *e;
-	d = sdata->argb8888.data;
+	d = sdata->argb8888.plane0;
 	e = d + len;
 
 	while (d < e) {
@@ -22,8 +22,8 @@ static void argb8888_unpremul(Enesim_Surface_Data *sdata, Enesim_Surface_Data *d
 {
 	DATA32 *d, *s, *e;
 
-	s = sdata->argb8888.data;
-	d = ddata->argb8888.data;
+	s = sdata->argb8888.plane0;
+	d = ddata->argb8888.plane0;
 	
 	e = s + len;
 	while (s < e) {

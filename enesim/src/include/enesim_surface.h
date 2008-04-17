@@ -29,15 +29,15 @@ typedef enum
  */
 typedef struct _Argb8888_Data
 {
-	DATA32	*data;
+	DATA32	*plane0; /* a8r8g8b8 plane */
 } Argb8888_Data;
 /**
  * 
  */
 typedef struct _Rgb565_Data
 {
-	DATA16	*data;
-	DATA8 	*alpha;
+	DATA16	*plane0; /* r5g6b5 plane */
+	DATA8 	*plane1; /* a5 plane */
 } Rgb565_Data;
 /**
  * 

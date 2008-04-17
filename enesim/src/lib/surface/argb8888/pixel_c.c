@@ -8,8 +8,8 @@ void argb8888_c_pixel(Enesim_Surface_Data *data, int off, Enesim_Surface_Data *s
 {
 	DATA32 *d, *s, *e;
 
-	d = data->argb8888.data + off;
-	s = sdata->argb8888.data + soff;
+	d = data->argb8888.plane0 + off;
+	s = sdata->argb8888.plane0 + soff;
 	e = d + len;
 	while (d < e)
 	{

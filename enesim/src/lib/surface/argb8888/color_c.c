@@ -7,7 +7,7 @@ void argb8888_c_color(Enesim_Surface_Data *data, int off, DATA32 c, int len)
 {
 	DATA32 *d, *e, a;
 
-	d = data->argb8888.data + off;
+	d = data->argb8888.plane0 + off;
 	e = d + len;
 	a = 256 - (c >> 24);
 
@@ -22,7 +22,7 @@ void argb8888_c_color_mask(Enesim_Surface_Data *data, int off, DATA32 c, int len
 {
 	DATA32 *d, *e;
 
-	d = data->argb8888.data + off;
+	d = data->argb8888.plane0 + off;
 	e = d + len;
 	len = 256 - (c >> 24);
 	while (d < e)

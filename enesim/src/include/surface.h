@@ -2,6 +2,30 @@
 #define _SURFACE_H
 
 /**
+ * 
+ */
+typedef struct _Argb8888_Pixel
+{
+	DATA32	plane0; /* a8r8g8b8 plane */
+} Argb8888_Pixel;
+/**
+ * 
+ */
+typedef struct _Rgb565_Pixel
+{
+	DATA16	plane0; /* r5g6b5 plane */
+	DATA8 	plane1; /* a5 plane */
+} Rgb565_Pixel;
+/**
+ * 
+ */
+typedef union _Enesim_Surface_Pixel
+{
+	Rgb565_Data 	rgb565;	
+	Argb8888_Data 	argb8888;	
+} Enesim_Surface_Pixel;
+
+/**
  * @todo resize code (enesim_surface_resize())
  * @todo clean this file
  */

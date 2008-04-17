@@ -15,6 +15,13 @@ typedef enum
 
 typedef enum
 {
+	PIXEL_OPAQUE,
+	PIXEL_TRANSPARENT,
+	PIXELS
+} Pixel_Type;
+
+typedef enum
+{
 	TYPE_UINT8,
 	TYPE_UINT16,
 	TYPE_UINT32,
@@ -57,10 +64,13 @@ extern const char *type_names[TYPES];
 extern const char *color_names[COLORS];
 extern const int argb_offsets[COLORS];
 extern const char *rop_names[ROPS];
+extern const char *pixel_types[PIXELS];
 extern Format *formats[];
+extern FILE *fout;
 
 void rop_functions(Format *sf, Format *df);
 void core_functions(void);
-void drawer_functions(void);
+void drawer_functions(Format *f);
+void data_parameters(Format *f);
 
 #endif /*ENESIM_GENERATOR_H_*/

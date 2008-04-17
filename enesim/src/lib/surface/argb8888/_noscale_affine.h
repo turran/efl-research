@@ -26,7 +26,7 @@ ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO
 	sx = enesim_16p16_mul(t[MATRIX_XX], drect->x) + enesim_16p16_mul(t[MATRIX_XY],drect->y) + t[MATRIX_XZ];
 	sy = enesim_16p16_mul(t[MATRIX_YX], drect->x) + enesim_16p16_mul(t[MATRIX_YY],drect->y) + t[MATRIX_YZ];
 	
-	dp = ds->data.argb8888.data + (drect->y * ds->w) + drect->x;
+	dp = ds->data.argb8888.plane0 + (drect->y * ds->w) + drect->x;
 	h = drect->h;
 	while (h--)
 	{
@@ -49,7 +49,7 @@ ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO
 			if ((enesim_rectangle_xcoord_inside(srect, six)) && (enesim_rectangle_ycoord_inside(srect, siy)))
 			{
 				/* use 2x2 convolution kernel to interpolate */
-				sp = ss->data.argb8888.data + (siy * ss->w) + six;
+				sp = ss->data.argb8888.plane0 + (siy * ss->w) + six;
 				ARGB8888_CONVOLUTION_CALL
 			}
 			d++;

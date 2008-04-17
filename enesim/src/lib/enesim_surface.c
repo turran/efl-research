@@ -104,12 +104,12 @@ enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag fl
 	va_start(va, flags);
 	switch (s->format) {
 	case ENESIM_SURFACE_ARGB8888:
-		s->data.argb8888.data = va_arg(va, DATA32 *);
+		s->data.argb8888.plane0 = va_arg(va, DATA32 *);
 		break;
 
 	case ENESIM_SURFACE_RGB565:
-		s->data.rgb565.data = va_arg(va, DATA16 *);
-		s->data.rgb565.alpha = va_arg(va, DATA8 *);
+		s->data.rgb565.plane0 = va_arg(va, DATA16 *);
+		s->data.rgb565.plane1 = va_arg(va, DATA8 *);
 		break;
 
 	default:
@@ -163,14 +163,14 @@ enesim_surface_data_get(Enesim_Surface *s, ...)
 	switch (s->format) {
 	case ENESIM_SURFACE_ARGB8888:
 		d32 = va_arg(va, DATA32 **);
-		*d32 = s->data.argb8888.data;
+		*d32 = s->data.argb8888.plane0;
 		break;
 
 	case ENESIM_SURFACE_RGB565:
 		d16 = va_arg(va, DATA16 **);
-		*d16 = s->data.rgb565.data;
+		*d16 = s->data.rgb565.plane0;
 		d8 = va_arg(va, DATA8 **);
-		*d8 = s->data.rgb565.alpha;
+		*d8 = s->data.rgb565.plane1;
 		break;
 
 	default:
@@ -222,12 +222,12 @@ enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Format f, ...)
 	va_start(va, f);
 	switch (s->format) {
 	case ENESIM_SURFACE_ARGB8888:
-		s->data.argb8888.data = va_arg(va, DATA32 *);
+		s->data.argb8888.plane0 = va_arg(va, DATA32 *);
 		break;
 
 	case ENESIM_SURFACE_RGB565:
-		s->data.rgb565.data = va_arg(va, DATA16 *);
-		s->data.rgb565.alpha = va_arg(va, DATA8 *);
+		s->data.rgb565.plane0 = va_arg(va, DATA16 *);
+		s->data.rgb565.plane1 = va_arg(va, DATA8 *);
 		break;
 
 	default:
@@ -343,12 +343,12 @@ enesim_surface_unpremul(Enesim_Surface *s, ...)
 	va_start(va, s);
 	switch (s->format) {
 	case ENESIM_SURFACE_ARGB8888:
-		data.argb8888.data = va_arg(va, DATA32 *);
+		data.argb8888.plane0 = va_arg(va, DATA32 *);
 		break;
 
 	case ENESIM_SURFACE_RGB565:
-		data.rgb565.data = va_arg(va, DATA16 *);
-		data.rgb565.alpha = va_arg(va, DATA8 *);
+		data.rgb565.plane0 = va_arg(va, DATA16 *);
+		data.rgb565.plane1 = va_arg(va, DATA8 *);
 		break;
 
 	default:

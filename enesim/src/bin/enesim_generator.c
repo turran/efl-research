@@ -27,6 +27,13 @@ const char *rop_names[ROPS] = {
 	"fill"
 };
 
+const char *pixel_types[PIXELS] = {
+	"opaque",
+	"transparent"
+};
+
+FILE *fout = NULL;
+
 /*============================================================================*
  *                                  argb8888                                  * 
  *============================================================================*/
@@ -119,94 +126,52 @@ Format *formats[] = {
  *                           generator functions                              * 
  *============================================================================*/
 
-
-/* iterators */
-void iterator_single(Format *f)
+static void help(void)
 {
-	int i;
-	
-	for (i = 0; i < f->num_planes; i++)
-	{
-		Plane *p = &f->planes[i];
-		
-		printf("%s *plane%d;\n", type_names[p->type], i);
-	}
-	printf("%s *end = plane0 + length\n", type_names[f->planes[0].type]);
-	/* place here more data definitions */
-
-	printf("while (plane0 < end)\n");
-	printf("{\n");
-	for (i = 0; i < f->num_planes; i++)
-	{
-		Plane *p = &f->planes[i];
-		
-		/* place here the ROP */
-		printf("\tplane%d++;\n", i);
-	}
-	printf("}\n");
+	printf("enesim_generator OPTION FORMAT FILE\n");
+	printf("OPTION: core, drawer\n");
+	printf("FORMAT: argb8888, rgb565\n");
 }
 
-void iterator_double(Plane *p)
-{
-
-	/* iterate two surfaces */
-	/* we need source and destination's width, height, and len */
-#if 0
-	h = height;
-	while (h--)
-	{
-		/* rop a span */
-		DATA32 *d = dp;
-		DATA32 *s = sp;
-		DATA32 *e = d + length;
-
-		
-		while (d < e)
-		{
-			RENDER_OP_CALL
-			d++;
-			s++;
-		}
-		dp += dwidth;
-		sp += swidth;
-	}
-#endif
-}
-
-/* given a format generate the parameters for a function */
-void data_parameters(Format *f)
-{
-	int i;
-	
-	for (i = 0; i < f->num_planes; i++)
-	{
-		Plane *p = &f->planes[i];
-		
-		if (i == f->num_planes - 1)
-			printf("%s data%d", type_names[p->type], i);
-		else
-			printf("%s data%d, ", type_names[p->type], i);
-	}
-}
-
-void converter_functions(Format *sf, Format *df)
-{
-	
-}
-
-int main(void)
-{
-	Format *f;
+int main(int argc, char **argv)
+{	
 	int i = 0;
-
+	Format *f;
+	
+	if (argc < 4)
+	{
+		help();
+		return 1;
+	}
+	
+	fout = fopen(argv[3], "w+");
+	if (!fout)
+	{
+		help();
+		return 2;
+	}
+	
 	f = formats[0];
 	while (f)
 	{
-		iterator_single(f);
+		if (!(strcmp(f->name, argv[2])))
+			break;
 		f = formats[++i];
 	}
+	if (!f)
+	{
+		help();
+		return 3;
+	}
+	
+	if (!(strcmp(argv[1], "core")))
+	{
+		core_functions();
+	}
+	else if (!strcmp(argv[1], "drawer"))
+	{
+		drawer_functions(f);
+	}
 
-	core_functions();
-	drawer_functions();
 	return 0;
 }
