@@ -27,3 +27,8 @@ TODO: decide on what an object class should contain.
 6) Canvas creation is done using a similar idea to object creation.
 TODO: decide on what a canvas class should be.
 
+DEMO
+A solar system modle would be a very nice gfx demo, it can handle things like:
+- Change colors based on the distance from the sun.
+- Move planets around the sun, using an elliptical animation (using bezier 
+paths i think).
