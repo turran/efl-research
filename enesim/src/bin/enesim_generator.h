@@ -58,6 +58,7 @@ typedef struct _Format
 	Plane planes[MAX_PLANES];
 	unsigned int num_planes;
 	const char *name;
+	unsigned char premul;
 } Format;
 
 extern const char *type_names[TYPES];

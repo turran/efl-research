@@ -1,11 +1,5 @@
 #include "enesim_generator.h"
 
-static const char *rop_enum[] = {
-	"ENESIM_BLEND",
-	"ENESIM_FILL"
-};
-
-
 static void point_prototype_start(Format *f)
 {
 	int i;
@@ -151,22 +145,26 @@ static void span_functions(Format *f, const char *rop)
 static void drawer_definition(Format *f)
 {
 	int rop;
+	char rupper[256];
 	
 	fprintf(fout, "Enesim_Drawer %s_drawer = {\n", f->name);
 	for (rop = 0; rop < ROPS; rop++)
 	{
-		int i;
+		int i = 0;
 		Format *sf = formats[0];
+		char fupper[256];
 		
+		strupr(rupper, rop_names[rop]);
 		/* sp/pt_color */
-		fprintf(fout, "\t.sp_color[%s] = %s_sp_color_%s,\n", rop_enum[rop], f->name, rop_names[rop]);			
-		fprintf(fout, "\t.pt_color[%s] = %s_pt_color_%s,\n", rop_enum[rop], f->name, rop_names[rop]);
+		fprintf(fout, "\t.sp_color[ENESIM_%s] = %s_sp_color_%s,\n", rupper, f->name, rop_names[rop]);			
+		fprintf(fout, "\t.pt_color[ENESIM_%s] = %s_pt_color_%s,\n", rupper, f->name, rop_names[rop]);
 		/* sp/pt pixel */
 		while (sf)
 		{
-			/*fprintf(fout, "\t.sp_pixel[%s][%s] = %s_sp_color_%s,\n", rop_enum[rop], f->name, rop_names[rop]);
-			fprintf(fout, "\t.pt_pixel[%s][%s] = %s_pt_color_%s,\n", rop_enum[rop], f->name, rop_names[rop]);
-			*/
+			strupr(fupper, sf->name);
+			fprintf(fout, "\t.sp_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_sp_pixel_%s,\n", rupper, fupper, f->name, rop_names[rop]);
+			fprintf(fout, "\t.pt_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_pt_pixel_%s,\n", rupper, fupper, f->name, rop_names[rop]);
+			
 			sf = formats[++i];
 		}
 	}

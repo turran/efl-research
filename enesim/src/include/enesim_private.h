@@ -49,11 +49,13 @@ static inline int enesim_hline_cut(int x, int *w, int *rx, int *rw, int cx)
 	return 0;
 }
 
-#include "rasterizer.h"
-#include "renderer.h"
-#include "surface.h"
+#include "private/rasterizer.h"
+#include "private/renderer.h"
+#include "private/surface.h"
 /* now the surface format backends */
-
+#include "private/surface_argb8888_pre_rop.h"
+#include "private/surface_argb8888_rop.h"
+#include "private/surface_rgb565_rop.h"
 
 /** @} */
 #endif

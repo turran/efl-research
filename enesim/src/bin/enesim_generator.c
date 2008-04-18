@@ -37,6 +37,42 @@ FILE *fout = NULL;
 /*============================================================================*
  *                                  argb8888                                  * 
  *============================================================================*/
+Format argb8888_pre = {
+	.name = "argb8888_pre",
+	.planes[0] = {
+		.colors = {
+			{
+				.offset = 0,
+				.length = 8,
+				.name = COLOR_BLUE,
+				.type = TYPE_UINT8,
+			},
+			{
+				.offset = 8,
+				.length = 8,
+				.name = COLOR_GREEN,
+				.type = TYPE_UINT8,
+			},
+			{
+				.offset = 16,
+				.length = 8,
+				.name = COLOR_RED,
+				.type = TYPE_UINT8,
+			},
+			{
+				.offset = 24,
+				.length = 8,
+				.type = TYPE_UINT8,
+				.name = COLOR_ALPHA,
+			},
+		},
+		.num_colors = 4,
+		.type = TYPE_UINT32,
+	},
+	.num_planes = 1,
+	.premul = 1,
+};
+
 Format argb8888 = {
 	.name = "argb8888",
 	.planes[0] = {
@@ -70,6 +106,7 @@ Format argb8888 = {
 		.type = TYPE_UINT32,
 	},
 	.num_planes = 1,
+	.premul = 0,
 };
 
 /*============================================================================*
@@ -114,10 +151,12 @@ Format rgb565 = {
 		.type = TYPE_UINT8,
 	},
 	.num_planes = 2,
+	.premul = 1,
 };
 
 Format *formats[] = {
 	&argb8888,
+	&argb8888_pre,
 	&rgb565,
 	NULL,
 };
@@ -133,7 +172,13 @@ static void help(void)
 /* helper function to make uppercase a string */
 void strupr(char *dst, const char *src)
 {
-	
+	while (*src)
+	{
+		*dst = toupper(*src);
+		dst++;
+		src++;
+	}
+	*dst = '\0';
 }
 
 int main(int argc, char **argv)
