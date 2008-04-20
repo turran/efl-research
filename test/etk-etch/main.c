@@ -67,41 +67,47 @@ void etch_setup(void)
 	ea = etch_animation_new(ETCH_UINT32);
 	/* x coordinate */
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 5, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
 	etch_animation_keyframe_time_set(ek, 0, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 10, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 200, 5);
 	etch_animation_keyframe_time_set(ek, 5, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 5, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
 	etch_animation_keyframe_time_set(ek, 10, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
 	etch_animation_keyframe_time_set(ek, 15, 0);
 	
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
+	etch_animation_keyframe_time_set(ek, 20, 0);
 	/* append the animation to the object */
 	etch_object_animation_set(etch_object, ETCH_POSITION_X_UINT32, ea);
 	
 	ea = etch_animation_new(ETCH_UINT32);
 	/* y coordinate */
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 5, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
 	etch_animation_keyframe_time_set(ek, 0, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 10, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
 	etch_animation_keyframe_time_set(ek, 5, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 5, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 200, 5);
 	etch_animation_keyframe_time_set(ek, 10, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
 	etch_animation_keyframe_time_set(ek, 15, 0);
+	
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
+	etch_animation_keyframe_time_set(ek, 20, 0);
 	
 	/* append the animation to the object */
 	etch_object_animation_set(etch_object, ETCH_POSITION_Y_UINT32, ea);
