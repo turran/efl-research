@@ -63,6 +63,8 @@ EAPI Etch * etch_new(void)
 	
 	e = malloc(sizeof(Etch));
 	e->objects = NULL;
+	e->frame = 0;
+	e->curr = 0;
 	return e;
 }
 
