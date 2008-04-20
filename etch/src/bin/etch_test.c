@@ -79,18 +79,22 @@ void object_animation_setup(Etch_Object *eo)
 	/* first keyframe */
 	ek = etch_animation_keyframe_add(ea);
 	/* quadratic example */
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 10, 15);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 10, 15);
 	etch_animation_keyframe_time_set(ek, 3, 3015);
 	/* second keyframe */
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 40);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
+	etch_animation_keyframe_value_set(ek,40);
 	etch_animation_keyframe_time_set(ek, 25, 1237);
 	/* third keyframe */
 	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 30);
 	etch_animation_keyframe_time_set(ek, 15, 2530);
 	/* fourth keyframe */
 	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 25);
 	etch_animation_keyframe_time_set(ek, 1, 2530);
 	/* append the animation to the object */

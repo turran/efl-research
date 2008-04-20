@@ -41,7 +41,6 @@ static void _bquad_uint32(void *data, double m, unsigned int *a, unsigned int *b
 {
 	Etch_Animation_Quadratic *q = data;
 	
-	
 	*(unsigned int *)res =  (1 - m) * (1 - m) * *a + 2 * m * (1 - m) * (q->cp.u32) + m * m * *b;
 }
 
@@ -144,7 +143,7 @@ EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a)
 	k->animation = a;
 
 	/* add the new keyframe to the list of keyframes */
-	a->keys = eina_inlist_append(a->keys, k);
+	a->keys = eina_inlist_prepend(a->keys, k);
 	
 	return k;
 }
@@ -194,19 +193,20 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned 
 	l = (Eina_Inlist *)(a->keys);
 	while (l)
 	{
-		if (((Etch_Animation_Keyframe *)l)->time >= new_time)
+		Etch_Animation_Keyframe *k = (Etch_Animation_Keyframe *)l;
+		
+		if (k->time >= new_time)
 			break;
 		if (!l->next)
 			break;
 		l = l->next;
 	}
-	
 	/* if the element to remove is the same as the element to change, do
 	 * nothing */
 	if (l == m)
 		goto update;
 	a->keys = eina_inlist_remove(a->keys, m);
-	a->keys = eina_inlist_prepend_relative(a->keys, m, l);
+	a->keys = eina_inlist_append_relative(a->keys, m, l);
 	/* update the start and end values */
 update:
 	m->time = new_time;
@@ -229,7 +229,6 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...)
 	va_list va;
 
 	va_start(va, m);
-	
 	/* now get the type specific data, for example the bezier forms need 
 	 * control points, etc */
 	switch (m->type)
