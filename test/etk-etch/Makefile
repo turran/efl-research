@@ -1,4 +1,4 @@
-CFLAGS = `pkg-config --cflags etk` `pkg-config --cflags etch`
+CFLAGS = -g `pkg-config --cflags etk` `pkg-config --cflags etch`
 LIBS = `pkg-config --libs etk` `pkg-config --libs etch`
 
 BINS  = etk-etch
