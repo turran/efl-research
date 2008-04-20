@@ -30,10 +30,18 @@ void _position_x_uint32(void *odata, void *pdata)
 void _position_y_uint32(void *odata, void *pdata)
 {
 	int x, y;
+	float val;
+#if 0
+	int x, y;
 
 	y = *(unsigned int *)pdata;
 	printf("called with y %d\n", y);
 	evas_object_geometry_get(evas_object, &x, NULL, NULL, NULL);
+	evas_object_move(evas_object, x, y);
+#endif
+	val = *(unsigned int *)pdata / 10000.0;
+	x = 200 + 200 * cos(val);
+	y = 200 + 200 * sin(val);
 	evas_object_move(evas_object, x, y);
 }
 
@@ -63,53 +71,79 @@ void etch_setup(void)
 	ecore_timer_add(1.0/30.0, timer_cb, NULL);
 	
 	etch_object = etch_object_add(etch, &oclass, "object1", NULL);
-
-	ea = etch_animation_new(ETCH_UINT32);
+#if 0
 	/* x coordinate */
+	ea = etch_animation_new(ETCH_UINT32);
+	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 200, 200);
 	etch_animation_keyframe_time_set(ek, 0, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 200, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 300, 300);
 	etch_animation_keyframe_time_set(ek, 5, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 200, 200);
 	etch_animation_keyframe_time_set(ek, 10, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 100, 100);
 	etch_animation_keyframe_time_set(ek, 15, 0);
 	
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 200, 200);
 	etch_animation_keyframe_time_set(ek, 20, 0);
 	/* append the animation to the object */
 	etch_object_animation_set(etch_object, ETCH_POSITION_X_UINT32, ea);
 	
-	ea = etch_animation_new(ETCH_UINT32);
 	/* y coordinate */
+	ea = etch_animation_new(ETCH_UINT32);
+	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 200, 200);
 	etch_animation_keyframe_time_set(ek, 0, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 100, 100);
 	etch_animation_keyframe_time_set(ek, 5, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 200, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 0, 0);
 	etch_animation_keyframe_time_set(ek, 10, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 100, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 100, 100);
 	etch_animation_keyframe_time_set(ek, 15, 0);
 	
 	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_QUADRATIC, 0, 5);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
+	etch_animation_keyframe_value_set(ek, 200, 200);
 	etch_animation_keyframe_time_set(ek, 20, 0);
-	
+		
 	/* append the animation to the object */
+	etch_object_animation_set(etch_object, ETCH_POSITION_Y_UINT32, ea);
+#endif
+	ea = etch_animation_new(ETCH_UINT32);
+
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
+	etch_animation_keyframe_value_set(ek, 0);
+	etch_animation_keyframe_time_set(ek, 0, 0);
+	
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
+	etch_animation_keyframe_value_set(ek, 31415);
+	etch_animation_keyframe_time_set(ek, 20000, 0);
 	etch_object_animation_set(etch_object, ETCH_POSITION_Y_UINT32, ea);
 }
 
@@ -125,9 +159,17 @@ int main(int argc, char **argv)
 	etk_container_add(ETK_CONTAINER(window), canvas);
 
 	evas = etk_toplevel_evas_get(ETK_TOPLEVEL(window));
+	/* the circle boundaries
+	evas_object = evas_object_rectangle_add(evas);
+	evas_object_color_set(evas_object, 255, 255, 0, 255);
+	evas_object_resize(evas_object, 100, 100);
+	evas_object_move(evas_object, 100, 100);
+	evas_object_show(evas_object);
+	*/
 	evas_object = evas_object_rectangle_add(evas);
 	evas_object_color_set(evas_object, 255, 128, 128, 255);
 	evas_object_resize(evas_object, 64, 64);
+	
 
 	etk_evas_object = etk_evas_object_new_from_object(evas_object);
 	etk_canvas_put(ETK_CANVAS(canvas), etk_evas_object, 10, 10);
