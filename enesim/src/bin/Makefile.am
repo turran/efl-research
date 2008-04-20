@@ -10,6 +10,4 @@ enesim_generator_DEPENDENCIES =
 enesim_generator_SOURCES = \
 enesim_generator.c \
 core.c \
-drawer.c \
-rop.c
-
+drawer.c 

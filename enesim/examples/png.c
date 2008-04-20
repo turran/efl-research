@@ -1,10 +1,4 @@
-#include <png.h>
-#include <setjmp.h>
-#include <alloca.h>
-#include <stdlib.h>
-
-#include "Eina.h"
-#include "Enesim.h"
+#include "enesim_test.h"
 
 #define PNG_BYTES_TO_CHECK 4
 
@@ -22,7 +16,7 @@ void png_load(Enesim_Surface *s, char *file)
 	unsigned char **lines;
 	char hasa, hasg;
 	int i;
-	DATA32 *sdata;
+	Enesim_Surface_Data sdata;
 
 	if ((!file)) return;
 	hasa = 0;
@@ -62,7 +56,6 @@ void png_load(Enesim_Surface *s, char *file)
 	png_get_IHDR(png_ptr, info_ptr, (png_uint_32 *) (&w32),
 		(png_uint_32 *) (&h32), &bit_depth, &color_type,
 		&interlace_type, NULL, NULL);
-	
 	enesim_surface_size_get(s, &w, &h);
 	if ((w32 != w) || (h32 != h))
 	{
@@ -113,7 +106,7 @@ void png_load(Enesim_Surface *s, char *file)
 	}
 	enesim_surface_data_get(s, &sdata);
 	for (i = 0; i < h; i++)
-		lines[i] = ((unsigned char *)(sdata)) + (i * w * sizeof(DATA32));
+		lines[i] = ((unsigned char *)(sdata.argb8888_pre.plane0)) + (i * w * sizeof(DATA32));
 	png_read_image(png_ptr, lines);
 	png_read_end(png_ptr, info_ptr);
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
@@ -127,8 +120,8 @@ void png_save(Enesim_Surface *s, char *file, int compress)
 	int num_passes = 1, pass;
 	int x, y, j;
 	int w, h;
-
-	DATA32 *ptr, *data, *sdata;
+	Enesim_Surface_Data esdata;
+	DATA32 *ptr, *data;
 
 	png_structp         png_ptr;
 	png_infop           info_ptr;
@@ -151,7 +144,7 @@ void png_save(Enesim_Surface *s, char *file, int compress)
 
 //	if (s->flags & RGBA_SURFACE_HAS_ALPHA)
 	{
-		enesim_surface_data_get(s, &sdata);
+		enesim_surface_data_get(s, &esdata);
 		enesim_surface_size_get(s, &w, &h);
 		data = malloc(w * h * sizeof(DATA32));
         if (!data)
@@ -161,7 +154,7 @@ void png_save(Enesim_Surface *s, char *file, int compress)
             png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
             return;
           }
-	memcpy(data, sdata, w * h * sizeof(DATA32));
+	memcpy(data, esdata.argb8888_pre.plane0, w * h * sizeof(DATA32));
         //enesim_color_data_argb_unpremul(data, w * h);
         png_init_io(png_ptr, f);
         png_set_IHDR(png_ptr, info_ptr, w, h, 8,
@@ -198,7 +191,8 @@ void png_save(Enesim_Surface *s, char *file, int compress)
 	png_set_packing(png_ptr);
 	for (pass = 0; pass < num_passes; pass++)
 	{
-ptr = data;
+		ptr = data;
+		printf("%x\n", *data);
 
         for (y = 0; y < h; y++)
           {

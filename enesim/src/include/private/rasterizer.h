@@ -1,5 +1,5 @@
-#ifndef _RASTERIZER_H
-#define _RASTERIZER_H
+#ifndef RASTERIZER_H_
+#define RASTERIZER_H_
 
 /**
  * @todo

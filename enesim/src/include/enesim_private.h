@@ -21,6 +21,9 @@ fprintf(stderr, "[Enesim] (%s:%d - %s()):\n" format "\n\n", __FILE__, __LINE__, 
 #endif
 
 #include <assert.h>
+#include <string.h>
+#include <limits.h>
+
 
 #ifdef MIN
 #undef MIN
@@ -49,14 +52,20 @@ static inline int enesim_hline_cut(int x, int *w, int *rx, int *rw, int cx)
 	return 0;
 }
 
+#include "extender_int.h"
+// #include "extender_float.h"
+#include "private/drawer.h"
 #include "private/rasterizer.h"
 #include "private/renderer.h"
 #include "private/surface.h"
+#include "private/transformer.h"
 /* now the surface format backends */
-#include "private/surface_argb8888_pre_rop.h"
+#include "private/surface_argb8888_core.h"
 #include "private/surface_argb8888_rop.h"
+#include "private/surface_argb8888_pre_core.h"
+#include "private/surface_argb8888_pre_rop.h"
+#include "private/surface_rgb565_core.h"
 #include "private/surface_rgb565_rop.h"
 
 /** @} */
 #endif
-

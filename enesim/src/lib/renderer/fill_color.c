@@ -1,8 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "renderer.h"
-#include "surface.h"
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -15,21 +13,26 @@ typedef struct _Fill_Color
 static void _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Surface *dst)
 {
 	Fill_Color *f;
-	Span_Color_Func cfnc;
+	Enesim_Drawer_Span cfnc;
+	Enesim_Surface_Data ddata;
+	Enesim_Surface_Format sfmt;
 	int nsl;
 	int offset;
 	int i;
 
 	f = r->data;
-
-	cfnc = enesim_surface_span_color_func_get(dst, r->rop);
+	
+	sfmt = enesim_surface_format_get(dst);
+	cfnc = enesim_drawer_span_color_get(r->rop, sfmt, f->color);
 	offset = (dst->w * sl->y) + sl->x;
-	//printf("%d %d %d\n", s->y, s->x, s->w);
-	cfnc(&dst->data, offset, f->color, sl->w);
+	enesim_surface_data_get(dst, &ddata);
+	enesim_surface_data_increment(&ddata, sfmt, offset);
+	cfnc(&ddata, sl->w, NULL, f->color, NULL);
 }
 
 static void _draw_mask(Enesim_Renderer *r, Enesim_Scanline_Mask *sl, Enesim_Surface *dst)
 {
+#if 0
 	Fill_Color *f;
 	Span_Color_Mask_Func cfnc;
 	int nsl;
@@ -41,6 +44,7 @@ static void _draw_mask(Enesim_Renderer *r, Enesim_Scanline_Mask *sl, Enesim_Surf
 	cfnc = enesim_surface_span_color_mask_func_get(dst, r->rop);
 	offset = (dst->w * sl->y) + sl->x;
 	cfnc(&dst->data, offset, f->color, sl->w, sl->coverages);
+#endif
 }
 
 static void _draw(Enesim_Renderer *r, int type, void *sl, Enesim_Surface *dst)

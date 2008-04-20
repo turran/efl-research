@@ -1,8 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-#include "rasterizer.h"
-#include "extender_int.h"
 
 #define KIIA_SUBPIXEL_SHIFT 4
 #define KIIA_SUBPIXEL_DATA unsigned short int

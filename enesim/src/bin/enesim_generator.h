@@ -70,7 +70,7 @@ extern Format *formats[];
 extern FILE *fout;
 
 void rop_functions(Format *sf, Format *df);
-void core_functions(void);
+void core_functions(Format *f);
 void drawer_functions(Format *f);
 void data_parameters(Format *f);
 

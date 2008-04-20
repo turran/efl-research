@@ -29,13 +29,15 @@ static void point_functions(Format *f, const char *rop)
 	fprintf(fout, "static void %s_pt_color_%s", f->name, rop);
 	point_prototype_start(f);
 	fprintf(fout, "\t%s_from_argb(");
+	fprintf(fout, "color, ");
 	for (i = 0; i < f->num_planes; i++)
 	{
 		Plane *p = &f->planes[i];
-		
-		fprintf(fout, "&data%d, ", i);
+		if (i == f->num_planes - 1)
+			fprintf(fout, "&data%d);\n", i);
+		else
+			fprintf(fout, "&data%d, ", i);
 	}
-	fprintf(fout, "color);\n");
 	fprintf(fout, "\t%s_%s(", f->name, rop);
 	for (i = 0; i < f->num_planes; i++)
 	{
@@ -48,13 +50,14 @@ static void point_functions(Format *f, const char *rop)
 		Plane *p = &f->planes[i];
 		
 		if (i == f->num_planes - 1)
-			fprintf(fout, "&data%d);\n", i);
+			fprintf(fout, "data%d);\n", i);
 		else
-			fprintf(fout, "&data%d, ", i);
+			fprintf(fout, "data%d, ", i);
 	}
 	point_prototype_end(f);
 	/* pixel */
 	sf = formats[0];
+	i = 0;
 	while (sf)
 	{
 		fprintf(fout, "static void %s_pt_pixel_%s_%s", f->name, rop, sf->name);
@@ -91,12 +94,12 @@ static void span_functions(Format *f, const char *rop)
 	fprintf(fout, "\tEnesim_Surface_Data dtmp, end;\n\n");
 	fprintf(fout, "\t%s_data_copy(d, &dtmp);\n", f->name);
 	fprintf(fout, "\t%s_data_offset(d, &end, len);\n", f->name);
-	fprintf(fout, "\twhile (dtmp.plane0 < end.plane0)\n");
+	fprintf(fout, "\twhile (dtmp.%s.plane0 < end.%s.plane0)\n", f->name, f->name);
 	fprintf(fout, "\t{\n");
 	/* TODO get the alpha */
 	/* TODO rop */
 	fprintf(fout, "\t\t%s_pt_color_%s(&dtmp, NULL, color, NULL);\n", f->name, rop);
-	fprintf(fout, "\t\t%s_increment(&dtmp, 1);\n", f->name);
+	fprintf(fout, "\t\t%s_data_increment(&dtmp, 1);\n", f->name);
 	fprintf(fout, "\t}\n");
 	span_prototype_end(f);
 	/* pixel */			
@@ -109,11 +112,11 @@ static void span_functions(Format *f, const char *rop)
 		fprintf(fout, "\t%s_data_copy(d, &dtmp);\n", f->name);
 		fprintf(fout, "\t%s_data_copy(s, &stmp);\n", sf->name);
 		fprintf(fout, "\t%s_data_offset(d, &end, len);\n", f->name);
-		fprintf(fout, "\twhile (dtmp.plane0 < end.plane0)\n");
+		fprintf(fout, "\twhile (dtmp.%s.plane0 < end.%s.plane0)\n", f->name, f->name);
 		fprintf(fout, "\t{\n");
 		fprintf(fout, "\t\t%s_pt_pixel_%s_%s(&dtmp, &stmp, 0, NULL);\n", f->name, rop, sf->name);
-		fprintf(fout, "\t\t%s_increment(&stmp, 1);\n", sf->name);
-		fprintf(fout, "\t\t%s_increment(&dtmp, 1);\n", f->name);
+		fprintf(fout, "\t\t%s_data_increment(&stmp, 1);\n", sf->name);
+		fprintf(fout, "\t\t%s_data_increment(&dtmp, 1);\n", f->name);
 		fprintf(fout, "\t}\n");
 		span_prototype_end(f);
 		sf = formats[++i];
@@ -128,11 +131,11 @@ static void span_functions(Format *f, const char *rop)
 		fprintf(fout, "\t%s_data_copy(d, &dtmp);\n", f->name);
 		fprintf(fout, "\t%s_data_copy(s, &stmp);\n", sf->name);
 		fprintf(fout, "\t%s_data_offset(d, &end, len);\n", f->name);
-		fprintf(fout, "\twhile (dtmp.plane0 < end.plane0)\n");
+		fprintf(fout, "\twhile (dtmp.%s.plane0 < end.%s.plane0)\n", f->name, f->name);
 		fprintf(fout, "\t{\n");
 		fprintf(fout, "\t\t%s_pt_pixel_color_%s_%s(&dtmp, &stmp, color, NULL);\n", f->name, rop, sf->name);
-		fprintf(fout, "\t\t%s_increment(&stmp, 1);\n", sf->name);
-		fprintf(fout, "\t\t%s_increment(&dtmp, 1);\n", f->name);
+		fprintf(fout, "\t\t%s_data_increment(&stmp, 1);\n", sf->name);
+		fprintf(fout, "\t\t%s_data_increment(&dtmp, 1);\n", f->name);
 		fprintf(fout, "\t}\n");
 		span_prototype_end(f);
 		sf = formats[++i];
@@ -162,8 +165,8 @@ static void drawer_definition(Format *f)
 		while (sf)
 		{
 			strupr(fupper, sf->name);
-			fprintf(fout, "\t.sp_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_sp_pixel_%s,\n", rupper, fupper, f->name, rop_names[rop]);
-			fprintf(fout, "\t.pt_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_pt_pixel_%s,\n", rupper, fupper, f->name, rop_names[rop]);
+			fprintf(fout, "\t.sp_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_sp_pixel_%s_%s,\n", rupper, fupper, f->name, rop_names[rop], sf->name);
+			fprintf(fout, "\t.pt_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_pt_pixel_%s_%s,\n", rupper, fupper, f->name, rop_names[rop], sf->name);
 			
 			sf = formats[++i];
 		}

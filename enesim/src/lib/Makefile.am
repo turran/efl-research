@@ -1,4 +1,4 @@
-SUBDIRS = converter drawer rasterizer renderer surface util
+SUBDIRS = converter drawer rasterizer renderer util
 
 MAINTAINERCLEANFILES = \
 Makefile.in
@@ -16,16 +16,18 @@ enesim_converter.c \
 enesim_drawer.c \
 enesim_rasterizer.c \
 enesim_renderer.c \
-enesim_surface.c
+enesim_surface.c \
+enesim_transformer.c
 
 libenesim_la_LIBADD = \
-surface/libenesim_surface.la \
 util/libenesim_util.la \
+renderer/libenesim_renderer.la \
+drawer/libenesim_drawer.la \
 @ENESIM_LIBS@
 
-
 libenesim_la_DEPENDENCIES = \
-surface/libenesim_surface.la \
-util/libenesim_util.la
+util/libenesim_util.la \
+drawer/libenesim_drawer.la \
+renderer/libenesim_renderer.la
 
 libenesim_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

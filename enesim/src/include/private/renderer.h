@@ -1,5 +1,5 @@
-#ifndef _RENDERER_H
-#define _RENDERER_H
+#ifndef RENDERER_H_
+#define RENDERER_H_
 
 /**
  *
