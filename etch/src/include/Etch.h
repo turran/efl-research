@@ -53,6 +53,7 @@ typedef enum
 	ETCH_POSITION_Y,
 	ETCH_SIZE_H,
 	ETCH_SIZE_W,
+	ETCH_COLOR,
 	/* user defined properties will go from 0x30 to end */
 	ETCH_USER 	= 0x30,
 } Etch_Property_Type;
@@ -74,6 +75,7 @@ typedef enum
 {
 	ETCH_POSITION_X_UINT32 = (ETCH_POSITION_X << 16) | (ETCH_UINT32),
 	ETCH_POSITION_Y_UINT32 = (ETCH_POSITION_Y << 16) | (ETCH_UINT32),
+	ETCH_COLOR_ARGB = (ETCH_COLOR << 16) | (ETCH_ARGB),
 } Etch_Property;
 
 /** 

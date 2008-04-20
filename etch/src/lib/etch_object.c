@@ -179,11 +179,19 @@ ok:
  */
 EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a)
 {
+	int i;
+	
 	/* check that the data type of the property is the same */
 	if (ETCH_PROPERTY_DATATYPE_GET(prop) != a->dtype)
 		return;
 	/* check if there's already an animation for this property
 	 * if so replace it
 	 */
-	eo->animations[ETCH_PROPERTY_TYPE_GET(prop)] = a;
+	for (i = 0; i < eo->nprops; i++)
+	{
+		if (ETCH_PROPERTY_TYPE_GET(eo->oclass->props[i].type) == ETCH_PROPERTY_TYPE_GET(prop))
+			break;
+	}
+	printf("%d %d\n", i, ETCH_PROPERTY_TYPE_GET(eo->oclass->props[i].type));
+	eo->animations[i] = a;
 }

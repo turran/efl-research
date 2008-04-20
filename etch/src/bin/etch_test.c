@@ -98,7 +98,7 @@ void object_animation_setup(Etch_Object *eo)
 	etch_animation_keyframe_value_set(ek, ETCH_ANIMATION_LINEAR, 25);
 	etch_animation_keyframe_time_set(ek, 1, 2530);
 	/* append the animation to the object */
-	etch_object_animation_set(eo, ETCH_POSITION_X, ea);
+	etch_object_animation_set(eo, ETCH_POSITION_X_UINT32, ea);
 }
 
 int main(void)

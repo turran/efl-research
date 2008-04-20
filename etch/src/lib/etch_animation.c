@@ -17,45 +17,80 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _linear_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
+static void _linear_argb(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
 {
-	double r;
+	unsigned int range;
+	unsigned int a, b;
 	
+	a = da->argb;
+	b = da->argb;
 	/* handle specific case where a and b are equal (constant) */
-	if (*a == *b)
-		*(unsigned int *)res = *a;
-	r = ((1 -m) * *a) + (m * *b);
-	*(unsigned int *)res = lrint(r);
+#if 0
+	if (a == b)
+		*res = a;
+	range = lrint(255 * m) + 1;
+	*res = ( (((((((a) >> 8) & 0xff00ff) - (((b) >> 8) & 0xff00ff)) * (range))
+	   + ((a) & 0xff00ff00)) & 0xff00ff00) +
+	   (((((((a) & 0xff00ff) - ((b) & 0xff00ff)) * (range)) >> 8)
+	   + ((a) & 0xff00ff)) & 0xff00ff) );
+	printf("res = %x %x %x\n", *res, a, b);
+#endif
 }
 
-static void _cosin_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
+static void _linear_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
+{
+	double r;
+	unsigned int a, b;
+	
+	a = da->u32;
+	b = da->u32;
+	
+	printf("pointer = %p\n", da);
+	/* handle specific case where a and b are equal (constant) */
+	if (a == b)
+		*res = a;
+	r = ((1 - m) * a) + (m * b);
+	*res = lrint(r);
+	printf("int32 = %u %u %u\n", *res, a, b);
+}
+
+static void _cosin_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
 {
 	double m2;
+	unsigned int a, b;
+		
+	a = da->u32;
+	b = da->u32;
 	
 	m2 = (1 - cos(m * M_PI))/2;
 	
-	*(unsigned int *)res = lrint((double)(*a * (1 - m2) + *b * m2));
+	*res = lrint((double)(a * (1 - m2) + b * m2));
 }
 
-static void _bquad_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
+static void _bquad_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
 {
 	Etch_Animation_Quadratic *q = data;
+	unsigned int a, b;
+		
+	a = da->u32;
+	b = da->u32;
 	
-	*(unsigned int *)res =  (1 - m) * (1 - m) * *a + 2 * m * (1 - m) * (q->cp.u32) + m * m * *b;
+	*res =  (1 - m) * (1 - m) * a + 2 * m * (1 - m) * (q->cp.u32) + m * m * b;
 }
 
-static void _bcubic_uint32(void *data, double m, unsigned int *a, unsigned int *b, void *res)
+static void _bcubic_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
 {
 	/* 
 	 */
 }
 /* prototype of the function table */
-typedef void (*Etch_Interpolator)(void *data, double m, void *a, void *b, void *res);
+typedef void (*Etch_Interpolator)(void *data, double m, Etch_Data *a, Etch_Data *b, void *res);
 
 Etch_Interpolator _interpolators[ETCH_ANIMATION_TYPES][ETCH_DATATYPES] = {
 		[ETCH_ANIMATION_LINEAR][ETCH_UINT32] = (Etch_Interpolator)_linear_uint32,
 		[ETCH_ANIMATION_COSIN][ETCH_UINT32] = (Etch_Interpolator)_cosin_uint32,
 		[ETCH_ANIMATION_QUADRATIC][ETCH_UINT32] = (Etch_Interpolator)_bquad_uint32,
+		[ETCH_ANIMATION_LINEAR][ETCH_ARGB] = (Etch_Interpolator)_linear_argb,
 };
 /*============================================================================*
  *                                 Global                                     * 
@@ -99,6 +134,7 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 			}
 			/* interpolate the new value */
 			ifnc = _interpolators[start->type][a->dtype];
+			//printf("%g,%u %g,%u\n", start->time, start->value.u32, end->time, end->value.u32);
 			ifnc(&start->data, m, &start->value, &end->value, pdata);
 		}
 		l = l->next;
@@ -238,7 +274,11 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...)
 			switch (m->animation->dtype)
 			{	
 				case ETCH_UINT32:
+					printf("pointer = %p\n", &m->value);
 					m->value.u32 = va_arg(va, unsigned int);
+					break;
+				case ETCH_ARGB:
+					m->value.argb = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
