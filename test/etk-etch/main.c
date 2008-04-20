@@ -17,42 +17,40 @@ int timer_cb(void *data)
 	return 1;
 }
 
-void _position_x_uint32(void *odata, void *pdata)
-{
-	int x, y;
-
-	x = *(unsigned int *)pdata;
-	printf("called with x %d\n", x);
-	etk_canvas_child_position_get(ETK_CANVAS(canvas), etk_evas_object, NULL, &x);
-	etk_canvas_move(ETK_CANVAS(canvas), etk_evas_object, x, y);
-}
-
 void _position_y_uint32(void *odata, void *pdata)
 {
 	int x, y;
 	float val;
-#if 0
-	int x, y;
-
-	y = *(unsigned int *)pdata;
-	printf("called with y %d\n", y);
-	evas_object_geometry_get(evas_object, &x, NULL, NULL, NULL);
-	evas_object_move(evas_object, x, y);
-#endif
+	
 	val = *(unsigned int *)pdata / 10000.0;
 	x = 200 + 200 * cos(val);
 	y = 200 + 200 * sin(val);
 	etk_canvas_move(ETK_CANVAS(canvas), etk_evas_object, x, y);
+	printf("called position %u!!!\n", val);
+}
+
+void _color(void *odata, void *pdata)
+{
+	unsigned int color = *(unsigned int *)pdata;
+	unsigned char a, r, g, b;
+
+	a = (color >> 24) & 0xff;
+	r = (color >> 16) & 0xff;
+	g = (color >> 8) & 0xff;
+	b = color & 0xff;
+
+	printf("called!!! 0x%x\n", color);
+	evas_object_color_set(evas_object, a, r, g, b);
 }
 
 Etch_Object_Property oproperties[] = {
 	{
-		.type = ETCH_POSITION_X_UINT32,
-		.set = &_position_x_uint32, 
-	},
-	{
 		.type = ETCH_POSITION_Y_UINT32,
 		.set = &_position_y_uint32,
+	},
+	{
+		.type = ETCH_COLOR_ARGB,
+		.set = &_color,
 	},
 };
 
@@ -71,68 +69,7 @@ void etch_setup(void)
 	ecore_timer_add(1.0/30.0, timer_cb, NULL);
 	
 	etch_object = etch_object_add(etch, &oclass, "object1", NULL);
-#if 0
-	/* x coordinate */
-	ea = etch_animation_new(ETCH_UINT32);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 200, 200);
-	etch_animation_keyframe_time_set(ek, 0, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 300, 300);
-	etch_animation_keyframe_time_set(ek, 5, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 200, 200);
-	etch_animation_keyframe_time_set(ek, 10, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 100, 100);
-	etch_animation_keyframe_time_set(ek, 15, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 200, 200);
-	etch_animation_keyframe_time_set(ek, 20, 0);
-	/* append the animation to the object */
-	etch_object_animation_set(etch_object, ETCH_POSITION_X_UINT32, ea);
-	
-	/* y coordinate */
-	ea = etch_animation_new(ETCH_UINT32);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 200, 200);
-	etch_animation_keyframe_time_set(ek, 0, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 100, 100);
-	etch_animation_keyframe_time_set(ek, 5, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 0, 0);
-	etch_animation_keyframe_time_set(ek, 10, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 100, 100);
-	etch_animation_keyframe_time_set(ek, 15, 0);
-	
-	ek = etch_animation_keyframe_add(ea);
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_QUADRATIC);
-	etch_animation_keyframe_value_set(ek, 200, 200);
-	etch_animation_keyframe_time_set(ek, 20, 0);
-		
-	/* append the animation to the object */
-	etch_object_animation_set(etch_object, ETCH_POSITION_Y_UINT32, ea);
-#endif
+	/* position */
 	ea = etch_animation_new(ETCH_UINT32);
 
 	ek = etch_animation_keyframe_add(ea);
@@ -145,6 +82,20 @@ void etch_setup(void)
 	etch_animation_keyframe_value_set(ek, 31415);
 	etch_animation_keyframe_time_set(ek, 20000, 0);
 	etch_object_animation_set(etch_object, ETCH_POSITION_Y_UINT32, ea);
+
+	/* color */
+	ea = etch_animation_new(ETCH_ARGB);
+
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
+	etch_animation_keyframe_value_set(ek, 0xffffffff);
+	etch_animation_keyframe_time_set(ek, 0, 0);
+	
+	ek = etch_animation_keyframe_add(ea);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
+	etch_animation_keyframe_value_set(ek, 0xff000000);
+	etch_animation_keyframe_time_set(ek, 100, 0);
+	//etch_object_animation_set(etch_object, ETCH_COLOR_ARGB, ea);
 }
 
 int main(int argc, char **argv)
