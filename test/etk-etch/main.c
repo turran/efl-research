@@ -23,8 +23,8 @@ void _position_x_uint32(void *odata, void *pdata)
 
 	x = *(unsigned int *)pdata;
 	printf("called with x %d\n", x);
-	evas_object_geometry_get(evas_object, NULL, &y, NULL, NULL);
-	evas_object_move(evas_object, x, y);
+	etk_canvas_child_position_get(ETK_CANVAS(canvas), etk_evas_object, NULL, &x);
+	etk_canvas_move(ETK_CANVAS(canvas), etk_evas_object, x, y);
 }
 
 void _position_y_uint32(void *odata, void *pdata)
@@ -42,7 +42,7 @@ void _position_y_uint32(void *odata, void *pdata)
 	val = *(unsigned int *)pdata / 10000.0;
 	x = 200 + 200 * cos(val);
 	y = 200 + 200 * sin(val);
-	evas_object_move(evas_object, x, y);
+	etk_canvas_move(ETK_CANVAS(canvas), etk_evas_object, x, y);
 }
 
 Etch_Object_Property oproperties[] = {
