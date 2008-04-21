@@ -39,7 +39,7 @@ static void _animation_debug(Etch_Animation *a)
 {
 	Eina_Inlist *l;
 
-	printf("Animation that interpolates %d data types, with the following keyframes:\n", a->dtype);
+	printf("Animation that interpolates data of type %d, with the following keyframes:\n", a->dtype);
 	l = (Eina_Inlist *)a->keys;
 	while (l)
 	{
@@ -170,12 +170,6 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 			}
 			/* interpolate the new value */
 			ifnc = _interpolators[start->type][a->dtype];
-#if 0
-			printf("Start!!!\n");
-			_keyframe_debug(start);
-			printf("End!!!\n");
-			_keyframe_debug(end);
-#endif
 			ifnc(&start->data, m, &(start->value), &(end->value), pdata);
 		}
 		l = l->next;
@@ -265,6 +259,7 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *k, unsigned 
 	Eina_Inlist *l;
 	
 	assert(k);
+	
 	t.tv_sec = secs;
 	t.tv_usec = usecs;
 	new_time = etch_timeval_to_double(&t);
@@ -272,7 +267,6 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *k, unsigned 
 	if (new_time == k->time)
 		return;
 	a = k->animation;
-	
 	/* find the greater element with the value less than the one to set */
 	l = (Eina_Inlist *)(a->keys);
 	while (l)
@@ -281,8 +275,6 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *k, unsigned 
 		
 		if (k2->time >= new_time)
 			break;
-		if (!l->next)
-			break;
 		l = l->next;
 	}
 	/* if the element to remove is the same as the element to change, do
@@ -290,7 +282,16 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *k, unsigned 
 	if ((Etch_Animation_Keyframe*)l == k)
 		goto update;
 	a->keys = eina_inlist_remove(a->keys, k);
-	a->keys = eina_inlist_append_relative(a->keys, k, l);
+	/* k is the greatest */
+	if (!l)
+	{
+		a->keys = eina_inlist_append(a->keys, k);
+	}
+	/* k is between two keyframes */
+	else
+	{	
+		a->keys = eina_inlist_prepend_relative(a->keys, k, l);	
+	}
 	/* update the start and end values */
 update:
 	k->time = new_time;
