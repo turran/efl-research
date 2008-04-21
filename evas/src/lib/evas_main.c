@@ -46,8 +46,9 @@ evas_new(void)
 
 	e = calloc(1, sizeof(Evas));
 	if (!e) return NULL;
-
+#ifdef DEBUG
 	e->magic = MAGIC_EVAS;
+#endif
 #if 0
 	e->viewport.w = 1;
 	e->viewport.h = 1;

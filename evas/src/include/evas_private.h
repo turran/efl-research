@@ -8,6 +8,9 @@
 #ifdef DEBUG
 #define MAGIC_EVAS          0x70777770
 #define MAGIC_OBJ           0x71777770
+#define MAGIC_CHECK()
+#else
+#define MAGIC_CHECK()
 #endif
 
 struct _Evas

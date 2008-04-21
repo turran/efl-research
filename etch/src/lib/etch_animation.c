@@ -19,13 +19,17 @@
  *============================================================================*/
 static void _keyframe_debug(Etch_Animation_Keyframe *k)
 {
-	printf("Keyframe at %g\n", k->time);
+	printf("Keyframe at %g of type %d\n", k->time, k->type);
 	switch (k->animation->dtype)
 	{
 		case ETCH_UINT32:
 		printf("value = %u\n", k->value.u32);
 		break;
 
+		case ETCH_ARGB:
+		printf("value = 0x%8x\n", k->value.argb);
+		break;
+		
 		default:
 		break;
 	}
@@ -35,7 +39,7 @@ static void _animation_debug(Etch_Animation *a)
 {
 	Eina_Inlist *l;
 
-	printf("Animation debug start\n");
+	printf("Animation that interpolates %d data types, with the following keyframes:\n", a->dtype);
 	l = (Eina_Inlist *)a->keys;
 	while (l)
 	{
@@ -44,27 +48,28 @@ static void _animation_debug(Etch_Animation *a)
 		_keyframe_debug(k);
 		l = l->next;
 	}
-	printf("Animation debug end\n");
 }
 
 static void _linear_argb(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
 {
 	unsigned int range;
-	unsigned int a, b;
+	unsigned int a, b, ag, rb;
 	
 	a = da->argb;
-	b = da->argb;
+	b = db->argb;
+	
 	/* handle specific case where a and b are equal (constant) */
-#if 0
 	if (a == b)
+	{
 		*res = a;
-	range = lrint(255 * m) + 1;
-	*res = ( (((((((a) >> 8) & 0xff00ff) - (((b) >> 8) & 0xff00ff)) * (range))
-	   + ((a) & 0xff00ff00)) & 0xff00ff00) +
-	   (((((((a) & 0xff00ff) - ((b) & 0xff00ff)) * (range)) >> 8)
-	   + ((a) & 0xff00ff)) & 0xff00ff) );
-	printf("res = %x %x %x\n", *res, a, b);
-#endif
+		return;
+	}
+	/* b - a*m + a */
+	range = rint(256 * m);
+	ag = ((((((b >> 8) & 0xff00ff) - ((a >> 8) & 0xff00ff)) * range) + (a & 0xff00ff00)) & 0xff00ff00);  
+	rb = ((((((b & 0xff00ff) - (a & 0xff00ff)) * (range)) >> 8) + (a & 0xff00ff)) & 0xff00ff);
+	
+	*res = ag + rb;
 }
 
 static void _linear_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
@@ -73,10 +78,8 @@ static void _linear_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, u
 	unsigned int a, b;
 	
 	a = da->u32;
-	b = da->u32;
+	b = db->u32;
 	
-	printf("pointer = %p %p %p\n", res, &da->u32, db);
-	printf("int32 = %u %u\n", *res, a, b);
 	/* handle specific case where a and b are equal (constant) */
 	if (a == b)
 	{
@@ -84,7 +87,6 @@ static void _linear_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, u
 		return;
 	}
 	r = ((1 - m) * a) + (m * b);
-	printf("r = %g\n", r);
 	*res = ceil(r);
 }
 
@@ -94,7 +96,7 @@ static void _cosin_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, un
 	unsigned int a, b;
 		
 	a = da->u32;
-	b = da->u32;
+	b = db->u32;
 	
 	m2 = (1 - cos(m * M_PI))/2;
 	
@@ -107,7 +109,7 @@ static void _bquad_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, un
 	unsigned int a, b;
 		
 	a = da->u32;
-	b = da->u32;
+	b = db->u32;
 	
 	*res =  (1 - m) * (1 - m) * a + 2 * m * (1 - m) * (q->cp.u32) + m * m * b;
 }
@@ -146,7 +148,6 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 	/* TODO instead of checking everytime every keyframe we can translate the
 	 * keyframes based on the frame, when a keyframe has passed move it before
 	 * like a circular list */
-	_animation_debug(a);
 	l = (Eina_Inlist *)a->keys;
 	while (l)
 	{
@@ -169,9 +170,13 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 			}
 			/* interpolate the new value */
 			ifnc = _interpolators[start->type][a->dtype];
+#if 0
+			printf("Start!!!\n");
 			_keyframe_debug(start);
+			printf("End!!!\n");
 			_keyframe_debug(end);
-			ifnc(&start->data, m, &start->value, &end->value, pdata);
+#endif
+			ifnc(&start->data, m, &(start->value), &(end->value), pdata);
 		}
 		l = l->next;
 	}
@@ -326,6 +331,7 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
 				default:
 					break;
 			}
+			break;
 		}
 		case ETCH_ANIMATION_QUADRATIC:
 		{
@@ -357,5 +363,5 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
 		default:
 			break;
 	}
-	va_end(va);
+	va_end(va);		
 }

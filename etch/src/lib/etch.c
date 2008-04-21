@@ -34,7 +34,6 @@ static void _process(Etch *e)
 			if (!(o->animations[i]))
 				continue;
 			/* check that the animation start and end is between our time */
-			printf("animation = %d\n", i);
 			a = o->animations[i];
 			if ((e->curr >= a->start) && (e->curr <= a->end))
 			{
