@@ -75,6 +75,7 @@ EAPI Etch * etch_new(void)
  */
 EAPI void etch_free(Etch *e)
 {
+	assert(e);
 	/* remove every object */
 	free(e);
 }
@@ -84,6 +85,7 @@ EAPI void etch_free(Etch *e)
  */
 EAPI void etch_timer_fps_set(Etch *e, unsigned int fps)
 {
+	assert(e);
 	e->fps = fps;
 }
 /**
@@ -92,6 +94,7 @@ EAPI void etch_timer_fps_set(Etch *e, unsigned int fps)
  */
 EAPI unsigned int etch_timer_fps_get(Etch *e)
 {
+	assert(e);
 	return e->fps;
 }
 /**
@@ -100,6 +103,7 @@ EAPI unsigned int etch_timer_fps_get(Etch *e)
  */
 EAPI void etch_timer_tick(Etch *e)
 {
+	assert(e);
 	/* TODO check for overflow */
 	e->frame++;
 	e->curr += (double)1/e->fps;

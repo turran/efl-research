@@ -189,11 +189,9 @@ EAPI void etch_object_animation_set(Etch_Object *eo, Etch_Property_Type ptype, E
 		int prop;
 		
 		prop = eo->oclass->props[i].type;
-		if (ETCH_PROPERTY_TYPE_GET(prop) == ptype) && )
+		if ((ETCH_PROPERTY_TYPE_GET(prop) == ptype) &&
+		(ETCH_PROPERTY_DATATYPE_GET(prop) == a->dtype))
 			break;
-		/* check that the data type of the property is the same */
-		if (ETCH_PROPERTY_DATATYPE_GET(ptype) != a->dtype)
-				return;
 	}
 	printf("%d %d\n", i, ETCH_PROPERTY_TYPE_GET(eo->oclass->props[i].type));
 	eo->animations[i] = a;

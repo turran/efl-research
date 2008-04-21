@@ -17,6 +17,36 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+static void _keyframe_debug(Etch_Animation_Keyframe *k)
+{
+	printf("Keyframe at %g\n", k->time);
+	switch (k->animation->dtype)
+	{
+		case ETCH_UINT32:
+		printf("value = %u\n", k->value.u32);
+		break;
+
+		default:
+		break;
+	}
+}
+
+static void _animation_debug(Etch_Animation *a)
+{
+	Eina_Inlist *l;
+
+	printf("Animation debug start\n");
+	l = (Eina_Inlist *)a->keys;
+	while (l)
+	{
+		Etch_Animation_Keyframe *k = (Etch_Animation_Keyframe *)l;
+	
+		_keyframe_debug(k);
+		l = l->next;
+	}
+	printf("Animation debug end\n");
+}
+
 static void _linear_argb(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
 {
 	unsigned int range;
@@ -45,13 +75,17 @@ static void _linear_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, u
 	a = da->u32;
 	b = da->u32;
 	
-	printf("pointer = %p\n", da);
+	printf("pointer = %p %p %p\n", res, &da->u32, db);
+	printf("int32 = %u %u\n", *res, a, b);
 	/* handle specific case where a and b are equal (constant) */
 	if (a == b)
+	{
 		*res = a;
+		return;
+	}
 	r = ((1 - m) * a) + (m * b);
-	*res = lrint(r);
-	printf("int32 = %u %u %u\n", *res, a, b);
+	printf("r = %g\n", r);
+	*res = ceil(r);
 }
 
 static void _cosin_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
@@ -64,7 +98,7 @@ static void _cosin_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, un
 	
 	m2 = (1 - cos(m * M_PI))/2;
 	
-	*res = lrint((double)(a * (1 - m2) + b * m2));
+	*res = ceil((double)(a * (1 - m2) + b * m2));
 }
 
 static void _bquad_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
@@ -112,6 +146,7 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 	/* TODO instead of checking everytime every keyframe we can translate the
 	 * keyframes based on the frame, when a keyframe has passed move it before
 	 * like a circular list */
+	_animation_debug(a);
 	l = (Eina_Inlist *)a->keys;
 	while (l)
 	{
@@ -134,7 +169,8 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 			}
 			/* interpolate the new value */
 			ifnc = _interpolators[start->type][a->dtype];
-			//printf("%g,%u %g,%u\n", start->time, start->value.u32, end->time, end->value.u32);
+			_keyframe_debug(start);
+			_keyframe_debug(end);
 			ifnc(&start->data, m, &start->value, &end->value, pdata);
 		}
 		l = l->next;
@@ -165,6 +201,7 @@ EAPI Etch_Animation * etch_animation_new(Etch_Data_Type dtype)
  */
 EAPI void etch_animation_free(Etch_Animation *a)
 {
+	assert(a);
 	/* TODO delete the list of keyframes */
 	free(a);
 }
@@ -175,6 +212,7 @@ EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a)
 {
 	Etch_Animation_Keyframe *k;
 	
+	assert(a);
 	k = calloc(1, sizeof(Etch_Animation_Keyframe));
 	k->animation = a;
 
@@ -188,6 +226,8 @@ EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a)
  */
 EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *k)
 {
+	assert(a);
+	assert(k);
 	/* remove the keyframe from the list */
 	a->keys = eina_inlist_remove(a->keys, k);
 	/* TODO recalculate the start and end if necessary */
@@ -196,42 +236,45 @@ EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe
 /**
  * Set the type of animation keyframe
  */
-EAPI void etch_animation_keyframe_type_set(Etch_Animation_Keyframe *m, Etch_Animation_Type t)
+EAPI void etch_animation_keyframe_type_set(Etch_Animation_Keyframe *k, Etch_Animation_Type t)
 {
-	m->type = t;
+	assert(k);
+	k->type = t;
 }
 /**
  * Get the type of animation keyframe
  */
-EAPI Etch_Animation_Type etch_animation_keyframe_type_get(Etch_Animation_Keyframe *m)
+EAPI Etch_Animation_Type etch_animation_keyframe_type_get(Etch_Animation_Keyframe *k)
 {
-	return m->type;
+	assert(k);
+	return k->type;
 }
 /**
  * Set the time for a mark
  */
-EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned long secs, unsigned long usecs)
+EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *k, unsigned long secs, unsigned long usecs)
 {
 	Etch_Animation *a;
 	struct timeval t;
 	double new_time;
 	Eina_Inlist *l;
 	
+	assert(k);
 	t.tv_sec = secs;
 	t.tv_usec = usecs;
 	new_time = etch_timeval_to_double(&t);
 	/* if the time is the same, do nothing */
-	if (new_time == m->time)
+	if (new_time == k->time)
 		return;
-	a = m->animation;
+	a = k->animation;
 	
 	/* find the greater element with the value less than the one to set */
 	l = (Eina_Inlist *)(a->keys);
 	while (l)
 	{
-		Etch_Animation_Keyframe *k = (Etch_Animation_Keyframe *)l;
+		Etch_Animation_Keyframe *k2 = (Etch_Animation_Keyframe *)l;
 		
-		if (k->time >= new_time)
+		if (k2->time >= new_time)
 			break;
 		if (!l->next)
 			break;
@@ -239,46 +282,46 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned 
 	}
 	/* if the element to remove is the same as the element to change, do
 	 * nothing */
-	if (l == m)
+	if ((Etch_Animation_Keyframe*)l == k)
 		goto update;
-	a->keys = eina_inlist_remove(a->keys, m);
-	a->keys = eina_inlist_append_relative(a->keys, m, l);
+	a->keys = eina_inlist_remove(a->keys, k);
+	a->keys = eina_inlist_append_relative(a->keys, k, l);
 	/* update the start and end values */
 update:
-	m->time = new_time;
+	k->time = new_time;
 	a->start = a->keys->time;
 	a->end = ((Etch_Animation_Keyframe *)((Eina_Inlist *)(a->keys))->last)->time;
 }
 /**
  * Get the value for a mark
  */ 
-EAPI void etch_animation_keyframe_value_get(Etch_Animation_Keyframe *m, ...)
+EAPI void etch_animation_keyframe_value_get(Etch_Animation_Keyframe *k, ...)
 {
-	
+	assert(k);
 	/* TODO */
 }
 /**
  * Set the value for a mark
  */
-EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...)
+EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
 {
 	va_list va;
 
-	va_start(va, m);
+	assert(k);
+	va_start(va, k);
 	/* now get the type specific data, for example the bezier forms need 
 	 * control points, etc */
-	switch (m->type)
+	switch (k->type)
 	{	
 		case ETCH_ANIMATION_LINEAR:
 		{
-			switch (m->animation->dtype)
+			switch (k->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					printf("pointer = %p\n", &m->value);
-					m->value.u32 = va_arg(va, unsigned int);
+					k->value.u32 = va_arg(va, unsigned int);
 					break;
 				case ETCH_ARGB:
-					m->value.argb = va_arg(va, unsigned int);
+					k->value.argb = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
@@ -286,11 +329,11 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...)
 		}
 		case ETCH_ANIMATION_QUADRATIC:
 		{
-			switch (m->animation->dtype)
+			switch (k->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					m->value.u32 = va_arg(va, unsigned int);
-					m->data.q.cp.u32 = va_arg(va, unsigned int);
+					k->value.u32 = va_arg(va, unsigned int);
+					k->data.q.cp.u32 = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
@@ -299,12 +342,12 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...)
 		}
 		case ETCH_ANIMATION_CUBIC:
 		{
-			switch (m->animation->dtype)
+			switch (k->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					m->value.u32 = va_arg(va, unsigned int);
-					m->data.c.cp1.u32 = va_arg(va, unsigned int);
-					m->data.c.cp2.u32 = va_arg(va, unsigned int);
+					k->value.u32 = va_arg(va, unsigned int);
+					k->data.c.cp1.u32 = va_arg(va, unsigned int);
+					k->data.c.cp2.u32 = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
