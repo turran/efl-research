@@ -147,7 +147,7 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
  * Create a new animation
  * @param dtype Data type the animation will animate
  */
-EAPI Etch_Animation * etch_animation_new(Etch_Property_Data dtype)
+EAPI Etch_Animation * etch_animation_new(Etch_Data_Type dtype)
 {
 	Etch_Animation *a;
 	

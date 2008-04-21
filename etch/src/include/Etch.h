@@ -43,7 +43,7 @@ typedef enum
 	ETCH_DOUBLE, /**< Double precision float */
 	ETCH_ARGB, /**< Color (Alpha, Red, Green, Blue) of 32 bits */
 	ETCH_DATATYPES,
-} Etch_Property_Data;
+} Etch_Data_Type;
 /**
  * 
  */
@@ -95,7 +95,7 @@ typedef enum
 	ETCH_ANIMATION_TYPES
 } Etch_Animation_Type;
 
-EAPI Etch_Animation * etch_animation_new(Etch_Property_Data dtype);
+EAPI Etch_Animation * etch_animation_new(Etch_Data_Type dtype);
 EAPI void etch_animation_free(Etch_Animation *a);
 EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a);
 EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *m);
@@ -139,7 +139,7 @@ EAPI void etch_object_delete(Etch_Object *o);
  * for internal usage we can make it return the offset directly */
 EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data);
 EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data);
-EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a);
+EAPI void etch_object_animation_set(Etch_Object *eo, Etch_Property_Type prop, Etch_Animation *a);
 /** 
  * @}
  * @}

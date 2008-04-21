@@ -173,24 +173,27 @@ ok:
 /**
  * To be documented
  * FIXME: To be fixed
- * @param eo   Object to set the animation
- * @param prop Property that will use this animation
- * @param a    Animation to assign
+ * @param eo    Object to set the animation
+ * @param ptype Property type that will use this animation
+ * @param a     Animation to assign
  */
-EAPI void etch_object_animation_set(Etch_Object *eo, int prop, Etch_Animation *a)
+EAPI void etch_object_animation_set(Etch_Object *eo, Etch_Property_Type ptype, Etch_Animation *a)
 {
 	int i;
 	
-	/* check that the data type of the property is the same */
-	if (ETCH_PROPERTY_DATATYPE_GET(prop) != a->dtype)
-		return;
 	/* check if there's already an animation for this property
 	 * if so replace it
 	 */
 	for (i = 0; i < eo->nprops; i++)
 	{
-		if (ETCH_PROPERTY_TYPE_GET(eo->oclass->props[i].type) == ETCH_PROPERTY_TYPE_GET(prop))
+		int prop;
+		
+		prop = eo->oclass->props[i].type;
+		if (ETCH_PROPERTY_TYPE_GET(prop) == ptype) && )
 			break;
+		/* check that the data type of the property is the same */
+		if (ETCH_PROPERTY_DATATYPE_GET(ptype) != a->dtype)
+				return;
 	}
 	printf("%d %d\n", i, ETCH_PROPERTY_TYPE_GET(eo->oclass->props[i].type));
 	eo->animations[i] = a;
