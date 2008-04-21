@@ -3,13 +3,11 @@
 
 Etk_Widget *window;
 Etk_Widget *canvas;
-Etk_Widget *etk_evas_object;
-Evas_Object *evas_object;
+Etk_Widget *widget;
 Evas *evas;
 
 Etch *etch;
 Etch_Object *etch_object;
-
 
 int timer_cb(void *data)
 {
@@ -25,7 +23,7 @@ void _position_y_uint32(void *odata, void *pdata)
 	val = *(unsigned int *)pdata / 10000.0;
 	x = rint(200 + 200 * cos(val));
 	y = rint(200 + 200 * sin(val));
-	etk_canvas_move(ETK_CANVAS(canvas), etk_evas_object, x, y);
+	etk_canvas_move(ETK_CANVAS(canvas), widget, x, y);
 }
 
 void _color(void *odata, void *pdata)
@@ -39,7 +37,7 @@ void _color(void *odata, void *pdata)
 	b = color & 0xff;
 
 	printf("called!!! 0x%x (%02x %02x %02x %02x)\n", color, a, r, g, b);
-	evas_object_color_set(evas_object, r, g, b, a);
+	etk_widget_color_set(widget, r, g, b, a);
 }
 
 Etch_Object_Property oproperties[] = {
@@ -115,14 +113,13 @@ int main(int argc, char **argv)
 	evas_object_resize(evas_object, 100, 100);
 	evas_object_move(evas_object, 100, 100);
 	evas_object_show(evas_object);
-	*/
 	evas_object = evas_object_rectangle_add(evas);
 	evas_object_color_set(evas_object, 255, 128, 128, 255);
 	evas_object_resize(evas_object, 64, 64);
-	
+	*/	
 
-	etk_evas_object = etk_evas_object_new_from_object(evas_object);
-	etk_canvas_put(ETK_CANVAS(canvas), etk_evas_object, 10, 10);
+	widget = etk_button_new_with_label("I'm moving!!");
+	etk_canvas_put(ETK_CANVAS(canvas), widget, 10, 10);
 
 	etk_widget_show_all(window);
 
