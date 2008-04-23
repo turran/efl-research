@@ -1,4 +1,4 @@
-PROJECT_NAME           = Eina
+PROJECT_NAME           = Emage
 PROJECT_NUMBER         =
 OUTPUT_DIRECTORY       = doc
 INPUT                  = ./src/lib

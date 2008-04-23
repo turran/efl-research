@@ -12,14 +12,24 @@ static void argb8888_pre_pt_color_blend(Enesim_Surface_Data *d, Enesim_Surface_D
 static void argb8888_pre_pt_pixel_blend_argb8888(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
 	unsigned int data0;
+	unsigned int argb;
+	argb8888_to_argb(&argb, *s->argb8888.plane0);
+	argb8888_pre_from_argb(argb, &data0);
+	argb8888_pre_blend(d->argb8888_pre.plane0, data0);
 }
 static void argb8888_pre_pt_pixel_blend_argb8888_pre(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
 	unsigned int data0;
+	unsigned int argb;
+	argb8888_pre_blend(d->argb8888_pre.plane0, data0);
 }
 static void argb8888_pre_pt_pixel_blend_rgb565(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
 	unsigned int data0;
+	unsigned int argb;
+	rgb565_to_argb(&argb, *s->rgb565.plane0, *s->rgb565.plane1);
+	argb8888_pre_from_argb(argb, &data0);
+	argb8888_pre_blend(d->argb8888_pre.plane0, data0);
 }
 static void argb8888_pre_sp_color_blend(Enesim_Surface_Data *d, unsigned int len, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
@@ -98,14 +108,24 @@ static void argb8888_pre_pt_color_fill(Enesim_Surface_Data *d, Enesim_Surface_Da
 static void argb8888_pre_pt_pixel_fill_argb8888(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
 	unsigned int data0;
+	unsigned int argb;
+	argb8888_to_argb(&argb, *s->argb8888.plane0);
+	argb8888_pre_from_argb(argb, &data0);
+	argb8888_pre_fill(d->argb8888_pre.plane0, data0);
 }
 static void argb8888_pre_pt_pixel_fill_argb8888_pre(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
 	unsigned int data0;
+	unsigned int argb;
+	argb8888_pre_fill(d->argb8888_pre.plane0, data0);
 }
 static void argb8888_pre_pt_pixel_fill_rgb565(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
 	unsigned int data0;
+	unsigned int argb;
+	rgb565_to_argb(&argb, *s->rgb565.plane0, *s->rgb565.plane1);
+	argb8888_pre_from_argb(argb, &data0);
+	argb8888_pre_fill(d->argb8888_pre.plane0, data0);
 }
 static void argb8888_pre_sp_color_fill(Enesim_Surface_Data *d, unsigned int len, Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {

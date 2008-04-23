@@ -34,17 +34,10 @@
 
 typedef struct _Ekeko_Canvas Ekeko_Canvas;
 typedef struct _Ekeko_Object Ekeko_Object;
-typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
 
 /**
  * @{
  */
-
-struct _Ekeko_Rectangle
-{
-	Eina_Inlist list;
-	Enesim_Rectangle r;
-};
 
 enum
 {
@@ -55,7 +48,7 @@ enum
 
 typedef struct _Ekeko_Canvas_Class
 {
-	void (*flush)(void *data, Ekeko_Rectangle *r);
+	int (*flush)(void *data, Enesim_Rectangle *r);
 	/* what about the idle? */
 	/* canvas_changed -> if some object has changed, then the canvas has changed, we could notify upward that so we can call
 	 * the canvas_process

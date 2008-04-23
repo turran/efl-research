@@ -14,24 +14,18 @@ struct _Subcanvas
 	Canvas *canvas;
 };
 
-static void _flush(void *data, Ekeko_Rectangle *rects)
+static int _flush(void *data, Enesim_Rectangle *r)
 {
 	Subcanvas *s = data;
-	Eina_Inlist *l;
+	Enesim_Rectangle geometry;
+	Enesim_Rectangle rscaled;
 
-	for (l = (Eina_Inlist *)rects; l; l = l->next)
-	{
-		Ekeko_Rectangle *r;
-		Enesim_Rectangle geometry;
-		Enesim_Rectangle rscaled;
-
-		r = (Ekeko_Rectangle *)l;
-		/* transform this rectangle relative to the upper canvas */ 
-		ekeko_object_geometry_get(s->object->object, &geometry);
-		enesim_rectangle_rescale_out(&geometry, &r->r, &rscaled);
-		/* and mark those rectangles as a damage */
-		ekeko_canvas_damage_add(s->object->canvas->canvas, &rscaled);
-	}
+	/* transform this rectangle relative to the upper canvas */ 
+	ekeko_object_geometry_get(s->object->object, &geometry);
+	enesim_rectangle_rescale_out(&geometry, r, &rscaled);
+	/* and mark those rectangles as a damage */
+	ekeko_canvas_damage_add(s->object->canvas->canvas, &rscaled);
+	return 1;
 }
 
 static Ekeko_Canvas_Class _canvas_class = {

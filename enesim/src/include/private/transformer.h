@@ -12,32 +12,29 @@
 #define MATRIX_ZZ 8
 #define MATRIX_SIZE 9
 
-#define ENESIM_TRANSFORMATIONS 3
-
 typedef enum
 {
-	ENESIM_TRANSFORMATION_IDENTITY = (1 << 0),
-	ENESIM_TRANSFORMATION_AFFINE = (1 << 1),
-	ENESIM_TRANSFORMATION_PROJECTIVE = (1 << 2),
-} Enesim_Transformer_Type;
+	ENESIM_TRANSFORMATION_IDENTITY,
+	ENESIM_TRANSFORMATION_AFFINE,
+	ENESIM_TRANSFORMATION_PROJECTIVE,
+	ENESIM_TRANSFORMATIONS 
+} Enesim_Transformation_Type;
 
 struct _Enesim_Transformation
 {
 	float matrix[MATRIX_SIZE];
-	Enesim_Transformer_Type type;
+	enesim_16p16_t matrix_fixed[MATRIX_SIZE];
+	Enesim_Transformation_Type type;
 	int quality; // TODO fix this
+	/* TODO also add the case were the src surface uses borders */
+	Enesim_Rop rop;
 };
-
-typedef struct _Enesim_Transformer
-{
-	
-} Enesim_Transformer;
 
 /* identity[quality][xscale][yscale]
  * affine[quality][xscale][yscale]
  * projective[quality][xscale][yscale]
  */
 
-//typedef void (*Enesim_Transformer_Func)()
+typedef void (*Enesim_Transformer_Func)(Enesim_Transformation *t, Enesim_Surface *ss, Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect);
 
 #endif /*TRANSFORMER_H_*/

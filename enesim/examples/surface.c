@@ -13,7 +13,13 @@ Enesim_Surface * surface_new(int w, int h, Enesim_Surface_Format fmt)
 		break;
 
 		case ENESIM_SURFACE_ARGB8888:
-		sdata.argb8888_pre.plane0 = calloc(1, sizeof(unsigned int) * w * h);
+		sdata.argb8888.plane0 = calloc(1, sizeof(unsigned int) * w * h);
+		s = enesim_surface_new(fmt, w, h, ENESIM_SURFACE_ALPHA, &sdata);
+		break;
+	
+		case ENESIM_SURFACE_RGB565:
+		sdata.rgb565.plane0 = calloc(1, sizeof(unsigned short int) * w * h);
+		sdata.rgb565.plane1 = calloc(1, sizeof(unsigned char) * w * h);
 		s = enesim_surface_new(fmt, w, h, ENESIM_SURFACE_ALPHA, &sdata);
 		break;
 		
@@ -36,6 +42,15 @@ void surface_free(Enesim_Surface *s)
 		case ENESIM_SURFACE_ARGB8888_PRE:
 		free(sdata.argb8888_pre.plane0);
 		break;
+	
+		case ENESIM_SURFACE_ARGB8888:
+		free(sdata.argb8888.plane0);
+		break;
+		
+		case ENESIM_SURFACE_RGB565:
+		free(sdata.rgb565.plane0);
+		free(sdata.rgb565.plane1);
+		break;
 		
 		default:
 		break;
@@ -57,6 +72,7 @@ void surface_blt(Enesim_Surface *s, SDL_Surface *sdl)
 	fmt = enesim_surface_format_get(s);
 	switch (fmt)
 	{
+		
 		case ENESIM_SURFACE_ARGB8888_PRE:
 		amask = 0xff000000;
 		rmask = 0x00ff0000;
@@ -64,7 +80,22 @@ void surface_blt(Enesim_Surface *s, SDL_Surface *sdl)
 		bmask = 0x000000ff;
 		pitch = 4 * w;
 		bpp = 32;
-		data = sdata.argb8888_pre.plane0;
+		data = malloc(sizeof(unsigned int) * w * h);
+		/* TODO we have to fix this with the converter? */
+		{
+			unsigned int argb;
+			int i;
+			unsigned int *ptr = data;
+			
+			for (i = 0; i < w * h; i++)
+			{
+				argb = enesim_surface_data_to_argb(&sdata, fmt);
+				enesim_surface_data_increment(&sdata, fmt, 1);
+				*ptr = argb;
+				ptr++;
+			}
+			
+		}
 		break;
 		
 		case ENESIM_SURFACE_ARGB8888:
@@ -77,10 +108,19 @@ void surface_blt(Enesim_Surface *s, SDL_Surface *sdl)
 		data = sdata.argb8888.plane0;
 		break;
 		
+		case ENESIM_SURFACE_RGB565:
+		amask = 0x00000000;
+		rmask = 0x0000f800;
+		gmask = 0x000007e0;
+		bmask = 0x0000001f;
+		pitch = 2 * w;
+		bpp = 16;
+		data = sdata.rgb565.plane0;
+		break;
+
 		default:
 		return;
 	}
-	/* TODO for now only argb8888_pre */
 	tmp = SDL_CreateRGBSurfaceFrom(data, w, h, bpp, pitch, rmask, gmask, bmask, amask);
 	SDL_BlitSurface(tmp, NULL, sdl, NULL);
 	SDL_FreeSurface(sdl);

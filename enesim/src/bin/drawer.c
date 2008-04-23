@@ -38,6 +38,7 @@ static void point_functions(Format *f, const char *rop)
 		else
 			fprintf(fout, "&data%d, ", i);
 	}
+	/* rop */
 	fprintf(fout, "\t%s_%s(", f->name, rop);
 	for (i = 0; i < f->num_planes; i++)
 	{
@@ -60,9 +61,50 @@ static void point_functions(Format *f, const char *rop)
 	i = 0;
 	while (sf)
 	{
+		int j;
+		
 		fprintf(fout, "static void %s_pt_pixel_%s_%s", f->name, rop, sf->name);
 		point_prototype_start(f);
-		/* TODO convert the src pixel to the dst pixel format */
+		fprintf(fout, "\tunsigned int argb;\n");
+		if (f != sf)
+		{
+			fprintf(fout, "\t%s_to_argb(&argb, ", sf->name);
+			for (j = 0; j < sf->num_planes; j++)
+			{
+				Plane *p = &sf->planes[j];
+					
+				if (j == sf->num_planes - 1)
+					fprintf(fout, "*s->%s.plane%d);\n", sf->name, j);
+				else
+					fprintf(fout, "*s->%s.plane%d, ", sf->name, j);
+			}
+			fprintf(fout, "\t%s_from_argb(argb, ", f->name);
+			for (j = 0; j < f->num_planes; j++)
+			{
+				Plane *p = &f->planes[j];
+								
+				if (j == f->num_planes - 1)
+					fprintf(fout, "&data%d);\n", j);
+				else
+					fprintf(fout, "&data%d, ", j);
+			}
+		}
+		fprintf(fout, "\t%s_%s(", f->name, rop);
+		for (j = 0; j < f->num_planes; j++)
+		{
+			Plane *p = &f->planes[j];
+				
+			fprintf(fout, "d->%s.plane%d, ", f->name, j);
+		}
+		for (j = 0; j < f->num_planes; j++)
+		{
+			Plane *p = &f->planes[j];
+				
+			if (j == f->num_planes - 1)
+				fprintf(fout, "data%d);\n", j);
+			else
+				fprintf(fout, "data%d, ", j);
+		}
 		/* TODO rop there */
 		point_prototype_end(f);
 		sf = formats[++i];

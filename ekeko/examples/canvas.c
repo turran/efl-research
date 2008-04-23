@@ -3,21 +3,16 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _flush(void *data, Ekeko_Rectangle *rects)
+static int _flush(void *data, Enesim_Rectangle *r)
 {
 	Canvas *c = data;
-	Eina_Inlist *l;
-
-	for (l = (Eina_Inlist *)rects; l; l = l->next)
-	{
-		Ekeko_Rectangle *r;
-		r = (Ekeko_Rectangle *)l;
-		//printf("RECT! %d %d %d %d\n", r->r.x, r->r.y, r->r.w, r->r.h);
-		// FIXME for now, update the rect like this, maybe call the
-		// UpdateRects directly? */
-		SDL_UpdateRect(c->surface, r->r.x, r->r.y, r->r.w, r->r.h);
-		//SDL_Flip(c->surface);
-	}
+	
+	//printf("RECT! %d %d %d %d\n", r->r.x, r->r.y, r->r.w, r->r.h);
+	// FIXME for now, update the rect like this, maybe call the
+	// UpdateRects directly? */
+	SDL_UpdateRect(c->surface, r->x, r->y, r->w, r->h);
+	//SDL_Flip(c->surface);
+	return 1;
 }
 
 static Ekeko_Canvas_Class _canvas_class = {

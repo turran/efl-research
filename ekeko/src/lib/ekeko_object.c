@@ -8,6 +8,7 @@ static void _object_change(Ekeko_Object *o)
 	if (o->changed == EINA_TRUE)
 		return;
 	o->changed = EINA_TRUE;
+	ekeko_canvas_change(o->canvas);
 }
 /*============================================================================*
  *                                 Global                                     * 
@@ -88,6 +89,9 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
 {
 	Ekeko_Object *o;
 
+	assert(o);
+	assert(oclass);
+	
 	o = calloc(1, sizeof(Ekeko_Object));
 	o->canvas = c;
 	
@@ -107,6 +111,7 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
  */
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 {
+	assert(o);
 	// FIXME check states
 	o->curr.geometry.x = x;
 	o->curr.geometry.y = y;
@@ -118,7 +123,9 @@ EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
  */
 EAPI void ekeko_object_show(Ekeko_Object *o)
 {
+	assert(o);
 	o->curr.visible = EINA_TRUE;
+	_object_change(o);
 }
 /**
  * To be documented
@@ -126,7 +133,9 @@ EAPI void ekeko_object_show(Ekeko_Object *o)
  */
 EAPI void ekeko_object_hide(Ekeko_Object *o)
 {
+	assert(o);
 	o->curr.visible = EINA_FALSE;
+	_object_change(o);
 }
 /**
  * To be documented
@@ -134,6 +143,7 @@ EAPI void ekeko_object_hide(Ekeko_Object *o)
  */
 EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 {
+	assert(o);
 	// FIXME check states
 	o->curr.geometry.w = w;
 	o->curr.geometry.h = h;
@@ -145,7 +155,8 @@ EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
  */
 EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel)
 {
-	
+	assert(o);
+	assert(object_rel);
 }
 /**
  * To be documented
@@ -153,7 +164,8 @@ EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel)
  */
 EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel)
 {
-	
+	assert(o);
+	assert(object_rel);
 }
 /**
  * To be documented
@@ -161,6 +173,8 @@ EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel)
  */
 EAPI void * ekeko_object_class_data_get(Ekeko_Object *o)
 {
+	assert(o);
+	
 	return o->cdata;
 }
 /**
@@ -169,6 +183,8 @@ EAPI void * ekeko_object_class_data_get(Ekeko_Object *o)
  */
 EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
 {
+	assert(o);
+	
 	return o->canvas;
 }
 /**
@@ -177,6 +193,9 @@ EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
  */
 EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Enesim_Rectangle *r)
 {
+	assert(o);
+	assert(r);
+	
 	r->x = o->curr.geometry.x;
 	r->y = o->curr.geometry.y;
 	r->w = o->curr.geometry.w;

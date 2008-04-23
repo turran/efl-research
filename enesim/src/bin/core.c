@@ -87,6 +87,7 @@ end:
 	fprintf(fout, "}\n");
 }
 
+#if 0
 /* print the format plane's mask when converting the plane data into a 32bit
  * value, like: rgb565 should be r5r5g6g6b5b5
  */
@@ -97,6 +98,7 @@ static void mask(Format *f)
 		fprintf(fout, "#define MASK 0x\n");
 	}
 }
+#endif
 
 /* function to pack a pixel from its components */
 static void plane_pack(const char *name, Plane *p, unsigned int num)
@@ -212,7 +214,7 @@ void core_functions(Format *f)
 	fprintf(fout, "#ifndef SURFACE_%s_CORE_H_\n", upper);
 	fprintf(fout, "#define SURFACE_%s_CORE_H_\n", upper);
 	//plane_pack(sf->name, p, i);
-	argb_conv(f);
+	//argb_conv(f);
 	data_copy(f);
 	data_increment(f);
 	data_offset(f);

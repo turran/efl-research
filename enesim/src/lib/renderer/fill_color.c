@@ -24,6 +24,7 @@ static void _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Su
 	
 	sfmt = enesim_surface_format_get(dst);
 	cfnc = enesim_drawer_span_color_get(r->rop, sfmt, f->color);
+	assert(cfnc);
 	offset = (dst->w * sl->y) + sl->x;
 	enesim_surface_data_get(dst, &ddata);
 	enesim_surface_data_increment(&ddata, sfmt, offset);

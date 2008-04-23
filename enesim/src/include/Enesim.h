@@ -4,10 +4,8 @@
 /**
  * @mainpage Enesim
  * @section intro Introduction
- * Enesim is a library that ...
- * @image html vector.png
- * The raster sub-library is ...
  * @image html raster.png 
+ * Enesim is a library that ...
  * 
  * @file
  * @brief Enesim API
@@ -15,7 +13,13 @@
  * @{
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "enesim_core.h"
+/* TODO fix this! */
+#include "fixed_16p16.h"
 #include "enesim_rectangle.h"
 #include "enesim_surface.h"
 #include "enesim_drawer.h"
@@ -24,5 +28,9 @@
 #include "enesim_rasterizer.h"
 #include "enesim_transformer.h"
 
+#ifdef __cplusplus
+}
+#endif
+	
 /** @} */
 #endif

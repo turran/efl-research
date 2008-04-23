@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "ekeko_tiler.h"
 #include "ekeko_object.h"

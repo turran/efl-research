@@ -126,6 +126,33 @@ enesim_surface_data_increment(Enesim_Surface_Data *sdata, Enesim_Surface_Format 
  * To be documented
  * FIXME: To be fixed
  */
+EAPI unsigned int
+enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sfmt)
+{
+	unsigned int argb;
+	
+	assert(sdata);
+	
+	switch (sfmt)
+	{
+	case ENESIM_SURFACE_ARGB8888:
+		argb8888_to_argb(&argb, *(sdata->argb8888.plane0));
+		break;
+	case ENESIM_SURFACE_ARGB8888_PRE:
+		argb8888_pre_to_argb(&argb, *(sdata->argb8888_pre.plane0));
+		break;
+	case ENESIM_SURFACE_RGB565:
+		rgb565_to_argb(&argb, *(sdata->rgb565.plane0), *(sdata->rgb565.plane1));
+		break;
+	default:
+		break;
+	}
+	return argb;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void 
 enesim_surface_unpremul(Enesim_Surface *s, ...)
 {	

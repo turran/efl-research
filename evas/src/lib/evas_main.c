@@ -1,6 +1,19 @@
 #include "Evas.h"
 #include "evas_private.h"
 /*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static int _flush(void *data, Enesim_Rectangle *r)
+{
+	printf("called\n");
+	/* call the engine function */
+	return 1;
+}
+
+static Ekeko_Canvas_Class _canvas_class = {
+	.flush = _flush,
+};
+/*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 static int _initcount = 0;
@@ -24,21 +37,6 @@ evas_shutdown(void)
 	return _initcount;
 }
 
-/**
- * Creates a new empty evas.
- *
- * Note that before you can use the evas, you will to at a minimum:
- * @li Set its render method with @ref evas_output_method_set .
- * @li Set its viewport size with @ref evas_output_viewport_set .
- * @li Set its size of the canvas with @ref evas_output_size_set .
- * @li Ensure that the render engine is given the correct settings with
- *     @ref evas_engine_info_set .
- *
- * This function should only fail if the memory allocation fails.
- *
- * @return  A new uninitialised Evas canvas on success.  Otherwise, @c NULL.
- * @ingroup Evas_Canvas
- */
 EAPI Evas *
 evas_new(void)
 {
@@ -49,32 +47,70 @@ evas_new(void)
 #ifdef DEBUG
 	e->magic = MAGIC_EVAS;
 #endif
-#if 0
-	e->viewport.w = 1;
-	e->viewport.h = 1;
-	e->hinting = EVAS_FONT_HINTING_BYTECODE;
-#endif
 	return e;
 }
 
 
-EAPI void evas_free(Evas *e)
+EAPI void
+evas_free(Evas *e)
 {
-	
+	assert(e);
+	free(e);
 }
-EAPI void evas_output_size_set(Evas *e, int w, int h)
+
+EAPI void
+evas_size_set(Evas *e, int w, int h)
 {
+	assert(e);
+	assert(w);
+	assert(h);
 	
+	if ((!e->w) && (!e->h))
+	{
+		e->canvas = ekeko_canvas_new(&_canvas_class, e, EKEKO_TILER_SPLITTER, w, h);
+		
+	}
+	else
+	{
+		/* resize the ekeko canvas */
+	}
+	e->w = w;
+	e->h = h;
 }
-EAPI void evas_output_size_get(const Evas *e, int *w, int *h)
+
+EAPI void
+evas_size_get(const Evas *e, int *w, int *h)
 {
+	assert(e);
 	
+	if (w) *w = e->w;
+	if (h) *h = e->h;
 }
-EAPI void evas_output_viewport_set(Evas *e, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coord h)
+
+EAPI void
+evas_output_set(Evas *e, const char *engine, const char *depth, const char *options)
 {
-	
+	assert(e);
+	/* sdl
+	 * ENESIM_ARGB_565?
+	 * fullsreen=xxx,noframe,etc
+	 */
+	/* comma separated options */
+	/* every option can be */
 }
-EAPI void evas_output_viewport_get(const Evas *e, Evas_Coord *x, Evas_Coord *y, Evas_Coord *w, Evas_Coord *h)
+
+
+EAPI void
+evas_render(Evas *e)
 {
-	
+	assert(e);
+	assert(e->canvas);
+#if 0
+	MAGIC_CHECK(e, Evas, MAGIC_EVAS);
+	return;
+	MAGIC_CHECK_END();
+#endif
+	/* TODO move this to ekeko *
+	if (!e->changed) return; */
+	ekeko_canvas_process(e->canvas);
 }

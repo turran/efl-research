@@ -110,6 +110,36 @@ ARGB8888_NOSCALE_IDENTITY_ITERATOR_PROTO
 }
 #endif
 
+static void transformer_prototype_start(Format *f)
+{
+	fprintf(fout, "(Enesim_Transformation *t, Enesim_Surface *ss, Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)\n")
+	fprintf(fout, "{\n");
+}
+
+static void transformer_prototype_end(Format *f)
+{
+	fprintf(fout, "}\n");
+}
+
+static void affine(Format *f)
+{
+	fprintf(fout, "static void transformer_affine_"); 
+	transformer_prototype_start();
+	frptinf(fout, "unsigned int h;");
+	fprintf(fout, "Enesim_Data sdata, ddata;\n\n");
+	fprintf(fout, "enesim_surface_data_copy(ss, &sdata);\n");
+	fprintf(fout, "enesim_surface_data_copy(ds, &ddata);\n");
+	fprintf(fout, "enesim_surface_data_increment(&sdata, ss->format, (srect->y * ss->w) + srect->x;\n");
+	fprintf(fout, "enesim_surface_data_increment(&ddata, ds->format, (drect->y * ds->w) + drect->x;\n");
+	fprintf(fout, "h = drect->h;\n");
+	fprintf(fout, "while (h--)\n");
+}
+
+static void projective(Format *f)
+{
+	
+}
+
 static void identity(Format *f)
 {
 	

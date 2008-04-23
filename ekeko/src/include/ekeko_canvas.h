@@ -14,6 +14,10 @@ struct _Ekeko_Canvas
 	// obscures
 	Ekeko_Canvas_Class *cclass;
 	void *cdata;
+	Eina_Bool changed;
 };
+
+void ekeko_canvas_change(Ekeko_Canvas *c);
+
 
 #endif

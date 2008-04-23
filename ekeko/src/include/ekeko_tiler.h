@@ -3,6 +3,13 @@
 
 typedef struct _Ekeko_Tiler Ekeko_Tiler;
 typedef struct _Ekeko_Tiler_Class Ekeko_Tiler_Class;
+typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
+
+struct _Ekeko_Rectangle
+{
+	Eina_Inlist list;
+	Enesim_Rectangle r;
+};
 
 struct _Ekeko_Tiler
 {

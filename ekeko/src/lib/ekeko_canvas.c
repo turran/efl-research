@@ -31,7 +31,17 @@ static void _obscures_remove(Ekeko_Canvas *c)
 {
 	/* remove the rectangles from the tiler */
 }
-
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void ekeko_canvas_change(Ekeko_Canvas *c)
+{
+	c->changed = EINA_TRUE;
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -85,6 +95,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	Eina_Inlist *lr, *lo;
 	int i = 0;
 
+	assert(c);
 	/* 1. check changed objects */
 	_objects_changed(c);
 	/* 2. add damages */
@@ -96,9 +107,8 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	/* 5. process al objects that intersect with the rects */
 	for (lr = (Eina_Inlist *)redraws; lr; lr = lr->next)
 	{
-		Ekeko_Rectangle *r;
+		Ekeko_Rectangle *r = (Ekeko_Rectangle *)lr;
 		
-		r = (Ekeko_Rectangle *)lr;
 		//printf("[%d] %d %d %d %d\n", i, r->r.x, r->r.y, r->r.w, r->r.h);
 		for (lo = (Eina_Inlist *)c->objects; lo; lo = lo->next)
 		{
@@ -117,7 +127,13 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 		i++;
 	}
 	/* 6. flush the rectangles on the canvas */
-	c->cclass->flush(c->cdata, redraws);
+	for (lr = (Eina_Inlist *)redraws; lr; lr = lr->next)
+	{
+		Ekeko_Rectangle *r = (Ekeko_Rectangle *)lr;
+	
+		if (!c->cclass->flush(c->cdata, &r->r))
+			break;
+	}
 	/* 7. clear the rectangles */
 	ekeko_tiler_clear(c->tiler);
 	/* 8. delete all objects that should be deleted */
@@ -128,6 +144,9 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
  */
 EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Enesim_Rectangle *r)
 {
+	assert(c);
+	assert(r);
+	
 	r->x = 0;
 	r->y = 0;
 	r->w = c->w;
@@ -139,5 +158,6 @@ EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Enesim_Rectangle *r)
  */
 EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
 {
+	assert(c);
 	return c->cdata;
 }

@@ -31,96 +31,28 @@ static void screen_clear(void)
 	SDL_FillRect(screen, NULL, 0xffffffff);
 }
 
-/*============================================================================*
- * Test3:                                                                     *
- * Surface draw test                                                          *
- *============================================================================*/
-#define MATRIX_XX 0
-#define MATRIX_XY 1
-#define MATRIX_XZ 2
-#define MATRIX_YX 3
-#define MATRIX_YY 4
-#define MATRIX_YZ 5
-#define MATRIX_ZX 6
-#define MATRIX_ZY 7
-#define MATRIX_ZZ 8
-#define MATRIX_SIZE 9
-
-#define PI 3.14159265
-
-static void transformation_compose(float *st, float *dt)
+static void rectangle_draw(Enesim_Rectangle *r, Enesim_Surface *dst, unsigned int color, Enesim_Rop rop)
 {
 	int i;
-	float tmp[MATRIX_SIZE];
+	Enesim_Scanline_Alias sl;
+	Enesim_Renderer *renderer;
 	
-	tmp[MATRIX_XX] = (st[MATRIX_XX] * dt[MATRIX_XX]) + (st[MATRIX_XY] * dt[MATRIX_YX]) + (st[MATRIX_XZ] * dt[MATRIX_ZX]);
-	tmp[MATRIX_XY] = (st[MATRIX_XX] * dt[MATRIX_XY]) + (st[MATRIX_XY] * dt[MATRIX_YY]) + (st[MATRIX_XZ] * dt[MATRIX_ZY]);
-	tmp[MATRIX_XZ] = (st[MATRIX_XX] * dt[MATRIX_XZ]) + (st[MATRIX_XY] * dt[MATRIX_YZ]) + (st[MATRIX_XZ] * dt[MATRIX_ZZ]);
-	
-	tmp[MATRIX_YX] = (st[MATRIX_YX] * dt[MATRIX_XX]) + (st[MATRIX_YY] * dt[MATRIX_YX]) + (st[MATRIX_YZ] * dt[MATRIX_ZX]);
-	tmp[MATRIX_YY] = (st[MATRIX_YX] * dt[MATRIX_XY]) + (st[MATRIX_YY] * dt[MATRIX_YY]) + (st[MATRIX_YZ] * dt[MATRIX_ZY]);
-	tmp[MATRIX_YZ] = (st[MATRIX_YX] * dt[MATRIX_XZ]) + (st[MATRIX_YY] * dt[MATRIX_YZ]) + (st[MATRIX_YZ] * dt[MATRIX_ZZ]);
-
-	tmp[MATRIX_ZX] = (st[MATRIX_ZX] * dt[MATRIX_XX]) + (st[MATRIX_ZY] * dt[MATRIX_YX]) + (st[MATRIX_ZZ] * dt[MATRIX_ZX]);
-	tmp[MATRIX_ZY] = (st[MATRIX_ZX] * dt[MATRIX_XY]) + (st[MATRIX_ZY] * dt[MATRIX_YY]) + (st[MATRIX_ZZ] * dt[MATRIX_ZY]);
-	tmp[MATRIX_ZZ] = (st[MATRIX_ZX] * dt[MATRIX_XZ]) + (st[MATRIX_ZY] * dt[MATRIX_YZ]) + (st[MATRIX_ZZ] * dt[MATRIX_ZZ]);
-
-	for (i = 0; i < MATRIX_SIZE; i++)
-		st[i] = tmp[i];
+	renderer = enesim_fill_color_new();
+	enesim_fill_color_color_set(renderer, color);
+	enesim_renderer_rop_set(renderer, rop);
+	for (i = 0; i < r->h; i++)
+	{
+		sl.w = r->w;
+		sl.x = r->x;
+		sl.y = r->y + i;
+		enesim_renderer_draw(renderer, ENESIM_SCANLINE_ALIAS, &sl, dst);
+	}
+	enesim_renderer_delete(renderer);
 }
 
-static void transformation_translate(float *t, float tx, float ty)
-{
-	t[MATRIX_XX] = 1;
-	t[MATRIX_XY] = 0;
-	t[MATRIX_XZ] = tx;
-	t[MATRIX_YX] = 0;
-	t[MATRIX_YY] = 1;
-	t[MATRIX_YZ] = ty;
-	t[MATRIX_ZX] = 0;
-	t[MATRIX_ZY] = 0;
-	t[MATRIX_ZZ] = 1;	
-}
-static void transformation_scale(float *t, float sx, float sy)
-{
-	t[MATRIX_XX] = sx;
-	t[MATRIX_XY] = 0;
-	t[MATRIX_XZ] = 0;
-	t[MATRIX_YX] = 0;
-	t[MATRIX_YY] = sy;
-	t[MATRIX_YZ] = 0;
-	t[MATRIX_ZX] = 0;
-	t[MATRIX_ZY] = 0;
-	t[MATRIX_ZZ] = 1;
-}
-static void transformation_rotate(float *t, float rad)
-{
-	float c = cos(rad);
-	float s = sin(rad);
-	
-	t[MATRIX_XX] = c;
-	t[MATRIX_XY] = -s;
-	t[MATRIX_XZ] = 0;
-	t[MATRIX_YX] = s;
-	t[MATRIX_YY] = c;
-	t[MATRIX_YZ] = 0;
-	t[MATRIX_ZX] = 0;
-	t[MATRIX_ZY] = 0;
-	t[MATRIX_ZZ] = 1;	
-}
+/* TODO add this to Enesim.h */
+#define MATRIX_SIZE 9
 
-static void transformation_identity(float *t)
-{
-	t[MATRIX_XX] = 1;
-	t[MATRIX_XY] = 0;
-	t[MATRIX_XZ] = 0;
-	t[MATRIX_YX] = 0;
-	t[MATRIX_YY] = 1;
-	t[MATRIX_YZ] = 0;
-	t[MATRIX_ZX] = 0;
-	t[MATRIX_ZY] = 0;
-	t[MATRIX_ZZ] = 1;
-}
 /*============================================================================*
  * Test4:                                                                     *
  * Renderers Demo                                                            *
@@ -158,7 +90,7 @@ static void test4(void)
 }
 /*============================================================================*
  * Test3:                                                                     *
- *                                                                            *
+ * Surface draw test                                                          *
  *============================================================================*/
 static void test3(void)
 {
@@ -166,37 +98,48 @@ static void test3(void)
 	Enesim_Transformation *tx;
 	Enesim_Rectangle srect;
 	Enesim_Rectangle drect;
+	int w, h;
 	float m1[9], m2[9];
 
 	src = tiger_draw();
 	dst = surface_new(TIGER_WIDTH, TIGER_HEIGHT, ENESIM_SURFACE_ARGB8888_PRE);
+	tx = enesim_transformation_new();
 	
+	enesim_surface_size_get(src, &w, &h);
+	
+	/* identity matrix */
 	srect.x = 0;
 	srect.y = 0;
-	enesim_surface_size_get(src, &srect.w, &srect.h);
-	
+	srect.w = w / 2;
+	srect.h = h / 2;
+		
 	drect.x = 0;
 	drect.y = 0;
 	drect.w = srect.w;
 	drect.h = srect.h;
-	
-	/* identity matrix */
+	enesim_transformation_apply(tx, src, &srect, dst, &drect);
+	rectangle_draw(&drect, dst, 0x55888888, ENESIM_BLEND);
 	/* affine matrix */
-	/* projective matrix */
+	enesim_transformation_matrix_scale(m1, 1.4, 0.9);
+	enesim_transformation_matrix_scale(m2, -20, -20);
+	enesim_transformation_matrix_compose(m1, m2);
+	enesim_transformation_matrix_rotate(m2, PI/4);
+	enesim_transformation_set(tx, m2);
+	drect.x = 200;
+	drect.y = 300;
+	enesim_transformation_apply(tx, src, &srect, dst, &drect);
+	rectangle_draw(&drect, dst, 0x55888888, ENESIM_BLEND);
+	/* projective matrix
 	transformation_scale(m1, 2.0, 2.0);
 	transformation_translate(m2, -20, -26);
 	transformation_compose(m1, m2);
 	transformation_rotate(m2, PI/4);
 	transformation_compose(m1, m2);
-	/*
 	transformation_translate(m2, 200, 206);
 	transformation_compose(m1, m2);*/
+	/* view the result */
 	
-	//enesim_surface_transformation_set(src, m1);
-	//enesim_surface_draw(src, &srect, dst, &drect, 0, 0);
-	//png_save(dst, DSTDIR"/enesim_test3_dst.png", 0);
-	//enesim_transformation_apply(tx, src, &srect, dst, &drect);
-	surface_blt(src, screen);
+	surface_blt(dst, screen);
 	surface_free(dst);
 	surface_free(src);
 }

@@ -6,9 +6,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-
-
-static Enesim_Transformer_Type _transformation_get(float *t)
+static Enesim_Transformation_Type _transformation_get(float *t)
 {
 	if ((t[MATRIX_ZX] != 0) || (t[MATRIX_ZY] != 0) || (t[MATRIX_ZZ] != 1))
 	            return ENESIM_TRANSFORMATION_PROJECTIVE;
@@ -35,9 +33,267 @@ static void _transformation_to_fixed(float *t, enesim_16p16_t *td)
 	td[7] = enesim_16p16_float_from(t[7]);
 	td[8] = enesim_16p16_float_from(t[8]);
 }
+
+static void _transformation_debug(Enesim_Transformation *t)
+{
+	
+	printf("Transformation with rop = %d\n", t->rop);
+	printf("Floating point matrix\n");
+	printf("XX = %f XY = %f XZ = %f\n", t->matrix[MATRIX_XX], t->matrix[MATRIX_XY], t->matrix[MATRIX_XZ]);
+	printf("YX = %f YY = %f YZ = %f\n", t->matrix[MATRIX_YX], t->matrix[MATRIX_YY], t->matrix[MATRIX_YZ]);
+	printf("ZX = %f ZY = %f ZZ = %f\n", t->matrix[MATRIX_ZX], t->matrix[MATRIX_ZY], t->matrix[MATRIX_ZZ]);
+	printf("Fixed point matrix (16p16 format)\n");
+	printf("XX = %u XY = %u XZ = %u\n", t->matrix_fixed[MATRIX_XX], t->matrix_fixed[MATRIX_XY], t->matrix_fixed[MATRIX_XZ]);
+	printf("YX = %u YY = %u YZ = %u\n", t->matrix_fixed[MATRIX_YX], t->matrix_fixed[MATRIX_YY], t->matrix_fixed[MATRIX_YZ]);
+	printf("ZX = %u ZY = %u ZZ = %u\n", t->matrix_fixed[MATRIX_ZX], t->matrix_fixed[MATRIX_ZY], t->matrix_fixed[MATRIX_ZZ]);
+}
+
+/* TODO
+ * remove this
+ */
+#define INTERP_256(a, c0, c1) \
+ ( (((((((c0) >> 8) & 0xff00ff) - (((c1) >> 8) & 0xff00ff)) * (a)) \
+   + ((c1) & 0xff00ff00)) & 0xff00ff00) + \
+   (((((((c0) & 0xff00ff) - ((c1) & 0xff00ff)) * (a)) >> 8) \
+   + ((c1) & 0xff00ff)) & 0xff00ff) )
+#define interp_256 INTERP_256
+
+/*
+ * TODO
+ * this function is very expensive because we have convert every time to argb
+ * in case of argb8888_pre means several muls and divs
+ */
+static unsigned int convolution2x2(Enesim_Surface_Data *data, 
+		Enesim_Surface_Format fmt, enesim_16p16_t x, enesim_16p16_t y,
+		unsigned w, unsigned int h)
+{
+	Enesim_Surface_Data tmp;
+	unsigned int p3 = 0, p2 = 0, p1 = 0, p0 = 0;
+	int ax, ay;
+	int sx, sy;
+
+	/* 8 bits error to alpha */
+	ax = 1 + enesim_16p16_fracc_get(x) >> 8;
+	ay = 1 + enesim_16p16_fracc_get(y) >> 8;
+	/* integer values for the coordinates */
+	sx = enesim_16p16_int_to(x);
+	sy = enesim_16p16_int_to(y);
+
+	if ((sx > -1) && (sy > -1))
+	{
+		p0 = enesim_surface_data_to_argb(data, fmt);
+	}
+	if ((sy > -1) && ((sx + 1) < w))
+	{
+		tmp = *data;
+		
+		enesim_surface_data_increment(&tmp, fmt, 1);
+		p1 = enesim_surface_data_to_argb(&tmp, fmt);
+	}
+	if ((sy + 1) < h)
+	{
+		if (sx > -1)
+		{
+			tmp = *data;
+			enesim_surface_data_increment(&tmp, fmt, w);
+			p2 = enesim_surface_data_to_argb(&tmp, fmt);
+		}
+		if ((sx + 1) < w)
+		{
+			tmp = *data;
+			enesim_surface_data_increment(&tmp, fmt, w + 1);
+			p3 = enesim_surface_data_to_argb(&tmp, fmt);
+		}
+	}
+	if (p0 != p1)
+		p0 = interp_256(ax, p1, p0);
+	if (p2 != p3)
+		p2 = interp_256(ax, p3, p2);
+	if (p0 != p2)
+		p0 = interp_256(ay, p2, p0);
+	return p0;
+}
+
+static void transformer_identity_no_no(Enesim_Transformation *t, Enesim_Surface *ss,
+		Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)
+{
+	Enesim_Surface_Data sdata, ddata;
+	Enesim_Drawer_Span spfnc;
+	int h;
+	
+	enesim_surface_data_get(ss, &sdata);
+	enesim_surface_data_get(ds, &ddata);
+	enesim_surface_data_increment(&sdata, ss->format, (srect->y * ss->w) + srect->x);
+	enesim_surface_data_increment(&ddata, ds->format, (drect->y * ds->w) + drect->x);
+	h = drect->h;
+	
+	/* TODO, pixel or pixel_color */
+	spfnc = enesim_drawer_span_pixel_get(t->rop, ds->format, ss->format);
+	while (h--)
+	{
+		spfnc(&ddata, drect->w, &sdata, /* mul_color */0, NULL);
+		enesim_surface_data_increment(&sdata, ss->format, ss->w);
+		enesim_surface_data_increment(&ddata, ds->format, ds->w);
+	}	
+}
+
+static void transformer_affine_no_no(Enesim_Transformation *t, Enesim_Surface *ss,
+		Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)
+{
+	Enesim_Surface_Data sdata, ddata;
+	enesim_16p16_t sx, sy;
+	Enesim_Drawer_Point ptfnc;
+	int h;
+	
+	sx = enesim_16p16_mul(t->matrix_fixed[MATRIX_XX], drect->x) + enesim_16p16_mul(t->matrix_fixed[MATRIX_XY], drect->y) + t->matrix_fixed[MATRIX_XZ];
+	sy = enesim_16p16_mul(t->matrix_fixed[MATRIX_YX], drect->x) + enesim_16p16_mul(t->matrix_fixed[MATRIX_YY], drect->y) + t->matrix_fixed[MATRIX_YZ];
+	
+	enesim_surface_data_get(ds, &ddata);
+	enesim_surface_data_get(ss, &sdata);
+	enesim_surface_data_increment(&ddata, ds->format, (drect->y * ds->w) + drect->x);
+	
+	h = drect->h;
+	while (h--)
+	{
+		Enesim_Surface_Data ddata2;
+		int w;
+		enesim_16p16_t sxx, syy;
+		
+		ddata2 = ddata;
+		sxx = sx;
+		syy = sy;
+
+		w = drect->w;
+		while (w--)
+		{
+			int six, siy;
+			Enesim_Surface_Data sdata2;
+			
+			sdata2 = sdata;
+			six = enesim_16p16_int_to(sxx);
+			siy = enesim_16p16_int_to(syy);
+			
+			/* check that we are inside the source rectangle */
+			if ((enesim_rectangle_xcoord_inside(srect, six)) && (enesim_rectangle_ycoord_inside(srect, siy)))
+			{
+				unsigned int argb;
+				
+				/* use 2x2 convolution kernel to interpolate */
+				enesim_surface_data_increment(&sdata2, ss->format, (siy * ss->w) + six);
+				argb = convolution2x2(&sdata2, ss->format, sxx, syy, ss->w, ss->h);
+				ptfnc = enesim_drawer_point_color_get(t->rop, ds->format, argb);
+				ptfnc(&ddata2, NULL, argb, NULL);
+			}
+			enesim_surface_data_increment(&ddata2, ds->format, 1);
+			sxx += t->matrix_fixed[MATRIX_XX];
+			syy += t->matrix_fixed[MATRIX_YX];
+		}
+		enesim_surface_data_increment(&ddata, ds->format, ds->w);
+		sx += t->matrix_fixed[MATRIX_XY];
+		sy += t->matrix_fixed[MATRIX_YY];
+	}
+}
+
+static void transformer_projective_no_no(Enesim_Transformation *t, Enesim_Surface *ss,
+		Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)
+{
+	
+}
+
+static Enesim_Transformer_Func _functions[ENESIM_TRANSFORMATIONS] = {
+		[ENESIM_TRANSFORMATION_AFFINE] = &transformer_affine_no_no,
+		[ENESIM_TRANSFORMATION_IDENTITY] = &transformer_identity_no_no,
+};
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * 
+ */
+EAPI void enesim_transformation_matrix_compose(float *st, float *dt)
+{
+	int i;
+	float tmp[MATRIX_SIZE];
+	
+	tmp[MATRIX_XX] = (st[MATRIX_XX] * dt[MATRIX_XX]) + (st[MATRIX_XY] * dt[MATRIX_YX]) + (st[MATRIX_XZ] * dt[MATRIX_ZX]);
+	tmp[MATRIX_XY] = (st[MATRIX_XX] * dt[MATRIX_XY]) + (st[MATRIX_XY] * dt[MATRIX_YY]) + (st[MATRIX_XZ] * dt[MATRIX_ZY]);
+	tmp[MATRIX_XZ] = (st[MATRIX_XX] * dt[MATRIX_XZ]) + (st[MATRIX_XY] * dt[MATRIX_YZ]) + (st[MATRIX_XZ] * dt[MATRIX_ZZ]);
+	
+	tmp[MATRIX_YX] = (st[MATRIX_YX] * dt[MATRIX_XX]) + (st[MATRIX_YY] * dt[MATRIX_YX]) + (st[MATRIX_YZ] * dt[MATRIX_ZX]);
+	tmp[MATRIX_YY] = (st[MATRIX_YX] * dt[MATRIX_XY]) + (st[MATRIX_YY] * dt[MATRIX_YY]) + (st[MATRIX_YZ] * dt[MATRIX_ZY]);
+	tmp[MATRIX_YZ] = (st[MATRIX_YX] * dt[MATRIX_XZ]) + (st[MATRIX_YY] * dt[MATRIX_YZ]) + (st[MATRIX_YZ] * dt[MATRIX_ZZ]);
+
+	tmp[MATRIX_ZX] = (st[MATRIX_ZX] * dt[MATRIX_XX]) + (st[MATRIX_ZY] * dt[MATRIX_YX]) + (st[MATRIX_ZZ] * dt[MATRIX_ZX]);
+	tmp[MATRIX_ZY] = (st[MATRIX_ZX] * dt[MATRIX_XY]) + (st[MATRIX_ZY] * dt[MATRIX_YY]) + (st[MATRIX_ZZ] * dt[MATRIX_ZY]);
+	tmp[MATRIX_ZZ] = (st[MATRIX_ZX] * dt[MATRIX_XZ]) + (st[MATRIX_ZY] * dt[MATRIX_YZ]) + (st[MATRIX_ZZ] * dt[MATRIX_ZZ]);
+
+	for (i = 0; i < MATRIX_SIZE; i++)
+		st[i] = tmp[i];
+}
+/**
+ * 
+ */
+EAPI void enesim_transformation_matrix_translate(float *t, float tx, float ty)
+{
+	t[MATRIX_XX] = 1;
+	t[MATRIX_XY] = 0;
+	t[MATRIX_XZ] = tx;
+	t[MATRIX_YX] = 0;
+	t[MATRIX_YY] = 1;
+	t[MATRIX_YZ] = ty;
+	t[MATRIX_ZX] = 0;
+	t[MATRIX_ZY] = 0;
+	t[MATRIX_ZZ] = 1;	
+}
+/**
+ * 
+ */
+EAPI void enesim_transformation_matrix_scale(float *t, float sx, float sy)
+{
+	t[MATRIX_XX] = sx;
+	t[MATRIX_XY] = 0;
+	t[MATRIX_XZ] = 0;
+	t[MATRIX_YX] = 0;
+	t[MATRIX_YY] = sy;
+	t[MATRIX_YZ] = 0;
+	t[MATRIX_ZX] = 0;
+	t[MATRIX_ZY] = 0;
+	t[MATRIX_ZZ] = 1;
+}
+/**
+ * 
+ */
+EAPI void enesim_transformation_matrix_rotate(float *t, float rad)
+{
+	float c = cos(rad);
+	float s = sin(rad);
+	
+	t[MATRIX_XX] = c;
+	t[MATRIX_XY] = -s;
+	t[MATRIX_XZ] = 0;
+	t[MATRIX_YX] = s;
+	t[MATRIX_YY] = c;
+	t[MATRIX_YZ] = 0;
+	t[MATRIX_ZX] = 0;
+	t[MATRIX_ZY] = 0;
+	t[MATRIX_ZZ] = 1;	
+}
+/**
+ * 
+ */
+EAPI void enesim_transformation_matrix_identity(float *t)
+{
+	t[MATRIX_XX] = 1;
+	t[MATRIX_XY] = 0;
+	t[MATRIX_XZ] = 0;
+	t[MATRIX_YX] = 0;
+	t[MATRIX_YY] = 1;
+	t[MATRIX_YZ] = 0;
+	t[MATRIX_ZX] = 0;
+	t[MATRIX_ZY] = 0;
+	t[MATRIX_ZZ] = 1;
+}
 /**
  * 
  */
@@ -50,6 +306,7 @@ EAPI Enesim_Transformation * enesim_transformation_new(void)
 	t->matrix[MATRIX_XX] = 1;
 	t->matrix[MATRIX_YY] = 1;
 	t->matrix[MATRIX_ZZ] = 1;
+	_transformation_to_fixed(t->matrix, t->matrix_fixed);
 	t->type = ENESIM_TRANSFORMATION_IDENTITY;
 	
 	return t;
@@ -63,11 +320,13 @@ EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 		
 	assert(t);
 	
-	/* TODO set the type of the transformation */
 	for (i = 0; i < MATRIX_SIZE; i++)
 	{
 		t->matrix[i] = tx[i];
 	}
+	/* TODO the type should on the fixed or on the float */
+	_transformation_to_fixed(t->matrix, t->matrix_fixed);
+	t->type = _transformation_get(t->matrix);
 }
 /**
  * 
@@ -75,10 +334,11 @@ EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 EAPI void enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, Enesim_Rectangle *dr)
 {
 	Enesim_Rectangle csr, cdr;
-	enesim_16p16_t ft[MATRIX_SIZE];
+	Enesim_Transformer_Func tfunc;
 		
 	assert(s);
 	assert(d);
+	assert(t);
 
 	/* setup the destination clipping */
 	cdr.x = 0;
@@ -104,41 +364,34 @@ EAPI void enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *
 		if (enesim_rectangle_is_empty(&csr))
 			return;
 	}
-	/* if we need to do some calcs with the matrix, transform it */
-	// if (!(s->transformation.type & ENESIM_SURFACE_TRANSFORMATION_IDENTITY))
-	_transformation_to_fixed(t->matrix, ft);
-	
 	/* check if we are going to scale */
-	/* scaling */
-	if ((cdr.w != csr.w) && (cdr.h != csr.h))
+#if 0
+	/* x scaling */
+	if (cdr.w > csr.w)
 	{
-		/* smooth scaling */
-		if ((cdr.w > csr.w) && (cdr.h <= csr.h))
-		{
-			/* x upscaling, y downscaling */
-		}
-		else if ((cdr.w <= csr.w) && (cdr.h > csr.h))
-		{
-			/* x downscaling, y upscaling */
-		}
-		else if ((cdr.w > csr.w) && (cdr.h > csr.h))
-		{
-			/* x upscaling, y upscaling */
-		}
 	}
-	/* not scaling */
+	else if (cdr.w < csr.w)
+	{
+		
+	}
 	else
 	{
-		/* when using the multiplied variant check that the mul color is different
-		 * than 255,255,255,255, if not use the version without mul
-		 */
-		//_backends[s->format].draw[s->transformation.type][ENESIM_SURFACE_NO_SCALE];
-		/* check transformation type */
-		//argb8888_transformed_blend(s, &csr, d, &cdr, ft);
-		//argb8888_identity_op(s, d);
-		//argb8888_c_draw_fill_affine_no_no(s, &csr, d, &cdr, ft);
-		//argb8888_c_draw_blend_mul_affine_no_no(s, &csr, d, &cdr, ft, 0xcccccccc);
+		
 	}
-	/* get the correct drawer function */
+	/* y scaling */
+	if (cdr.h > csr.h)
+	{
+	}
+	else if (cdr.h < csr.h)
+	{
+		
+	}
+	else
+	{
+			
+	}
+#endif
 	/* get the correct transfomer function */
+	tfunc = _functions[t->type];
+	tfunc(t, s, sr, d, dr);
 }

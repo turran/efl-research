@@ -1,7 +1,7 @@
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
-AC_INIT(enesim, 0.0.1, enlightenment-devel@lists.sourceforge.net)
+AC_INIT(emage, 0.0.1, enlightenment-devel@lists.sourceforge.net)
 AC_PREREQ(2.52)
 AC_CONFIG_SRCDIR(configure.in)
 AC_CANONICAL_BUILD
@@ -37,53 +37,17 @@ case "$host_os" in
 esac
 AC_SUBST(create_shared_lib)
 
-PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
-PKG_CHECK_MODULES(PNG, [libpng >= 0.22], [have_png="yes"], [have_png="no"])
-PKG_CHECK_MODULES(SDL, [sdl >= 1.2.10], [have_sdl="yes"], [have_sdl="no"])
-
-build_example="no"
-if test "x$have_sdl" = "xyes" && test "x$have_png" = "xyes"; then 
-	build_example="yes"
-fi
-
-EXAMPLE_CFLAGS="$SDL_CFLAGS $PNG_CFLAGS"
-EXAMPLE_LIBS="$SDL_LIBS $PNG_LIBS"
-AC_SUBST(EXAMPLE_CFLAGS)
-AC_SUBST(EXAMPLE_LIBS)
-
-AM_CONDITIONAL(BUILD_EXAMPLE, test "x$build_example" = "xyes")
-
-ENESIM_CFLAGS="$EINA_CFLAGS"
-ENESIM_LIBS="$EINA_LIBS"
-AC_SUBST(ENESIM_CFLAGS)
-AC_SUBST(ENESIM_LIBS)
+PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
 
 ## Make the debug preprocessor configurable
 
 AC_OUTPUT([
 Makefile
-enesim.pc
+emage.pc
 src/Makefile
 src/include/Makefile
-src/bin/Makefile
 src/lib/Makefile
-src/lib/rasterizer/Makefile
-src/lib/renderer/Makefile
-src/lib/surface/Makefile
-src/lib/converter/Makefile
-src/lib/drawer/Makefile
-src/lib/surface/argb8888/Makefile
-src/lib/util/Makefile
-src/lib/vector/Makefile
-src/lib/vector/component/Makefile
-examples/Makefile
-data/Makefile
-],[
 ])
-#deprecated
-#src/lib/raster/scanline/Makefile
-#src/lib/raster/surface/rop/Makefile
-#src/lib/raster/surface/rop/blend/Makefile
 
 
 #####################################################################
@@ -98,8 +62,6 @@ echo "------------------------------------------------------------------------"
 echo
 echo
 echo "Configuration Options Summary:"
-echo
-echo "  Build example...........: $build_example"
 echo
 echo "Installation Path.........: $prefix"
 echo

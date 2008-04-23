@@ -307,6 +307,29 @@ EAPI void etch_animation_keyframe_value_get(Etch_Animation_Keyframe *k, ...)
 	/* TODO */
 }
 /**
+ * 
+ */ 
+EAPI void etch_animation_offset_add(Etch_Animation *a, unsigned long secs, unsigned long usecs)
+{
+	struct timeval t;
+	double new_time;
+	Eina_Inlist *l;
+		
+	assert(a);
+		
+	t.tv_sec = secs;
+	t.tv_usec = usecs;
+	new_time = etch_timeval_to_double(&t);
+	l = (Eina_Inlist *)(a->keys);
+	while (l)
+	{
+		Etch_Animation_Keyframe *k = (Etch_Animation_Keyframe *)l;
+		
+		k->time += new_time;
+		l = l->next;
+	}
+}
+/**
  * Set the value for a mark
  */
 EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
