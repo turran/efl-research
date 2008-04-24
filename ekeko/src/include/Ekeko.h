@@ -31,13 +31,24 @@
  * 
  */
 
+/**
+ * @defgroup Ekeko_Core_Group Core
+ */
+typedef enum
+{
+} Ekeko_Error;
 
-typedef struct _Ekeko_Canvas Ekeko_Canvas;
-typedef struct _Ekeko_Object Ekeko_Object;
+
+extern Ekeko_Error ekeko_err; /**< */
+
 
 /**
- * @{
+ * @}
+ * @defgroup Ekeko_Canvas_Group Canvas
+ * @{ 
  */
+
+typedef struct _Ekeko_Canvas Ekeko_Canvas; /**< Opaque handler */
 
 enum
 {
@@ -63,11 +74,14 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
 EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Enesim_Rectangle *r);
 EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c); 
 
-/** @} */
-
 /**
- * @{
+ * @}
+ * @defgroup Ekeko_Object_Group Object
+ * @{ 
  */
+
+typedef struct _Ekeko_Object Ekeko_Object;
+
 typedef struct _Ekeko_Object_Class
 {
 	/* object is freed */

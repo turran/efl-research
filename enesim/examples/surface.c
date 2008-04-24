@@ -9,18 +9,18 @@ Enesim_Surface * surface_new(int w, int h, Enesim_Surface_Format fmt)
 	{
 		case ENESIM_SURFACE_ARGB8888_PRE:
 		sdata.argb8888_pre.plane0 = calloc(1, sizeof(unsigned int) * w * h);
-		s = enesim_surface_new(fmt, w, h, ENESIM_SURFACE_ALPHA, &sdata);
+		s = enesim_surface_new(fmt, w, h, &sdata);
 		break;
 
 		case ENESIM_SURFACE_ARGB8888:
 		sdata.argb8888.plane0 = calloc(1, sizeof(unsigned int) * w * h);
-		s = enesim_surface_new(fmt, w, h, ENESIM_SURFACE_ALPHA, &sdata);
+		s = enesim_surface_new(fmt, w, h, &sdata);
 		break;
 	
 		case ENESIM_SURFACE_RGB565:
 		sdata.rgb565.plane0 = calloc(1, sizeof(unsigned short int) * w * h);
 		sdata.rgb565.plane1 = calloc(1, sizeof(unsigned char) * w * h);
-		s = enesim_surface_new(fmt, w, h, ENESIM_SURFACE_ALPHA, &sdata);
+		s = enesim_surface_new(fmt, w, h, &sdata);
 		break;
 		
 		default:

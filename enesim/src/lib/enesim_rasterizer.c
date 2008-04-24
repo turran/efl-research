@@ -42,7 +42,7 @@ EAPI void enesim_rasterizer_vertex_add(Enesim_Rasterizer *r, float x, float y)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int enesim_rasterizer_generate(Enesim_Rasterizer *r,
+EAPI Eina_Bool enesim_rasterizer_generate(Enesim_Rasterizer *r,
 		Enesim_Scanline_Callback cb, void *data)
 {
 	assert(r);
@@ -53,7 +53,7 @@ EAPI int enesim_rasterizer_generate(Enesim_Rasterizer *r,
 	r->user_data = data;
 	r->scanline_callback = cb;
 	r->funcs->generate(r->data);
-	return ENESIM_OK;
+	return EINA_TRUE;
 }
 
 /**

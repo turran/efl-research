@@ -20,6 +20,13 @@ typedef enum
 	ENESIM_TRANSFORMATIONS 
 } Enesim_Transformation_Type;
 
+typedef enum
+{
+	ENESIM_SCALE_NO,
+	ENESIM_SCALE_UP,
+	ENESIM_SCALE_DOWN
+} Enesim_Scale;
+
 struct _Enesim_Transformation
 {
 	float matrix[MATRIX_SIZE];
@@ -28,6 +35,9 @@ struct _Enesim_Transformation
 	int quality; // TODO fix this
 	/* TODO also add the case were the src surface uses borders */
 	Enesim_Rop rop;
+#ifdef DEBUG
+	Enesim_Magic magic;
+#endif
 };
 
 /* identity[quality][xscale][yscale]

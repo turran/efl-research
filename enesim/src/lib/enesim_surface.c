@@ -13,7 +13,7 @@
  * FIXME: To be fixed
  */
 EAPI Enesim_Surface *
-enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag flags, Enesim_Surface_Data *sdata)
+enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Data *sdata)
 {
 	Enesim_Surface *s;
 	
@@ -21,9 +21,8 @@ enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag fl
 	s->w = w;
 	s->h = h;
 	s->format = f;
-	s->flags = flags;
-
 	s->data = *sdata;
+	ENESIM_MAGIC_SET(s, ENESIM_SURFACE_MAGIC);
 	
 	return s;
 }
@@ -32,9 +31,10 @@ enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Flag fl
  * FIXME: To be fixed
  */
 EAPI void
-enesim_surface_size_get(Enesim_Surface *s, int *w, int *h)
+enesim_surface_size_get(const Enesim_Surface *s, int *w, int *h)
 {
-	assert(s);
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
 	if (w) *w = s->w;
 	if (h) *h = s->h;
 }
@@ -44,7 +44,10 @@ enesim_surface_size_get(Enesim_Surface *s, int *w, int *h)
  */
 EAPI void enesim_surface_size_set(Enesim_Surface *s, int w, int h)
 {
-	assert(s);
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_ASSERT(w >= 0, ENESIM_ERROR_GEOMETRY_INVALID);
+	ENESIM_ASSERT(h >= 0, ENESIM_ERROR_GEOMETRY_INVALID);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
 	s->w = w;
 	s->h = h;
 }
@@ -53,39 +56,49 @@ EAPI void enesim_surface_size_set(Enesim_Surface *s, int w, int h)
  * FIXME: To be fixed
  */
 EAPI Enesim_Surface_Format
-enesim_surface_format_get(Enesim_Surface *s)
+enesim_surface_format_get(const Enesim_Surface *s)
 {
-	assert(s);
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
 	return s->format;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI int
-enesim_surface_flag_get(Enesim_Surface *s)
+EAPI void 
+enesim_surface_convert(Enesim_Surface *s, Enesim_Surface *d)
 {
-	assert(s);
-	return s->flags;
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_ASSERT(d, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
+	ENESIM_MAGIC_CHECK(d, ENESIM_SURFACE_MAGIC);
+	
+	if (s->format == d->format) return;
+	/* TODO call the correct convert function based on the src
+	 * and dst format, the src and dst flags, etc
+	 */
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
 EAPI void 
-enesim_surface_flag_set(Enesim_Surface *s, Enesim_Surface_Flag flags)
+enesim_surface_delete(Enesim_Surface *s)
 {
 	assert(s);
-	s->flags = flags;
+	free(s);
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
 EAPI void
-enesim_surface_data_get(Enesim_Surface *s, Enesim_Surface_Data *sdata)
+enesim_surface_data_get(const Enesim_Surface *s, Enesim_Surface_Data *sdata)
 {
-	assert(s);
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_ASSERT(sdata, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
 	*sdata = s->data;
 }
 /**
@@ -93,9 +106,11 @@ enesim_surface_data_get(Enesim_Surface *s, Enesim_Surface_Data *sdata)
  * FIXME: To be fixed
  */
 EAPI void 
-enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Data *sdata)
+enesim_surface_data_set(Enesim_Surface *s, const Enesim_Surface_Data *sdata)
 {
-	assert(s);
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_ASSERT(sdata, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
 	/* TODO check if we already had data */
 	s->data = *sdata;
 }
@@ -103,10 +118,10 @@ enesim_surface_data_set(Enesim_Surface *s, Enesim_Surface_Data *sdata)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void 
+EAPI void
 enesim_surface_data_increment(Enesim_Surface_Data *sdata, Enesim_Surface_Format sfmt, unsigned int len)
 {
-	assert(sdata);
+	ENESIM_ASSERT(sdata, ENESIM_ERROR_HANDLE_INVALID);
 	switch (sfmt)
 	{
 	case ENESIM_SURFACE_ARGB8888:
@@ -131,7 +146,7 @@ enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sf
 {
 	unsigned int argb;
 	
-	assert(sdata);
+	ENESIM_ASSERT(sdata, ENESIM_ERROR_HANDLE_INVALID);
 	
 	switch (sfmt)
 	{
@@ -149,54 +164,3 @@ enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sf
 	}
 	return argb;
 }
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void 
-enesim_surface_unpremul(Enesim_Surface *s, ...)
-{	
-	Enesim_Surface_Data data;
-	va_list va;
-	
-	assert(s);
-	/* TODO check if we already had data */
-	va_start(va, s);
-	switch (s->format) {
-	case ENESIM_SURFACE_ARGB8888:
-		data.argb8888.plane0 = va_arg(va, DATA32 *);
-		break;
-
-	case ENESIM_SURFACE_RGB565:
-		data.rgb565.plane0 = va_arg(va, DATA16 *);
-		data.rgb565.plane1 = va_arg(va, DATA8 *);
-		break;
-
-	default:
-		break;
-	}
-	// TODO _backends[s->format]->unpremul(&s->data, &data, s->w * s->h);
-	va_end(va);
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void 
-enesim_surface_convert(Enesim_Surface *s, Enesim_Surface *d)
-{
-	assert(s);
-	assert(d);
-	if (s->format == d->format) return;
-	/* TODO call the correct convert function based on the src
-	 * and dst format, the src and dst flags, etc
-	 */
-}
-
-EAPI void 
-enesim_surface_delete(Enesim_Surface *s)
-{
-	assert(s);
-	free(s);
-}
-

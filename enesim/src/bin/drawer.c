@@ -1,5 +1,37 @@
 #include "enesim_generator.h"
 
+/* color mask code */
+#if 0
+DATA32 *d, *e;
+
+	d = data->argb8888.plane0 + off;
+	e = d + len;
+	len = 256 - (c >> 24);
+	while (d < e)
+	{
+		DATA32 a = *mask;
+		switch(a)
+		{
+			case 0:
+			break;
+
+			case 255:
+			*d = c + mul_256(len, *d);
+			break;
+
+			default:
+			{
+				DATA32 mc = mul_sym(a, c);
+				a = 256 - (mc >> 24);
+				*d = mc + mul_256(a, *d);
+			}
+			break;
+		}
+		d++;
+		mask++;
+	}
+#endif
+
 static void point_prototype_start(Format *f)
 {
 	int i;
@@ -213,8 +245,6 @@ static void drawer_definition(Format *f)
 			sf = formats[++i];
 		}
 	}
-	
-	
 	/*
 	 * Enesim_Drawer_Span sp_mask_color[COLOR_TYPES];
 	 * Enesim_Drawer_Span sp_pixel[ENESIM_SURFACE_FORMATS];

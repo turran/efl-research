@@ -308,6 +308,7 @@ EAPI Enesim_Transformation * enesim_transformation_new(void)
 	t->matrix[MATRIX_ZZ] = 1;
 	_transformation_to_fixed(t->matrix, t->matrix_fixed);
 	t->type = ENESIM_TRANSFORMATION_IDENTITY;
+	ENESIM_MAGIC_SET(t, ENESIM_TRANSFORMATION_MAGIC);
 	
 	return t;
 }
@@ -317,8 +318,9 @@ EAPI Enesim_Transformation * enesim_transformation_new(void)
 EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 {
 	int i;
-		
-	assert(t);
+	
+	ENESIM_ASSERT(t, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_MAGIC_CHECK(t, ENESIM_TRANSFORMATION_MAGIC);
 	
 	for (i = 0; i < MATRIX_SIZE; i++)
 	{
@@ -331,15 +333,22 @@ EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 /**
  * 
  */
-EAPI void enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, Enesim_Rectangle *dr)
+EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, Enesim_Rectangle *dr)
 {
 	Enesim_Rectangle csr, cdr;
 	Enesim_Transformer_Func tfunc;
-		
-	assert(s);
-	assert(d);
-	assert(t);
-
+	Enesim_Scale xscale, yscale;
+	
+	ENESIM_ASSERT(t, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
+	ENESIM_ASSERT(d, ENESIM_ERROR_HANDLE_INVALID);
+	
+	ENESIM_MAGIC_CHECK(t, ENESIM_TRANSFORMATION_MAGIC);
+	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
+	ENESIM_MAGIC_CHECK(d, ENESIM_SURFACE_MAGIC);
+	
+	xscale = ENESIM_SCALE_NO;
+	yscale = ENESIM_SCALE_NO;
 	/* setup the destination clipping */
 	cdr.x = 0;
 	cdr.y = 0;
@@ -350,7 +359,9 @@ EAPI void enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *
 		/* TODO check the return value of the intersection */
 		enesim_rectangle_rectangle_intersection_get(&cdr, dr);
 		if (enesim_rectangle_is_empty(&cdr))
-			return;
+		{
+			ENESIM_ERROR(ENESIM_ERROR_DSTRECT_INVALID);
+		}
 	}
 	/* setup the source clipping */
 	csr.x = 0;
@@ -362,36 +373,27 @@ EAPI void enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *
 		/* TODO check the return value of the intersection */
 		enesim_rectangle_rectangle_intersection_get(&csr, sr);
 		if (enesim_rectangle_is_empty(&csr))
-			return;
+		{
+			ENESIM_ERROR(ENESIM_ERROR_SRCRECT_INVALID);
+		}
 	}
 	/* check if we are going to scale */
-#if 0
 	/* x scaling */
 	if (cdr.w > csr.w)
-	{
-	}
+		xscale = ENESIM_SCALE_UP; 
 	else if (cdr.w < csr.w)
-	{
-		
-	}
-	else
-	{
-		
-	}
+		xscale = ENESIM_SCALE_DOWN;
 	/* y scaling */
 	if (cdr.h > csr.h)
-	{
-	}
+		yscale = ENESIM_SCALE_UP;
 	else if (cdr.h < csr.h)
-	{
-		
-	}
-	else
-	{
-			
-	}
-#endif
+		yscale = ENESIM_SCALE_DOWN;
 	/* get the correct transfomer function */
-	tfunc = _functions[t->type];
+	/* TODO use xscale and yscale */
+	if (!(tfunc = _functions[t->type]))
+	{
+		ENESIM_ERROR(ENESIM_ERROR_TRANSFORMATION_NOT_SUPPORTED);
+	}
 	tfunc(t, s, sr, d, dr);
+	return EINA_TRUE;
 }

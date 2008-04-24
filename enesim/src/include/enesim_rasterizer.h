@@ -42,11 +42,6 @@ typedef struct _Enesim_Scanline Enesim_Scanline; /**< Scanline Handler */
 EAPI Enesim_Scanline 	*enesim_scanline_alias_new(void);
 EAPI void 		enesim_scanline_delete(Enesim_Scanline *sl);
 
-enum
-{
-	ENESIM_OK = 1,
-	ENESIM_ERROR_SCANLINE_NOT_SUPPORTED,
-};
 
 typedef enum
 {
@@ -58,7 +53,7 @@ typedef enum
 typedef struct _Enesim_Rasterizer Enesim_Rasterizer; /**< Rasterizer Handler */
 
 EAPI void enesim_rasterizer_vertex_add(Enesim_Rasterizer *r, float x, float y);
-EAPI int enesim_rasterizer_generate(Enesim_Rasterizer *r, Enesim_Scanline_Callback cb, void *data);
+EAPI Eina_Bool enesim_rasterizer_generate(Enesim_Rasterizer *r, Enesim_Scanline_Callback cb, void *data);
 EAPI void enesim_rasterizer_delete(Enesim_Rasterizer *r);
 EAPI void enesim_rasterizer_fill_rule_set(Enesim_Rasterizer *r, Enesim_Rasterizer_Fill_Rule rule);
 

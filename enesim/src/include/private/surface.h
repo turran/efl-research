@@ -22,6 +22,9 @@ struct _Enesim_Surface
 	Enesim_Surface_Format format;
 	int flags;
 	Enesim_Surface_Data 		data;
+#ifdef DEBUG
+	Enesim_Magic magic;
+#endif
 };
 
 void enesim_surface_premul(Enesim_Surface *s);

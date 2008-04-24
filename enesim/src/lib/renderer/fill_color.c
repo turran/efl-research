@@ -7,10 +7,13 @@
  *============================================================================*/
 typedef struct _Fill_Color
 {
+#ifdef DEBUG
+	unsigned int magic;
+#endif
 	DATA32	color;
 } Fill_Color;
 
-static void _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Surface *dst)
+static Eina_Bool _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Surface *dst)
 {
 	Fill_Color *f;
 	Enesim_Drawer_Span cfnc;
@@ -29,9 +32,11 @@ static void _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Su
 	enesim_surface_data_get(dst, &ddata);
 	enesim_surface_data_increment(&ddata, sfmt, offset);
 	cfnc(&ddata, sl->w, NULL, f->color, NULL);
+	
+	return EINA_TRUE;
 }
 
-static void _draw_mask(Enesim_Renderer *r, Enesim_Scanline_Mask *sl, Enesim_Surface *dst)
+static Eina_Bool _draw_mask(Enesim_Renderer *r, Enesim_Scanline_Mask *sl, Enesim_Surface *dst)
 {
 #if 0
 	Fill_Color *f;
@@ -46,14 +51,23 @@ static void _draw_mask(Enesim_Renderer *r, Enesim_Scanline_Mask *sl, Enesim_Surf
 	offset = (dst->w * sl->y) + sl->x;
 	cfnc(&dst->data, offset, f->color, sl->w, sl->coverages);
 #endif
+	return EINA_TRUE;
 }
 
-static void _draw(Enesim_Renderer *r, int type, void *sl, Enesim_Surface *dst)
+static Eina_Bool _draw(Enesim_Renderer *r, int type, void *sl, Enesim_Surface *dst)
 {
+	Eina_Bool ret;
+	
+	ENESIM_MAGIC_CHECK(((Fill_Color *)(r->data)), ENESIM_RENDERER_FILLCOLOR_MAGIC);
 	if (type == ENESIM_SCANLINE_ALIAS)
-		_draw_alias(r, sl, dst);
-	if (type == ENESIM_SCANLINE_MASK)
-		_draw_mask(r, sl, dst);
+		ret = _draw_alias(r, sl, dst);
+	else if (type == ENESIM_SCANLINE_MASK)
+		ret = _draw_mask(r, sl, dst);
+	else
+	{
+		ENESIM_ERROR(ENESIM_ERROR_HANDLE_INVALID);
+	}
+	return ret;
 }
 
 static void _free(Enesim_Renderer *r)
@@ -82,6 +96,7 @@ EAPI Enesim_Renderer * enesim_fill_color_new(void)
 	r = enesim_renderer_new();
 	r->data = f;
 	r->funcs = &f_func;
+	ENESIM_MAGIC_SET(f, ENESIM_RENDERER_FILLCOLOR_MAGIC);
 
 	return r;
 }
@@ -92,8 +107,14 @@ EAPI Enesim_Renderer * enesim_fill_color_new(void)
 EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, DATA32 color)
 {
 	Fill_Color *f;
+	int i;
+	
+	i = ENESIM_RENDERER_MAGIC;
 
-	assert(r);
+	ENESIM_ASSERT(r, ENESIM_ERROR_HANDLE_INVALID);
+	
+	ENESIM_MAGIC_CHECK(r, ENESIM_RENDERER_MAGIC);
 	f = r->data;
+	ENESIM_MAGIC_CHECK(f, ENESIM_RENDERER_FILLCOLOR_MAGIC);
 	f->color = color;
 }
