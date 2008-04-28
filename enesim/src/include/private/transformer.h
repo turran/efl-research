@@ -30,7 +30,7 @@ typedef enum
 struct _Enesim_Transformation
 {
 	float matrix[MATRIX_SIZE];
-	enesim_16p16_t matrix_fixed[MATRIX_SIZE];
+	Eina_F16p16 matrix_fixed[MATRIX_SIZE];
 	Enesim_Transformation_Type type;
 	int quality; // TODO fix this
 	/* TODO also add the case were the src surface uses borders */
@@ -45,6 +45,6 @@ struct _Enesim_Transformation
  * projective[quality][xscale][yscale]
  */
 
-typedef void (*Enesim_Transformer_Func)(Enesim_Transformation *t, Enesim_Surface *ss, Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect);
+typedef void (*Enesim_Transformer_Func)(Enesim_Transformation *t, Enesim_Surface *ss, Eina_Rectangle *srect, Enesim_Surface *ds, Eina_Rectangle *drect);
 
 #endif /*TRANSFORMER_H_*/

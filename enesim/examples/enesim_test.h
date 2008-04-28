@@ -12,7 +12,6 @@
 
 #include "Eina.h"
 #include "Enesim.h"
-#include "fixed_16p16.h"
 #include "config.h"
 #include "SDL.h"
 

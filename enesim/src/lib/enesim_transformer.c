@@ -1,8 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-
-#include "fixed_16p16.h"
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
@@ -21,17 +19,17 @@ static Enesim_Transformation_Type _transformation_get(float *t)
 }
 
 /* convert the transformation values to fixed point */
-static void _transformation_to_fixed(float *t, enesim_16p16_t *td)
+static void _transformation_to_fixed(float *t, Eina_F16p16 *td)
 {
-	td[0] = enesim_16p16_float_from(t[0]);
-	td[1] = enesim_16p16_float_from(t[1]);
-	td[2] = enesim_16p16_float_from(t[2]);
-	td[3] = enesim_16p16_float_from(t[3]);
-	td[4] = enesim_16p16_float_from(t[4]);
-	td[5] = enesim_16p16_float_from(t[5]);
-	td[6] = enesim_16p16_float_from(t[6]);
-	td[7] = enesim_16p16_float_from(t[7]);
-	td[8] = enesim_16p16_float_from(t[8]);
+	td[0] = eina_f16p16_float_from(t[0]);
+	td[1] = eina_f16p16_float_from(t[1]);
+	td[2] = eina_f16p16_float_from(t[2]);
+	td[3] = eina_f16p16_float_from(t[3]);
+	td[4] = eina_f16p16_float_from(t[4]);
+	td[5] = eina_f16p16_float_from(t[5]);
+	td[6] = eina_f16p16_float_from(t[6]);
+	td[7] = eina_f16p16_float_from(t[7]);
+	td[8] = eina_f16p16_float_from(t[8]);
 }
 
 static void _transformation_debug(Enesim_Transformation *t)
@@ -64,7 +62,7 @@ static void _transformation_debug(Enesim_Transformation *t)
  * in case of argb8888_pre means several muls and divs
  */
 static unsigned int convolution2x2(Enesim_Surface_Data *data, 
-		Enesim_Surface_Format fmt, enesim_16p16_t x, enesim_16p16_t y,
+		Enesim_Surface_Format fmt, Eina_F16p16 x, Eina_F16p16 y,
 		unsigned w, unsigned int h)
 {
 	Enesim_Surface_Data tmp;
@@ -73,11 +71,11 @@ static unsigned int convolution2x2(Enesim_Surface_Data *data,
 	int sx, sy;
 
 	/* 8 bits error to alpha */
-	ax = 1 + enesim_16p16_fracc_get(x) >> 8;
-	ay = 1 + enesim_16p16_fracc_get(y) >> 8;
+	ax = 1 + (eina_f16p16_fracc_get(x) >> 8);
+	ay = 1 + (eina_f16p16_fracc_get(y) >> 8);
 	/* integer values for the coordinates */
-	sx = enesim_16p16_int_to(x);
-	sy = enesim_16p16_int_to(y);
+	sx = eina_f16p16_int_to(x);
+	sy = eina_f16p16_int_to(y);
 
 	if ((sx > -1) && (sy > -1))
 	{
@@ -115,7 +113,7 @@ static unsigned int convolution2x2(Enesim_Surface_Data *data,
 }
 
 static void transformer_identity_no_no(Enesim_Transformation *t, Enesim_Surface *ss,
-		Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)
+		Eina_Rectangle *srect, Enesim_Surface *ds, Eina_Rectangle *drect)
 {
 	Enesim_Surface_Data sdata, ddata;
 	Enesim_Drawer_Span spfnc;
@@ -138,15 +136,15 @@ static void transformer_identity_no_no(Enesim_Transformation *t, Enesim_Surface 
 }
 
 static void transformer_affine_no_no(Enesim_Transformation *t, Enesim_Surface *ss,
-		Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)
+		Eina_Rectangle *srect, Enesim_Surface *ds, Eina_Rectangle *drect)
 {
 	Enesim_Surface_Data sdata, ddata;
-	enesim_16p16_t sx, sy;
+	Eina_F16p16 sx, sy;
 	Enesim_Drawer_Point ptfnc;
 	int h;
 	
-	sx = enesim_16p16_mul(t->matrix_fixed[MATRIX_XX], drect->x) + enesim_16p16_mul(t->matrix_fixed[MATRIX_XY], drect->y) + t->matrix_fixed[MATRIX_XZ];
-	sy = enesim_16p16_mul(t->matrix_fixed[MATRIX_YX], drect->x) + enesim_16p16_mul(t->matrix_fixed[MATRIX_YY], drect->y) + t->matrix_fixed[MATRIX_YZ];
+	sx = eina_f16p16_mul(t->matrix_fixed[MATRIX_XX], drect->x) + eina_f16p16_mul(t->matrix_fixed[MATRIX_XY], drect->y) + t->matrix_fixed[MATRIX_XZ];
+	sy = eina_f16p16_mul(t->matrix_fixed[MATRIX_YX], drect->x) + eina_f16p16_mul(t->matrix_fixed[MATRIX_YY], drect->y) + t->matrix_fixed[MATRIX_YZ];
 	
 	enesim_surface_data_get(ds, &ddata);
 	enesim_surface_data_get(ss, &sdata);
@@ -157,7 +155,7 @@ static void transformer_affine_no_no(Enesim_Transformation *t, Enesim_Surface *s
 	{
 		Enesim_Surface_Data ddata2;
 		int w;
-		enesim_16p16_t sxx, syy;
+		Eina_F16p16 sxx, syy;
 		
 		ddata2 = ddata;
 		sxx = sx;
@@ -170,11 +168,11 @@ static void transformer_affine_no_no(Enesim_Transformation *t, Enesim_Surface *s
 			Enesim_Surface_Data sdata2;
 			
 			sdata2 = sdata;
-			six = enesim_16p16_int_to(sxx);
-			siy = enesim_16p16_int_to(syy);
+			six = eina_f16p16_int_to(sxx);
+			siy = eina_f16p16_int_to(syy);
 			
 			/* check that we are inside the source rectangle */
-			if ((enesim_rectangle_xcoord_inside(srect, six)) && (enesim_rectangle_ycoord_inside(srect, siy)))
+			if ((eina_rectangle_xcoord_inside(srect, six)) && (eina_rectangle_ycoord_inside(srect, siy)))
 			{
 				unsigned int argb;
 				
@@ -195,7 +193,7 @@ static void transformer_affine_no_no(Enesim_Transformation *t, Enesim_Surface *s
 }
 
 static void transformer_projective_no_no(Enesim_Transformation *t, Enesim_Surface *ss,
-		Enesim_Rectangle *srect, Enesim_Surface *ds, Enesim_Rectangle *drect)
+		Eina_Rectangle *srect, Enesim_Surface *ds, Eina_Rectangle *drect)
 {
 	
 }
@@ -333,9 +331,9 @@ EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 /**
  * 
  */
-EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Enesim_Rectangle *sr, Enesim_Surface *d, Enesim_Rectangle *dr)
+EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d, Eina_Rectangle *dr)
 {
-	Enesim_Rectangle csr, cdr;
+	Eina_Rectangle csr, cdr;
 	Enesim_Transformer_Func tfunc;
 	Enesim_Scale xscale, yscale;
 	
@@ -357,8 +355,8 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (sr)
 	{
 		/* TODO check the return value of the intersection */
-		enesim_rectangle_rectangle_intersection_get(&cdr, dr);
-		if (enesim_rectangle_is_empty(&cdr))
+		eina_rectangle_rectangle_intersection_get(&cdr, dr);
+		if (eina_rectangle_is_empty(&cdr))
 		{
 			ENESIM_ERROR(ENESIM_ERROR_DSTRECT_INVALID);
 		}
@@ -371,8 +369,8 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (dr)
 	{
 		/* TODO check the return value of the intersection */
-		enesim_rectangle_rectangle_intersection_get(&csr, sr);
-		if (enesim_rectangle_is_empty(&csr))
+		eina_rectangle_rectangle_intersection_get(&csr, sr);
+		if (eina_rectangle_is_empty(&csr))
 		{
 			ENESIM_ERROR(ENESIM_ERROR_SRCRECT_INVALID);
 		}

@@ -235,7 +235,7 @@ static Enesim_Rasterizer_Func cpsc_func = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Enesim_Rectangle boundaries)
+EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Eina_Rectangle boundaries)
 {
 	Enesim_Rasterizer *r;
 	Cpsc *c;

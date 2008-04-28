@@ -10,7 +10,7 @@
  */
 typedef struct _Ekeko_Object_State
 {
-	Enesim_Rectangle geometry;
+	Eina_Rectangle geometry;
 	Eina_Bool visible;
 	void *data;
 } Ekeko_Object_State;
@@ -28,9 +28,9 @@ struct _Ekeko_Object
 	void *cdata;
 };
 
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Enesim_Rectangle *drect);
+Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect);
 void ekeko_object_pre_process(Ekeko_Object *o);
-void ekeko_object_process(Ekeko_Object *o, Enesim_Rectangle *r);
+void ekeko_object_process(Ekeko_Object *o, Eina_Rectangle *r);
 void ekeko_object_post_process(Ekeko_Object *o);
 
 #endif

@@ -23,30 +23,30 @@ typedef enum
  */
 typedef struct _Argb8888_Data
 {
-	DATA32	*plane0; /* a8r8g8b8 plane */
+	uint32_t	*plane0; /* a8r8g8b8 plane */
 } Argb8888_Data, Argb8888_Pre_Data;
 /**
  * 
  */
 typedef struct _Rgb565_Data
 {
-	DATA16	*plane0; /* r5g6b5 plane */
-	DATA8 	*plane1; /* a5 plane */
+	uint16_t	*plane0; /* r5g6b5 plane */
+	uint8_t 	*plane1; /* a5 plane */
 } Rgb565_Data;
 /**
  * 
  */
 typedef struct _Rgb888_Data
 {
-	DATA8 	*plane0; /* r8g8b8 plane */
-	DATA8 	*plane1; /* a8 plane */
+	uint8_t 	*plane0; /* r8g8b8 plane */
+	uint8_t 	*plane1; /* a8 plane */
 } Rgb888_Data;
 /**
  * TODO how to handle this??
  */
 typedef struct _A8_Data
 {
-	DATA8 	*plane0; /* a8 plane */
+	uint8_t 	*plane0; /* a8 plane */
 } A8_Data;
 /**
  * 

@@ -10,7 +10,7 @@ typedef struct _Fill_Color
 #ifdef DEBUG
 	unsigned int magic;
 #endif
-	DATA32	color;
+	uint32_t	color;
 } Fill_Color;
 
 static Eina_Bool _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Surface *dst)
@@ -104,7 +104,7 @@ EAPI Enesim_Renderer * enesim_fill_color_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, DATA32 color)
+EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, uint32_t color)
 {
 	Fill_Color *f;
 	int i;

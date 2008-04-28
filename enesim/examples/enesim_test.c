@@ -31,7 +31,7 @@ static void screen_clear(void)
 	SDL_FillRect(screen, NULL, 0xffffffff);
 }
 
-static void rectangle_draw(Enesim_Rectangle *r, Enesim_Surface *dst, unsigned int color, Enesim_Rop rop)
+static void rectangle_draw(Eina_Rectangle *r, Enesim_Surface *dst, unsigned int color, Enesim_Rop rop)
 {
 	int i;
 	Enesim_Scanline_Alias sl;
@@ -96,8 +96,8 @@ static void test3(void)
 {
 	Enesim_Surface *dst, *src;
 	Enesim_Transformation *tx;
-	Enesim_Rectangle srect;
-	Enesim_Rectangle drect;
+	Eina_Rectangle srect;
+	Eina_Rectangle drect;
 	int w, h;
 	float m1[9], m2[9];
 
@@ -160,13 +160,13 @@ static void test2(void)
  *============================================================================*/
 static void test1(void)
 {
-	enesim_16p16_t fp, res;
+	Eina_F16p16 fp, res;
 	float r;
 
 	/* sqrt(2) */
-	fp = enesim_16p16_int_from(2);
-	res = enesim_16p16_sqrt(fp);
-	r = enesim_16p16_float_to(res);
+	fp = eina_f16p16_int_from(2);
+	res = eina_f16p16_sqrt(fp);
+	r = eina_f16p16_float_to(res);
 	printf("sqrt(2) = %f\n", r);
 }
 

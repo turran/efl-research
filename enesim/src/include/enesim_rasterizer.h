@@ -26,7 +26,7 @@ typedef struct _Enesim_Scanline_Mask
 	int y;
 	int x;
 	int w;
-	DATA8 *coverages;
+	uint8_t *coverages;
 } Enesim_Scanline_Mask;
 
 enum {
@@ -57,7 +57,7 @@ EAPI Eina_Bool enesim_rasterizer_generate(Enesim_Rasterizer *r, Enesim_Scanline_
 EAPI void enesim_rasterizer_delete(Enesim_Rasterizer *r);
 EAPI void enesim_rasterizer_fill_rule_set(Enesim_Rasterizer *r, Enesim_Rasterizer_Fill_Rule rule);
 
-EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Enesim_Rectangle boundaries);
+EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Eina_Rectangle boundaries);
 
 typedef enum
 {
@@ -68,7 +68,7 @@ typedef enum
 } Enesim_Rasterizer_Kiia_Count;
 
 EAPI Enesim_Rasterizer * enesim_rasterizer_kiia_new(Enesim_Rasterizer_Kiia_Count count,
-		Enesim_Rectangle boundaries);
+		Eina_Rectangle boundaries);
 
 /** @} */ //End of Enesim_Rasterizer_Group
 

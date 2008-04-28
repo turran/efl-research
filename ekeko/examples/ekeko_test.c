@@ -58,7 +58,7 @@ void shutdown(void)
 
 void loop(void)
 {
-	Enesim_Rectangle r;
+	Eina_Rectangle r;
 	SDL_Event event;
 	int end = 0;
 	int i = 0;

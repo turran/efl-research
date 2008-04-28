@@ -17,14 +17,14 @@ static void _object_change(Ekeko_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Enesim_Rectangle *drect)
+Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect)
 {
 	drect->x = o->curr.geometry.x;
 	drect->y = o->curr.geometry.y;
 	drect->w = o->curr.geometry.w;
 	drect->h = o->curr.geometry.h;
 
-	return enesim_rectangle_rectangle_intersection_get(drect, &r->r);
+	return eina_rectangle_rectangle_intersection_get(drect, &r->r);
 }
 /**
  * To be documented
@@ -62,7 +62,7 @@ ok:
  * To be documented
  * FIXME: To be fixed
  */
-void ekeko_object_process(Ekeko_Object *o, Enesim_Rectangle *r)
+void ekeko_object_process(Ekeko_Object *o, Eina_Rectangle *r)
 {
 	/* call class function */
 	o->oclass->process(o->cdata, r);
@@ -191,7 +191,7 @@ EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Enesim_Rectangle *r)
+EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Eina_Rectangle *r)
 {
 	assert(o);
 	assert(r);

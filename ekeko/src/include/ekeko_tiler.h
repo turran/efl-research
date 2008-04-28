@@ -8,7 +8,7 @@ typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
 struct _Ekeko_Rectangle
 {
 	Eina_Inlist list;
-	Enesim_Rectangle r;
+	Eina_Rectangle r;
 };
 
 struct _Ekeko_Tiler
@@ -32,8 +32,8 @@ struct _Ekeko_Tiler_Class
 	void * (*new)(Ekeko_Tiler *t);
 	void (*free)(Ekeko_Tiler *t);
 	void (*tile_size_set)(Ekeko_Tiler *t, int w, int h);
-	int (*rect_add)(Ekeko_Tiler *t, Enesim_Rectangle *r);
-	int (*rect_del)(Ekeko_Tiler *t, Enesim_Rectangle *r);
+	int (*rect_add)(Ekeko_Tiler *t, Eina_Rectangle *r);
+	int (*rect_del)(Ekeko_Tiler *t, Eina_Rectangle *r);
 	void (*clear)(Ekeko_Tiler *t);
 	Ekeko_Rectangle * (*rects_get)(Ekeko_Tiler *t);
 };
@@ -41,8 +41,8 @@ struct _Ekeko_Tiler_Class
 Ekeko_Tiler *ekeko_tiler_new(int type, int w, int h);
 void ekeko_tiler_free(Ekeko_Tiler *t);
 void ekeko_tiler_tile_size_set(Ekeko_Tiler *t, int w, int h);
-int ekeko_tiler_rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r);
-int ekeko_tiler_rect_del(Ekeko_Tiler *t, Enesim_Rectangle *r);
+int ekeko_tiler_rect_add(Ekeko_Tiler *t, Eina_Rectangle *r);
+int ekeko_tiler_rect_del(Ekeko_Tiler *t, Eina_Rectangle *r);
 void ekeko_tiler_clear(Ekeko_Tiler *t);
 Ekeko_Rectangle * ekeko_tiler_rects_get(Ekeko_Tiler *t);
 void ekeko_tiler_rects_free(Ekeko_Rectangle *rects);

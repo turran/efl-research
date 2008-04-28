@@ -1,10 +1,6 @@
 #ifndef _KIIA_H
 #define _KIIA_H
 
-#include <math.h>
-
-#include "fixed_16p16.h"
-
 /*
  * Kiia Kallio Scanline edge-flag algorithm, check it out at:
  * http://mlab.uiah.fi/~kkallio/antialiasing/
@@ -15,7 +11,7 @@
  * - Support the clipping?
  */
 
-//#define FLOAT_TO_FIXED(a) enesim_16p16_float_from(a)
+//#define FLOAT_TO_FIXED(a) eina_f16p16_float_from(a)
 
 #define SLOPE_FIX_SHIFT 8
 #define SLOPE_FIX_STEP (1 << SLOPE_FIX_SHIFT)
@@ -35,9 +31,9 @@ struct _Kiia_Edge
 	int yfirst;
 	int ylast;
 	
-	enesim_16p16_t x;
-	enesim_16p16_t slope;
-	enesim_16p16_t slope_fix;
+	Eina_F16p16 x;
+	Eina_F16p16 slope;
+	Eina_F16p16 slope_fix;
 	
 	int direction;
 	Kiia_Edge *next; /* the next in the line */
@@ -61,12 +57,12 @@ typedef struct _Kiia
 	Enesim_Extender_Int extender;
 	
 	KIIA_SUBPIXEL_DATA *mask;
-	DATA8 *coverages;
+	uint8_t *coverages;
 	Enesim_Scanline_Mask sl; /* FIXME is it needed ??? */
 } Kiia;
 
 static float _float_offsets[KIIA_SUBPIXEL_COUNT] = KIIA_SUBPIXEL_OFFSETS;
-static enesim_16p16_t _offsets[KIIA_SUBPIXEL_COUNT];
+static Eina_F16p16 _offsets[KIIA_SUBPIXEL_COUNT];
 
 /*============================================================================*
  *                                  Local                                     * 
@@ -148,16 +144,16 @@ static void _edge_add(Kiia *k, Kiia_Vertex *v)
 	/* create the new edge */
 	e = calloc(1, sizeof(Kiia_Edge));
 	slope = (xend - xstart) / (yend - ystart);
-	e->slope = enesim_16p16_float_from(slope);
+	e->slope = eina_f16p16_float_from(slope);
 	if (last_line - first_line >= SLOPE_FIX_STEP)
 	{
-		e->slope_fix = enesim_16p16_float_from(slope * SLOPE_FIX_STEP) - (e->slope << SLOPE_FIX_SHIFT);
+		e->slope_fix = eina_f16p16_float_from(slope * SLOPE_FIX_STEP) - (e->slope << SLOPE_FIX_SHIFT);
 	}
 	else
 	{
 		e->slope_fix = 0;
 	}
-	e->x = enesim_16p16_float_from(xstart + (((float)first_line - ystart) * slope));
+	e->x = eina_f16p16_float_from(xstart + (((float)first_line - ystart) * slope));
 	e->direction = direction;
 	e->yfirst = first_line;
 	e->ylast = last_line;
@@ -185,16 +181,16 @@ static void _vertex_add(Kiia *k, float x, float y)
 	k->vertex_last = v;
 }
 
-static inline enesim_16p16_t _dda(Kiia *k, enesim_16p16_t xs, int ys, int ye, enesim_16p16_t slope, KIIA_SUBPIXEL_DATA mask)
+static inline Eina_F16p16 _dda(Kiia *k, Eina_F16p16 xs, int ys, int ye, Eina_F16p16 slope, KIIA_SUBPIXEL_DATA mask)
 {
-	enesim_16p16_t x;
+	Eina_F16p16 x;
 	int y;
 
 	x = xs;
 
 	for (y = ys; y <= ye; y++)
 	{
-		int xp =  enesim_16p16_int_to((x + _offsets[y]));
+		int xp =  eina_f16p16_int_to((x + _offsets[y]));
 		
 		k->mask[xp] ^= mask;
 		mask <<= 1;
@@ -216,13 +212,13 @@ static void _rasterize_edge(Kiia *k, Kiia_Edge **aet, Enesim_Extender_Int *lengt
 		{
 			int ye;
 			int xe;
-			enesim_16p16_t x;
+			Eina_F16p16 x;
 
 			ye = curr_edge->ylast & (KIIA_SUBPIXEL_COUNT - 1);
 			x = _dda(k, curr_edge->x, 0, ye, curr_edge->slope, 1);
-			xe = enesim_16p16_int_to(x - curr_edge->slope);
+			xe = eina_f16p16_int_to(x - curr_edge->slope);
 		
-			enesim_extender_int_unsorted_add(length, enesim_16p16_int_to(curr_edge->x), xe);
+			enesim_extender_int_unsorted_add(length, eina_f16p16_int_to(curr_edge->x), xe);
 			/* remove the edge from the AET */
 			curr_edge = curr_edge->gnext;
 			if (prev_edge)
@@ -233,11 +229,11 @@ static void _rasterize_edge(Kiia *k, Kiia_Edge **aet, Enesim_Extender_Int *lengt
 		else
 		{
 			int xe;
-			enesim_16p16_t x;
+			Eina_F16p16 x;
 
 			x = _dda(k, curr_edge->x, 0, KIIA_SUBPIXEL_COUNT - 1, curr_edge->slope, 1);
-			xe = enesim_16p16_int_to(x - curr_edge->slope);
-			enesim_extender_int_unsorted_add(length, enesim_16p16_int_to(curr_edge->x), xe);
+			xe = eina_f16p16_int_to(x - curr_edge->slope);
+			enesim_extender_int_unsorted_add(length, eina_f16p16_int_to(curr_edge->x), xe);
 			/* update the edge */
 			if ((curr_line & SLOPE_FIX_SCANLINE_MASK) == 0)
 				curr_edge->x = x + curr_edge->slope_fix;
@@ -262,23 +258,23 @@ static void _rasterize_edge(Kiia *k, Kiia_Edge **aet, Enesim_Extender_Int *lengt
 				int ye;
 				int ys;
 				int xe;
-				enesim_16p16_t x;
+				Eina_F16p16 x;
 				ye = curr_edge->ylast & (KIIA_SUBPIXEL_COUNT - 1);
 				ys = curr_edge->yfirst & (KIIA_SUBPIXEL_COUNT - 1);
 				x = _dda(k, curr_edge->x, ys, ye, curr_edge->slope, 1 << ys);
-				xe = enesim_16p16_int_to(x - curr_edge->slope);
-				enesim_extender_int_unsorted_add(length, enesim_16p16_int_to(curr_edge->x), xe);
+				xe = eina_f16p16_int_to(x - curr_edge->slope);
+				enesim_extender_int_unsorted_add(length, eina_f16p16_int_to(curr_edge->x), xe);
 				/* ignore this edge */
 			}
 			else
 			{
 				int ys;
 				int xe;
-				enesim_16p16_t x;
+				Eina_F16p16 x;
 				ys = curr_edge->yfirst & (KIIA_SUBPIXEL_COUNT - 1);
 				x = _dda(k, curr_edge->x, ys, KIIA_SUBPIXEL_COUNT - 1, curr_edge->slope, 1 << ys);
-				xe = enesim_16p16_int_to(x - curr_edge->slope);
-				enesim_extender_int_unsorted_add(length, enesim_16p16_int_to(curr_edge->x), xe);
+				xe = eina_f16p16_int_to(x - curr_edge->slope);
+				enesim_extender_int_unsorted_add(length, eina_f16p16_int_to(curr_edge->x), xe);
 				curr_edge->x = x;
 				/* add the edge to the AET */
 				if (prev_edge)
@@ -319,7 +315,7 @@ static void _generate(Kiia *k)
 		KIIA_SUBPIXEL_DATA *end;
 		KIIA_SUBPIXEL_DATA mask;
 
-		DATA8 *cov;
+		uint8_t *cov;
 
 		enesim_extender_int_reset(&length);
 		_rasterize_edge(k, &edge, &length, y);
@@ -447,7 +443,7 @@ static void _delete(Kiia *k)
 	free(k);
 }
 
-static inline Enesim_Rasterizer * _new(Enesim_Rasterizer_Func *func, Enesim_Rectangle boundaries)
+static inline Enesim_Rasterizer * _new(Enesim_Rasterizer_Func *func, Eina_Rectangle boundaries)
 {
 	Kiia *k;
 	Enesim_Rasterizer *r;
@@ -459,11 +455,11 @@ static inline Enesim_Rasterizer * _new(Enesim_Rasterizer_Func *func, Enesim_Rect
 	k->table = calloc(boundaries.h, sizeof(Kiia_Edge *));
 	/* TODO explain the 3 */
 	k->mask = calloc(boundaries.w + 3, sizeof(KIIA_SUBPIXEL_DATA));
-	k->coverages = calloc(boundaries.w + 3, sizeof(DATA8));
+	k->coverages = calloc(boundaries.w + 3, sizeof(uint8_t));
 	/* convert the offsets to fixed point */
 	for (i = 0; i < KIIA_SUBPIXEL_COUNT; i++)
 	{
-		_offsets[i] = enesim_16p16_float_from(_float_offsets[i]);	
+		_offsets[i] = eina_f16p16_float_from(_float_offsets[i]);	
 	}
 	
 	return r;

@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 /* TODO remove all assert statements */
 #include <assert.h>
 
@@ -106,6 +107,7 @@ static inline int enesim_hline_cut(int x, int *w, int *rx, int *rw, int cx)
 
 #include "extender_int.h"
 // #include "extender_float.h"
+#include "private/curve.h"
 #include "private/drawer.h"
 #include "private/rasterizer.h"
 #include "private/renderer.h"

@@ -2,7 +2,7 @@
 static inline void
 ARGB8888_CONVOLUTION_2X2_PROTO
 {
-	DATA32 p3 = 0, p2 = 0, p1 = 0, p0 = 0;
+	uint32_t p3 = 0, p2 = 0, p1 = 0, p0 = 0;
 	int ax, ay;
 	int sx, sy;
 	
@@ -39,9 +39,9 @@ ARGB8888_CONVOLUTION_2X2_PROTO
 void 
 ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO
 {
-	DATA32 *dp;
-	DATA32 *sp;
-	enesim_16p16_t sx, sy;
+	uint32_t *dp;
+	uint32_t *sp;
+	Eina_F16p16 sx, sy;
 	int h;
 	
 	sx = enesim_16p16_mul(t[MATRIX_XX], drect->x) + enesim_16p16_mul(t[MATRIX_XY],drect->y) + t[MATRIX_XZ];
@@ -51,9 +51,9 @@ ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO
 	h = drect->h;
 	while (h--)
 	{
-		DATA32 *d = dp;
-		DATA32 *e = d + drect->w;
-		enesim_16p16_t sxx, syy;
+		uint32_t *d = dp;
+		uint32_t *e = d + drect->w;
+		Eina_F16p16 sxx, syy;
 		
 		sxx = sx;
 		syy = sy;
@@ -86,7 +86,7 @@ ARGB8888_NOSCALE_AFFINE_ITERATOR_PROTO
 void 
 ARGB8888_NOSCALE_IDENTITY_ITERATOR_PROTO
 {
-	DATA32 *dp, *sp;
+	uint32_t *dp, *sp;
 	int h;
 	
 	dp = ds->data.argb8888.plane0 + (drect->y * ds->w) + drect->x;
@@ -94,9 +94,9 @@ ARGB8888_NOSCALE_IDENTITY_ITERATOR_PROTO
 	h = drect->h;
 	while (h--)
 	{
-		DATA32 *d = dp;
-		DATA32 *s = sp;
-		DATA32 *e = d + drect->w;
+		uint32_t *d = dp;
+		uint32_t *s = sp;
+		uint32_t *e = d + drect->w;
 
 		while (d < e)
 		{

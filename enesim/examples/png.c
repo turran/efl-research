@@ -106,7 +106,7 @@ void png_load(Enesim_Surface *s, char *file)
 	}
 	enesim_surface_data_get(s, &sdata);
 	for (i = 0; i < h; i++)
-		lines[i] = ((unsigned char *)(sdata.argb8888_pre.plane0)) + (i * w * sizeof(DATA32));
+		lines[i] = ((unsigned char *)(sdata.argb8888_pre.plane0)) + (i * w * sizeof(uint32_t));
 	png_read_image(png_ptr, lines);
 	png_read_end(png_ptr, info_ptr);
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
@@ -121,7 +121,7 @@ void png_save(Enesim_Surface *s, char *file, int compress)
 	int x, y, j;
 	int w, h;
 	Enesim_Surface_Data esdata;
-	DATA32 *ptr, *data;
+	uint32_t *ptr, *data;
 
 	png_structp         png_ptr;
 	png_infop           info_ptr;
@@ -146,7 +146,7 @@ void png_save(Enesim_Surface *s, char *file, int compress)
 	{
 		enesim_surface_data_get(s, &esdata);
 		enesim_surface_size_get(s, &w, &h);
-		data = malloc(w * h * sizeof(DATA32));
+		data = malloc(w * h * sizeof(uint32_t));
         if (!data)
           {
             fclose(f);
@@ -154,7 +154,7 @@ void png_save(Enesim_Surface *s, char *file, int compress)
             png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
             return;
           }
-	memcpy(data, esdata.argb8888_pre.plane0, w * h * sizeof(DATA32));
+	memcpy(data, esdata.argb8888_pre.plane0, w * h * sizeof(uint32_t));
         //enesim_color_data_argb_unpremul(data, w * h);
         png_init_io(png_ptr, f);
         png_set_IHDR(png_ptr, info_ptr, w, h, 8,

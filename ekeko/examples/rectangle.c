@@ -12,7 +12,7 @@ static void _pre_process(void *data)
 {
 }
 
-static void _process(void *data, Enesim_Rectangle *r)
+static void _process(void *data, Eina_Rectangle *r)
 {
 	Object *o = data;
 	SDL_Rect rect;

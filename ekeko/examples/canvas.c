@@ -3,7 +3,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static int _flush(void *data, Enesim_Rectangle *r)
+static int _flush(void *data, Eina_Rectangle *r)
 {
 	Canvas *c = data;
 	

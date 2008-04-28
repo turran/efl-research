@@ -108,8 +108,8 @@ static void _tile_size_set(Ekeko_Tiler *t, int w, int h) {
 
 }
 
-static int _rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r) {
-	Enesim_Rectangle r2;
+static int _rect_add(Ekeko_Tiler *t, Eina_Rectangle *r) {
+	Eina_Rectangle r2;
 	tiles_t *ts = t->data;
 	int tx1, tx2, ty1, ty2, tfx1, tfx2, tfy1, tfy2, xx, yy;
 	int num;
@@ -150,7 +150,7 @@ static int _rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r) {
 	return num;
 }
 
-static int _rect_del(Ekeko_Tiler *t, Enesim_Rectangle *rect) {
+static int _rect_del(Ekeko_Tiler *t, Eina_Rectangle *rect) {
 	tiles_t *ts = t->data;
 
 	int tx1, tx2, ty1, ty2, tfx1, tfx2, tfy1, tfy2, xx, yy;

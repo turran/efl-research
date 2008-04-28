@@ -15,7 +15,7 @@ EAPI Eina_Bool enesim_renderer_draw(Enesim_Renderer *r, int type, void *sl, Enes
  * @{
  */
 EAPI Enesim_Renderer * enesim_fill_color_new(void);
-EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, DATA32 color);
+EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, uint32_t color);
 /** 
  * @} 
  * @defgroup Enesim_Renderer_Fill_Surface_Group Fill Surface

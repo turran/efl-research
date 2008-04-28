@@ -2,14 +2,14 @@
 
 /* color mask code */
 #if 0
-DATA32 *d, *e;
+uint32_t *d, *e;
 
 	d = data->argb8888.plane0 + off;
 	e = d + len;
 	len = 256 - (c >> 24);
 	while (d < e)
 	{
-		DATA32 a = *mask;
+		uint32_t a = *mask;
 		switch(a)
 		{
 			case 0:
@@ -21,7 +21,7 @@ DATA32 *d, *e;
 
 			default:
 			{
-				DATA32 mc = mul_sym(a, c);
+				uint32_t mc = mul_sym(a, c);
 				a = 256 - (mc >> 24);
 				*d = mc + mul_256(a, *d);
 			}

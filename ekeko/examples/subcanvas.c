@@ -14,15 +14,15 @@ struct _Subcanvas
 	Canvas *canvas;
 };
 
-static int _flush(void *data, Enesim_Rectangle *r)
+static int _flush(void *data, Eina_Rectangle *r)
 {
 	Subcanvas *s = data;
-	Enesim_Rectangle geometry;
-	Enesim_Rectangle rscaled;
+	Eina_Rectangle geometry;
+	Eina_Rectangle rscaled;
 
 	/* transform this rectangle relative to the upper canvas */ 
 	ekeko_object_geometry_get(s->object->object, &geometry);
-	enesim_rectangle_rescale_out(&geometry, r, &rscaled);
+	eina_rectangle_rescale_out(&geometry, r, &rscaled);
 	/* and mark those rectangles as a damage */
 	ekeko_canvas_damage_add(s->object->canvas->canvas, &rscaled);
 	return 1;
@@ -40,18 +40,18 @@ static void _pre_process(void *data)
 {
 }
 
-static void _process(void *data, Enesim_Rectangle *r)
+static void _process(void *data, Eina_Rectangle *r)
 {
 	Subcanvas *s = data;
-	Enesim_Rectangle geometry;
-	Enesim_Rectangle rscaled;
+	Eina_Rectangle geometry;
+	Eina_Rectangle rscaled;
 	SDL_Rect srect;
 	SDL_Rect drect;
 	
 	/* the rectangle received is relative to the upper canvas
 	 * transform it to the local coordinates */
 	ekeko_object_geometry_get(s->object->object, &geometry);
-	enesim_rectangle_rescale_in(&geometry, r, &rscaled);
+	eina_rectangle_rescale_in(&geometry, r, &rscaled);
 	/* blit the rectangle on the upper canvas */
 	srect.x = rscaled.x;
 	srect.y = rscaled.y;

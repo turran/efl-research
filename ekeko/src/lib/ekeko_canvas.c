@@ -42,6 +42,15 @@ void ekeko_canvas_change(Ekeko_Canvas *c)
 {
 	c->changed = EINA_TRUE;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void ekeko_canvas_input_add(Ekeko_Canvas *c, Ekeko_Input *i)
+{
+	c->inputs = eina_inlist_append(c->inputs, i);
+}
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -65,7 +74,7 @@ EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r)
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	
 }
@@ -73,7 +82,7 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Enesim_Rectangle *r)
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	
 }
@@ -81,7 +90,7 @@ EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Enesim_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Enesim_Rectangle *r)
+EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	
 }
@@ -113,7 +122,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 		for (lo = (Eina_Inlist *)c->objects; lo; lo = lo->next)
 		{
 			Ekeko_Object *o;
-			Enesim_Rectangle orect;
+			Eina_Rectangle orect;
 
 			o = (Ekeko_Object *)lo;
 			if (ekeko_object_is_inside(o, r, &orect) == EINA_TRUE)
@@ -142,7 +151,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Enesim_Rectangle *r)
+EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	assert(c);
 	assert(r);

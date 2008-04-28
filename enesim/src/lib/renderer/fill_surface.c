@@ -9,8 +9,8 @@ typedef struct _Fill_Surface
 {
 	Enesim_Surface *s;
 	int mode;
-	Enesim_Rectangle sarea;
-	Enesim_Rectangle darea;
+	Eina_Rectangle sarea;
+	Eina_Rectangle darea;
 } Fill_Surface;
 
 #define DRECT f->darea
@@ -141,7 +141,7 @@ EAPI void enesim_fill_surface_dst_area_set(Enesim_Renderer *r, int x, int y, int
 	y = (y < 0) ? 0 : y;
 	w = (w < 0) ? 0 : w;
 	h = (h < 0) ? 0 : h;
-	enesim_rectangle_from_coords(&f->darea, x, y, w, h);
+	eina_rectangle_from_coords(&f->darea, x, y, w, h);
 }
 /**
  * To be documented
@@ -156,5 +156,5 @@ EAPI void enesim_fill_surface_src_area_set(Enesim_Renderer *r, int x, int y, int
 	y = (y < 0) ? 0 : y;
 	w = (w < 0) ? 0 : w;
 	h = (h < 0) ? 0 : h;
-	enesim_rectangle_from_coords(&f->sarea, x, y, w, h);
+	eina_rectangle_from_coords(&f->sarea, x, y, w, h);
 }

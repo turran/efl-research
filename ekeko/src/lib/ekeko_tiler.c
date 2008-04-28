@@ -63,7 +63,7 @@ void ekeko_tiler_tile_size_set(Ekeko_Tiler *t, int w, int h)
  * To be documented
  * FIXME: To be fixed
  */
-int ekeko_tiler_rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r)
+int ekeko_tiler_rect_add(Ekeko_Tiler *t, Eina_Rectangle *r)
 {
 	if (t->class->rect_add)
 		return t->class->rect_add(t, r);
@@ -75,7 +75,7 @@ int ekeko_tiler_rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-int ekeko_tiler_rect_del(Ekeko_Tiler *t, Enesim_Rectangle *r)
+int ekeko_tiler_rect_del(Ekeko_Tiler *t, Eina_Rectangle *r)
 {
 	if (t->class->rect_del)
 		return t->class->rect_del(t, r);

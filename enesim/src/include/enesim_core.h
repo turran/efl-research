@@ -30,11 +30,6 @@ typedef enum
  */
 extern unsigned int enesim_err;
 
-
-typedef unsigned int 		DATA32;
-typedef unsigned short int 	DATA16;
-typedef unsigned char 		DATA8;
-
 EAPI char * enesim_error_to_str(unsigned int err);
 
 #endif /*ENESIM_CORE_H_*/

@@ -35,6 +35,7 @@ Object * subcanvas_object_get(Subcanvas *s);
 
 
 Object * rectangle_new(Canvas *c);
+Object * filter_new(Canvas *c);
 Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *cdata);
 void object_move(Object *o, int x, int y);
 void object_resize(Object *o, int w, int h);
@@ -42,7 +43,7 @@ void object_color_set(Object *o, int color);
 Canvas * object_canvas_get(Object *o);
 
 
-static inline void rectangle_print(Enesim_Rectangle *r)
+static inline void rectangle_print(Eina_Rectangle *r)
 {
 	printf("%d %d %d %d\n", r->x, r->y, r->w, r->h);
 }

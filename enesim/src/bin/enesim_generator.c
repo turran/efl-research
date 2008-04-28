@@ -1,11 +1,10 @@
 #include "enesim_generator.h"
 
 const char *type_names[TYPES] = {
-	"unsigned char",
-	"unsigned short int",
-	"unsigned int",
+	"uint8_t",
+	"uint16_t",
+	"uint32_t",
 };
-
 
 const char *color_names[COLORS] = {
 	"red",

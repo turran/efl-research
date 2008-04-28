@@ -36,6 +36,7 @@
  */
 typedef enum
 {
+	EKEKO_ERROR_NONE,
 } Ekeko_Error;
 
 
@@ -59,7 +60,7 @@ enum
 
 typedef struct _Ekeko_Canvas_Class
 {
-	int (*flush)(void *data, Enesim_Rectangle *r);
+	int (*flush)(void *data, Eina_Rectangle *r);
 	/* what about the idle? */
 	/* canvas_changed -> if some object has changed, then the canvas has changed, we could notify upward that so we can call
 	 * the canvas_process
@@ -67,11 +68,11 @@ typedef struct _Ekeko_Canvas_Class
 } Ekeko_Canvas_Class;
 
 EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata, int type, int w, int h);
-EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
-EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Enesim_Rectangle *r);
-EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Enesim_Rectangle *r);
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r);
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
+EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
-EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Enesim_Rectangle *r);
+EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c); 
 
 /**
@@ -89,7 +90,7 @@ typedef struct _Ekeko_Object_Class
 	/* once the object is going to be processed, first this is called */
 	void (*pre_process)(void *data);
 	/* the actual process has to be done here receiving the rectangle, FIXME maybe return a value to stop checking this object? */
-	void (*process)(void *data, Enesim_Rectangle *r);
+	void (*process)(void *data, Eina_Rectangle *r);
 	/* after the process this is called */
 	void (*post_process)(void *data);
 	/* return a list of rectangles in case something inside the object has
@@ -107,12 +108,53 @@ EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel);
 EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel);
 EAPI void * ekeko_object_class_data_get(Ekeko_Object *o);
 EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o);
-EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Enesim_Rectangle *r);
+EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Eina_Rectangle *r);
 
 /** @} */
 
-/* possible event api */
-/* interceptors */
+/**
+ * @}
+ * @defgroup Ekeko_Input_Group Input
+ * @{
+ */
+typedef struct _Ekeko_Input Ekeko_Input;
+
+typedef enum _Ekeko_Button_Flags
+{
+	EKEKO_BUTTON_NONE = 0, /**< No extra mouse button data */
+	EKEKO_BUTTON_DOUBLE_CLICK = (1 << 0), /**< This mouse button press was the 2nd press of a double click */
+	EKEKO_BUTTON_TRIPLE_CLICK = (1 << 1) /**< This mouse button press was the 3rd press of a triple click */
+} Ekeko_Button_Flags; /**< Flags for Mouse Button events */
+
+
+/* TODO the final parameter (data) can be replaced? i think there's no need
+ * for it
+ */
+EAPI Ekeko_Input * ekeko_input_new(Ekeko_Canvas *c);
+EAPI ekeko_input_feed_mouse_down(Ekeko_Input *i, int b, Ekeko_Button_Flags flags, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i, int b, Ekeko_Button_Flags flags, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_mouse_out(Ekeko_Input *i, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_mouse_wheel(Ekeko_Input *i, int direction, int z, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_key_down(Ekeko_Input *i, const char *keyname, const char *key, const char *string, const char *compose, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_key_up(Ekeko_Input *i, const char *keyname, const char *key, const char *string, const char *compose, unsigned int timestamp, const void *data);
+EAPI void ekeko_input_feed_hold(Ekeko_Input *i, int hold, unsigned int timestamp, const void *data); 
+
+/**
+ * @}
+ * @defgroup Ekeko_Event_Group Event
+ * @{
+ */
+
+typedef struct _Ekeko_Event
+{
+	union
+	{
+		
+	} data;
+} Ekeko_Event;
+
 /** 
  * @}
  */

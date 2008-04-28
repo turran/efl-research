@@ -8,11 +8,15 @@
  * TODO add debug functions, magic functions, etc
  */
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "eina_types.h"
+#include "eina_f16p16.h"
+#include "eina_rectangle.h"
 #include "eina_inlist.h"
 #include "eina_list.h"
 #include "eina_hash.h"

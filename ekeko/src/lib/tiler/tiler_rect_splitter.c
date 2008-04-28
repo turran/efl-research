@@ -955,7 +955,7 @@ static void _tile_size_set(Ekeko_Tiler *t, int w, int h)
 	sp->rects = list_zeroed;
 }
 
-static int _rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r)
+static int _rect_add(Ekeko_Tiler *t, Eina_Rectangle *r)
 {
 	splitter_t *sp;
 
@@ -963,7 +963,7 @@ static int _rect_add(Ekeko_Tiler *t, Enesim_Rectangle *r)
 	return _add_redraw(&sp->rects, t->canvas.w, t->canvas.h, r->x, r->y, r->w, r->h);
 }
 
-static int _rect_del(Ekeko_Tiler *t, Enesim_Rectangle *rect)
+static int _rect_del(Ekeko_Tiler *t, Eina_Rectangle *rect)
 {
    splitter_t *sp;
    rect_t r;

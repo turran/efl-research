@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "ekeko_input.h"
 #include "ekeko_tiler.h"
 #include "ekeko_object.h"
 #include "ekeko_canvas.h"
