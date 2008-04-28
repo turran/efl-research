@@ -46,6 +46,7 @@ static void _post_process(void *data)
 }
 
 static Ekeko_Object_Class _filter_class = {
+	.name = "filter",
 	.free = _free,
 	.pre_process = _pre_process,
 	.process = _process,

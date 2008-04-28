@@ -10,16 +10,17 @@ struct _ESVG
 	Ekeko_Canvas *canvas;
 };
 
-static void _flush(void *data, Ekeko_Rectangle *rects)
+static int _flush(void *data, Eina_Rectangle *rects)
 {
 	ESVG *e = data;
 	Eina_Inlist *l;
 
 	for (l = (Eina_Inlist *)rects; l; l = l->next)
 	{
-		Ekeko_Rectangle *r;
-		r = (Ekeko_Rectangle *)l;
+		Eina_Rectangle *r = (Eina_Rectangle *)l;
+		
 	}
+	return 1; 
 }
 
 static Ekeko_Canvas_Class _canvas_class = {

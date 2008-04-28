@@ -7,7 +7,7 @@ struct _Ekeko_Input
 	Ekeko_Canvas *canvas; /* canvas associated with this input */
 	struct {
 		Eina_Bool inside;
-		int mouse_grabbed;
+		int grabbed;
 		unsigned int button;
 		unsigned int x;
 		unsigned int y;

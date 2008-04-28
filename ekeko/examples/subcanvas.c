@@ -76,6 +76,7 @@ static void _post_process(void *data)
 }
 
 static Ekeko_Object_Class _object_class = {
+	.name = "subcanvas",
 	.free = _free,
 	.pre_process = _pre_process,
 	.process = _process,

@@ -58,12 +58,15 @@ Ekeko_Object * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned i
 {
 	Eina_Inlist *l;
 	
-	/* iterate from the last, it will be easier to find the topmost object */
+	/* iterate from the last to find the topmost object */
 	for (l = ((Eina_Inlist *)c->objects)->last; l; l = l->prev)
 	{
 		Ekeko_Object *o;
 		
 		o = (Ekeko_Object *)l;
+		/* check visibility */
+		if (!ekeko_object_is_visible(o))
+			continue;
 		if (eina_rectangle_coords_inside(&o->curr.geometry, x, y))
 			return o;
 	}
@@ -144,7 +147,8 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 			Eina_Rectangle orect;
 
 			o = (Ekeko_Object *)lo;
-			if (ekeko_object_is_inside(o, r, &orect) == EINA_TRUE)
+			if (ekeko_object_is_inside(o, r, &orect) &&
+				ekeko_object_is_visible(o))
 			{
 				/* clip the rect to the bounding box of the object */
 				ekeko_object_process(o, &orect);
