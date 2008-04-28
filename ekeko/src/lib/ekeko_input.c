@@ -51,7 +51,7 @@ EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i, int b, Ekeko_Button_Flags fl
  */
 EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int timestamp, const void *data)
 {
-	
+	i->last_timestamp = timestamp;
 }
 /**
  * To be documented
@@ -59,7 +59,18 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int
  */
 EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i, unsigned int timestamp, const void *data)
 {
+	Ekeko_Object *inside;
 	
+	
+	if (i->pointer.inside) return;
+	
+	/* TODO check that we dont have any object below the pointer */
+	inside = ekeko_canvas_object_get_at_coordinate(i->canvas, i->pointer.x, i->pointer.y);
+	i->pointer.obj = inside;
+	i->pointer.inside = EINA_TRUE;
+	i->last_timestamp = timestamp;
+	/* call the _in_ callback */
+	ekeko_input_feed_mouse_move(i, i->pointer.x, i->pointer.y, timestamp, data);
 }
 /**
  * To be documented

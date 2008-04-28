@@ -100,6 +100,15 @@ eina_rectangle_ycoord_inside(Eina_Rectangle *r, int y)
  * FIXME: To be fixed
  */
 static inline Eina_Bool
+eina_rectangle_coords_inside(Eina_Rectangle *r, int x, int y)
+{
+	return (eina_rectangle_xcoord_inside(r, x) && eina_rectangle_ycoord_inside(r, y));
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+static inline Eina_Bool
 eina_rectangle_rectangle_intersection_get(Eina_Rectangle *r1, Eina_Rectangle *r2)
 {
 	if (!(eina_rectangles_intersect(r1, r2)))

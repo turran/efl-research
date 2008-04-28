@@ -50,6 +50,25 @@ void ekeko_canvas_input_add(Ekeko_Canvas *c, Ekeko_Input *i)
 {
 	c->inputs = eina_inlist_append(c->inputs, i);
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+Ekeko_Object * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned int x, unsigned int y)
+{
+	Eina_Inlist *l;
+	
+	/* iterate from the last, it will be easier to find the topmost object */
+	for (l = ((Eina_Inlist *)c->objects)->last; l; l = l->prev)
+	{
+		Ekeko_Object *o;
+		
+		o = (Ekeko_Object *)l;
+		if (eina_rectangle_coords_inside(&o->curr.geometry, x, y))
+			return o;
+	}
+	return NULL;
+}
 
 /*============================================================================*
  *                                   API                                      * 

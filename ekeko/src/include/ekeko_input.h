@@ -6,16 +6,12 @@ struct _Ekeko_Input
 	Eina_Inlist list;
 	Ekeko_Canvas *canvas; /* canvas associated with this input */
 	struct {
-		unsigned char inside : 1;
+		Eina_Bool inside;
 		int mouse_grabbed;
 		unsigned int button;
 		unsigned int x;
 		unsigned int y;
-#if 0
-		struct {
-			Evas_List *in;
-		} object;
-#endif
+		Ekeko_Object *obj; /* only one object below the cursor */
 	} pointer;
 	struct {
 		
