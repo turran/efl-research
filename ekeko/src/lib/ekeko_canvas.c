@@ -64,6 +64,9 @@ Ekeko_Object * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned i
 		Ekeko_Object *o;
 		
 		o = (Ekeko_Object *)l;
+		/* TODO, the visibility check should be defined
+		 * (receive or not events when hidden)
+		 */
 		/* check visibility */
 		if (!ekeko_object_is_visible(o))
 			continue;

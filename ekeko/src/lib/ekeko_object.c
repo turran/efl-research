@@ -117,10 +117,10 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
 {
 	Ekeko_Object *o;
 
-	assert(o);
 	assert(oclass);
 	
 	o = calloc(1, sizeof(Ekeko_Object));
+	assert(o);
 	o->canvas = c;
 	
 	/* default object properties */

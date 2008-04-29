@@ -1,8 +1,5 @@
-#ifndef _ESVG_PRIVATE_H
-#define _ESVG_PRIVATE_H
-
-#include "esvg_draw_private.h"
-
+#ifndef ESVG_PARSER_H_
+#define ESVG_PARSER_H_
 
 /* old code */
 #if 0
@@ -63,5 +60,6 @@ typedef struct _ESVG_Attribute
 extern ESVG_Element esvg_elements[ESVG_ELEMENTS];
 #endif
 #endif
-#endif
 
+
+#endif /*ESVG_PARSER_H_*/

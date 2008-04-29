@@ -1,24 +1,19 @@
+MAINTAINERCLEANFILES = Makefile.in
+
 SUBDIRS = draw
 
 lib_LTLIBRARIES = libesvg.la
-include_HEADERS = ESVG.h
 
 INCLUDES = \
 -I. \
 -I$(top_srcdir)/src/lib \
-@EINA_CFLAGS@ \
-@EKEKO_CFLAGS@ \
-@ENESIM_CFLAGS@ \
-@EVG_CFLAGS@
+@ESVG_CFLAGS@
 
 libesvg_la_SOURCES =
 
 libesvg_la_LIBADD = \
 draw/libesvg_draw.la \
-@EINA_LIBS@ \
-@EKEKO_LIBS@ \
-@ENESIM_LIBS@ \
-@EVG_LIBS@
+@ESVG_LIBS@
 
 libesvg_la_DEPENDENCIES = \
 draw/libesvg_draw.la

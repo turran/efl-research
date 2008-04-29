@@ -1,10 +1,6 @@
-#ifndef ESVG_DRAW_PRIVATE_H_
-#define ESVG_DRAW_PRIVATE_H_
+#ifndef SHAPE_H_
+#define SHAPE_H_
 
-/* basic types */
-typedef unsigned int ESVG_Color;
-typedef double ESVG_Length;
-typedef double ESVG_Coord;
 
 /* id
  * xml:base
@@ -13,7 +9,7 @@ typedef double ESVG_Coord;
  */
 typedef struct _ESVG_Attribute_Core
 {
-	char id;
+	char *id;
 } ESVG_Attribute_Core;
 
 typedef enum _ESVG_Fill_Rule
@@ -108,30 +104,51 @@ typedef struct _ESVG_Attribute_Cursor
 
 struct _ESVG_Shape
 {
+	Eina_Inlist list;
+	ESVG *canvas;
+	Ekeko_Object *object;
 	/* state */
 	/* attributes */
-	ESVG_Attribute_Core core;
+	struct 
+	{
+		ESVG_Attribute_Core core;
 #if 0
-	ESVG_Attribute_Conditional conditional;
-	ESVG_Attribute_Style style;
+		ESVG_Attribute_Conditional conditional;
+		ESVG_Attribute_Style style;
 #endif
-	ESVG_Attribute_Paint paint;
+		ESVG_Attribute_Paint paint;
 #if 0
-	ESVG_Attribute_Color color;
+		ESVG_Attribute_Color color;
 #endif
-	ESVG_Attribute_Opacity opacity;
-	ESVG_Attribute_Graphics graphics;
-	ESVG_Attribute_Clip clip;
-	ESVG_Attribute_Mask mask;
+		ESVG_Attribute_Opacity opacity;
+		ESVG_Attribute_Graphics graphics;
+		ESVG_Attribute_Clip clip;
+		ESVG_Attribute_Mask mask;
 #if 0
-	ESVG_Attribute_Filter filter;
-	ESVG_Attribute_Graphical_Events graphical_events;
+		ESVG_Attribute_Filter filter;
+		ESVG_Attribute_Graphical_Events graphical_events;
 #endif
-	ESVG_Attribute_Cursor cursor;
+		ESVG_Attribute_Cursor cursor;
+	} attributes;
 	/* implementation */
-	Ekeko_Object *object;
+	struct
+	{
+		void *context;
+	} engine;
 };
 
 
+struct _ESVG_Rect
+{
+	ESVG_Shape shape;
+	ESVG_Coord x;
+	ESVG_Coord y;
+	ESVG_Length rx;
+	ESVG_Length ry;
+	ESVG_Length width;
+	ESVG_Length height;
+};
 
-#endif /*ESVG_DRAW_PRIVATE_H_*/
+void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord x, ESVG_Coord y, ESVG_Length width, ESVG_Length height);
+
+#endif /*SHAPE_H_*/

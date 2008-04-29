@@ -29,6 +29,7 @@
  * + Add support for clip rectangles
  * + Maybe make the subcanvas part of ekeko itslef?
  * + As we have object events, why dont canvas events?
+ * + Add a way to notify if an object has changed
  *  
  * @file
  * @brief Ekeko API
