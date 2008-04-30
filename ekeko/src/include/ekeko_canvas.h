@@ -11,7 +11,7 @@ struct _Ekeko_Canvas
 	Ekeko_Tiler *tiler;
 	Ekeko_Object *objects;
 	Ekeko_Input *inputs;
-	// damages
+	Ekeko_Rectangle *damages;
 	// obscures
 	Ekeko_Canvas_Class *cclass;
 	void *cdata;

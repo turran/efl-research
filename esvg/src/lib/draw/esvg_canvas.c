@@ -10,11 +10,6 @@ static int _flush(void *data, Eina_Rectangle *rects)
 	ESVG *e = data;
 	Eina_Inlist *l;
 
-	for (l = (Eina_Inlist *)rects; l; l = l->next)
-	{
-		Eina_Rectangle *r = (Eina_Rectangle *)l;
-		printf("flushing\n");
-	}
 	return 1; 
 }
 
@@ -26,9 +21,12 @@ static Ekeko_Canvas_Class _canvas_class = {
  *============================================================================*/
 void esvg_canvas_shape_add(ESVG *svg, ESVG_Shape *s, Ekeko_Object_Class *class, void *data)
 {
+	/* TODO make a shape_init function */
 	s->canvas = svg;
 	s->object = ekeko_object_add(svg->canvas, class, data);
 	s->engine.context = esvg_engine_context_new(svg);
+	s->attributes.opacity.stroke_opacity = 1;
+	s->attributes.opacity.fill_opacity = 1;
 	ekeko_object_show(s->object);
 	svg->shapes = eina_inlist_append(svg->shapes, s);
 }
@@ -59,6 +57,14 @@ EAPI ESVG * esvg_new(int w, int h, ESVG_Engine_Type type, void *engine_data)
 		break;
 	}
 	return e;
+}
+
+EAPI esvg_damage_add(ESVG *e, ESVG_Coord x, ESVG_Coord y, ESVG_Length w, ESVG_Length h)
+{
+	Eina_Rectangle r;
+	
+	eina_rectangle_coords_from(&r, x, y, w, h);
+	ekeko_canvas_damage_add(e->canvas, &r);
 }
 
 EAPI void esvg_render(ESVG *e)

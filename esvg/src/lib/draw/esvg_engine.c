@@ -22,7 +22,7 @@ void esvg_engine_context_free(ESVG *svg, void *context)
 	svg->engine->context_free(svg->engine_data, context);
 }
 
-void esvg_engine_rect_draw(ESVG_Rect *r)
+void esvg_engine_rect_draw(ESVG *svg, void *context, ESVG_Rect *r, Eina_Rectangle *rclip)
 {
-	
+	svg->engine->rect_draw(svg->engine_data, context, r, rclip);
 }

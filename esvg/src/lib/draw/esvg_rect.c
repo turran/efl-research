@@ -20,7 +20,10 @@ static void _pre_process(void *data)
 
 static void _process(void *data, Eina_Rectangle *r)
 {
+	ESVG_Rect *rect = data;
+	
 	printf("process %d %d %d %d!!\n", r->x, r->y, r->w, r->h);
+	esvg_engine_rect_draw(rect->shape.canvas, rect->shape.engine.context, rect, r);
 }
 
 static void _post_process(void *data)
@@ -64,5 +67,6 @@ EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord x, ESVG_Coord y, ESVG_
 
 EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry)
 {
-	
+	r->rx = rx;
+	r->ry = ry;
 }

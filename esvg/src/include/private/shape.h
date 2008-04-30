@@ -12,32 +12,6 @@ typedef struct _ESVG_Attribute_Core
 	char *id;
 } ESVG_Attribute_Core;
 
-typedef enum _ESVG_Fill_Rule
-{
-	ESVG_FILL_RULE_NONZERO,
-	ESVG_FILL_RULE_EVENODD,
-} ESVG_Fill_Rule;
-
-typedef enum _ESVG_Stroke_Line_Cap
-{
-	ESVG_STROKE_LINE_CAP_BUTT,
-	ESVG_STROKE_LINE_CAP_ROUND,
-	ESVG_STROKE_LINE_CAP_SQUARE,
-} ESVG_Stroke_Line_Cap;
-
-typedef enum _ESVG_Stroke_Line_Join
-{
-	ESVG_STROKE_LINE_JOIN_MITER,
-	ESVG_STROKE_LINE_JOIN_ROUND,
-	ESVG_STROKE_LINE_JOIN_BEVEL,
-} ESVG_Stroke_Line_Join;
-
-typedef enum _ESVG_Interpolation
-{
-	ESVG_INTERPOLATION_AUTO,
-	ESVG_INTERPOLATION_SRGB,
-	ESVG_INTERPOLATION_LINEAR_RGB,
-} ESVG_Interpolation;
 
 typedef struct _ESVG_Attribute_Paint
 {

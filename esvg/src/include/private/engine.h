@@ -8,7 +8,7 @@ typedef struct _ESVG_Engine
 	void (*context_free)(void *engine_data, void *context);
 	/* attributes */
 	/* rect */
-//	void (*rect_render)(ESVG_Rect *r);
+	void (*rect_draw)(void *engine_data, void *context, ESVG_Rect *r, Eina_Rectangle *rclip);
 } ESVG_Engine;
 
 void * esvg_engine_context_new(ESVG *svg);

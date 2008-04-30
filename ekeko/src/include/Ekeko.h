@@ -102,6 +102,10 @@ typedef struct _Ekeko_Object_Class
 	void (*process)(void *data, Eina_Rectangle *r);
 	/* after the process this is called */
 	void (*post_process)(void *data);
+	/* the inside check is calculated against the bounding box, this function
+	 * determines if the object is really inside
+	 */
+	//Eina_Bool (*is_inside)(void *data, Eina_Rectangle *r, Eina_Rectangle *dst);
 	/* return a list of rectangles in case something inside the object has
 	 * changed */
 	//Ekeko_Rectangle * (*state_changed)(void *data);

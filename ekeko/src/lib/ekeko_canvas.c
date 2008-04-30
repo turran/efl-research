@@ -24,8 +24,14 @@ static void _objects_changed(Ekeko_Canvas *c)
 }
 static void _damages_add(Ekeko_Canvas *c)
 {
+	Eina_Inlist *l;
 	/* add the rectangles to the tiler */
-
+	for (l = (Eina_Inlist*)c->damages; l; l = l->next)
+	{
+		Ekeko_Rectangle *r = (Ekeko_Rectangle *)l;
+		ekeko_tiler_rect_add(c->tiler, &r->r);
+		c->damages = eina_inlist_remove(c->damages, l);
+	}
 }
 static void _obscures_remove(Ekeko_Canvas *c)
 {
@@ -70,7 +76,11 @@ Ekeko_Object * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned i
 		/* check visibility */
 		if (!ekeko_object_is_visible(o))
 			continue;
-		if (eina_rectangle_coords_inside(&o->curr.geometry, x, y))
+		/* TODO
+		 * bseide checking if the object is inside by its
+		 * bounding box, also check by the class function
+		 */
+		if (eina_rectangle_coords_inside(&o->curr.geometry, x, y))	
 			return o;
 	}
 	return NULL;
@@ -101,7 +111,11 @@ EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
  */
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
+	/* TODO we use an inlist, this should be optimized */
+	Ekeko_Rectangle *er = calloc(1, sizeof(Ekeko_Rectangle));
 	
+	er->r = *r;
+	c->damages = eina_inlist_append(c->damages, er);
 }
 /**
  * To be documented
