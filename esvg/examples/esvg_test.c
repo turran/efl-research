@@ -72,10 +72,10 @@ int main(int argc, char **argv)
 	
 	rect = esvg_rect_add(canvas);
 	esvg_rect_geometry_set(rect, 10, 20, 140, 280);
-	esvg_rect_rounded_set(rect, 10, 10);
+	esvg_rect_rounded_set(rect, 50, 15);
 	shape = esvg_rect_shape_get(rect);
-	esvg_shape_fill_set(shape, 0x000055);
-	esvg_shape_stroke_set(shape, 0x00ff10);
+	esvg_shape_fill_set(shape, 0xf10b14);
+	esvg_shape_stroke_set(shape, 0x000000);
 	esvg_shape_opacity_set(shape, 1);
 	while (1)
 	{
@@ -83,11 +83,8 @@ int main(int argc, char **argv)
 		XEvent e;
 		XNextEvent(dpy, &e);
 
-		if(e.type == Expose)
-		{
-			printf("%d\n", e.xexpose.count);
+		if (e.type == Expose)
 			esvg_damage_add(canvas, e.xexpose.x, e.xexpose.y, e.xexpose.width, e.xexpose.height);
-		}
 #endif
 		esvg_render(canvas);
 	}

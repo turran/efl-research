@@ -28,6 +28,8 @@ void esvg_canvas_shape_add(ESVG *svg, ESVG_Shape *s, Ekeko_Object_Class *class, 
 	s->attributes.opacity.stroke_opacity = 1;
 	s->attributes.opacity.fill_opacity = 1;
 	ekeko_object_show(s->object);
+	/* TODO do we need to keep a list of shapes? or better add them
+	 * to the priv data of each ekeko object */
 	svg->shapes = eina_inlist_append(svg->shapes, s);
 }
 void esvg_canvas_shape_remove(ESVG_Shape *s)

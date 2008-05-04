@@ -7,7 +7,12 @@
 #include "esvg_parser.h"
 
 /**
- * TODO split the code in two, the drawing and the parser =)
+ * TODO 
+ * + split the code in two, the drawing and the parser =)
+ * + We need to handle two different kinds of backends, the drawer/context one
+ * and the output, so we can use cairo image backend and a sdl output for
+ * example.
+ * 
  */
 #if 0
 

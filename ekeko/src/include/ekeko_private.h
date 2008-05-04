@@ -5,6 +5,63 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "config.h"
+
+#define DEBUG
+/* Magic values for each system */
+typedef enum
+{
+	EKEKO_CANVAS_MAGIC  = 0x20000000,
+	EKEKO_OBJECT_MAGIC = 0x21000000,
+} Ekeko_Magic;
+
+/* Debugging routines
+ * ASSERT will abort the program execution
+ * ERROR will set the error and return false
+ */
+#ifndef DEBUG
+#define EKEKO_MAGIC_CHECK(p, m)
+#define EKEKO_MAGIC_SET(p, m)
+#define EKEKO_ASSERT(cond, err)
+#define EKEKO_ERROR(err) \
+	ekeko_error_set(err); \
+	return EINA_FALSE; \
+#define EKEKO_ERROR_COND(err, cond) \
+	if (!(cond)) \
+	{ \
+		EKEKO_ERROR(err);
+	}
+#else
+
+#define EKEKO_MAGIC_SET(p, m) \
+	p->magic = m;
+#define EKEKO_MAGIC_CHECK(p, m) \
+	if (p->magic != m) \
+	{ \
+		fprintf(stderr, "[Ekeko] Magic Failed. %s at %s:%d - %s():\n", ekeko_error_to_str(EKEKO_ERROR_HANDLE_INVALID), __FILE__, __LINE__, __FUNCTION__); \
+		abort(); \
+	}
+
+#define EKEKO_ERROR(err) \
+	fprintf(stderr, "[Ekeko] %s at %s:%d - %s():\n", ekeko_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); \
+	ekeko_error_set(err); \
+	return EINA_FALSE; \
+
+#define EKEKO_ERROR_COND(err, cond) \
+	if (!(cond)) \
+	{ \
+		EKEKO_ERROR(err) \
+	}
+#define EKEKO_ASSERT(cond, err) \
+	if (!(cond)) \
+	{ \
+		fprintf(stderr, "[Ekeko] %s at %s:%d - %s():\n", ekeko_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); \
+		abort(); \
+	}
+#endif
+
+
+
 #include "ekeko_input.h"
 #include "ekeko_tiler.h"
 #include "ekeko_object.h"

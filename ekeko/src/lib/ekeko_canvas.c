@@ -8,7 +8,7 @@ static void _object_changed(Ekeko_Canvas *c, Ekeko_Object *o)
 {
 	ekeko_object_pre_process(o);
 }
-
+/* refactor this to use the iterator */
 static void _objects_changed(Ekeko_Canvas *c)
 {
 	Eina_Inlist *l;
@@ -63,7 +63,15 @@ void ekeko_canvas_input_add(Ekeko_Canvas *c, Ekeko_Input *i)
 Ekeko_Object * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned int x, unsigned int y)
 {
 	Eina_Inlist *l;
+	Eina_Rectangle r;
 	
+	r.x = x;
+	r.y = y;
+	r.w = 1;
+	r.h = 1;
+	/* TODO
+	 * refactor this to call the iterator of objects
+	 */
 	/* iterate from the last to find the topmost object */
 	for (l = ((Eina_Inlist *)c->objects)->last; l; l = l->prev)
 	{
@@ -76,14 +84,25 @@ Ekeko_Object * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned i
 		/* check visibility */
 		if (!ekeko_object_is_visible(o))
 			continue;
-		/* TODO
-		 * bseide checking if the object is inside by its
-		 * bounding box, also check by the class function
-		 */
-		if (eina_rectangle_coords_inside(&o->curr.geometry, x, y))	
+		/* check geometry */
+		if (ekeko_object_is_inside(o, &r))
 			return o;
 	}
 	return NULL;
+}
+/* FIXME use this function
+ */
+static Eina_Bool _at_coordinate(Ekeko_Object *o, void *data)
+{
+	Eina_Rectangle *r = data;
+	
+	if (!ekeko_object_is_visible(o))
+		return EINA_FALSE;
+	/* check geometry */
+	if (ekeko_object_is_inside(o, &r))
+		return EINA_TRUE;
+	
+	return EINA_FALSE;
 }
 
 /*============================================================================*
@@ -164,7 +183,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 			Eina_Rectangle orect;
 
 			o = (Ekeko_Object *)lo;
-			if (ekeko_object_is_inside(o, r, &orect) &&
+			if (ekeko_object_intersection_get(o, r, &orect) &&
 				ekeko_object_is_visible(o))
 			{
 				/* clip the rect to the bounding box of the object */
@@ -210,3 +229,32 @@ EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
 	assert(c);
 	return c->cdata;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+/* FIXME This function can be integrated into eina */
+EAPI Ekeko_Object * ekeko_canvas_object_from_last_get(Ekeko_Canvas *c, Ekeko_Object_Cmp_Func cmp, void *data)
+{
+	Ekeko_Object *o;
+	
+	o = ekeko_object_rel_get_up((Ekeko_Object *)(((Eina_Inlist *)c->objects)->last), cmp, data);
+	return o;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+/* FIXME This function can be integrated into eina */
+EAPI Ekeko_Object * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekeko_Object_Cmp_Func cmp, void *data)
+{
+	Ekeko_Object *o;
+	
+	o = ekeko_object_rel_get_up(c->objects, cmp, data);
+	return o;
+}
+
+/* TODO
+ * get objects that are in a rect
+ */

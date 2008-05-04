@@ -37,6 +37,7 @@ static void  _path_stroke(cairo_t *c, ESVG_Shape *s)
 	{
 		_color_to_double(s->attributes.paint.stroke, &r, &g, &b);
 		cairo_set_source_rgba(c, r, g, b, opacity);
+		cairo_set_line_width(c, 4.0);
 		cairo_stroke(c);
 	}
 }

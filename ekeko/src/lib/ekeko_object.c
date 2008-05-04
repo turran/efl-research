@@ -10,6 +10,7 @@ static void _object_change(Ekeko_Object *o)
 	o->changed = EINA_TRUE;
 	ekeko_canvas_change(o->canvas);
 }
+
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
@@ -30,15 +31,7 @@ void ekeko_object_event_callback_call(Ekeko_Object *o, Ekeko_Event_Type ect, Eke
  * To be documented
  * FIXME: To be fixed
  */
-Ekeko_Object * ekeko_object_get_at_coordinate(Ekeko_Object *o, unsigned int x, unsigned int y)
-{
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect)
+Eina_Bool ekeko_object_intersection_get(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect)
 {
 	drect->x = o->curr.geometry.x;
 	drect->y = o->curr.geometry.y;
@@ -269,4 +262,61 @@ EAPI void ekeko_object_event_callback_add(Ekeko_Object *o, Ekeko_Event_Type etyp
 	ocb->data = data;
 	
 	o->callbacks[etype] = eina_inlist_append(o->callbacks[etype], ocb);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ekeko_Object * ekeko_object_rel_get_up(Ekeko_Object *rel, Ekeko_Object_Cmp_Func cmp, void *data)
+{
+	Eina_Inlist *l;
+
+	assert(rel);
+	assert(cmp);
+	
+	for (l = (Eina_Inlist *)rel; l; l = l->prev)
+	{
+		Ekeko_Object *o = (Ekeko_Object*)l;
+		if (cmp(o, data))
+			return o;
+	}
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ekeko_Object * ekeko_object_rel_get_down(Ekeko_Object *rel, Ekeko_Object_Cmp_Func cmp, void *data)
+{
+	Eina_Inlist *l;
+	
+	assert(rel);
+	assert(cmp);
+			
+	for (l = (Eina_Inlist *)rel; l; l = l->next)
+	{
+		Ekeko_Object *o = (Ekeko_Object*)l;
+		if (cmp(o, data))
+			return o;
+	}
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Eina_Rectangle *r)
+{
+	if (!(ekeko_object_geometry_is_inside(o, r)))
+		return EINA_FALSE;
+	
+	if (!(o->oclass->is_inside))
+		return EINA_TRUE;
+	return o->oclass->is_inside(&o->curr.geometry, r);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool ekeko_object_geometry_is_inside(Ekeko_Object *o, Eina_Rectangle *r)
+{
+	return eina_rectangles_intersect(&o->curr.geometry, r);
 }

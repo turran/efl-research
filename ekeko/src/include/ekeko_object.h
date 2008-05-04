@@ -35,10 +35,13 @@ struct _Ekeko_Object
 	Ekeko_Object_Cb *callbacks[EKEKO_EVENTS];
 	Eina_Bool delete_me;
 	Eina_Bool changed;
+	/* TODO
+	 * add a way to pass the event to the objects behind
+	 */
 	void *cdata;
 };
 
-Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect);
+Eina_Bool ekeko_object_intersection_get(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect);
 void ekeko_object_pre_process(Ekeko_Object *o);
 void ekeko_object_process(Ekeko_Object *o, Eina_Rectangle *r);
 void ekeko_object_post_process(Ekeko_Object *o);

@@ -41,6 +41,9 @@
 /**
  * @defgroup Ekeko_Core_Group Core
  */
+typedef unsigned int Ekeko_Coord;
+typedef unsigned int Ekeko_Length;
+
 typedef enum
 {
 	EKEKO_ERROR_NONE,
@@ -80,7 +83,9 @@ EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c);
 EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Eina_Rectangle *r);
-EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c); 
+EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c);
+EAPI Ekeko_Object * ekeko_canvas_object_from_last_get(Ekeko_Canvas *c, Ekeko_Object_Cmp_Func cmp, void *data);
+EAPI Ekeko_Object * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekeko_Object_Cmp_Func cmp, void *data);
 
 /**
  * @}
@@ -103,13 +108,27 @@ typedef struct _Ekeko_Object_Class
 	/* after the process this is called */
 	void (*post_process)(void *data);
 	/* the inside check is calculated against the bounding box, this function
-	 * determines if the object is really inside
+	 * determines if the object is really inside a giving rectangle
 	 */
-	//Eina_Bool (*is_inside)(void *data, Eina_Rectangle *r, Eina_Rectangle *dst);
+	Eina_Bool (*is_inside)(void *data, Eina_Rectangle *r);
 	/* return a list of rectangles in case something inside the object has
 	 * changed */
 	//Ekeko_Rectangle * (*state_changed)(void *data);
 } Ekeko_Object_Class;
+
+
+typedef Eina_Bool (*Ekeko_Object_Cmp_Func)(Ekeko_Object *o, void *data);
+
+#if 0
+/**
+ * TODO
+ * should we make this object flags?
+ */
+typedef enum _Ekeko_Object_Flag
+{
+	EKEKO_OBJECT_FLAG_HIDDEN_RECEIVE = (1 << 0),
+} Ekeko_Object_Flag;
+#endif
 
 
 EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass, void *cdata);
@@ -123,6 +142,10 @@ EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel);
 EAPI void * ekeko_object_class_data_get(Ekeko_Object *o);
 EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o);
 EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Eina_Rectangle *r);
+EAPI Ekeko_Object * ekeko_object_rel_get_down(Ekeko_Object *rel, Ekeko_Object_Cmp_Func cmp, void *data);
+EAPI Ekeko_Object * ekeko_object_rel_get_up(Ekeko_Object *rel, Ekeko_Object_Cmp_Func cmp, void *data);
+EAPI Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Eina_Rectangle *r);
+EAPI Eina_Bool ekeko_object_geometry_is_inside(Ekeko_Object *o, Eina_Rectangle *r);
 
 /** @} */
 
