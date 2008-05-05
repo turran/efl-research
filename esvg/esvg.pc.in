@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Edata 
-Description: Edata
-Requires: 
+Name: ESVG
+Description: ESVG
+Requires: eina ekeko
 Version: @VERSION@
-Libs: -L${libdir} -ledata
-Cflags: -I${includedir}
+Libs: -L${libdir} -lesvg
+Cflags: -I${includedir} -I${includedir}/esvg

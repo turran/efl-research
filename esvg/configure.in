@@ -109,8 +109,8 @@ AC_SUBST(create_shared_lib)
 PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
 PKG_CHECK_MODULES(EKEKO, [ekeko >= 0.0.1])
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
+PKG_CHECK_MODULES(EXML, [exml >= 0.1.1])
 #PKG_CHECK_MODULES(EVG, [evg >= 0.0.1])
-#PKG_CHECK_MODULES(EXML, [exml >= 0.1.1])
 #PKG_CHECK_MODULES(SDL, [sdl >= 1.2.10], [have_sdl="yes"], [have_sdl="no"])
 #AM_CONDITIONAL(HAVE_SDL, test "x$have_sdl" = "xyes")
 
@@ -118,8 +118,8 @@ PKG_CHECK_MODULES(CAIRO, [cairo >= 1.6.4], [have_cairo="yes" AC_DEFINE(HAVE_CAIR
 
 AM_CONDITIONAL(HAVE_CAIRO, test "x$have_cairo" = "xyes")
 
-ESVG_CFLAGS="$EINA_CFLAGS $EKEKO_CFLAGS $ENESIM_CFLAGS $CAIRO_CFLAGS"
-ESVG_LIBS="$EINA_LIBS $EKEKO_LIBS $ENESIM_LIBS $CAIRO_LIBS"
+ESVG_CFLAGS="$EINA_CFLAGS $EKEKO_CFLAGS $EXML_CFLAGS $ENESIM_CFLAGS $CAIRO_CFLAGS"
+ESVG_LIBS="$EINA_LIBS $EKEKO_LIBS $EXML_LIBS $ENESIM_LIBS $CAIRO_LIBS"
 
 AC_SUBST(ESVG_CFLAGS)
 AC_SUBST(ESVG_LIBS)
@@ -134,6 +134,7 @@ src/Makefile
 src/lib/Makefile
 src/include/Makefile
 src/lib/draw/Makefile
+src/lib/parse/Makefile
 ],[
 ])
 

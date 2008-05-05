@@ -1,40 +1,52 @@
+#include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
 
-struct _ESVG
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static ESVG_Document * _document_new(void)
 {
-	EXML *xml;
-};
-
-ESVG_Element esvg_elements[ESVG_ELEMENTS];
-
-static ESVG * esvg_new(void)
-{
-	ESVG *svg;
+	ESVG_Document *svg;
 	
-	svg = calloc(1, sizeof(ESVG));
+	svg = calloc(1, sizeof(ESVG_Document));
 	return svg;
 }
-
-void element_parse(ESVG_Element *e, const char *tag)
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+ESVG_Document_Element *esvg_elements[ESVG_ELEMENTS] = {
+	[ESVG_ELEMENT_DOCUMENT] = &document_element,
+};
+/* given a tag, parse it finding the element that
+ * parse that tag
+ */
+void element_parse(ESVG_Document *ed, const char *tag)
 {
-	int el;
+	int i;
 	
-	for (el = 0; el < ESVG_ELEMENTS; el++)
+	for (i = 0; i < ESVG_ELEMENTS; i++)
 	{
-		if (!strcmp(tag, esvg_elements[el].tag));
-			//esvg_elements[el].parser();
+		ESVG_Document_Element *el;
+		
+		el = esvg_elements[i];
+		
+		printf("%d\n", el);
+		if (!strcmp(tag, el->tag));
+			el->parser(ed);
 	}
 }
-
-EAPI void esvg_file_save(const char *file)
+/* parse every child object */
+void element_child_parse(ESVG_Document_Element *ed)
 {
 	
 }
-
-EAPI ESVG* esvg_file_load(const char *file)
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
+EAPI ESVG * esvg_document_load(const char *file)
 {
-	ESVG *svg;
+	ESVG_Document *svg;
 	EXML *xml;
 	EXML_Node *n;
 	char *tag;
@@ -43,19 +55,22 @@ EAPI ESVG* esvg_file_load(const char *file)
 	if (!exml_file_read(xml, file))
 	{
 		printf("cant read file??\n");
+		return NULL;
 	}
 	n = exml_get(xml);
+	printf("%p\n", n);
 	if (strcmp(n->tag, "svg"))
 	{
 		printf("no svg\n");
-		return -1;
+		return NULL;
 	}
 	if ((tag = exml_down(xml)) == NULL)
 	{
 		printf("empty tags\n");
-		return -2;
+		return NULL;
 	}
+	svg = _document_new();
 	svg->xml = xml;
-	//element_parse(esvg_elements[ESVG_ELEMENT_DOCUMENT], svg);
-	return svg;
+	element_parse(svg, "svg");
+	return NULL;
 }

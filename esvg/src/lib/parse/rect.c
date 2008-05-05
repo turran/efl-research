@@ -1,13 +1,17 @@
+#include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
-
-typedef struct _ESVG_Rect
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static Eina_Bool rect_parse(ESVG_Document *esvg)
 {
-	ESVG_Shape shape;
-	float x;
-	float y;
-	float w;
-	float h;
-	float rx;
-	float ry;
-} Esvg_Rect;
+	printf("rect parse\n");
+}
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+ESVG_Document_Element rect_element = {
+		.tag = "rect",
+		.parser = &rect_parse, 
+};

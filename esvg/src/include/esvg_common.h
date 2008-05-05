@@ -8,6 +8,7 @@
 #include "Eina.h"
 #include "Enesim.h"
 #include "Ekeko.h"
+#include "EXML.h"
 //#include "openvg.h"
 
 #endif /*ESVG_COMMON_H_*/

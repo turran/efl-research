@@ -10,6 +10,7 @@
 #include "private/engine.h"
 #include "private/shape.h"
 #include "private/canvas.h"
+#include "private/parser.h"
 
 #endif
 
