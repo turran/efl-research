@@ -16,6 +16,15 @@ static int _flush(void *data, Eina_Rectangle *rects)
 static Ekeko_Canvas_Class _canvas_class = {
 	.flush = _flush,
 };
+/* called when a shape of the canvas has changed size or position */
+static void _shape_changed(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *data)
+{
+	ESVG *svg = data;
+	Eina_Rectangle r;
+	
+	ekeko_object_geometry_get(o, &r);
+	eina_rectangle_union(&svg->shape_area, &r);
+}
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
@@ -28,9 +37,9 @@ void esvg_canvas_shape_add(ESVG *svg, ESVG_Shape *s, Ekeko_Object_Class *class, 
 	s->attributes.opacity.stroke_opacity = 1;
 	s->attributes.opacity.fill_opacity = 1;
 	ekeko_object_show(s->object);
-	/* TODO do we need to keep a list of shapes? or better add them
-	 * to the priv data of each ekeko object */
-	svg->shapes = eina_inlist_append(svg->shapes, s);
+	/* in case of resize/move a shape recalc the final canvas area */
+	ekeko_object_event_callback_add(s->object, EKEKO_EVENT_MOVE, _shape_changed, svg);
+	ekeko_object_event_callback_add(s->object, EKEKO_EVENT_RESIZE, _shape_changed, svg);
 }
 void esvg_canvas_shape_remove(ESVG_Shape *s)
 {
@@ -58,6 +67,8 @@ EAPI ESVG * esvg_new(int w, int h, ESVG_Engine_Type type, void *engine_data)
 		default:
 		break;
 	}
+	/* initialize the shape area to 0 */
+	eina_rectangle_coords_from(&e->shape_area, 0, 0, 0, 0);
 	return e;
 }
 

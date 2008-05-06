@@ -10,3 +10,6 @@ esvg_test: $(esvg_test_OBJS)
 	$(RM) $@
 	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(esvg_test_OBJS) -o $@
 
+clean: 
+	rm $(BINS)
+	rm *.o

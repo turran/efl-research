@@ -21,6 +21,8 @@ typedef struct _ESVG_Document
 {
 	ESVG *canvas;
 	EXML *xml;
+	ESVG_Engine_Type type;
+	void *engine_data;
 } ESVG_Document;
 
 typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Document *svg);

@@ -108,36 +108,61 @@ eina_rectangle_coords_inside(Eina_Rectangle *r, int x, int y)
  * To be documented
  * FIXME: To be fixed
  */
-static inline Eina_Bool
-eina_rectangle_rectangle_intersection_get(Eina_Rectangle *r1, Eina_Rectangle *r2)
+static inline void
+eina_rectangle_union(Eina_Rectangle *dst, Eina_Rectangle *src)
 {
-	if (!(eina_rectangles_intersect(r1, r2)))
+	/* left */
+	if (dst->x > src->x)
+	{
+		dst->w += dst->x - src->x;
+		dst->x = src->x;
+	}
+	/* right */
+	if ((dst->x + dst->w) < (src->x + src->w))
+		dst->w = src->x + src->w;
+	/* top */
+	if (dst->y > src->y)
+	{
+		dst->h += dst->y - src->y;
+		dst->y = src->y;
+	}
+	/* bottom */
+	if ((dst->y + dst->h) < (src->y + src->h))
+		dst->h = src->y + src->h;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+static inline Eina_Bool
+eina_rectangle_intersection(Eina_Rectangle *dst, Eina_Rectangle *src)
+{
+	if (!(eina_rectangles_intersect(dst, src)))
 		return EINA_FALSE;
 	
 	/* left */
-	if (r1->x < r2->x)
+	if (dst->x < src->x)
 	{
-		r1->w += r1->x - r2->x;
-		r1->x = r2->x;
-		if (r1->w < 0)
-			r1->w = 0;
+		dst->w += dst->x - src->x;
+		dst->x = src->x;
+		if (dst->w < 0)
+			dst->w = 0;
 	}
 	/* right */
-	if ((r1->x + r1->w) > (r2->x + r2->w))
-	{
-		r1->w = r2->x +r2->w - r1->x;
-	}
+	if ((dst->x + dst->w) > (src->x + src->w))
+		dst->w = src->x + src->w - dst->x;
 	/* top */
-	if (r1->y < r2->y)
+	if (dst->y < src->y)
 	{
-		r1->h += r1->y - r2->y;
-		r1->y = r2->y;
-		if (r1->h < 0)
-			r1->h = 0;
+		dst->h += dst->y - src->y;
+		dst->y = src->y;
+		if (dst->h < 0)
+			dst->h = 0;
 	}
 	/* bottom */
-	if ((r1->y + r1->h) > (r2->y + r2->h))
-		r1->h = r2->y + r2->h - r1->y;
+	if ((dst->y + dst->h) > (src->y + src->h))
+		dst->h = src->y + src->h - dst->y;
+	
 	return EINA_TRUE;
 }
 

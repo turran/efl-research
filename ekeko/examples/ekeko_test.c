@@ -38,6 +38,19 @@ void rectangle_mouse_out_cb(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, v
 	printf("called mouse out on moving rectangle\n");
 }
 
+void rectangle_move_cb(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *data)
+{
+	Eina_Rectangle r1;
+	Eina_Rectangle r2;
+	Object *obj;
+	
+	obj = subcanvas_object_get(subcanvas);
+	ekeko_object_geometry_get(o, &r1);
+	ekeko_object_geometry_get(obj->object, &r2);
+	ekeko_object_move(obj->object, r1.y + 10, r1.x); 
+}
+
+
 void init(void)
 {
 	c = canvas_new(CANVAS_W, CANVAS_H);
@@ -73,6 +86,8 @@ void init(void)
 	ekeko_object_event_callback_add(filter1->object, EKEKO_EVENT_MOUSE_IN, filter_mouse_in_cb, NULL);
 	ekeko_object_event_callback_add(rectangle1->object, EKEKO_EVENT_MOUSE_IN, rectangle_mouse_in_cb, NULL);
 	ekeko_object_event_callback_add(rectangle1->object, EKEKO_EVENT_MOUSE_OUT, rectangle_mouse_out_cb, NULL);
+	ekeko_object_event_callback_add(filter1->object, EKEKO_EVENT_MOVE, rectangle_move_cb, NULL);
+	
 }
 
 void shutdown(void)

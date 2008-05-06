@@ -8,7 +8,7 @@
  * "1cm" equals "35.43307px" (and therefore 35.43307 user units)
  * "1in" equals "90px" (and therefore 90 user units)
  */
-float units_get(const char *str)
+double units_get(const char *str)
 {
 	char units[3];
 	float c;
@@ -25,6 +25,18 @@ float units_get(const char *str)
 		r = 1.25 * c;
 	}
 	return r;
+}
+
+typedef enum _ESVG_Coord_Type
+{
+	ESVG_UNIT_ABSOLUTE,
+	ESVG_UNIT_RELATIVE,
+	ESVG_UNITS,
+} ESVG_Coord_Type;
+
+void coord_get(const char *str, ESVG_Coord *value, ESVG_Coord_Type *type)
+{
+	
 }
 
 DATA32 color_get(const char *str)

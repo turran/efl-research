@@ -23,9 +23,29 @@ void ekeko_object_event_callback_call(Ekeko_Object *o, Ekeko_Event_Type ect, Eke
 		Ekeko_Object_Cb *cb;
 		cb = (Ekeko_Object_Cb *)l;
 		
-		printf("calling callback for event %d\n", ect);
+		//printf("calling callback for event %d\n", ect);
 		cb->func(o->canvas, o, ev, cb->data);
 	}
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void ekeko_object_event_move_call(Ekeko_Object *o)
+{
+	Ekeko_Event ev;
+	
+	ekeko_object_event_callback_call(o, EKEKO_EVENT_MOVE, &ev);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+void ekeko_object_event_resize_call(Ekeko_Object *o)
+{
+	Ekeko_Event ev;
+	
+	ekeko_object_event_callback_call(o, EKEKO_EVENT_RESIZE, &ev);
 }
 /**
  * To be documented
@@ -38,7 +58,7 @@ Eina_Bool ekeko_object_intersection_get(Ekeko_Object *o, Ekeko_Rectangle *r, Ein
 	drect->w = o->curr.geometry.w;
 	drect->h = o->curr.geometry.h;
 
-	return eina_rectangle_rectangle_intersection_get(drect, &r->r);
+	return eina_rectangle_intersection(drect, &r->r);
 }
 /**
  * To be documented
@@ -130,11 +150,26 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void ekeko_object_change_notify(Ekeko_Object *o)
+{
+	assert(o);
+	_object_change(o);
+}
+/**
+ * Moves an object to the given coordinate
+ * @param o Object to move
+ * @param x X coordinate
+ * @param y Y coordinate
+ */
 EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 {
 	Eina_Inlist *l;
 	
 	assert(o);
+	if ((o->curr.geometry.x == x) && (o->curr.geometry.y == y))
+	{
+		goto callback;
+	}
 	// FIXME check states
 	o->curr.geometry.x = x;
 	o->curr.geometry.y = y;
@@ -155,7 +190,8 @@ EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 			ekeko_input_feed_mouse_move(i, i->pointer.x, i->pointer.y, i->last_timestamp);
 		}
 	}
-	
+callback:
+	ekeko_object_event_move_call(o);
 }
 /**
  * To be documented
@@ -166,6 +202,7 @@ EAPI void ekeko_object_show(Ekeko_Object *o)
 	assert(o);
 	o->curr.visible = EINA_TRUE;
 	_object_change(o);
+//callback:
 }
 /**
  * To be documented
@@ -176,6 +213,7 @@ EAPI void ekeko_object_hide(Ekeko_Object *o)
 	assert(o);
 	o->curr.visible = EINA_FALSE;
 	_object_change(o);
+//callback:
 }
 /**
  * To be documented
@@ -184,10 +222,15 @@ EAPI void ekeko_object_hide(Ekeko_Object *o)
 EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 {
 	assert(o);
-	// FIXME check states
+	if ((o->curr.geometry.w == w) && (o->curr.geometry.h == h))
+	{
+		goto callback;
+	}
 	o->curr.geometry.w = w;
 	o->curr.geometry.h = h;
 	_object_change(o);
+callback:
+	ekeko_object_event_resize_call(o);
 }
 /**
  * To be documented

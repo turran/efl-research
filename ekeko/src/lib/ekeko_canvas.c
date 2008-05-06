@@ -99,7 +99,7 @@ static Eina_Bool _at_coordinate(Ekeko_Object *o, void *data)
 	if (!ekeko_object_is_visible(o))
 		return EINA_FALSE;
 	/* check geometry */
-	if (ekeko_object_is_inside(o, &r))
+	if (ekeko_object_is_inside(o, r))
 		return EINA_TRUE;
 	
 	return EINA_FALSE;

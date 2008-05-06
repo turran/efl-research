@@ -8,6 +8,8 @@ typedef struct _ESVG ESVG;
  * backend cairo supports (x11 = dpy, etc, etc)
  * for enesim (sw only) we need the flush function: when the
  * backbuffer is drawn we need to flip it into the frontbuffer
+ * + TODO how to handle relative coordinates? add callbacks when an object
+ * is resized and moved and keep track of the union of every bounding box
  */ 
 
 typedef enum _ESVG_Engine_Type

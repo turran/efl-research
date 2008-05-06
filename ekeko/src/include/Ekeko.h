@@ -43,6 +43,9 @@
  */
 typedef unsigned int Ekeko_Coord;
 typedef unsigned int Ekeko_Length;
+typedef struct _Ekeko_Object Ekeko_Object;
+typedef struct _Ekeko_Canvas Ekeko_Canvas; /**< Opaque handler */
+typedef Eina_Bool (*Ekeko_Object_Cmp_Func)(Ekeko_Object *o, void *data);
 
 typedef enum
 {
@@ -58,8 +61,6 @@ EAPI char * ekeko_error_to_str(unsigned int err);
  * @defgroup Ekeko_Canvas_Group Canvas
  * @{ 
  */
-
-typedef struct _Ekeko_Canvas Ekeko_Canvas; /**< Opaque handler */
 
 enum
 {
@@ -93,8 +94,6 @@ EAPI Ekeko_Object * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekeko_Ob
  * @{ 
  */
 
-typedef struct _Ekeko_Object Ekeko_Object;
-
 typedef struct _Ekeko_Object_Class
 {
 	/* name of the object class */
@@ -116,8 +115,6 @@ typedef struct _Ekeko_Object_Class
 	//Ekeko_Rectangle * (*state_changed)(void *data);
 } Ekeko_Object_Class;
 
-
-typedef Eina_Bool (*Ekeko_Object_Cmp_Func)(Ekeko_Object *o, void *data);
 
 #if 0
 /**
@@ -202,6 +199,7 @@ typedef enum _Ekeko_Event_Type
 	EKEKO_EVENT_MOVE, /**< Move Event */
 	EKEKO_EVENT_RESIZE, /**< Resize Event */
 	EKEKO_EVENT_RESTACK, /**< Restack Event */
+	EKEKO_EVENT_USER_CHANGE, /**< User provided change */
 	EKEKO_EVENT_DEL, /**< Object Being Deleted (called before Free) */
 	EKEKO_EVENT_HOLD, /**< Events go on/off hold */
 	EKEKO_EVENTS,

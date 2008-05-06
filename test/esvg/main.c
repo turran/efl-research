@@ -13,6 +13,15 @@ static void help(void)
 	printf("\t sdl - SDL (Simple DirectMedia Layer) engine.\n");
 }
 
+static ESVG_Engine_Type parse_engine(const char *engine)
+{
+	if (!strcmp(engine, "sdl"))
+	{
+		
+	}
+}
+
+
 int main(int argc, char **argv)
 {
 	ESVG *esvg;
@@ -28,6 +37,6 @@ int main(int argc, char **argv)
 	/* call the test loop */
 	/* call the backend shutdown */
 	
-	esvg = esvg_document_load(argv[1]);
+	esvg = esvg_document_load(argv[1], ESVG_ENGINE_CAIRO, NULL);
 	return 1;
 }

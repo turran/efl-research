@@ -31,20 +31,22 @@ void element_parse(ESVG_Document *ed, const char *tag)
 		
 		el = esvg_elements[i];
 		
-		printf("%d\n", el);
-		if (!strcmp(tag, el->tag));
+		if (!strcmp(tag, el->tag))
+		{
 			el->parser(ed);
+			break;
+		}
 	}
 }
 /* parse every child object */
 void element_child_parse(ESVG_Document_Element *ed)
 {
-	
+
 }
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-EAPI ESVG * esvg_document_load(const char *file)
+EAPI ESVG * esvg_document_load(const char *file, ESVG_Engine_Type type, void *engine_data)
 {
 	ESVG_Document *svg;
 	EXML *xml;
@@ -58,19 +60,23 @@ EAPI ESVG * esvg_document_load(const char *file)
 		return NULL;
 	}
 	n = exml_get(xml);
-	printf("%p\n", n);
+	printf("tag = %s\n", n->tag);
 	if (strcmp(n->tag, "svg"))
 	{
 		printf("no svg\n");
 		return NULL;
 	}
+#if 0
 	if ((tag = exml_down(xml)) == NULL)
 	{
 		printf("empty tags\n");
 		return NULL;
 	}
+#endif
 	svg = _document_new();
 	svg->xml = xml;
+	svg->type = type;
+	svg->engine_data = engine_data;
 	element_parse(svg, "svg");
 	return NULL;
 }
