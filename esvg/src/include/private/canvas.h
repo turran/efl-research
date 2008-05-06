@@ -5,6 +5,7 @@ struct _ESVG
 {
 	Ekeko_Canvas *canvas;
 	Eina_Rectangle shape_area;
+	ESVG_Rect *background; /* the background rectangle */
 	ESVG_Engine *engine;
 	void *engine_data;
 };

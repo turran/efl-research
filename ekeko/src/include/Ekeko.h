@@ -88,6 +88,13 @@ EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c);
 EAPI Ekeko_Object * ekeko_canvas_object_from_last_get(Ekeko_Canvas *c, Ekeko_Object_Cmp_Func cmp, void *data);
 EAPI Ekeko_Object * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekeko_Object_Cmp_Func cmp, void *data);
 
+/** TODO
+ * typedef enum _Ekeko_Canvas_Event
+ * {
+ * 	EKEKO_CANVAS_EVENT_RESIZE,
+ * 	EKEKO_CANVAS_EVENTS,
+ * } Ekeko_Canvas_Event;
+
 /**
  * @}
  * @defgroup Ekeko_Object_Group Object

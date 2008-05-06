@@ -43,14 +43,12 @@ typedef struct _ESVG_Rect ESVG_Rect;
 
 EAPI ESVG_Rect * esvg_rect_add(ESVG *svg);
 EAPI ESVG_Shape * esvg_rect_shape_get(ESVG_Rect *r);
-EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord x, ESVG_Coord y, ESVG_Length width, ESVG_Length height);
+EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESVG_Length *w, ESVG_Length *h);
 EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry);
 
 #if 0
 
-EAPI ESVG_Shape * esvg_shape_rect_add(ESVG *e);
-EAPI void esvg_shape_rectangle_geometry_set(ESVG_Shape *s, Eina_Rectangle *r);
-EAPI void esvg_shape_rectangle_rounding_set(ESVG_Shape *s, float rx, float ry);
+EAPI void esvg_rect_geometry_set(ESVG_Rect *r, const char *x, const char *y, const char *w, const char *h);
 
 EAPI ESVG_Shape * esvg_shape_ellipse_add(ESVG *e);
 EAPI ESVG_Shape * esvg_shape_polygon_add(ESVG *e);

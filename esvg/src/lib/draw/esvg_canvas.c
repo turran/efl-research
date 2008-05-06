@@ -46,9 +46,17 @@ void esvg_canvas_shape_remove(ESVG_Shape *s)
 	/* TODO remove the ekeko object */
 	/* TODO remove the context */ 
 }
+/* TODO
+void esvg_canvas_resize_register()
+*/
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ * TODO change w and h 
+ */
 EAPI ESVG * esvg_new(int w, int h, ESVG_Engine_Type type, void *engine_data)
 {
 	ESVG *e;
@@ -69,25 +77,53 @@ EAPI ESVG * esvg_new(int w, int h, ESVG_Engine_Type type, void *engine_data)
 	}
 	/* initialize the shape area to 0 */
 	eina_rectangle_coords_from(&e->shape_area, 0, 0, 0, 0);
+	/* if the size of the canvas is relative we should add a callback for every
+	 * object's resize or move
+	 */
+	e->background = esvg_rect_add(e);
+	/* TODO define the rectangle
+	 * the size should be absolute!! or we end with an endless lopp
+	//esvg_rect_geometry_set(e->rect, 0, 0, w, h);
+	 */
+	/* TODO add callbacks to the background, if it changes
+	 * resize the canvas */
 	return e;
 }
-
-EAPI esvg_damage_add(ESVG *e, ESVG_Coord x, ESVG_Coord y, ESVG_Length w, ESVG_Length h)
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI esvg_damage_add(ESVG *e, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value w, ESVG_Length_Value h)
 {
 	Eina_Rectangle r;
 	
 	eina_rectangle_coords_from(&r, x, y, w, h);
 	ekeko_canvas_damage_add(e->canvas, &r);
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void esvg_render(ESVG *e)
 {
 	ekeko_canvas_process(e->canvas);
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void esvg_free(ESVG *e)
 {
 	
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void esvg_size_set(ESVG *e, ESVG_Length *w, ESVG_Length *h)
+{
+	/* */
 }
 
 /* viewport functions */

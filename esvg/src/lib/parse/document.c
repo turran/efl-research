@@ -8,6 +8,8 @@
 Eina_Bool document_parse(ESVG_Document *svg)
 {
 	ESVG *esvg;
+	ESVG_Length length;
+	
 	char *attr;
 	
 	/* canvas or subcanvas ? */
@@ -15,16 +17,12 @@ Eina_Bool document_parse(ESVG_Document *svg)
 	{
 		/* parse the attributes */
 		attr = exml_attribute_get(svg->xml, "width");
+		esvg_length_get(attr, &length);
+		printf("%f %d\n", length.value, length.type);
 		
-		if (!attr)
-			printf("no attribute\n");
-		else
-			printf("value = %s\n", attr);
 		attr = exml_attribute_get(svg->xml, "height");
-		if (!attr)
-			printf("no attribute\n");
-		else
-			printf("value = %s\n", attr);
+		esvg_length_get(attr, &length);
+		printf("%f %d\n", length.value, length.type);
 		//svg->canvas = esvg_new(w, h, svg->type, svg->data);
 	}
 	printf("ok??\n");

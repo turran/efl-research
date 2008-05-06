@@ -56,13 +56,16 @@ EAPI ESVG_Shape * esvg_rect_shape_get(ESVG_Rect *r)
 	return &r->shape;
 }
 
-EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord x, ESVG_Coord y, ESVG_Length width, ESVG_Length height)
+EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESVG_Length *w, ESVG_Length *h)
 {
-	r->x = x;
-	r->y = y;
-	r->width = width;
-	r->height = height;
-	esvg_shape_geometry_set(&r->shape, x, y, width, height);
+	if (x) r->x = *x;
+	if (y) r->y = *y;
+	if (w) r->width = *w;
+	if (h) r->height = *h;
+	/* TODO check if some of the values are relative, if so register callbacks
+	 * to the parent */
+	//ekeko_canvas_callback_add(r->shape.canvas->canvas, EKEKO_CANVAS_EVENT_RESIZE, NULL); 
+	esvg_shape_geometry_set(&r->shape, x->value, y->value, w->value, h->value);
 }
 
 EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry)

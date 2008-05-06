@@ -59,20 +59,27 @@ int main(int argc, char **argv)
 	ESVG *canvas;
 	ESVG_Rect *rect, *background;
 	ESVG_Shape *shape;
+	ESVG_Length length;
 	
 #if HAVE_CAIRO
 	engine_data = cairo_engine_create();
 	engine_type = ESVG_ENGINE_CAIRO;
 #endif
+	length.type = ESVG_LENGTH_TYPE_NUMBER;
+	
 	canvas = esvg_new(WIDTH, HEIGHT, engine_type, engine_data);
 	background = esvg_rect_add(canvas);
+#if 0
 	esvg_rect_geometry_set(background, 0, 0, WIDTH, HEIGHT);
+#endif
 	shape = esvg_rect_shape_get(background);
 	esvg_shape_fill_set(shape, 0xffffff);
 	
 	rect = esvg_rect_add(canvas);
+#if 0
 	esvg_rect_geometry_set(rect, 10, 20, 140, 280);
 	esvg_rect_rounded_set(rect, 50, 15);
+#endif
 	shape = esvg_rect_shape_get(rect);
 	esvg_shape_fill_set(shape, 0xf10b14);
 	esvg_shape_stroke_set(shape, 0x000000);

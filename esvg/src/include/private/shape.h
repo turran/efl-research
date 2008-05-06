@@ -78,7 +78,6 @@ typedef struct _ESVG_Attribute_Cursor
 
 struct _ESVG_Shape
 {
-	Eina_Inlist list;
 	ESVG *canvas;
 	Ekeko_Object *object;
 	/* state */
@@ -123,6 +122,6 @@ struct _ESVG_Rect
 	ESVG_Length height;
 };
 
-void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord x, ESVG_Coord y, ESVG_Length width, ESVG_Length height);
+EAPI void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value width, ESVG_Length_Value height);
 
 #endif /*SHAPE_H_*/

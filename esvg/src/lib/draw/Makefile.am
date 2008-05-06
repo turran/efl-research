@@ -13,7 +13,8 @@ esvg_canvas.c \
 esvg_engine.c \
 esvg_engine_cairo.c \
 esvg_rect.c \
-esvg_shape.c
+esvg_shape.c \
+esvg_units.c
 
 libesvg_draw_la_LIBADD = \
 @ESVG_LIBS@

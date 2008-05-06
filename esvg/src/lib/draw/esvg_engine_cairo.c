@@ -73,6 +73,7 @@ static void _rect_draw(void *engine_data, void *context, ESVG_Rect *r, Eina_Rect
 	cairo_clip(c);
 	cairo_new_path(c);
 	/* rounded rect */
+#if 0
 	if ((r->rx != 0) && (r->ry != 0))
 	{
 		cairo_move_to(c, r->x + r->rx, r->y);
@@ -90,6 +91,7 @@ static void _rect_draw(void *engine_data, void *context, ESVG_Rect *r, Eina_Rect
 	{
 		cairo_rectangle(c, r->x, r->y, r->width, r->height);
 	}
+#endif
 	_path_fill(c, &r->shape);
 	_path_stroke(c, &r->shape);
 }
