@@ -4,9 +4,12 @@
 struct _ESVG
 {
 	Ekeko_Canvas *canvas;
-	Eina_Rectangle shape_area;
+	unsigned int width; /* output width */
+	unsigned int height; /* output height */
 	ESVG_Rect *background; /* the background rectangle */
+	Eina_Rectangle shape_area;
 	ESVG_Engine *engine;
+	ESVG_Engine_Type engine_type;
 	void *engine_data;
 };
 

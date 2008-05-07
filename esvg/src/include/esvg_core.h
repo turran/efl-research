@@ -23,13 +23,14 @@ typedef enum _ESVG_Length_Type
 
 typedef struct _ESVG_Length
 {
+	float n_value; /* normalized value, read only */
 	float value;
 	ESVG_Length_Type type;
 } ESVG_Length, ESVG_Coord;
 
 //typedef ESVG_Length ESVG_Angle;
 
-static inline Eina_Bool eina_length_type_is_relative(ESVG_Length_Type type)
+static inline Eina_Bool esvg_length_type_is_relative(ESVG_Length_Type type)
 {
 	if ((type == ESVG_LENGTH_TYPE_PERCENTAGE) ||
 		(type == ESVG_LENGTH_TYPE_EMS))

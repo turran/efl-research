@@ -10,7 +10,6 @@
 #define WIDTH  640
 #define HEIGHT 480
 
-
 #if HAVE_CAIRO
 
 #include <cairo.h>
@@ -54,6 +53,7 @@ void * cairo_engine_create(void)
 
 int main(int argc, char **argv)
 {
+#if 0
 	void *engine_data;
 	ESVG_Engine_Type engine_type;
 	ESVG *canvas;
@@ -95,5 +95,6 @@ int main(int argc, char **argv)
 #endif
 		esvg_render(canvas);
 	}
+#endif
 	return 0;
 }

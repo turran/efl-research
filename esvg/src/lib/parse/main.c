@@ -16,32 +16,57 @@ static ESVG_Document * _document_new(void)
  *                                 Global                                     * 
  *============================================================================*/
 ESVG_Document_Element *esvg_elements[ESVG_ELEMENTS] = {
-	[ESVG_ELEMENT_DOCUMENT] = &document_element,
+	[ESVG_ELEMENT_SVG] = &element_document,
+	[ESVG_ELEMENT_G] = &element_group,
 };
-/* given a tag, parse it finding the element that
- * parse that tag
- */
-void element_parse(ESVG_Document *ed, const char *tag)
-{
-	int i;
-	
-	for (i = 0; i < ESVG_ELEMENTS; i++)
-	{
-		ESVG_Document_Element *el;
-		
-		el = esvg_elements[i];
-		
-		if (!strcmp(tag, el->tag))
-		{
-			el->parser(ed);
-			break;
-		}
-	}
-}
-/* parse every child object */
-void element_child_parse(ESVG_Document_Element *ed)
-{
 
+char *element_tags[ESVG_ELEMENTS] = {
+	[ESVG_ELEMENT_SVG] = "svg",
+	[ESVG_ELEMENT_RECT] = "rect",
+	[ESVG_ELEMENT_G] = "g",
+	[ESVG_ELEMENT_POLYLINE] = "polyline",
+	[ESVG_ELEMENT_POLYGON] = "polygon",
+};
+
+/* parse every child object */
+void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
+{
+	EXML_Node *n;
+	char *tag;
+	
+	if (!ede) return;
+	
+	n = exml_get(ed->xml);
+	tag = exml_down(ed->xml);
+	while (tag != NULL)
+	{
+		int i;
+		
+		/* iterate over the children */
+		for (i = 0; i < ESVG_ELEMENTS; i++)
+		{
+			int index;
+			
+			index = ede->children[i]; 
+			if (index == ESVG_ELEMENT_UNKNOWN)
+				continue;
+			if (!element_tags[index])
+			{
+				printf("unsupported tag %s\n", tag);
+				continue;
+			}
+			if (!strcmp(element_tags[index], tag))
+			{
+				ESVG_Document_Element *el;
+				
+				printf("parsing %s\n", tag);
+				el = esvg_elements[index];
+				el->parser(ed);
+			}
+		}
+		tag = exml_next(ed->xml);
+	}
+	exml_goto_node(ed->xml, n);
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -60,23 +85,15 @@ EAPI ESVG * esvg_document_load(const char *file, ESVG_Engine_Type type, void *en
 		return NULL;
 	}
 	n = exml_get(xml);
-	printf("tag = %s\n", n->tag);
 	if (strcmp(n->tag, "svg"))
 	{
 		printf("no svg\n");
 		return NULL;
 	}
-#if 0
-	if ((tag = exml_down(xml)) == NULL)
-	{
-		printf("empty tags\n");
-		return NULL;
-	}
-#endif
 	svg = _document_new();
 	svg->xml = xml;
 	svg->type = type;
 	svg->engine_data = engine_data;
-	element_parse(svg, "svg");
+	esvg_elements[ESVG_ELEMENT_SVG]->parser(svg);
 	return NULL;
 }

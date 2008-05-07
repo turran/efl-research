@@ -8,30 +8,43 @@
 Eina_Bool document_parse(ESVG_Document *svg)
 {
 	ESVG *esvg;
-	ESVG_Length length;
-	
 	char *attr;
 	
 	/* canvas or subcanvas ? */
 	if (!svg->canvas)
 	{
+		ESVG_Length w, h;
+		
+		svg->canvas = esvg_new();
+		esvg_engine_set(svg->canvas, svg->type, svg->engine_data);
+		esvg_output_size_set(svg->canvas, 0, 0);
 		/* parse the attributes */
 		attr = exml_attribute_get(svg->xml, "width");
-		esvg_length_get(attr, &length);
-		printf("%f %d\n", length.value, length.type);
-		
+		if (!esvg_length_get(attr, &w))
+		{
+			w.value = 100;
+			w.type = ESVG_LENGTH_TYPE_PERCENTAGE;
+		}
 		attr = exml_attribute_get(svg->xml, "height");
-		esvg_length_get(attr, &length);
-		printf("%f %d\n", length.value, length.type);
-		//svg->canvas = esvg_new(w, h, svg->type, svg->data);
+		if (!esvg_length_get(attr, &h))
+		{
+			h.value = 100;
+			h.type = ESVG_LENGTH_TYPE_PERCENTAGE;
+		}
+		esvg_size_set(svg->canvas, &w, &h);
 	}
-	printf("ok??\n");
+	else
+	{
+		printf("this should be a subcanvas!!!\n");
+	}
+	/* parse the childs */
+	element_child_parse(svg, &element_document);
 }
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-ESVG_Document_Element document_element = {
-	.tag = "svg",
+ESVG_Document_Element element_document = {
+	.element = ESVG_ELEMENT_SVG,
 	.parser = &document_parse,
-	.children = { ESVG_ELEMENT_DOCUMENT, ESVG_ELEMENT_GROUP, ESVG_ELEMENT_POLYGON},
+	.children = { ESVG_ELEMENT_SVG, ESVG_ELEMENT_G, ESVG_ELEMENT_POLYGON},
 };

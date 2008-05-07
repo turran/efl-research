@@ -12,8 +12,8 @@ static Eina_Bool group_parse(ESVG_Document *svg)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-ESVG_Document_Element group_element = {
-	.tag = "group",
+ESVG_Document_Element element_group = {
+	.element = ESVG_ELEMENT_G,
 	.parser = &group_parse,
+	//.children
 };
-#endif

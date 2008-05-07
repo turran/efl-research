@@ -38,6 +38,30 @@ DATA32 color_get(const char *str)
 }
 #endif
 /*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+void esvg_length_calculate(ESVG_Length *length, ESVG_Length_Value rel)
+{
+	/* TODO finish this function */
+	switch (length->type)
+	{
+		case ESVG_LENGTH_TYPE_NUMBER:
+			break;
+		case ESVG_LENGTH_TYPE_PERCENTAGE:
+			length->n_value = length->value * rel;
+			break;
+		case ESVG_LENGTH_TYPE_EMS:
+		case ESVG_LENGTH_TYPE_EXS:
+		case ESVG_LENGTH_TYPE_PX:
+		case ESVG_LENGTH_TYPE_CM:
+		case ESVG_LENGTH_TYPE_MM:
+		case ESVG_LENGTH_TYPE_IN:
+		case ESVG_LENGTH_TYPE_PT:
+		case ESVG_LENGTH_TYPE_PC:
+		break;
+	}
+}
+/*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
 EAPI Eina_Bool esvg_length_get(const char *str, ESVG_Length *length)
@@ -53,19 +77,22 @@ EAPI Eina_Bool esvg_length_get(const char *str, ESVG_Length *length)
 	sscanf(str, "%f%s", &c, units);
 	if (!strcmp(units, "cm"))
 	{
-		length->value = 35.43307 * c; 
+		length->value = c;
+		length->n_value = 35.43307 * c;
 		length->type = ESVG_LENGTH_TYPE_CM;
 		return EINA_TRUE;
 	}
 	else if (!strcmp(units, "pt"))
 	{
-		length->value = 1.25 * c;
+		length->value = c;
+		length->n_value = 1.25 * c;
 		length->type = ESVG_LENGTH_TYPE_PT;
 		return EINA_TRUE;
 	}
 	else if (!strcmp(units, "%"))
 	{
 		length->value = c;
+		length->n_value = c;
 		length->type = ESVG_LENGTH_TYPE_PERCENTAGE;
 		return EINA_TRUE;
 	}

@@ -57,43 +57,23 @@ void esvg_canvas_resize_register()
  * FIXME: To be fixed
  * TODO change w and h 
  */
-EAPI ESVG * esvg_new(int w, int h, ESVG_Engine_Type type, void *engine_data)
+EAPI ESVG * esvg_new(void)
 {
 	ESVG *e;
 	
-	if ((w < 0) || (h < 0)) return NULL;
-	
 	e = calloc(1, sizeof(ESVG));
-	e->canvas = ekeko_canvas_new(&_canvas_class, e, EKEKO_TILER_SPLITTER, w, h);
-	e->engine_data = engine_data;
-	switch (type)
-	{
-		case ESVG_ENGINE_CAIRO:
-		e->engine = &esvg_engine_cairo;
-		break;
-		
-		default:
-		break;
-	}
+	e->engine_type = ESVG_ENGINE_UNKNOWN;
+	return e;
+#if 0
 	/* initialize the shape area to 0 */
 	eina_rectangle_coords_from(&e->shape_area, 0, 0, 0, 0);
-	/* if the size of the canvas is relative we should add a callback for every
-	 * object's resize or move
-	 */
-	e->background = esvg_rect_add(e);
-	/* TODO define the rectangle
-	 * the size should be absolute!! or we end with an endless lopp
-	//esvg_rect_geometry_set(e->rect, 0, 0, w, h);
-	 */
-	/* TODO add callbacks to the background, if it changes
-	 * resize the canvas */
-	return e;
+#endif
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI esvg_damage_add(ESVG *e, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value w, ESVG_Length_Value h)
+EAPI void esvg_damage_add(ESVG *e, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value w, ESVG_Length_Value h)
 {
 	Eina_Rectangle r;
 	
@@ -121,9 +101,74 @@ EAPI void esvg_free(ESVG *e)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void esvg_size_set(ESVG *e, ESVG_Length *w, ESVG_Length *h)
+EAPI Eina_Bool esvg_size_set(ESVG *e, ESVG_Length *w, ESVG_Length *h)
 {
-	/* */
+	/* add the background object, the reference for every relative object */
+	/* if the size is relative, take the values relative to the output size */
+	if (!e->canvas)
+		return EINA_FALSE;
+	if (e->engine_type == ESVG_ENGINE_UNKNOWN)
+		return EINA_FALSE;
+	if (!e->background)
+		e->background = esvg_rect_add(e);
+	esvg_rect_geometry_set(e->background, 0, 0, w, h);
+	
+	return EINA_TRUE;
 }
 
-/* viewport functions */
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool esvg_output_size_set(ESVG *e, unsigned int width, unsigned int height)
+{
+	if (!e->canvas)
+	{
+		e->canvas = ekeko_canvas_new(&_canvas_class, e, EKEKO_TILER_SPLITTER, width, height);
+		if (!e->canvas)
+			return EINA_FALSE;
+	}
+	else
+	{
+		if ((e->width == width) && (e->height == height))
+			return EINA_TRUE;
+		/* we should resize the canvas size */
+		printf("not supported yet!\n");
+	}
+	e->width = width;
+	e->height = height;
+	
+	if (!e->background)
+		return EINA_TRUE;
+	
+	/* if the size of the canvas is relative update the background size */
+	if (esvg_length_type_is_relative(e->background->width.type))
+		esvg_length_calculate(&e->background->width, e->width);
+	if (esvg_length_type_is_relative(e->background->height.type))
+		esvg_length_calculate(&e->background->width, e->height);
+	
+	return EINA_TRUE;
+}
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool esvg_engine_set(ESVG *e, ESVG_Engine_Type type, void *engine_data)
+{
+	if (e->engine_type != ESVG_ENGINE_UNKNOWN)
+		return EINA_FALSE;
+	e->engine_data = engine_data;
+	switch (type)
+	{
+		case ESVG_ENGINE_CAIRO:
+		e->engine = &esvg_engine_cairo;
+		break;
+		
+		default:
+		break;
+	}
+	return EINA_TRUE;
+}
+
+/* TODO viewport functions */

@@ -12,6 +12,6 @@ static Eina_Bool rect_parse(ESVG_Document *esvg)
  *                                 Global                                     * 
  *============================================================================*/
 ESVG_Document_Element rect_element = {
-		.tag = "rect",
+		.element = ESVG_ELEMENT_RECT,
 		.parser = &rect_parse, 
 };

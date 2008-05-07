@@ -14,6 +14,6 @@ static Eina_Bool polygon_parse(ESVG_Document *esvg)
 }
 
 ESVG_Document_Element polygon_element = {
-		.tag = "polygon",
+		.element = ESVG_ELEMENT_POLYGON,
 		.parser = &polygon_parse, 
 };

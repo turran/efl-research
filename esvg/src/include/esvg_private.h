@@ -7,6 +7,7 @@
 #include <cairo.h>
 #endif
 
+#include "private/core.h"
 #include "private/engine.h"
 #include "private/shape.h"
 #include "private/canvas.h"
