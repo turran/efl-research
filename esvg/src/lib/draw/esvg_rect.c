@@ -73,3 +73,8 @@ EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry)
 	r->rx = rx;
 	r->ry = ry;
 }
+
+EAPI void esvg_rect_del(ESVG_Rect *r)
+{
+	
+}

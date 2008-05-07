@@ -45,6 +45,7 @@ EAPI ESVG_Rect * esvg_rect_add(ESVG *svg);
 EAPI ESVG_Shape * esvg_rect_shape_get(ESVG_Rect *r);
 EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESVG_Length *w, ESVG_Length *h);
 EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry);
+EAPI void esvg_rect_del(ESVG_Rect *r);
 
 #if 0
 

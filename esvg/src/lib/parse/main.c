@@ -18,6 +18,7 @@ static ESVG_Document * _document_new(void)
 ESVG_Document_Element *esvg_elements[ESVG_ELEMENTS] = {
 	[ESVG_ELEMENT_SVG] = &element_document,
 	[ESVG_ELEMENT_G] = &element_group,
+	[ESVG_ELEMENT_RECT] = &element_rect,
 };
 
 char *element_tags[ESVG_ELEMENTS] = {
@@ -62,6 +63,8 @@ void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
 				printf("parsing %s\n", tag);
 				el = esvg_elements[index];
 				el->parser(ed);
+				/* now parse the children */
+				element_child_parse(ed, el);
 			}
 		}
 		tag = exml_next(ed->xml);
@@ -71,7 +74,7 @@ void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-EAPI ESVG * esvg_document_load(const char *file, ESVG_Engine_Type type, void *engine_data)
+EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data)
 {
 	ESVG_Document *svg;
 	EXML *xml;

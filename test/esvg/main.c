@@ -7,8 +7,10 @@
 
 static void help(void)
 {
-	printf("Usage esvg_test <FILE> <ENGINE>\n");
+	printf("Usage esvg_test <WIDTH> <HEIGHT> <FILE> <ENGINE>\n");
 	printf("Open FILE and render it using ENGINE's backend.\n\n");
+	printf("WIDTH: Width of the window\n");
+	printf("HEIGHT: Height of the window\n");
 	printf("ENGINES:\n");
 	printf("\t sdl - SDL (Simple DirectMedia Layer) engine.\n");
 }
@@ -25,18 +27,27 @@ static ESVG_Engine_Type parse_engine(const char *engine)
 int main(int argc, char **argv)
 {
 	ESVG *esvg;
+	unsigned int w, h;
+	unsigned int end = 0;
 	
-	if (argc < 3)
+	if (argc < 5)
 	{
 		help();
 		return -1;
 	}
+	w = strtol(argv[1], NULL, 0);
+	h = strtol(argv[2], NULL, 0);
 	/* call the backend init */
+	if (!sdl_init(w, h))
+		return -1;
 	/* forever */
-	/* call the backend loop */
-	/* call the test loop */
+	esvg = esvg_document_load(argv[3], w, h, ESVG_ENGINE_CAIRO, NULL);
+	while (!end)
+	{
+		/* call the backend loop */
+		end = sdl_loop();	
+	}
 	/* call the backend shutdown */
-	
-	esvg = esvg_document_load(argv[1], ESVG_ENGINE_CAIRO, NULL);
+	sdl_shutdown();
 	return 1;
 }

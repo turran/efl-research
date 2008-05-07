@@ -32,13 +32,14 @@ Eina_Bool document_parse(ESVG_Document *svg)
 			h.type = ESVG_LENGTH_TYPE_PERCENTAGE;
 		}
 		esvg_size_set(svg->canvas, &w, &h);
+		/* Lets begin the recursion */
+		element_child_parse(svg, &element_document);
 	}
 	else
 	{
 		printf("this should be a subcanvas!!!\n");
 	}
 	/* parse the childs */
-	element_child_parse(svg, &element_document);
 }
 /*============================================================================*
  *                                 Global                                     * 

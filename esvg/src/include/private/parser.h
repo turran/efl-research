@@ -113,5 +113,6 @@ extern char *element_tags[ESVG_ELEMENTS];
 extern ESVG_Document_Element *esvg_elements[ESVG_ELEMENTS];
 extern ESVG_Document_Element element_document;
 extern ESVG_Document_Element element_group;
+extern ESVG_Document_Element element_rect;
 
 #endif /*PARSER_H_*/
