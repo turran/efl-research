@@ -12,6 +12,10 @@ static ESVG_Document * _document_new(void)
 	svg = calloc(1, sizeof(ESVG_Document));
 	return svg;
 }
+static ESVG_Document * _document_del(ESVG_Document *d)
+{
+
+}
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
@@ -43,6 +47,7 @@ void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
 	{
 		int i;
 		
+		printf("tag %s found\n", tag);
 		/* iterate over the children */
 		for (i = 0; i < ESVG_ELEMENTS; i++)
 		{
@@ -97,6 +102,8 @@ EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h,
 	svg->xml = xml;
 	svg->type = type;
 	svg->engine_data = engine_data;
+	svg->w = w;
+	svg->h = h;
 	esvg_elements[ESVG_ELEMENT_SVG]->parser(svg);
-	return NULL;
+	return svg->canvas;
 }

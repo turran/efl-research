@@ -65,6 +65,7 @@ static void  _path_fill(cairo_t *c, ESVG_Shape *s)
 
 static void _rect_draw(void *engine_data, void *context, ESVG_Rect *r, Eina_Rectangle *rclip)
 {
+	ESVG_Length_Value x, y, w, h, rx, ry;
 	cairo_t *c = context;
 	
 	cairo_reset_clip(c);
@@ -72,26 +73,32 @@ static void _rect_draw(void *engine_data, void *context, ESVG_Rect *r, Eina_Rect
 	cairo_rectangle(c, rclip->x, rclip->y, rclip->w, rclip->h);
 	cairo_clip(c);
 	cairo_new_path(c);
+	
+	x = r->x.value;
+	y = r->y.value;
+	w = r->width.value;
+	h = r->height.value;
+	rx = r->rx.value;
+	ry = r->ry.value;
 	/* rounded rect */
-#if 0
-	if ((r->rx != 0) && (r->ry != 0))
+	if ((rx != 0) && (ry != 0))
 	{
-		cairo_move_to(c, r->x + r->rx, r->y);
-		cairo_line_to(c, r->x + r->width - r->rx, r->y);
-		cairo_curve_to(c, r->x + r->width - (r->rx/2), r->y, r->x + r->width, r->y + (r->ry/2), r->x + r->width, r->y + r->ry);
-		cairo_line_to(c, r->x + r->width, r->y + r->height - r->ry);
-		cairo_curve_to(c, r->x + r->width, r->y + r->height - (r->ry/2), r->x + r->width - (r->rx/2), r->y + r->height, r->x + r->width - r->rx, r->y + r->height);
-		cairo_line_to(c, r->x + r->rx, r->y + r->height);
-		cairo_curve_to(c, r->x + (r->rx/2), r->y + r->height, r->x, r->y + r->height - (r->ry/2), r->x, r->y + r->height - r->ry);
-		cairo_line_to(c, r->x, r->y + r->ry);
-		cairo_curve_to(c, r->x, r->y + (r->ry/2), r->x + (r->rx/2), r->y, r->x + r->rx, r->y);
+		cairo_move_to(c, x + rx, y);
+		cairo_line_to(c, x + w - rx, y);
+		cairo_curve_to(c, x + w - (rx/2), y, x + w, y + (ry/2), x + w, y + ry);
+		cairo_line_to(c, x + w, y + h - ry);
+		cairo_curve_to(c, x + w, y + h - (ry/2), x + w - (rx/2), y + h, x + w - rx, y + h);
+		cairo_line_to(c, x + rx, y + h);
+		cairo_curve_to(c, x + (rx/2), y + h, x, y + h - (ry/2), x, y + h - ry);
+		cairo_line_to(c, x, y + ry);
+		cairo_curve_to(c, x, y + (ry/2), x + (rx/2), y, x + rx, y);
 	}
 	/* regular rect */
 	else
 	{
-		cairo_rectangle(c, r->x, r->y, r->width, r->height);
+		cairo_rectangle(c, x, y, w, h);
 	}
-#endif
+	printf("painting rect\n");
 	_path_fill(c, &r->shape);
 	_path_stroke(c, &r->shape);
 }

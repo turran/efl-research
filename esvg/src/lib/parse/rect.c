@@ -9,6 +9,7 @@ static Eina_Bool rect_parse(ESVG_Document *svg)
 	char *attr;
 	ESVG_Rect *r;
 	ESVG_Length w, h, x, y, rx, ry;
+	
 	/* TODO change this to add the rect to the parent object */
 	r = esvg_rect_add(svg->canvas);
 	/* parse the attributes */
@@ -37,8 +38,11 @@ static Eina_Bool rect_parse(ESVG_Document *svg)
 	if (!esvg_length_get(attr, &h))
 		goto error;
 #endif
+	/* common shape attributes */
+	esvg_shape_parse(svg, esvg_rect_shape_get(r));
 	return EINA_TRUE;
 error:
+	printf("error\n");
 	esvg_rect_del(r);
 	return EINA_FALSE;
 }

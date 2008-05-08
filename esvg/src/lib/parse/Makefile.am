@@ -10,11 +10,13 @@ noinst_LTLIBRARIES = libesvg_parse.la
 
 # make all the sources but main.c to be optional
 libesvg_parse_la_SOURCES = \
-main.c \
-group.c \
 document.c \
+group.c \
+main.c \
+polygon.c \
 rect.c \
-polygon.c 
+shape.c 
+ 
 
 libesvg_parse_la_LIBADD = \
 @ESVG_LIBS@

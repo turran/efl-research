@@ -93,6 +93,8 @@ typedef struct _ESVG_Document
 	ESVG *canvas;
 	EXML *xml;
 	ESVG_Engine_Type type;
+	unsigned int w;
+	unsigned int h;
 	void *engine_data;
 } ESVG_Document;
 

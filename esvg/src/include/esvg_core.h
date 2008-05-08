@@ -23,8 +23,8 @@ typedef enum _ESVG_Length_Type
 
 typedef struct _ESVG_Length
 {
-	float n_value; /* normalized value, read only */
-	float value;
+	float value; /* normalized value, read only */
+	float type_value; /* value in type units */
 	ESVG_Length_Type type;
 } ESVG_Length, ESVG_Coord;
 

@@ -1,23 +1,33 @@
-#include <SDL.h>
+#include "esvg_test.h"
 
-SDL_Surface *surface;
+SDL_Surface *screen;
+SDL_Surface *src;
+cairo_surface_t *src_cairo;
 
 int sdl_init(unsigned int w, unsigned int h)
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	unsigned char *src_data;
+	unsigned int stride;
 
-	if (!(surface = SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA | SDL_DOUBLEBUF)))
+	if (!(screen = SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SWSURFACE)))
 	{
 		fprintf(stderr, "%s\n", SDL_GetError());
 		SDL_Quit();
 		return 0;
 	}
 	/* create a new software surface */
+	stride = w * 4;
+	src_data = calloc(stride * h, sizeof(unsigned char ));
+	src = SDL_CreateRGBSurfaceFrom((void *)src_data, w, h, 32, stride,
+	0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 	/* create a new cairo context */
+	src_cairo = cairo_image_surface_create_for_data(src_data, CAIRO_FORMAT_ARGB32, w, h, stride);
+
 	return 1;
 }
 
-int sdl_loop(void)
+int sdl_loop(ESVG *svg)
 {
 	SDL_Event event;
 	
@@ -44,14 +54,17 @@ int sdl_loop(void)
 			//ekeko_input_feed_mouse_move(input, event.button.x, event.button.y, 0);
 			//ekeko_input_feed_mouse_up(input, event.button.state, EKEKO_BUTTON_NONE, 0);
 			break;
-		default:
+		case SDL_VIDEORESIZE:
+			esvg_output_size_set(svg, event.resize.w, event.resize.h);
 			break;
-			//case SDL_VIDEORESIZE:
 		case SDL_QUIT:
 			return 1;
 			break;
 		}
 	}
+	SDL_BlitSurface(src, NULL, screen, NULL);
+	SDL_UpdateRect(screen, 0, 0, 0, 0);
+
 	return 0;
 }
 

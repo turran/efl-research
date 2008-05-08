@@ -45,11 +45,13 @@ void esvg_length_calculate(ESVG_Length *length, ESVG_Length_Value rel)
 	/* TODO finish this function */
 	switch (length->type)
 	{
-		case ESVG_LENGTH_TYPE_NUMBER:
-			break;
+		
+		/* relative uints */
 		case ESVG_LENGTH_TYPE_PERCENTAGE:
-			length->n_value = length->value * rel;
+			length->value = length->type_value * rel;
 			break;
+		/* absolute units */
+		case ESVG_LENGTH_TYPE_NUMBER:
 		case ESVG_LENGTH_TYPE_EMS:
 		case ESVG_LENGTH_TYPE_EXS:
 		case ESVG_LENGTH_TYPE_PX:
@@ -64,9 +66,43 @@ void esvg_length_calculate(ESVG_Length *length, ESVG_Length_Value rel)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+EAPI Eina_Bool esvg_opacity_get(const char *str, ESVG_Length_Value *op)
+{
+	float f;
+	
+	if (!str) return EINA_FALSE;
+	
+	sscanf(str, "%f", &f);
+	if (f < 0.0)
+		*op = 0.0;
+	else if (f > 1.0)
+		*op = 1.0;
+	else
+		*op = f;
+	return EINA_TRUE;
+}
+
+EAPI Eina_Bool esvg_color_get(const char *str, ESVG_Color *color)
+{
+	if (!str) return EINA_FALSE;
+	
+	/* rgb(r, g, b)*/
+	/* three digits hex 0xfb0 = 0xffbb00 */
+	/* six digits hex 0xffbb00 */
+	/* rgb(100%, 50%, 50%) */
+	/* color definitions, cyan, red, black, etc */
+	if (!strcmp(str, "blue"))
+		*color = 0x0000ff;	
+	else if (!strcmp(str, "red"))
+		*color = 0xff0000;
+	else
+		return EINA_FALSE;
+	return EINA_TRUE;
+}
 EAPI Eina_Bool esvg_length_get(const char *str, ESVG_Length *length)
 {
-	char units[3];
+	char *units;
+	int num;
 	float c;
 	float r;
 
@@ -74,28 +110,34 @@ EAPI Eina_Bool esvg_length_get(const char *str, ESVG_Length *length)
 	
 	if (!str) return EINA_FALSE;
 	
-	sscanf(str, "%f%s", &c, units);
-	if (!strcmp(units, "cm"))
+	sscanf(str, "%f%n", &c, &num);
+	units = str + num;
+	if (!(*units))
 	{
+		length->type_value = c;
 		length->value = c;
-		length->n_value = 35.43307 * c;
+		length->type = ESVG_LENGTH_TYPE_NUMBER;
+	}
+	else if (!strcmp(units, "cm"))
+	{
+		length->type_value =  c;
+		length->value = 35.43307 * c;
 		length->type = ESVG_LENGTH_TYPE_CM;
-		return EINA_TRUE;
 	}
 	else if (!strcmp(units, "pt"))
 	{
-		length->value = c;
-		length->n_value = 1.25 * c;
+		length->type_value = c;
+		length->value = 1.25 * c;
 		length->type = ESVG_LENGTH_TYPE_PT;
-		return EINA_TRUE;
 	}
 	else if (!strcmp(units, "%"))
 	{
+		length->type_value = c;
 		length->value = c;
-		length->n_value = c;
 		length->type = ESVG_LENGTH_TYPE_PERCENTAGE;
-		return EINA_TRUE;
 	}
+	else
+		return EINA_FALSE;
 	/* TODO do the rest */
-	return EINA_FALSE;
+	return EINA_TRUE;
 }

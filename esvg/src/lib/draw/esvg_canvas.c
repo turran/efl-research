@@ -103,15 +103,35 @@ EAPI void esvg_free(ESVG *e)
  */
 EAPI Eina_Bool esvg_size_set(ESVG *e, ESVG_Length *w, ESVG_Length *h)
 {
-	/* add the background object, the reference for every relative object */
-	/* if the size is relative, take the values relative to the output size */
+	ESVG_Length zero;
+	
+	/* if no canvas yet, nothing to do */
 	if (!e->canvas)
 		return EINA_FALSE;
+	/* if no engine yet, nothing to do */
 	if (e->engine_type == ESVG_ENGINE_UNKNOWN)
 		return EINA_FALSE;
+	/* add the background object, the reference for every relative object */
+	/* if the size is relative, take the values relative to the output size */
+	printf("background??\n");
 	if (!e->background)
+	{
+		ESVG_Shape *shape;
+		
 		e->background = esvg_rect_add(e);
-	esvg_rect_geometry_set(e->background, 0, 0, w, h);
+		shape = esvg_rect_shape_get(e->background);
+		esvg_shape_color_set(shape, 0xffffff);
+		esvg_shape_fill_set(shape, 0xffffff);
+		esvg_shape_opacity_set(shape, 1.0);
+	}
+	zero.value = 0;
+	zero.type_value = 0;
+	zero.type = ESVG_LENGTH_TYPE_NUMBER;
+	/* TODO should thi calculate be here? */
+	esvg_length_calculate(w, e->width);
+	esvg_length_calculate(h, e->height);
+	
+	esvg_rect_geometry_set(e->background, &zero, &zero, w, h);
 	
 	return EINA_TRUE;
 }
@@ -146,7 +166,7 @@ EAPI Eina_Bool esvg_output_size_set(ESVG *e, unsigned int width, unsigned int he
 		esvg_length_calculate(&e->background->width, e->width);
 	if (esvg_length_type_is_relative(e->background->height.type))
 		esvg_length_calculate(&e->background->width, e->height);
-	
+	printf("relative!!\n");
 	return EINA_TRUE;
 }
 
@@ -159,6 +179,7 @@ EAPI Eina_Bool esvg_engine_set(ESVG *e, ESVG_Engine_Type type, void *engine_data
 	if (e->engine_type != ESVG_ENGINE_UNKNOWN)
 		return EINA_FALSE;
 	e->engine_data = engine_data;
+	e->engine_type = type;
 	switch (type)
 	{
 		case ESVG_ENGINE_CAIRO:

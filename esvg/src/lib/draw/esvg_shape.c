@@ -5,10 +5,11 @@
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-EAPI void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value width, ESVG_Length_Value height)
+void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value width, ESVG_Length_Value height)
 {
 	/* TODO round values to up for positive or down for negatives */
 	//printf("%d %d %d %d\n", x, y, width, height);
+	/* TODO the geometry has to be calculated adding the stroke */
 	ekeko_object_move(s->object, x, y);
 	ekeko_object_resize(s->object, width, height);
 }

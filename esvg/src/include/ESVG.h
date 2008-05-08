@@ -2,6 +2,7 @@
 #define _ESVG_H
 
 #include "esvg_core.h"
+#include "esvg_element.h"
 #include "esvg_canvas.h"
 #include "esvg_shape.h"
 #include "esvg_parser.h"

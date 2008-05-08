@@ -1,5 +1,5 @@
-CFLAGS = -g `pkg-config --cflags esvg` `pkg-config --cflags sdl`
-LIBS = `pkg-config --libs esvg` `pkg-config --libs sdl`
+CFLAGS = -g `pkg-config --cflags esvg sdl cairo`
+LIBS = `pkg-config --libs esvg sdl cairo`
 
 BINS  = esvg_test
 all: $(BINS)

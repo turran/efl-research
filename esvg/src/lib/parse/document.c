@@ -17,7 +17,7 @@ Eina_Bool document_parse(ESVG_Document *svg)
 		
 		svg->canvas = esvg_new();
 		esvg_engine_set(svg->canvas, svg->type, svg->engine_data);
-		esvg_output_size_set(svg->canvas, 0, 0);
+		esvg_output_size_set(svg->canvas, svg->w, svg->h);
 		/* parse the attributes */
 		attr = exml_attribute_get(svg->xml, "width");
 		if (!esvg_length_get(attr, &w))
@@ -47,5 +47,5 @@ Eina_Bool document_parse(ESVG_Document *svg)
 ESVG_Document_Element element_document = {
 	.element = ESVG_ELEMENT_SVG,
 	.parser = &document_parse,
-	.children = { ESVG_ELEMENT_SVG, ESVG_ELEMENT_G, ESVG_ELEMENT_POLYGON},
+	.children = { ESVG_ELEMENT_SVG, ESVG_ELEMENT_G, ESVG_ELEMENT_POLYGON, ESVG_ELEMENT_RECT},
 };

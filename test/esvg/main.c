@@ -1,9 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include "esvg_test.h"
 
-#include "Eina.h"
-#include "ESVG.h"
-
+extern cairo_surface_t *src_cairo;
 
 static void help(void)
 {
@@ -41,11 +38,12 @@ int main(int argc, char **argv)
 	if (!sdl_init(w, h))
 		return -1;
 	/* forever */
-	esvg = esvg_document_load(argv[3], w, h, ESVG_ENGINE_CAIRO, NULL);
+	esvg = esvg_document_load(argv[3], w, h, ESVG_ENGINE_CAIRO, src_cairo);
 	while (!end)
 	{
 		/* call the backend loop */
-		end = sdl_loop();	
+		end = sdl_loop(esvg);
+		esvg_render(esvg);
 	}
 	/* call the backend shutdown */
 	sdl_shutdown();

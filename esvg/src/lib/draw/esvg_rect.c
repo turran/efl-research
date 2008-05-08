@@ -64,6 +64,7 @@ EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESV
 	if (h) r->height = *h;
 	/* TODO check if some of the values are relative, if so register callbacks
 	 * to the parent */
+	printf("new rect of size %f %f %f %f\n", x->value, y->value, w->value, h->value);
 	//ekeko_canvas_callback_add(r->shape.canvas->canvas, EKEKO_CANVAS_EVENT_RESIZE, NULL); 
 	esvg_shape_geometry_set(&r->shape, x->value, y->value, w->value, h->value);
 }
