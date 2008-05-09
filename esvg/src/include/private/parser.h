@@ -99,9 +99,10 @@ typedef struct _ESVG_Document
 } ESVG_Document;
 
 /* TODO the parser callback should have some kind of parent element reference
- * in case we need it
+ * in case we need it: pass ESVG_Element too
  */
-typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Document *svg);
+
+typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Document *svg, ESVG_Element *el);
 
 typedef struct _ESVG_Document_Element
 {

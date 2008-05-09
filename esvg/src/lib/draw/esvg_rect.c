@@ -23,7 +23,7 @@ static void _process(void *data, Eina_Rectangle *r)
 	ESVG_Rect *rect = data;
 	
 	printf("process %d %d %d %d!!\n", r->x, r->y, r->w, r->h);
-	esvg_engine_rect_draw(rect->shape.canvas, rect->shape.engine.context, rect, r);
+	//esvg_engine_rect_draw(rect->shape.canvas, rect->shape.engine.context, rect, r);
 }
 
 static void _post_process(void *data)

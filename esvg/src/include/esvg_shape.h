@@ -1,34 +1,46 @@
 #ifndef ESVG_SHAPE_H_
 #define ESVG_SHAPE_H_
 
+/**
+ * A shape interacts with the canvas engine
+ * 
+ */
 typedef struct _ESVG_Shape ESVG_Shape;
 
-typedef enum _ESVG_Fill_Rule
+struct _ESVG_Shape
 {
-	ESVG_FILL_RULE_NONZERO,
-	ESVG_FILL_RULE_EVENODD,
-} ESVG_Fill_Rule;
-
-typedef enum _ESVG_Stroke_Line_Cap
-{
-	ESVG_STROKE_LINE_CAP_BUTT,
-	ESVG_STROKE_LINE_CAP_ROUND,
-	ESVG_STROKE_LINE_CAP_SQUARE,
-} ESVG_Stroke_Line_Cap;
-
-typedef enum _ESVG_Stroke_Line_Join
-{
-	ESVG_STROKE_LINE_JOIN_MITER,
-	ESVG_STROKE_LINE_JOIN_ROUND,
-	ESVG_STROKE_LINE_JOIN_BEVEL,
-} ESVG_Stroke_Line_Join;
-
-typedef enum _ESVG_Interpolation
-{
-	ESVG_INTERPOLATION_AUTO,
-	ESVG_INTERPOLATION_SRGB,
-	ESVG_INTERPOLATION_LINEAR_RGB,
-} ESVG_Interpolation;
+	/* inheritance */
+	ESVG_Element element;
+	/* attributes */
+	struct 
+	{
+		ESVG_Attribute_Core core;
+#if 0
+		ESVG_Attribute_Conditional conditional;
+		ESVG_Attribute_Style style;
+#endif
+		ESVG_Attribute_Paint paint;
+#if 0
+		ESVG_Attribute_Color color;
+#endif
+		ESVG_Attribute_Opacity opacity;
+		ESVG_Attribute_Graphics graphics;
+		ESVG_Attribute_Clip clip;
+		ESVG_Attribute_Mask mask;
+#if 0
+		ESVG_Attribute_Filter filter;
+		ESVG_Attribute_Graphical_Events graphical_events;
+#endif
+		ESVG_Attribute_Cursor cursor;
+	} attributes;
+	/* implementation */
+	//ESVG *canvas;
+	Ekeko_Object *object;
+	struct
+	{
+		void *context;
+	} engine;
+};
 
 EAPI void esvg_shape_id_set(ESVG_Shape *s, char *id);
 EAPI void esvg_shape_color_set(ESVG_Shape *s, ESVG_Color color);
@@ -38,14 +50,6 @@ EAPI void esvg_shape_stroke_set(ESVG_Shape *s, ESVG_Color color);
 EAPI void esvg_shape_opacity_set(ESVG_Shape *s, double opacity);
 EAPI void esvg_shape_stroke_opacity_set(ESVG_Shape *s, double opacity);
 EAPI void esvg_shape_fill_opacity_set(ESVG_Shape *s, double opacity);
-
-typedef struct _ESVG_Rect ESVG_Rect;
-
-EAPI ESVG_Rect * esvg_rect_add(ESVG *svg);
-EAPI ESVG_Shape * esvg_rect_shape_get(ESVG_Rect *r);
-EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESVG_Length *w, ESVG_Length *h);
-EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry);
-EAPI void esvg_rect_del(ESVG_Rect *r);
 
 #if 0
 

@@ -5,7 +5,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-Eina_Bool document_parse(ESVG_Document *svg)
+Eina_Bool document_parse(ESVG_Document *svg, ESVG_Element *parent)
 {
 	ESVG *esvg;
 	char *attr;
@@ -15,7 +15,7 @@ Eina_Bool document_parse(ESVG_Document *svg)
 	{
 		ESVG_Length w, h;
 		
-		svg->canvas = esvg_new();
+		svg->canvas = esvg_svg_new();
 		esvg_engine_set(svg->canvas, svg->type, svg->engine_data);
 		esvg_output_size_set(svg->canvas, svg->w, svg->h);
 		/* parse the attributes */

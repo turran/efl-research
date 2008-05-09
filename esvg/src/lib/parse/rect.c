@@ -4,7 +4,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static Eina_Bool rect_parse(ESVG_Document *svg)
+static Eina_Bool rect_parse(ESVG_Document *svg, ESVG_Element *parent)
 {
 	char *attr;
 	ESVG_Rect *r;

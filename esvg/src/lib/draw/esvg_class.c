@@ -1,14 +1,15 @@
 #include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
+
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _constructor(ESVG_Element *e)
+static void _object_constructor(ESVG_Object *o)
 {
 	
 }
-static void _destructor(ESVG_Element *e)
+static void _object_destructor(ESVG_Object *o)
 {
 	
 }
@@ -20,29 +21,47 @@ static void _destructor(ESVG_Element *e)
  *============================================================================*/
 /**
  * To be documented
- * FIXME: To be fixed
+ * FIXME: To be fixed 
  */
-EAPI void esvg_element_id_set(ESVG_Element *e, const char *id)
+EAPI ESVG_Class * esvg_class_new(const char *class_name, ESVG_Class *parent,
+		unsigned int size, ESVG_Class_Constructor constructor,
+		ESVG_Class_Destructor destructor)
 {
+	ESVG_Class *c;
 	
+	if (!class_name)
+		return NULL;
+	
+	c = malloc(sizeof(ESVG_Class));
+	c->constructor = constructor;
+	c->destructor = destructor;
+	c->size = size;
+	
+	if (parent)
+	{
+		c->parent = parent;
+	}
+	return c;
 }
 /**
  * To be documented
- * FIXME: To be fixed
+ * FIXME: To be fixed 
  */
-EAPI ESVG_Element * esvg_element_ancestor_get(ESVG_Element *e)
+EAPI Eina_Bool esvg_class_inherits_from(ESVG_Class *c, ESVG_Class *parent)
 {
+	ESVG_Class *cparent;
 	
-}
-EAPI ESVG_Class *esvg_element_class_get(void)
-{
-	static ESVG_Class *c = NULL;
+	if (!c || !parent)
+		return EINA_FALSE;
+	if (c == parent)
+		return EINA_TRUE;
 	
-	if (!c)
+	cparent = c->parent;
+	while (cparent)
 	{
-		c = esvg_class_new("ESVG_Element", ESVG_OBJECT_CLASS,
-				sizeof(ESVG_Element), _constructor,
-				_destructor);
+		if (parent == cparent)
+			return EINA_TRUE;
+		cparent = cparent->parent;
 	}
-	return c;
+	return EINA_FALSE;
 }

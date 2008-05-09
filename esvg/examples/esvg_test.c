@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 #endif
 	length.type = ESVG_LENGTH_TYPE_NUMBER;
 	
-	canvas = esvg_new(WIDTH, HEIGHT, engine_type, engine_data);
+	canvas = esvg_svg_new(WIDTH, HEIGHT, engine_type, engine_data);
 	background = esvg_rect_add(canvas);
 #if 0
 	esvg_rect_geometry_set(background, 0, 0, WIDTH, HEIGHT);

@@ -6,7 +6,9 @@ typedef struct _ESVG_Svg ESVG_Svg;
 struct _ESVG_Svg
 {
 	/* inheritance */
-	ESVG_Container;
+	ESVG_Container container;
+	/* attributes */
+	/* implementation */
 	ESVG_Rect *background;
 };
 

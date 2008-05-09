@@ -1,4 +1,3 @@
-#include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
 
@@ -31,7 +30,7 @@ static void _shape_changed(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, vo
 void esvg_canvas_shape_add(ESVG *svg, ESVG_Shape *s, Ekeko_Object_Class *class, void *data)
 {
 	/* TODO make a shape_init function */
-	s->canvas = svg;
+	//s->canvas = svg;
 	s->object = ekeko_object_add(svg->canvas, class, data);
 	s->engine.context = esvg_engine_context_new(svg);
 	s->attributes.opacity.stroke_opacity = 1;
@@ -57,7 +56,7 @@ void esvg_canvas_resize_register()
  * FIXME: To be fixed
  * TODO change w and h 
  */
-EAPI ESVG * esvg_new(void)
+EAPI ESVG * esvg_svg_new(void)
 {
 	ESVG *e;
 	
@@ -69,6 +68,7 @@ EAPI ESVG * esvg_new(void)
 	eina_rectangle_coords_from(&e->shape_area, 0, 0, 0, 0);
 #endif
 }
+
 /**
  * To be documented
  * FIXME: To be fixed
@@ -92,7 +92,7 @@ EAPI void esvg_render(ESVG *e)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void esvg_free(ESVG *e)
+EAPI void esvg_svg_del(ESVG *e)
 {
 	
 }

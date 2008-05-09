@@ -20,7 +20,7 @@ typedef enum _ESVG_Engine_Type
 	ESVG_ENGINES,
 } ESVG_Engine_Type;
 
-EAPI ESVG * esvg_new(void);
+EAPI ESVG * esvg_svg_new(void);
 EAPI void esvg_damage_add(ESVG *e, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value w, ESVG_Length_Value h);
 EAPI void esvg_free(ESVG *e);
 EAPI void esvg_render(ESVG *e);
