@@ -9,8 +9,6 @@ eina_list.h \
 eina_mm.h \
 eina_module.h \
 eina_rectangle.h \
-eina_sheap.h \
-eina_tree.h \
 eina_types.h
 
 include_HEADERS = \

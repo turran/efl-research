@@ -10,8 +10,6 @@ eina_hash.c \
 eina_lalloc.c \
 eina_inlist.c \
 eina_list.c \
-eina_sheap.c \
-eina_tree.c \
 eina_module.c \
 eina_value.c
 

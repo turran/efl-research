@@ -1253,6 +1253,7 @@ static Eina_List_Node * _eina_list_node_merge(Eina_List_Node *first,
 EAPI int eina_list_heapsort(Eina_List *list, Eina_Compare_Cb compare,
 		char order)
 {
+#if 0
 	Eina_Sheap *heap;
 	Eina_List_Node *node;
 	void *data;
@@ -1285,6 +1286,7 @@ EAPI int eina_list_heapsort(Eina_List *list, Eina_Compare_Cb compare,
 	eina_sheap_destroy(heap);
 
 	_eina_list_first_goto(list);
+#endif
 	return 1;
 }
 

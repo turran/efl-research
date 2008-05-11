@@ -42,7 +42,7 @@ EAPI Eina_Module * eina_module_load(const char *name)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI eina_module_load_all(const char *dir, Eina_Module_Load_Cb cb, void *data)
+EAPI void eina_module_load_all(const char *dir, Eina_Module_Load_Cb cb, void *data)
 {
 	struct dirent *de;
 	DIR *d;

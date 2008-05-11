@@ -22,8 +22,6 @@ extern "C" {
 #include "eina_hash.h"
 #include "eina_lalloc.h"
 #include "eina_module.h"
-#include "eina_sheap.h"
-#include "eina_tree.h"
 
 #ifdef __cplusplus
 }
