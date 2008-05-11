@@ -67,7 +67,8 @@ void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
 				
 				printf("parsing %s\n", tag);
 				el = esvg_elements[index];
-				el->parser(ed);
+				/* TODO fix this */
+				el->parser(ed, NULL);
 				/* now parse the children */
 				element_child_parse(ed, el);
 			}
@@ -87,7 +88,7 @@ EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h,
 	char *tag;
 	
 	xml = exml_new();
-	if (!exml_file_read(xml, file))
+	if (!exml_file_read((char *)xml, file))
 	{
 		printf("cant read file??\n");
 		return NULL;
@@ -104,6 +105,6 @@ EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h,
 	svg->engine_data = engine_data;
 	svg->w = w;
 	svg->h = h;
-	esvg_elements[ESVG_ELEMENT_SVG]->parser(svg);
+	esvg_elements[ESVG_ELEMENT_SVG]->parser(svg, NULL);
 	return svg->canvas;
 }

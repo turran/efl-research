@@ -65,3 +65,14 @@ EAPI Eina_Bool esvg_class_inherits_from(ESVG_Class *c, ESVG_Class *parent)
 	}
 	return EINA_FALSE;
 }
+
+EAPI ESVG_Class * esvg_object_class_get(void)
+{
+	static ESVG_Class *c = NULL;
+	
+	if (!c)
+	{
+		
+	}
+	return c;
+}

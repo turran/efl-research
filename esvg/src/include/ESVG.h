@@ -9,6 +9,7 @@
 #include "esvg_element.h"
 #include "esvg_shape.h"
 #include "esvg_container.h"
+#include "esvg_group.h"
 #include "esvg_rect.h"
 #include "esvg_svg.h"
 #include "esvg_canvas.h"

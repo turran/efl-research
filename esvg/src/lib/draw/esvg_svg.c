@@ -1,3 +1,4 @@
+#include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
 
@@ -23,6 +24,25 @@ static void _shape_changed(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, vo
 	
 	ekeko_object_geometry_get(o, &r);
 	eina_rectangle_union(&svg->shape_area, &r);
+}
+
+/* Container */
+static void _child_add(ESVG_Container *container, ESVG_Element *element)
+{
+	
+}
+static void _child_remove(ESVG_Container *container, ESVG_Element *element)
+{
+	
+}
+/* Classs */
+static void _constructor(ESVG_Svg *s)
+{
+	
+}
+static void _destructor(ESVG_Svg *s)
+{
+	
 }
 /*============================================================================*
  *                                 Global                                     * 
@@ -54,21 +74,28 @@ void esvg_canvas_resize_register()
 /**
  * To be documented
  * FIXME: To be fixed
+ */
+EAPI ESVG_Class * esvg_svg_class_get(void)
+{
+	static ESVG_Class *c = NULL;
+	
+	if (!c)
+	{
+		c = esvg_class_new("ESVG_Svg", ESVG_CONTAINER_CLASS,
+				sizeof(ESVG_Svg), ESVG_CONSTRUCTOR(_constructor),
+				ESVG_DESTRUCTOR(_destructor));
+	}
+	return c;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
  * TODO change w and h 
  */
 EAPI ESVG * esvg_svg_new(void)
 {
-	ESVG *e;
-	
-	e = calloc(1, sizeof(ESVG));
-	e->engine_type = ESVG_ENGINE_UNKNOWN;
-	return e;
-#if 0
-	/* initialize the shape area to 0 */
-	eina_rectangle_coords_from(&e->shape_area, 0, 0, 0, 0);
-#endif
+	esvg_element_new(ESVG_SVG_CLASS, NULL);
 }
-
 /**
  * To be documented
  * FIXME: To be fixed
@@ -118,7 +145,7 @@ EAPI Eina_Bool esvg_size_set(ESVG *e, ESVG_Length *w, ESVG_Length *h)
 	{
 		ESVG_Shape *shape;
 		
-		e->background = esvg_rect_add(e);
+		/*e->background = esvg_rect_add(e);*/
 		shape = esvg_rect_shape_get(e->background);
 		esvg_shape_color_set(shape, 0xffffff);
 		esvg_shape_fill_set(shape, 0xffffff);

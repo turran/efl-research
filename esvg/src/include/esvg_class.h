@@ -19,6 +19,9 @@ typedef struct _ESVG_Object ESVG_Object;
 typedef void (*ESVG_Class_Constructor)(ESVG_Object *e);
 typedef void (*ESVG_Class_Destructor)(ESVG_Object *e);
 
+#define ESVG_CONSTRUCTOR(p) ((ESVG_Class_Constructor) p)
+#define ESVG_DESTRUCTOR(p) ((ESVG_Class_Destructor) p)
+
 struct _ESVG_Object
 {
 	ESVG_Class *class;
@@ -37,5 +40,7 @@ EAPI ESVG_Class * esvg_class_new(const char *class_name, ESVG_Class *parent,
 		unsigned int size, ESVG_Class_Constructor constructor,
 		ESVG_Class_Destructor destructor);
 EAPI Eina_Bool esvg_class_inherits_from(ESVG_Class *c, ESVG_Class *parent);
+EAPI ESVG_Class * esvg_object_class_get(void);
+
 
 #endif /*ESVG_CLASS_H_*/

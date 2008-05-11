@@ -11,8 +11,10 @@ noinst_LTLIBRARIES = libesvg_draw.la
 libesvg_draw_la_SOURCES = \
 esvg_class.c \
 esvg_container.c \
+esvg_element.c \
 esvg_engine.c \
 esvg_engine_cairo.c \
+esvg_group.c \
 esvg_rect.c \
 esvg_shape.c \
 esvg_svg.c \

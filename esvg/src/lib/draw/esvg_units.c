@@ -111,7 +111,7 @@ EAPI Eina_Bool esvg_length_get(const char *str, ESVG_Length *length)
 	if (!str) return EINA_FALSE;
 	
 	sscanf(str, "%f%n", &c, &num);
-	units = str + num;
+	units = (char *)str + num;
 	if (!(*units))
 	{
 		length->type_value = c;

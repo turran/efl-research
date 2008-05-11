@@ -19,8 +19,9 @@ struct _ESVG_Element
 	/* attributes */
 	ESVG_Element *ancestor;
 	ESVG_Attribute_Core core;
+	/* TODO style attributes */
 };
-
+EAPI ESVG_Class * esvg_element_class_get(void);
 EAPI void esvg_element_id_set(ESVG_Element *e, const char *id);
 EAPI ESVG_Element * esvg_element_ancestor_get(ESVG_Element *e);
 EAPI ESVG_Class *esvg_element_class_get(void);
