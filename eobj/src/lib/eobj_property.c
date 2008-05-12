@@ -1,16 +1,8 @@
 #include "Eobj.h"
 #include "eobj_private.h"
-/**
- * @addtogroup Eobj_Property
- * @{
- */
-
-/**************************
- *
- * Implementation
- *
- **************************/
-
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * @brief Creates a new property
  * @param name the name of the new property
@@ -704,8 +696,6 @@ const char *eobj_property_value_string_get(Eobj_Property_Value *value)
       return NULL;
    return value->value.string_value;
 }
-
-/** @} */
 
 /**************************
  *

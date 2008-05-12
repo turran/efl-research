@@ -1,9 +1,13 @@
 #include "Eobj.h"
 #include "eobj_private.h"
-/**
- * @addtogroup Eobj_Object
- * @{
- */
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static Eobj_Object *_eobj_object_objects = NULL;
+static Eobj_Object *_eobj_object_last_object = NULL;
+static Eina_Hash *_eobj_object_name_hash = NULL;
+
+int EOBJ_OBJECT_DESTROYED_SIGNAL;
 
 typedef struct Eobj_Object_Data
 {
@@ -16,28 +20,161 @@ enum Eobj_Object_Property_Id
    EOBJ_OBJECT_NAME_PROPERTY
 };
 
-static void _eobj_object_constructor(Eobj_Object *object);
-static void _eobj_object_destructor(Eobj_Object *object);
-static void _eobj_object_property_set(Eobj_Object *object, int property_id, Eobj_Property_Value *value);
-static void _eobj_object_property_get(Eobj_Object *object, int property_id, Eobj_Property_Value *value);
+/* Removes the notification-callbacks marked as "deleted" from the list (called by eobj_object_notify()) */
+static Eina_Bool _eobj_object_notification_callbacks_clean_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
+{
+   Eina_List *l, *next;
+   Eina_List **callbacks;
+   Eobj_Notification_Callback *callback;
 
-static void _eobj_object_free(Eobj_Object *object);
-static Eina_Bool _eobj_object_notification_callbacks_clean_cb(Eina_Hash *hash, const char *key, void *data, void *fdata);
-static Eina_Bool _eobj_object_notification_callbacks_free_cb(Eina_Hash *hash, const char *key, void *data, void *fdata);
-static Eina_Bool _eobj_object_data_free_cb(Eina_Hash *hash, const char *key, void *data, void *fdata);
+   if (!(callbacks = data))
+      return 1;
 
-static Eobj_Object *_eobj_object_objects = NULL;
-static Eobj_Object *_eobj_object_last_object = NULL;
-static Eina_Hash *_eobj_object_name_hash = NULL;
+   for (l = *callbacks; l; l = next)
+   {
+      next = eina_list_next(l);
+      callback = eina_list_data(l);
 
-int EOBJ_OBJECT_DESTROYED_SIGNAL;
+      if (callback->delete_me)
+      {
+         free(callback);
+         *callbacks = eina_list_remove_list(*callbacks, l);
+      }
+   }
 
-/**************************
- *
- * Implementation
- *
- **************************/
+   return 1;
+}
 
+/* Frees a list of notification callbacks (called by _eobj_object_destructor()) */
+static Eina_Bool _eobj_object_notification_callbacks_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
+{
+   Eina_List **list;
+
+   if (!(list = data))
+      return 1;
+
+   while (*list)
+   {
+      free(eina_list_data(*list));
+      *list = eina_list_remove_list(*list, *list);
+   }
+   free(list);
+
+   return 1;
+}
+
+/* Frees data from the data hash of the object */
+static Eina_Bool _eobj_object_data_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
+{
+   Eobj_Object_Data *object_data;
+
+   if (!(object_data = data))
+      return 1;
+
+   if (object_data->free_cb)
+      object_data->free_cb(object_data->value);
+   free(object_data);
+
+   return 1;
+}
+
+
+
+/* Initializes the object */
+static void _eobj_object_constructor(Eobj_Object *object)
+{
+   if (!object)
+      return;
+
+   object->name = NULL;
+   object->destroy_me = EINA_FALSE;
+   object->data_hash = NULL;
+   object->weak_pointers = NULL;
+   object->notification_callbacks = NULL;
+   object->should_delete_cbs = EINA_FALSE;
+   object->notifying = 0;
+
+   /* Append the new object to the list */
+   object->prev = _eobj_object_last_object;
+   object->next = NULL;
+   if (!_eobj_object_objects)
+      _eobj_object_objects = object;
+   if (_eobj_object_last_object)
+      _eobj_object_last_object->next = object;
+   _eobj_object_last_object = object;
+}
+
+/* Destroys the object */
+static void _eobj_object_destructor(Eobj_Object *object)
+{
+   if (!object)
+      return;
+
+   eina_hash_foreach(object->data_hash, _eobj_object_data_free_cb, NULL);
+   eina_hash_free(object->data_hash);
+
+   eina_hash_foreach(object->notification_callbacks, _eobj_object_notification_callbacks_free_cb, NULL);
+   eina_hash_free(object->notification_callbacks);
+}
+
+/* Sets the property whose id is "property_id" to the value "value" */
+static void _eobj_object_property_set(Eobj_Object *object, int property_id, Eobj_Property_Value *value)
+{
+   if (!object || !value)
+      return;
+
+   switch (property_id)
+   {
+      case EOBJ_OBJECT_NAME_PROPERTY:
+         eobj_object_name_set(object, eina_property_value_string_get(value));
+         break;
+      default:
+         break;
+   }
+}
+
+/* Gets the value of the property whose id is "property_id" */
+static void _eobj_object_property_get(Eobj_Object *object, int property_id, Eobj_Property_Value *value)
+{
+   if (!object || !value)
+      return;
+
+   switch (property_id)
+   {
+      case EOBJ_OBJECT_NAME_PROPERTY:
+         eina_property_value_string_set(value, object->name);
+         break;
+      default:
+         break;
+   }
+}
+
+
+/* Frees the object: it calls the destructors (from the destructor of the more derived class
+ * to the destructor of the ultimate base class) and frees the allocated memory */
+static void _eobj_object_free(Eobj_Object *object)
+{
+   if (!object)
+      return;
+
+   eobj_object_destroy(object);
+   eina_type_destructors_call(object->type, object);
+
+   if (object->prev)
+      object->prev->next = object->next;
+   if (object->next)
+      object->next->prev = object->prev;
+   if (object == _eobj_object_objects)
+      _eobj_object_objects = object->next;
+   if (object == _eobj_object_last_object)
+      _eobj_object_last_object = object->prev;
+
+   free(object);
+}
+
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * @internal
  * @brief Shutdowns the object system: it frees all the created objects
@@ -682,168 +819,7 @@ void eobj_object_notification_callback_remove(Eobj_Object *object, const char *p
    }
 }
 
-/**************************
- *
- * Eina specific functions
- *
- **************************/
 
-/* Initializes the object */
-static void _eobj_object_constructor(Eobj_Object *object)
-{
-   if (!object)
-      return;
-
-   object->name = NULL;
-   object->destroy_me = EINA_FALSE;
-   object->data_hash = NULL;
-   object->weak_pointers = NULL;
-   object->notification_callbacks = NULL;
-   object->should_delete_cbs = EINA_FALSE;
-   object->notifying = 0;
-
-   /* Append the new object to the list */
-   object->prev = _eobj_object_last_object;
-   object->next = NULL;
-   if (!_eobj_object_objects)
-      _eobj_object_objects = object;
-   if (_eobj_object_last_object)
-      _eobj_object_last_object->next = object;
-   _eobj_object_last_object = object;
-}
-
-/* Destroys the object */
-static void _eobj_object_destructor(Eobj_Object *object)
-{
-   if (!object)
-      return;
-
-   eina_hash_foreach(object->data_hash, _eobj_object_data_free_cb, NULL);
-   eina_hash_free(object->data_hash);
-
-   eina_hash_foreach(object->notification_callbacks, _eobj_object_notification_callbacks_free_cb, NULL);
-   eina_hash_free(object->notification_callbacks);
-}
-
-/* Sets the property whose id is "property_id" to the value "value" */
-static void _eobj_object_property_set(Eobj_Object *object, int property_id, Eobj_Property_Value *value)
-{
-   if (!object || !value)
-      return;
-
-   switch (property_id)
-   {
-      case EOBJ_OBJECT_NAME_PROPERTY:
-         eobj_object_name_set(object, eina_property_value_string_get(value));
-         break;
-      default:
-         break;
-   }
-}
-
-/* Gets the value of the property whose id is "property_id" */
-static void _eobj_object_property_get(Eobj_Object *object, int property_id, Eobj_Property_Value *value)
-{
-   if (!object || !value)
-      return;
-
-   switch (property_id)
-   {
-      case EOBJ_OBJECT_NAME_PROPERTY:
-         eina_property_value_string_set(value, object->name);
-         break;
-      default:
-         break;
-   }
-}
-
-/**************************
- *
- * Private functions
- *
- **************************/
-
-/* Frees the object: it calls the destructors (from the destructor of the more derived class
- * to the destructor of the ultimate base class) and frees the allocated memory */
-static void _eobj_object_free(Eobj_Object *object)
-{
-   if (!object)
-      return;
-
-   eobj_object_destroy(object);
-   eina_type_destructors_call(object->type, object);
-
-   if (object->prev)
-      object->prev->next = object->next;
-   if (object->next)
-      object->next->prev = object->prev;
-   if (object == _eobj_object_objects)
-      _eobj_object_objects = object->next;
-   if (object == _eobj_object_last_object)
-      _eobj_object_last_object = object->prev;
-
-   free(object);
-}
-
-/* Removes the notification-callbacks marked as "deleted" from the list (called by eobj_object_notify()) */
-static Eina_Bool _eobj_object_notification_callbacks_clean_cb(Eina_Hash *hash, const char *key, void *data, void *fdata)
-{
-   Eina_List *l, *next;
-   Eina_List **callbacks;
-   Eobj_Notification_Callback *callback;
-
-   if (!(callbacks = data))
-      return 1;
-
-   for (l = *callbacks; l; l = next)
-   {
-      next = l->next;
-      callback = l->data;
-
-      if (callback->delete_me)
-      {
-         free(callback);
-         *callbacks = eina_list_remove_list(*callbacks, l);
-      }
-   }
-
-   return 1;
-}
-
-/* Frees a list of notification callbacks (called by _eobj_object_destructor()) */
-static Eina_Bool _eobj_object_notification_callbacks_free_cb(Eina_Hash *hash, const char *key, void *data, void *fdata)
-{
-   Eina_List **list;
-
-   if (!(list = data))
-      return 1;
-
-   while (*list)
-   {
-      free((*list)->data);
-      *list = eina_list_remove_list(*list, *list);
-   }
-   free(list);
-
-   return 1;
-}
-
-/* Frees data from the data hash of the object */
-static Eina_Bool _eobj_object_data_free_cb(Eina_Hash *hash, const char *key, void *data, void *fdata)
-{
-   Eobj_Object_Data *object_data;
-
-   if (!(object_data = data))
-      return 1;
-
-   if (object_data->free_cb)
-      object_data->free_cb(object_data->value);
-   free(object_data);
-
-   return 1;
-}
-
-/** @} */
 
 /**************************
  *

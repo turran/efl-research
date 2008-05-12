@@ -1,24 +1,59 @@
 #include "Eobj.h"
 #include "eobj_private.h"
 
-/**
- * @addtogroup Eobj_Class
- * @{
- */
-
-static void _eobj_class_free(Eobj_Class *type);
-static Eina_Bool _eobj_class_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata);
-static Eina_Bool _eobj_class_property_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata);
-static Eina_Bool _eobj_class_property_add_to_list(const Eina_Hash *hash, const char *key, void *data, void *fdata);
-
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
 static Eina_Hash *_eobj_class_types_hash = NULL;
 
-/**************************
- *
- * Implementation
- *
- **************************/
+/* Used by _eobj_class_free() */
+static Eina_Bool _eobj_class_property_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
+{
+   eina_property_delete(data);
+   return 1;
+}
 
+/* Frees the type (called when it's removed from the hash table) */
+static void _eobj_class_free(Eobj_Class *class)
+{
+   if (!class)
+      return;
+
+   eina_hash_foreach(class->properties_hash, _eobj_class_property_free_cb, NULL);
+   eina_hash_free(class->properties_hash);
+
+   /* The signals themselves will be freed by eina_signal_shutdown() */
+   if (class->signals)
+      free(class->signals);
+
+   if (class->hierarchy)
+      free(class->hierarchy);
+   free(class->name);
+   free(class);
+}
+
+/* Used by eobj_class_shutdown() */
+static Eina_Bool _eobj_class_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
+{
+   _eobj_class_free(data);
+   return 1;
+}
+
+/* Used by eobj_class_property_list() */
+static Eina_Bool _eobj_class_property_add_to_list(const Eina_Hash *hash, const char *key, void *data, void *fdata)
+{
+   Eina_List **properties;
+
+   if (data && (properties = fdata))
+      *properties = eina_list_append(*properties, data);
+   return 1;
+}
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * @brief Deletes all the created types
  * @warning Shouldn't be called manually, eina_shutdown() calls it
@@ -164,7 +199,7 @@ void eobj_class_object_construct(Eobj_Class *type, Eobj_Object *object)
       eobj_class_property_list(type->hierarchy[i], &properties);
       while (properties)
       {
-         property = properties->data;
+         property = eina_list_data(properties);
          if (property->default_value && (property->flags & EOBJ_PROPERTY_CONSTRUCT))
             type->hierarchy[i]->property_set(object, property->id, property->default_value);
          properties = eina_list_remove_list(properties, properties);
@@ -175,7 +210,7 @@ void eobj_class_object_construct(Eobj_Class *type, Eobj_Object *object)
       eobj_class_property_list(type, &properties);
       while (properties)
       {
-         property = properties->data;
+	 property = eina_list_data(properties);
          if (property->default_value && (property->flags & EOBJ_PROPERTY_CONSTRUCT))
             type->property_set(object, property->id, property->default_value);
          properties = eina_list_remove_list(properties, properties);
@@ -208,8 +243,8 @@ void eobj_class_destructors_call(Eobj_Class *type, Eobj_Object *object)
    {
       Eina_List *lst;
 
-      for (lst = object->signal_callbacks[i]; lst; lst = lst->next)
-         eina_signal_callback_del(lst->data);
+      for (lst = object->signal_callbacks[i]; lst; lst = eina_list_next(lst))
+         eobj_signal_callback_del(eina_list_data(lst));
       eina_list_free(object->signal_callbacks[i]);
    }
 
@@ -380,53 +415,3 @@ void eobj_class_property_list(Eobj_Class *type, Eina_List **properties)
    eina_hash_foreach(type->properties_hash, _eobj_class_property_add_to_list, properties);
 }
 
-/**************************
- *
- * Private functions
- *
- **************************/
-
-/* Frees the type (called when it's removed from the hash table) */
-static void _eobj_class_free(Eobj_Class *class)
-{
-   if (!class)
-      return;
-
-   eina_hash_foreach(class->properties_hash, _eobj_class_property_free_cb, NULL);
-   eina_hash_free(class->properties_hash);
-
-   /* The signals themselves will be freed by eina_signal_shutdown() */
-   if (class->signals)
-      free(class->signals);
-
-   if (class->hierarchy)
-      free(class->hierarchy);
-   free(class->name);
-   free(class);
-}
-
-/* Used by eobj_class_shutdown() */
-static Eina_Bool _eobj_class_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
-{
-   _eobj_class_free(data);
-   return 1;
-}
-
-/* Used by _eobj_class_free() */
-static Eina_Bool _eobj_class_property_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
-{
-   eina_property_delete(data);
-   return 1;
-}
-
-/* Used by eobj_class_property_list() */
-static Eina_Bool _eobj_class_property_add_to_list(const Eina_Hash *hash, const char *key, void *data, void *fdata)
-{
-   Eina_List **properties;
-
-   if (data && (properties = fdata))
-      *properties = eina_list_append(*properties, data);
-   return 1;
-}
-
-/** @} */

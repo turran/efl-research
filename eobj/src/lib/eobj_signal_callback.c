@@ -1,16 +1,8 @@
 #include "Eobj.h"
 #include "eobj_private.h"
-/**
- * @addtogroup Eobj_Signal_Callback
- * @{
- */
-
-/**************************
- *
- * Implementation
- *
- **************************/
-
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * @internal
  * @brief Creates a new signal-callback for the signal @a signal, using the callback function @a callback, and
@@ -19,9 +11,9 @@
  * @param data the user data to pass to the callback function
  * @param swapped if @a swapped is EINA_TRUE, the callback function will be called with the data as the only argument
  * @return Returns the new signal-callback on success or NULL on failure
- * @warning The new signal-callback has to be freed with eina_signal_callback_del()
+ * @warning The new signal-callback has to be freed with eobj_signal_callback_del()
  */
-Eobj_Signal_Callback *eina_signal_callback_new(Eina_Callback callback, void *data, Eina_Bool swapped)
+Eobj_Signal_Callback *eobj_signal_callback_new(Eobj_Callback callback, void *data, Eina_Bool swapped)
 {
    Eobj_Signal_Callback *new_callback;
 
@@ -42,7 +34,7 @@ Eobj_Signal_Callback *eina_signal_callback_new(Eina_Callback callback, void *dat
  * @brief Deletes the signal-callback
  * @param signal_callback the signal-callback to delete
  */
-void eina_signal_callback_del(Eobj_Signal_Callback *signal_callback)
+void eobj_signal_callback_del(Eobj_Signal_Callback *signal_callback)
 {
    free(signal_callback);
 }
@@ -59,19 +51,19 @@ void eina_signal_callback_del(Eobj_Signal_Callback *signal_callback)
  * @param args the arguments to pass to the callback
  * @note if the callback is blocked, it won't be called
  */
-void eina_signal_callback_call_valist(Eobj_Signal *signal,
+void eobj_signal_callback_call_valist(Eobj_Signal *signal,
    Eobj_Signal_Callback *callback, Eobj_Object *object, void *return_value,
    va_list args)
 {
    Eobj_Marshaller marshaller;
 
    if (!callback || !callback->callback || callback->blocked ||
-       !(marshaller = eina_signal_marshaller_get(signal)))
+       !(marshaller = eobj_signal_marshaller_get(signal)))
       return;
 
    if (callback->swapped)
    {
-      Eina_Callback_Swapped swapped_callback = callback->callback;
+      Eobj_Callback_Swapped swapped_callback = callback->callback;
       swapped_callback(callback->data);
    }
    else
@@ -87,10 +79,10 @@ void eina_signal_callback_call_valist(Eobj_Signal *signal,
 
 /**
  * @internal
- * @brief Prevents the callback from being called: eina_signal_callback_call() will have no effect on the callback
+ * @brief Prevents the callback from being called: eobj_signal_callback_call() will have no effect on the callback
  * @param callback the callback to block
  */
-void eina_signal_callback_block(Eobj_Signal_Callback *callback)
+void eobj_signal_callback_block(Eobj_Signal_Callback *callback)
 {
    if (!callback)
       return;
@@ -99,10 +91,10 @@ void eina_signal_callback_block(Eobj_Signal_Callback *callback)
 
 /**
  * @internal
- * @brief Unblocks the callback. It can no be called again by calling eina_signal_callback_call()
+ * @brief Unblocks the callback. It can no be called again by calling eobj_signal_callback_call()
  * @param callback the callback to unblock
  */
-void eina_signal_callback_unblock(Eobj_Signal_Callback *callback)
+void eobj_signal_callback_unblock(Eobj_Signal_Callback *callback)
 {
    if (!callback)
       return;
@@ -115,11 +107,9 @@ void eina_signal_callback_unblock(Eobj_Signal_Callback *callback)
  * @param callback a callback
  * @return Returns EINA_TRUE if the callback is blocked, EINA_FALSE otherwise
  */
-Eina_Bool eina_signal_callback_is_blocked(Eobj_Signal_Callback *callback)
+Eina_Bool eobj_signal_callback_is_blocked(Eobj_Signal_Callback *callback)
 {
    if (!callback)
       return EINA_FALSE;
    return callback->blocked;
 }
-
-/** @} */

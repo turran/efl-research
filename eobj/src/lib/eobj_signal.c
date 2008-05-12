@@ -1,20 +1,23 @@
 #include "Eobj.h"
 #include "eobj_private.h"
-/**
- * @addtogroup Eobj_Signal
- * @{
- */
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+/* Frees the signal */
+static void _eobj_signal_free(Eobj_Signal *signal)
+{
+   if (!signal)
+      return;
+
+   free(signal->name);
+   free(signal);
+}
 
 static void _eobj_signal_free(Eobj_Signal *signal);
-
 static Eina_List *_eobj_signal_signals_list = NULL;
-
-/**************************
- *
- * Implementation
- *
- **************************/
-
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * @internal
  * @brief Shutdowns the signal system: it destroys all the created signals
@@ -26,7 +29,7 @@ void eobj_signal_shutdown(void)
    for (lst = _eobj_signal_signals_list; lst; lst = lst->next)
       _eobj_signal_free(lst->data);
 
-   eobj_list_free(_eobj_signal_signals_list);
+   eina_list_free(_eobj_signal_signals_list);
 }
 
 /**
@@ -46,7 +49,7 @@ static Eobj_Signal *eobj_signal_new_raw(const char *signal_name, Eobj_Class *typ
 
    type->signals_count++;
 
-   _eobj_signal_signals_list = eobj_list_append(_eobj_signal_signals_list, new_signal);
+   _eobj_signal_signals_list = eina_list_append(_eobj_signal_signals_list, new_signal);
 
    return new_signal;
 }
@@ -250,7 +253,7 @@ inline const Eobj_Signal_Callback *eobj_signal_connect(const char *signal_name,
    Eobj_Object *object, Eobj_Callback callback, void *data)
 {
    return eobj_signal_connect_full_by_name(signal_name, object, callback, data,
-                                          EINA_FALSE, EOBJ_FALSE);
+                                          EINA_FALSE, EINA_FALSE);
 }
 
 inline const Eobj_Signal_Callback *eobj_signal_connect_after(
@@ -273,7 +276,7 @@ inline const Eobj_Signal_Callback *eobj_signal_connect_by_code(int signal_code,
    Eobj_Object *object, Eobj_Callback callback, void *data)
 {
    return eobj_signal_connect_full_by_code(signal_code, object, callback, data,
-                                          EINA_FALSE, EOBJ_FALSE);
+                                          EINA_FALSE, EINA_FALSE);
 }
 
 inline const Eobj_Signal_Callback *eobj_signal_connect_after_by_code(
@@ -891,24 +894,6 @@ Eina_List * eobj_signal_get_all()
 {
    return _eobj_signal_signals_list;
 }
-
-/**************************
- *
- * Private functions
- *
- **************************/
-
-/* Frees the signal */
-static void _eobj_signal_free(Eobj_Signal *signal)
-{
-   if (!signal)
-      return;
-
-   free(signal->name);
-   free(signal);
-}
-
-/** @} */
 
 /**************************
  *
