@@ -11,5 +11,6 @@
 #include "eobj_class.h"
 #include "eobj_object.h"
 #include "eobj_signal_callback.h"
+#include "eobj_marshallers.h"
 
 #endif

@@ -2,10 +2,6 @@
 #ifndef _EOBJ_PROPERTY_H_
 #define _EOBJ_PROPERTY_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @defgroup Eobj_Property Eobj_Property
  * @brief The property system of Eobj is a powerful system to set or to get the state of an object, or to be notified when
@@ -88,6 +84,10 @@ struct _Eobj_Property_Value
    } value;
    Eobj_Property_Type type;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 Eobj_Property       *eobj_property_new(const char *name, int property_id, Eobj_Property_Type type, Eobj_Property_Flags flags, Eobj_Property_Value *default_value);
 void                eobj_property_delete(Eobj_Property *property);

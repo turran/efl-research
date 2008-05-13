@@ -16,7 +16,7 @@ struct _ESVG_Container
 	void (*child_remove)(ESVG_Container *container, ESVG_Element *element);
 };
 
-EAPI ESVG_Class * esvg_container_class_get(void);
+EAPI Eobj_Class * esvg_container_class_get(void);
 EAPI void esvg_container_add(ESVG_Container *c, ESVG_Element *e);
 EAPI void esvg_container_remove(ESVG_Element *e);
 

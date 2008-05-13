@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "Eina.h"
+#include "Eobj.h"
 #include "Enesim.h"
 #include "Ekeko.h"
 #include "EXML.h"

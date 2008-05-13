@@ -23,15 +23,15 @@ static void _destructor(ESVG_Container *o)
  * To be documented
  * FIXME: To be fixed 
  */
-ESVG_Class * esvg_container_class_get(void)
+EAPI Eobj_Class * esvg_container_class_get(void)
 {
-	static ESVG_Class *c = NULL;
+	static Eobj_Class *c = NULL;
 		
 	if (!c)
 	{
-		esvg_class_new("ESVG_Container", ESVG_ELEMENT_CLASS,
-			sizeof(ESVG_Container), ESVG_CONSTRUCTOR(_constructor),
-			ESVG_DESTRUCTOR(_destructor));
+		eobj_class_new("ESVG_Container", ESVG_ELEMENT_CLASS,
+			sizeof(ESVG_Container), EOBJ_CONSTRUCTOR(_constructor),
+			EOBJ_DESTRUCTOR(_destructor), NULL);
 	}
 	return c;	
 }

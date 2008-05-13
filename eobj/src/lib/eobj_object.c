@@ -126,7 +126,7 @@ static void _eobj_object_property_set(Eobj_Object *object, int property_id, Eobj
    switch (property_id)
    {
       case EOBJ_OBJECT_NAME_PROPERTY:
-         eobj_object_name_set(object, eina_property_value_string_get(value));
+         eobj_object_name_set(object, eobj_property_value_string_get(value));
          break;
       default:
          break;
@@ -142,7 +142,7 @@ static void _eobj_object_property_get(Eobj_Object *object, int property_id, Eobj
    switch (property_id)
    {
       case EOBJ_OBJECT_NAME_PROPERTY:
-         eina_property_value_string_set(value, object->name);
+         eobj_property_value_string_set(value, object->name);
          break;
       default:
          break;
@@ -158,7 +158,7 @@ static void _eobj_object_free(Eobj_Object *object)
       return;
 
    eobj_object_destroy(object);
-   eina_type_destructors_call(object->type, object);
+   eobj_class_destructors_call(object->type, object);
 
    if (object->prev)
       object->prev->next = object->next;
@@ -208,7 +208,7 @@ void eobj_object_purge(void)
  * @brief Gets the type of an Eobj_Object
  * @return Returns the type of an Eobj_Object
  */
-Eobj_Class *eobj_object_type_get(void)
+Eobj_Class *eobj_object_class_get(void)
 {
    static Eobj_Class *object_type = NULL;
 
@@ -216,16 +216,16 @@ Eobj_Class *eobj_object_type_get(void)
    {
       const Eobj_Signal_Description signals[] = {
          EOBJ_SIGNAL_DESC_NO_HANDLER(EOBJ_OBJECT_DESTROYED_SIGNAL,
-            "destroyed", eina_marshaller_VOID),
+            "destroyed", eobj_marshaller_VOID),
          EOBJ_SIGNAL_DESCRIPTION_SENTINEL
       };
 
-      object_type = eina_type_new("Eobj_Object", NULL,
+      object_type = eobj_class_new("Eobj_Object", NULL,
          sizeof(Eobj_Object), EOBJ_CONSTRUCTOR(_eobj_object_constructor),
          EOBJ_DESTRUCTOR(_eobj_object_destructor), signals);
 
-      eina_type_property_add(object_type, "name", EOBJ_OBJECT_NAME_PROPERTY,
-         EOBJ_PROPERTY_STRING, EOBJ_PROPERTY_READABLE_WRITABLE, eina_property_value_string(NULL));
+      eobj_class_property_add(object_type, "name", EOBJ_OBJECT_NAME_PROPERTY,
+         EOBJ_PROPERTY_STRING, EOBJ_PROPERTY_READABLE_WRITABLE, eobj_property_value_string(NULL));
 
       object_type->property_set = _eobj_object_property_set;
       object_type->property_get = _eobj_object_property_get;
@@ -278,7 +278,7 @@ Eobj_Object *eobj_object_new_valist(Eobj_Class *object_type, const char *first_p
    new_object = malloc(object_type->type_size);
    new_object->type = object_type;
 
-   eina_type_object_construct(object_type, new_object);
+   eobj_class_object_construct(object_type, new_object);
    va_copy(args2, args);
    eobj_object_properties_set_valist(new_object, first_property, args2);
    va_end(args2);
@@ -305,13 +305,13 @@ void eobj_object_destroy(Eobj_Object *object)
    /* Sets the weak-pointers to NULL */
    while (object->weak_pointers)
    {
-      weak_pointer = object->weak_pointers->data;
+      weak_pointer = eina_list_data(object->weak_pointers);
       *weak_pointer =  NULL;
       object->weak_pointers = eina_list_remove_list(object->weak_pointers, object->weak_pointers);
    }
 
    object->destroy_me = EINA_TRUE;
-   eina_signal_emit(EOBJ_OBJECT_DESTROYED_SIGNAL, object);
+   eobj_signal_emit(EOBJ_OBJECT_DESTROYED_SIGNAL, object);
 }
 
 /**
@@ -339,11 +339,11 @@ void eobj_object_name_set(Eobj_Object *object, const char *name)
 
       free(object->name);
       object->name = strdup(name);
-      _eobj_object_name_hash = eina_hash_add(_eina_object_name_hash, object->name, object);
+      _eobj_object_name_hash = eina_hash_add(_eobj_object_name_hash, object->name, object);
    }
    else
    {
-      _eobj_object_name_hash = eina_hash_del(_eina_object_name_hash, object->name, object);
+      _eobj_object_name_hash = eina_hash_del(_eobj_object_name_hash, object->name, object);
       free(object->name);
       object->name = NULL;
    }
@@ -388,8 +388,8 @@ Eobj_Object *eobj_object_check_cast(Eobj_Object *object, Eobj_Class *type)
    if (!object)
       return NULL;
 
-   if (!eina_type_inherits_from(object->type, type))
-      EOBJ_WARNING("Invalid cast from \"%s\" to \"%s\"", eina_type_name_get(object->type), eina_type_name_get(type));
+   if (!eobj_class_inherits_from(object->type, type))
+      EOBJ_WARNING("Invalid cast from \"%s\" to \"%s\"", eobj_class_name_get(object->type), eobj_class_name_get(type));
 
    return object;
 }
@@ -418,7 +418,7 @@ Eobj_Class *eobj_object_object_type_get(Eobj_Object *object)
  *              the other callbacks already connected to this signal, otherwise
  *              it will be called before (default behaviour)
  *
- * @note You do not have to call this function, use eina_signal_connect() instead
+ * @note You do not have to call this function, use eobj_signal_connect() instead
  */
 void eobj_object_signal_callback_add(Eobj_Object *object, int signal_code,
                                     Eobj_Signal_Callback *signal_callback,
@@ -443,7 +443,7 @@ void eobj_object_signal_callback_add(Eobj_Object *object, int signal_code,
  * @param signal_code the signal identification code
  * @param signal_callback the signal-callback to remove
  *
- * @note You do not have have to call this function, use eina_signal_disconnect()
+ * @note You do not have have to call this function, use eobj_signal_disconnect()
  *       instead.
  */
 void eobj_object_signal_callback_remove(Eobj_Object *object, int signal_code,
@@ -456,7 +456,7 @@ void eobj_object_signal_callback_remove(Eobj_Object *object, int signal_code,
                                         signal_callback);
    if (lst)
    {
-      eina_signal_callback_del(lst->data);
+      eobj_signal_callback_del(eina_list_data(lst));
       object->signal_callbacks[signal_code] =
          eina_list_remove_list(object->signal_callbacks[signal_code], lst);
    }
@@ -473,7 +473,7 @@ void eobj_object_signal_callback_remove(Eobj_Object *object, int signal_code,
  *                  returned. You should not free this list.
  *
  * @note You usually do not need to call this function manually, it is used
- *       by eina_signal_emit().
+ *       by eobj_signal_emit().
  */
 void eobj_object_signal_callbacks_get(Eobj_Object *object, int signal_code,
                                      Eina_List **callbacks)
@@ -589,7 +589,7 @@ void eobj_object_property_reset(Eobj_Object *object, const char *property_name)
    if (!object || !property_name)
       return;
 
-   if (eina_type_property_find(object->type, property_name, &type, &property))
+   if (eobj_class_property_find(object->type, property_name, &type, &property))
    {
       if (type->property_set)
          type->property_set(object, property->id, property->default_value);
@@ -636,12 +636,12 @@ void eobj_object_properties_set_valist(Eobj_Object *object, const char *first_pr
    va_copy(args2, args);
    for (property_name = first_property; property_name; property_name = va_arg(args2, const char *))
    {
-      if (eina_type_property_find(object->type, property_name, &type, &property))
+      if (eobj_class_property_find(object->type, property_name, &type, &property))
       {
-         property_value = eina_property_value_create_valist(eina_property_type_get(property), &args2);
+         property_value = eobj_property_value_create_valist(eobj_property_type_get(property), &args2);
          if (type->property_set)
             type->property_set(object, property->id, property_value);
-         eina_property_value_delete(property_value);
+         eobj_property_value_delete(property_value);
       }
       else
       {
@@ -690,17 +690,17 @@ void eobj_object_properties_get_valist(Eobj_Object *object, const char *first_pr
    if (!object)
       return;
 
-   property_value = eina_property_value_new();
+   property_value = eobj_property_value_new();
    for (property_name = first_property; property_name; property_name = va_arg(args, const char *))
    {
-      if (eina_type_property_find(object->type, property_name, &type, &property))
+      if (eobj_class_property_find(object->type, property_name, &type, &property))
       {
          if (type->property_get)
          {
             type->property_get(object, property->id, property_value);
 
             value_location = va_arg(args, void *);
-            eina_property_value_get(property_value, eina_property_value_type_get(property_value), value_location);
+            eobj_property_value_get(property_value, eobj_property_value_type_get(property_value), value_location);
          }
       }
       else
@@ -710,7 +710,7 @@ void eobj_object_properties_get_valist(Eobj_Object *object, const char *first_pr
          break;
       }
    }
-   eina_property_value_delete(property_value);
+   eobj_property_value_delete(property_value);
 }
 
 /**
@@ -733,9 +733,9 @@ void eobj_object_notify(Eobj_Object *object, const char *property_name)
 
    object->notifying++;
 
-   for (l = *callbacks; l; l = l->next)
+   for (l = *callbacks; l; l = eina_list_next(l))
    {
-      callback = l->data;
+      callback = eina_list_data(l);
       if (callback->callback && !callback->delete_me)
          callback->callback(object, property_name, callback->data);
    }
@@ -798,8 +798,8 @@ void eobj_object_notification_callback_remove(Eobj_Object *object, const char *p
 
    for (l = *list; l; l = next)
    {
-      remove_callback = l->data;
-      next = l->next;
+	   eina_list_data(l);
+	   next = eina_list_next(l);
       if (remove_callback->callback == callback)
       {
          /* If the object is calling the notification-callbacks, we can't remove the callback from the list, or it may
@@ -851,20 +851,20 @@ void eobj_object_notification_callback_remove(Eobj_Object *object, const char *p
  *
  * <b>Signal concept:</b> @n
  * Each object has a list of signals that can be connected to one or several callbacks. The callbacks connected to
- * a signal will be automatically called when the signal is emitted with eina_signal_emit(). @n
- * You can connect a callback to a signal of an object with eina_signal_connect(). For example:
+ * a signal will be automatically called when the signal is emitted with eobj_signal_emit(). @n
+ * You can connect a callback to a signal of an object with eobj_signal_connect(). For example:
  * @code
  * //Callback prototype
  * void clicked_cb(Eina_Button *button, void *data);
  *
  * //Connects the callback "clicked_cb()" to the signal "clicked" of the button
- * eina_signal_connect("clicked", EOBJ_OBJECT(button), EOBJ_CALLBACK(clicked_cb), user_data);
+ * eobj_signal_connect("clicked", EOBJ_OBJECT(button), EOBJ_CALLBACK(clicked_cb), user_data);
  * @endcode
  *
- * You can also disconnect a callback from a signal of an object with eina_signal_disconnect(). For instance:
+ * You can also disconnect a callback from a signal of an object with eobj_signal_disconnect(). For instance:
  * @code
  * //Disconnects the callback "clicked_cb()" from the signal "clicked"
- * eina_signal_disconnect("clicked", EOBJ_OBJECT(button), EOBJ_CALLBACK(clicked_cb));
+ * eobj_signal_disconnect("clicked", EOBJ_OBJECT(button), EOBJ_CALLBACK(clicked_cb));
  * @endcode
  *
  * Each object inherits the signals from its parent classes (for instance, an Eina_Button has the signals of Eobj_Object,

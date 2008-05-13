@@ -1,10 +1,6 @@
 #ifndef EOBJ_CLASS_H_
 #define EOBJ_CLASS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @defgroup Eobj_Class Eobj_Class
  * @{
@@ -40,6 +36,11 @@ struct _Eobj_Class {
 	Eobj_Signal **signals;
 	Eina_Hash *properties_hash;
 };
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void eobj_class_shutdown(void);
 

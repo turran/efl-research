@@ -75,15 +75,15 @@ void esvg_canvas_resize_register()
  * To be documented
  * FIXME: To be fixed
  */
-EAPI ESVG_Class * esvg_svg_class_get(void)
+EAPI Eobj_Class * esvg_svg_class_get(void)
 {
-	static ESVG_Class *c = NULL;
+	static Eobj_Class *c = NULL;
 	
 	if (!c)
 	{
-		c = esvg_class_new("ESVG_Svg", ESVG_CONTAINER_CLASS,
-				sizeof(ESVG_Svg), ESVG_CONSTRUCTOR(_constructor),
-				ESVG_DESTRUCTOR(_destructor));
+		c = eobj_class_new("ESVG_Svg", ESVG_CONTAINER_CLASS,
+				sizeof(ESVG_Svg), EOBJ_CONSTRUCTOR(_constructor),
+				EOBJ_DESTRUCTOR(_destructor), NULL);
 	}
 	return c;
 }

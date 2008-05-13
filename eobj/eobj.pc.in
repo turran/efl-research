@@ -7,6 +7,6 @@ Name: Eobj
 Description: Eobj
 Requires: 
 Version: @VERSION@
-Libs: -L${libdir} -lebj
+Libs: -L${libdir} -leobj
 Libs.private:
 Cflags: -I${includedir} -I${includedir}/eobj

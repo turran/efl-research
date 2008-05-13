@@ -706,9 +706,9 @@ const char *eobj_property_value_string_get(Eobj_Property_Value *value)
 /**
  * @addtogroup Eobj_Property
  *
- * Most of the following functions are used internally by Etk, you usually do not have to directly call any of the
+ * Most of the following functions are used internally by Eobj, you usually do not have to directly call any of the
  * eobj_property_*() functions. @n
- * If you want to create a property for a new object type, use etk_type_property_add(). @n
+ * If you want to create a property for a new object type, use eobj_class_property_add(). @n
  * The only case where you have to use the eobj_property_value_*_set/get() functions is in the property_set/get()
  * methods when you are implementing a new widget, to set or to get the value of a property.  @n
  *

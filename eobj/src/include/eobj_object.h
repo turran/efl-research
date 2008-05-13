@@ -20,21 +20,21 @@ extern "C" {
  */
 
 #ifndef EOBJ_DISABLE_CAST_CHECKS
-#define EOBJ_OBJECT_CAST(obj, eina_type, c_type) \
-      ((c_type *)eobj_object_check_cast((Eobj_Object *)(obj), (eina_type)))
+#define EOBJ_OBJECT_CAST(obj, eobj_class, c_type) \
+      ((c_type *)eobj_object_check_cast((Eobj_Object *)(obj), (eobj_class)))
 #else
-#define EOBJ_OBJECT_CAST(obj, eina_type, c_type)     ((c_type *)(obj))
+#define EOBJ_OBJECT_CAST(obj, eobj_class, c_type)     ((c_type *)(obj))
 #endif
 
-#define EOBJ_OBJECT_CHECK_TYPE(obj, eina_type) \
-   (eina_type_inherits_from(((Eobj_Object *)(obj))->type, (eina_type)))
+#define EOBJ_OBJECT_CHECK_TYPE(obj, eobj_class) \
+   (eobj_class_inherits_from(((Eobj_Object *)(obj))->type, (eobj_class)))
 
 /** Gets the type of an object */
-#define EOBJ_OBJECT_TYPE       (eobj_object_type_get())
+#define EOBJ_OBJECT_CLASS       (eobj_object_class_get())
 /** Casts the object to an Eobj_Object */
-#define EOBJ_OBJECT(obj)       (EINA_OBJECT_CAST((obj), EINA_OBJECT_TYPE, Eobj_Object))
+#define EOBJ_OBJECT(obj)       (EOBJ_OBJECT_CAST((obj), EOBJ_OBJECT_CLASS, Eobj_Object))
 /** Checks if the object is an Eobj_Object */
-#define EOBJ_IS_OBJECT(obj)    (EINA_OBJECT_CHECK_TYPE((obj), EINA_OBJECT_TYPE))
+#define EOBJ_IS_OBJECT(obj)    (EOBJ_OBJECT_CHECK_TYPE((obj), EOBJ_OBJECT_CLASS))
 
 /**
  * @brief A callback called each time the value of the associated property is modified
@@ -78,7 +78,7 @@ struct _Eobj_Object {
 void eobj_object_shutdown(void);
 void eobj_object_purge(void);
 
-Eobj_Class *eobj_object_type_get(void);
+Eobj_Class *eobj_object_class_get(void);
 Eobj_Object *eobj_object_new(Eobj_Class *object_type,
 		const char *first_property, ...);
 Eobj_Object *eobj_object_new_valist(Eobj_Class *object_type,

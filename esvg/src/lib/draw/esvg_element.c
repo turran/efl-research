@@ -6,7 +6,7 @@
  *============================================================================*/
 static void _constructor(ESVG_Element *e)
 {
-	
+	printf("called constructor\n");
 }
 static void _destructor(ESVG_Element *e)
 {
@@ -22,15 +22,15 @@ static void _destructor(ESVG_Element *e)
  * To be documented
  * FIXME: To be fixed 
  */
-EAPI ESVG_Class *esvg_element_class_get(void)
+EAPI Eobj_Class *esvg_element_class_get(void)
 {
-	static ESVG_Class *c = NULL;
+	static Eobj_Class *c = NULL;
 	
 	if (!c)
 	{
-		c = esvg_class_new("ESVG_Element", ESVG_OBJECT_CLASS,
-			sizeof(ESVG_Element), ESVG_CONSTRUCTOR(_constructor),
-			ESVG_DESTRUCTOR(_destructor));
+		c = eobj_class_new("ESVG_Element", EOBJ_OBJECT_CLASS,
+			sizeof(ESVG_Element), EOBJ_CONSTRUCTOR(_constructor),
+			EOBJ_DESTRUCTOR(_destructor), NULL);
 	}
 	return c;
 }
@@ -54,7 +54,17 @@ EAPI ESVG_Element * esvg_element_ancestor_get(ESVG_Element *e)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI ESVG_Element * esvg_element_new(ESVG_Class *class, const char *first_property, ...)
+EAPI ESVG_Element * esvg_element_new(Eobj_Class *class, const char *first_property, ...)
 {
-	
+	ESVG_Element *new_element;
+	va_list args;
+
+	if (!class)
+		return NULL;
+
+	va_start(args, first_property);
+	new_element = ESVG_ELEMENT(eobj_object_new_valist(class, first_property, args));
+	va_end(args);
+
+	return new_element;
 }

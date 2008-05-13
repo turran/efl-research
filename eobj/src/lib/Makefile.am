@@ -12,9 +12,10 @@ eobj_class.c \
 eobj_object.c \
 eobj_property.c \
 eobj_signal.c \
+eobj_marshallers.c \
 eobj_signal_callback.c
 
 libeobj_la_LIBADD = \
-@EINA_CFLAGS@
+@EINA_LIBS@
 
 libeobj_la_DEPENDENCIES =

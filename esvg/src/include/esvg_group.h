@@ -13,7 +13,7 @@ struct _ESVG_Group
 	ESVG_Container container;
 };
 
-EAPI ESVG_Class * esvg_group_class_get(void);
+EAPI Eobj_Class * esvg_group_class_get(void);
 
 
 #endif /*ESVG_GROUP_H_*/

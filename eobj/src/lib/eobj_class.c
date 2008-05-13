@@ -9,7 +9,7 @@ static Eina_Hash *_eobj_class_types_hash = NULL;
 /* Used by _eobj_class_free() */
 static Eina_Bool _eobj_class_property_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
 {
-   eina_property_delete(data);
+   eobj_property_delete(data);
    return 1;
 }
 
@@ -22,7 +22,7 @@ static void _eobj_class_free(Eobj_Class *class)
    eina_hash_foreach(class->properties_hash, _eobj_class_property_free_cb, NULL);
    eina_hash_free(class->properties_hash);
 
-   /* The signals themselves will be freed by eina_signal_shutdown() */
+   /* The signals themselves will be freed by eobj_signal_shutdown() */
    if (class->signals)
       free(class->signals);
 
@@ -36,7 +36,7 @@ static void _eobj_class_free(Eobj_Class *class)
 static Eina_Bool _eobj_class_free_cb(const Eina_Hash *hash, const char *key, void *data, void *fdata)
 {
    _eobj_class_free(data);
-   return 1;
+   return EINA_TRUE;
 }
 
 /* Used by eobj_class_property_list() */
@@ -46,7 +46,7 @@ static Eina_Bool _eobj_class_property_add_to_list(const Eina_Hash *hash, const c
 
    if (data && (properties = fdata))
       *properties = eina_list_append(*properties, data);
-   return 1;
+   return EINA_TRUE;
 }
 /*============================================================================*
  *                                 Global                                     * 
@@ -141,7 +141,7 @@ Eobj_Class *eobj_class_new(const char *type_name,
       const Eobj_Signal_Description *s;
 
       for (s = signals; s->signal_code_store; s++)
-         eina_signal_new_with_desc(new_type, s);
+         eobj_signal_new_with_desc(new_type, s);
    }
 
    _eobj_class_types_hash = eina_hash_add(_eobj_class_types_hash, new_type->name, new_type);

@@ -26,8 +26,8 @@ void eobj_signal_shutdown(void)
 {
    Eina_List *lst;
 
-   for (lst = _eobj_signal_signals_list; lst; lst = lst->next)
-      _eobj_signal_free(lst->data);
+   for (lst = _eobj_signal_signals_list; lst; lst = eina_list_next(lst))
+      _eobj_signal_free(eina_list_data(lst));
 
    eina_list_free(_eobj_signal_signals_list);
 }
@@ -347,8 +347,8 @@ void eobj_signal_disconnect_by_code(int signal_code, Eobj_Object *object,
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
 
       if (signal_callback->callback == callback &&
           signal_callback->data == data)
@@ -390,8 +390,8 @@ void eobj_signal_disconnect_scb_by_code(int signal_code, Eobj_Object *object,
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
 
       if (signal_callback == scb)
       {
@@ -455,8 +455,8 @@ void eobj_signal_disconnect_all_by_code(int signal_code, Eobj_Object *object)
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
       eobj_object_signal_callback_remove(object, signal_code, signal_callback);
    }
 }
@@ -510,8 +510,8 @@ void eobj_signal_block_by_code(int signal_code, Eobj_Object *object,
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
 
       if (signal_callback->callback == callback &&
           signal_callback->data == data)
@@ -576,8 +576,8 @@ void eobj_signal_block_scb_by_code(int signal_code, Eobj_Object *object,
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
 
       if (signal_callback == scb)
       {
@@ -633,8 +633,8 @@ void eobj_signal_unblock_by_code(int signal_code, Eobj_Object *object,
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
 
       if (signal_callback->callback == callback && signal_callback->data == data)
       {
@@ -700,8 +700,8 @@ void eobj_signal_unblock_scb_by_code(int signal_code, Eobj_Object *object,
    eobj_object_signal_callbacks_get(object, signal_code, &c);
    while (c)
    {
-      signal_callback = c->data;
-      c = c->next;
+      signal_callback = eina_list_data(c);
+      c = eina_list_next(c);
 
       if (signal_callback == scb)
       {
@@ -858,8 +858,8 @@ Eina_Bool eobj_signal_emit_valist(Eobj_Signal *signal, Eobj_Object *object,
       eobj_object_signal_callbacks_get(object, signal->code, &callbacks);
       while (keep_emission && callbacks && object_ptr)
       {
-         callback = callbacks->data;
-         callbacks = callbacks->next;
+         callback = eina_list_data(callbacks);
+         callbacks = eina_list_next(callbacks);
 
          va_copy(args2, args);
          eobj_signal_callback_call_valist(signal, callback, object,

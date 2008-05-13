@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 /**
- * @defgroup Eobj_Signal_Callback Eina_Signal_Callback
+ * @defgroup Eobj_Signal_Callback Eobj_Signal_Callback
  * @brief For more info, see the page about Eobj_Signal
  * @{
  */

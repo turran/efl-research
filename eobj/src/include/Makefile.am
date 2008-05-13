@@ -5,6 +5,7 @@ eobj_types.h \
 eobj_object_property.h \
 eobj_object.h \
 eobj_class.h \
+eobj_marshallers.h \
 eobj_signal.h \
 eobj_signal_callback.h
 
