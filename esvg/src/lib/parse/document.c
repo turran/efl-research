@@ -8,11 +8,13 @@
 Eina_Bool document_parse(ESVG_Document *svg, ESVG_Element *parent)
 {
 	ESVG *esvg;
+	ESVG_Element *s;
 	char *attr;
 	
 	/* canvas or subcanvas ? */
 	if (!svg->canvas)
 	{
+#if 0
 		ESVG_Length w, h;
 		
 		svg->canvas = esvg_svg_new();
@@ -31,9 +33,11 @@ Eina_Bool document_parse(ESVG_Document *svg, ESVG_Element *parent)
 			h.value = 100;
 			h.type = ESVG_LENGTH_TYPE_PERCENTAGE;
 		}
-		esvg_size_set(svg->canvas, &w, &h);
+		esvg_size_set(svg->canvas, &w, &h);	
 		/* Lets begin the recursion */
 		element_child_parse(svg, &element_document);
+#endif
+		s = esvg_svg_new();
 	}
 	else
 	{

@@ -7,7 +7,7 @@
  *============================================================================*/
 static void _constructor(ESVG_Container *o)
 {
-	
+	printf("container construct\n");
 }
 static void _destructor(ESVG_Container *o)
 {
@@ -29,7 +29,7 @@ EAPI Eobj_Class * esvg_container_class_get(void)
 		
 	if (!c)
 	{
-		eobj_class_new("ESVG_Container", ESVG_ELEMENT_CLASS,
+		c = eobj_class_new("ESVG_Container", ESVG_ELEMENT_CLASS,
 			sizeof(ESVG_Container), EOBJ_CONSTRUCTOR(_constructor),
 			EOBJ_DESTRUCTOR(_destructor), NULL);
 	}

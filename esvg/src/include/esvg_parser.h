@@ -7,6 +7,6 @@
  * some attributes accumulate (transform) and others replace (color) 
  * 
  */
-EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data);
+EAPI ESVG_Svg * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data);
 
 #endif /*ESVG_PARSER_H_*/

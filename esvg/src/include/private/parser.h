@@ -90,7 +90,7 @@ typedef enum _ESVG_Parser_Element
 
 typedef struct _ESVG_Document
 {
-	ESVG *canvas;
+	ESVG_Svg *canvas;
 	EXML *xml;
 	ESVG_Engine_Type type;
 	unsigned int w;

@@ -41,6 +41,7 @@ Ekeko_Object_Class _rect_class = {
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/* relative properties (x, y, w, h) should register the notifiers */
 EAPI ESVG_Rect * esvg_rect_add(ESVG *svg)
 {
 	ESVG_Rect *r;

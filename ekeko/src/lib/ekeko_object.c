@@ -118,6 +118,22 @@ void ekeko_object_post_process(Ekeko_Object *o)
 	o->changed = EINA_FALSE;
 	o->oclass->post_process(o->cdata);
 }
+/**
+ * Validate an object, add the object to the list of valid objects
+ * FIXME: To be fixed
+ */
+void ekeko_object_validate(Ekeko_Object *o)
+{
+	
+}
+/**
+ * Invalidate an object, remove the object from the list of valid objects
+ * FIXME: To be fixed
+ */
+void ekeko_object_invalidate(Ekeko_Object *o)
+{
+	
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -145,6 +161,15 @@ EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass
 	
 	c->objects = eina_inlist_append(c->objects, o);
 	return o;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_object_delete(Ekeko_Object *o)
+{
+	/* TODO change the valid/invalid lists */
+	/* update the object's list */
 }
 /**
  * To be documented

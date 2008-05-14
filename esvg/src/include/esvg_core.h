@@ -21,12 +21,20 @@ typedef enum _ESVG_Length_Type
 	ESVG_LENGTH_TYPE_PC
 } ESVG_Length_Type;
 
+
 typedef struct _ESVG_Length
 {
 	float value; /* normalized value, read only */
 	float type_value; /* value in type units */
 	ESVG_Length_Type type;
 } ESVG_Length, ESVG_Coord;
+
+
+typedef struct _ESVG_Length_Animated
+{
+	ESVG_Length base;
+	ESVG_Length anim;
+} ESVG_Length_Animated;
 
 //typedef ESVG_Length ESVG_Angle;
 

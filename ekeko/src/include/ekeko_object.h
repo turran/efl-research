@@ -46,5 +46,7 @@ void ekeko_object_pre_process(Ekeko_Object *o);
 void ekeko_object_process(Ekeko_Object *o, Eina_Rectangle *r);
 void ekeko_object_post_process(Ekeko_Object *o);
 void ekeko_object_event_callback_call(Ekeko_Object *o, Ekeko_Event_Type type, Ekeko_Event *ev);
+void ekeko_object_validate(Ekeko_Object *o);
+void ekeko_object_invalidate(Ekeko_Object *o);
 
 #endif

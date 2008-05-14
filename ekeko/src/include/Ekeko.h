@@ -30,6 +30,10 @@
  * + Maybe make the subcanvas part of ekeko itslef?
  * + As we have object events, why dont canvas events?
  * + Add a way to notify if an object has changed
+ * + Add two lists to an Ekeko_Canvas to keep track of the valid and 
+ * invalid objects. Like objects outside the canvas, objects that are invisible
+ * and dont handle events, etc.
+ * 
  *  
  * @file
  * @brief Ekeko API

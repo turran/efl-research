@@ -7,7 +7,6 @@ esvg_element.h \
 esvg_rect.h \
 esvg_svg.h\
 esvg_group.h \
-esvg_canvas.h \
 esvg_shape.h \
 esvg_parser.h
 
