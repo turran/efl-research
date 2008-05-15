@@ -1,12 +1,16 @@
 #ifndef ESVG_RECT_H_
 #define ESVG_RECT_H_
 
+#define ESVG_RECT_CLASS       (esvg_rect_class_get())
+#define ESVG_RECT(obj)       (ESVG_OBJECT_CAST((obj), ESVG_RECT_CLASS, ESVG_Rect))
+#define ESVG_IS_RECT(obj)    (ESVG_OBJECT_CHECK_CLASS((obj), ESVG_RECT_CLASS))
+
 typedef struct _ESVG_Rect ESVG_Rect;
 
 struct _ESVG_Rect
 {
 	/* inheritance */
-	ESVG_Shape shape;
+	ESVG_Element element;
 	/* private attributes */
 	ESVG_Coord x;
 	ESVG_Coord y;
@@ -16,9 +20,8 @@ struct _ESVG_Rect
 	ESVG_Length height;
 };
 
-//EAPI ESVG_Rect * esvg_rect_add(ESVG *svg);
-//EAPI ESVG_Rect * esvg_rect_add(ESVG_Container *container);
-EAPI ESVG_Shape * esvg_rect_shape_get(ESVG_Rect *r);
+EAPI Eobj_Class * esvg_rect_class_get(void);
+EAPI ESVG_Rect * esvg_rect_new(void);
 EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESVG_Length *w, ESVG_Length *h);
 EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry);
 EAPI void esvg_rect_del(ESVG_Rect *r);

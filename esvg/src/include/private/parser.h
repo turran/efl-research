@@ -88,21 +88,21 @@ typedef enum _ESVG_Parser_Element
 	ESVG_ELEMENTS,
 } ESVG_Parser_Element;
 
-typedef struct _ESVG_Document
+typedef struct _ESVG_Parser
 {
-	ESVG_Svg *canvas;
+	ESVG_Document *document;
 	EXML *xml;
 	ESVG_Engine_Type type;
 	unsigned int w;
 	unsigned int h;
 	void *engine_data;
-} ESVG_Document;
+} ESVG_Parser;
 
 /* TODO the parser callback should have some kind of parent element reference
  * in case we need it: pass ESVG_Element too
  */
 
-typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Document *svg, ESVG_Element *el);
+typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Parser *svg, ESVG_Element *el);
 
 typedef struct _ESVG_Document_Element
 {

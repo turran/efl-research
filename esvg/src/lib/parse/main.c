@@ -5,14 +5,14 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static ESVG_Document * _document_new(void)
+static ESVG_Parser * _parser_new(void)
 {
-	ESVG_Document *svg;
+	ESVG_Parser *svg;
 	
-	svg = calloc(1, sizeof(ESVG_Document));
+	svg = calloc(1, sizeof(ESVG_Parser));
 	return svg;
 }
-static ESVG_Document * _document_del(ESVG_Document *d)
+static ESVG_Parser * _document_del(ESVG_Parser *d)
 {
 
 }
@@ -34,7 +34,7 @@ char *element_tags[ESVG_ELEMENTS] = {
 };
 
 /* parse every child object */
-void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
+void element_child_parse(ESVG_Parser *ed, ESVG_Document_Element *ede)
 {
 	EXML_Node *n;
 	char *tag;
@@ -80,15 +80,15 @@ void element_child_parse(ESVG_Document *ed, ESVG_Document_Element *ede)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data)
+EAPI ESVG_Document * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data)
 {
-	ESVG_Document *svg;
+	ESVG_Parser *parser;
 	EXML *xml;
 	EXML_Node *n;
 	char *tag;
 	
 	xml = exml_new();
-	if (!exml_file_read((char *)xml, file))
+	if (!exml_file_read(xml, (char *)file))
 	{
 		printf("cant read file??\n");
 		return NULL;
@@ -99,12 +99,12 @@ EAPI ESVG * esvg_document_load(const char *file, unsigned int w, unsigned int h,
 		printf("no svg\n");
 		return NULL;
 	}
-	svg = _document_new();
-	svg->xml = xml;
-	svg->type = type;
-	svg->engine_data = engine_data;
-	svg->w = w;
-	svg->h = h;
-	esvg_elements[ESVG_ELEMENT_SVG]->parser(svg, NULL);
-	return svg->canvas;
+	parser = _parser_new();
+	parser->xml = xml;
+	parser->type = type;
+	parser->engine_data = engine_data;
+	parser->w = w;
+	parser->h = h;
+	esvg_elements[ESVG_ELEMENT_SVG]->parser(parser, NULL);
+	return parser->document;
 }

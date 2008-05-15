@@ -5,14 +5,13 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-Eina_Bool document_parse(ESVG_Document *svg, ESVG_Element *parent)
+Eina_Bool document_parse(ESVG_Parser *svg, ESVG_Element *parent)
 {
-	ESVG *esvg;
 	ESVG_Element *s;
 	char *attr;
 	
 	/* canvas or subcanvas ? */
-	if (!svg->canvas)
+	if (!svg->document)
 	{
 #if 0
 		ESVG_Length w, h;

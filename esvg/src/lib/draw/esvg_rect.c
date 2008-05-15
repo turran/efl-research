@@ -38,25 +38,47 @@ Ekeko_Object_Class _rect_class = {
 	.post_process = _post_process,
 	.free = _free,
 };
+/* Classs */
+static void _constructor(ESVG_Svg *s)
+{
+	printf("rect constructor\n");
+}
+static void _destructor(ESVG_Svg *s)
+{
+	
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eobj_Class * esvg_rect_class_get(void)
+{
+	static Eobj_Class *c = NULL;
+	
+	if (!c)
+	{
+		c = eobj_class_new("ESVG_Rect", ESVG_SHAPE_CLASS,
+				sizeof(ESVG_Rect), EOBJ_CONSTRUCTOR(_constructor),
+				EOBJ_DESTRUCTOR(_destructor), NULL);
+	}
+	return c;
+}
 /* relative properties (x, y, w, h) should register the notifiers */
-EAPI ESVG_Rect * esvg_rect_add(ESVG *svg)
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI ESVG_Rect * esvg_rect_new(void)
 {
-	ESVG_Rect *r;
-	
-	r = calloc(1, sizeof(ESVG_Rect));
-	esvg_canvas_shape_add(svg, &r->shape, &_rect_class, r);
-	
-	return r;
+	return (ESVG_Rect *)esvg_element_new(ESVG_RECT_CLASS, NULL);
 }
-
-EAPI ESVG_Shape * esvg_rect_shape_get(ESVG_Rect *r)
-{
-	return &r->shape;
-}
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESVG_Length *w, ESVG_Length *h)
 {
 	if (x) r->x = *x;
@@ -67,15 +89,21 @@ EAPI void esvg_rect_geometry_set(ESVG_Rect *r, ESVG_Coord *x, ESVG_Coord *y, ESV
 	 * to the parent */
 	printf("new rect of size %f %f %f %f\n", x->value, y->value, w->value, h->value);
 	//ekeko_canvas_callback_add(r->shape.canvas->canvas, EKEKO_CANVAS_EVENT_RESIZE, NULL); 
-	esvg_shape_geometry_set(&r->shape, x->value, y->value, w->value, h->value);
+	//esvg_shape_geometry_set(&r->shape, x->value, y->value, w->value, h->value);
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void esvg_rect_rounded_set(ESVG_Rect *r, ESVG_Length rx, ESVG_Length ry)
 {
 	r->rx = rx;
 	r->ry = ry;
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void esvg_rect_del(ESVG_Rect *r)
 {
 	

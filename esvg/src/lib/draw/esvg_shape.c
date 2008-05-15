@@ -3,6 +3,18 @@
 #include "esvg_private.h"
 
 /*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+/* Classs */
+static void _constructor(ESVG_Svg *s)
+{
+	printf("shape constructor\n");
+}
+static void _destructor(ESVG_Svg *s)
+{
+	
+}
+/*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
 void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value width, ESVG_Length_Value height)
@@ -16,6 +28,23 @@ void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eobj_Class * esvg_shape_class_get(void)
+{
+	static Eobj_Class *c = NULL;
+	
+	if (!c)
+	{
+		c = eobj_class_new("ESVG_Shape", ESVG_ELEMENT_CLASS,
+				sizeof(ESVG_Shape), EOBJ_CONSTRUCTOR(_constructor),
+				EOBJ_DESTRUCTOR(_destructor), NULL);
+	}
+	return c;
+}
 /* Core Attributes */
 /**
  * To be documented

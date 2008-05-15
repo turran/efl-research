@@ -4,7 +4,7 @@
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-void esvg_shape_parse(ESVG_Document *svg, ESVG_Shape *shape)
+void esvg_shape_parse(ESVG_Parser *svg, ESVG_Shape *shape)
 {
 	char *attr;
 	ESVG_Length_Value op;

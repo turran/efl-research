@@ -8,7 +8,7 @@
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-static Eina_Bool polygon_parse(ESVG_Document *esvg, ESVG_Element *parent)
+static Eina_Bool polygon_parse(ESVG_Parser *esvg, ESVG_Element *parent)
 {
 	printf("polygon parse\n");
 }

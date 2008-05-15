@@ -1,7 +1,10 @@
 #include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
-/* For now we can only have one engine, i.e one ESVG instance */
+/* For now we can only have one engine, i.e one ESVG instance
+ * this code is very bad, we allocate an engine on every property
+ * change
+ */
 typedef struct _ESVG_Engine ESVG_Engine;
 
 struct _ESVG_Engine
@@ -51,7 +54,7 @@ void esvg_engine_rect_draw(void *context, ESVG_Rect *r, Eina_Rectangle *rclip)
 EAPI Eina_Bool esvg_engine_output_size_get(unsigned int *width, unsigned int *height)
 {
 	if (!_engine)
-		return EINA_FALSE;
+		_engine_new();
 	if (width) *width = _engine->w;
 	if (height) *height = _engine->h;
 }
@@ -61,22 +64,14 @@ EAPI Eina_Bool esvg_engine_output_size_get(unsigned int *width, unsigned int *he
  */
 EAPI Eina_Bool esvg_engine_output_size_set(unsigned int width, unsigned int height)
 {
-	if (!e->canvas)
-	{
-		e->canvas = ekeko_canvas_new(&_canvas_class, e, EKEKO_TILER_SPLITTER, width, height);
-		if (!e->canvas)
-			return EINA_FALSE;
-	}
-	else
-	{
-		if ((e->width == width) && (e->height == height))
-			return EINA_TRUE;
-		/* we should resize the canvas size */
-		printf("not supported yet!\n");
-	}
-	e->width = width;
-	e->height = height;
-	
+	if (!_engine)
+		_engine_new();
+	if ((_engine->w == width) && (_engine->h == height))
+		return EINA_TRUE;
+	_engine->w = width;
+	_engine->h = height;
+	/* notify the change to the topmost svg */
+#if 0	
 	if (!e->background)
 		return EINA_TRUE;
 	
@@ -86,6 +81,7 @@ EAPI Eina_Bool esvg_engine_output_size_set(unsigned int width, unsigned int heig
 	if (esvg_length_type_is_relative(e->background->height.type))
 		esvg_length_calculate(&e->background->width, e->height);
 	printf("relative!!\n");
+#endif
 	return EINA_TRUE;
 }
 /**
@@ -97,7 +93,8 @@ EAPI Eina_Bool esvg_engine_set(ESVG_Engine_Type type, void *engine_data)
 	/* engine already set */
 	if ((_engine) && (_engine->type != ESVG_ENGINE_UNKNOWN))
 		return EINA_FALSE;
-	
+	if (!_engine)
+		_engine_new();
 	_engine->data = engine_data;
 	_engine->type = type;
 	switch (type)

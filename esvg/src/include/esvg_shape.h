@@ -1,6 +1,10 @@
 #ifndef ESVG_SHAPE_H_
 #define ESVG_SHAPE_H_
 
+#define ESVG_SHAPE_CLASS       (esvg_shape_class_get())
+#define ESVG_SHAPE(obj)       (ESVG_OBJECT_CAST((obj), ESVG_SHAPE_CLASS, ESVG_Rect))
+#define ESVG_IS_SHAPE(obj)    (ESVG_OBJECT_CHECK_CLASS((obj), ESVG_SHAPE_CLASS))
+
 /**
  * A shape interacts with the canvas engine
  * 
@@ -41,6 +45,8 @@ struct _ESVG_Shape
 		void *context;
 	} engine;
 };
+
+EAPI Eobj_Class * esvg_shape_class_get(void);
 
 EAPI void esvg_shape_id_set(ESVG_Shape *s, char *id);
 EAPI void esvg_shape_color_set(ESVG_Shape *s, ESVG_Color color);

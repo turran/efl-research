@@ -4,14 +4,14 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static Eina_Bool rect_parse(ESVG_Document *svg, ESVG_Element *parent)
+static Eina_Bool rect_parse(ESVG_Parser *svg, ESVG_Element *parent)
 {
 	char *attr;
 	ESVG_Rect *r;
 	ESVG_Length w, h, x, y, rx, ry;
 	
 	/* TODO change this to add the rect to the parent object */
-	r = esvg_rect_add(svg->canvas);
+	//r = esvg_rect_add(svg->canvas);
 	/* parse the attributes */
 	attr = exml_attribute_get(svg->xml, "width");
 	if (!esvg_length_get(attr, &w))
@@ -39,7 +39,7 @@ static Eina_Bool rect_parse(ESVG_Document *svg, ESVG_Element *parent)
 		goto error;
 #endif
 	/* common shape attributes */
-	esvg_shape_parse(svg, esvg_rect_shape_get(r));
+	//esvg_shape_parse(svg, esvg_rect_shape_get(r));
 	return EINA_TRUE;
 error:
 	printf("error\n");

@@ -8,7 +8,6 @@
 #endif
 
 #include "private/core.h"
-#include "private/svg.h"
 #include "private/engine.h"
 #include "private/shape.h"
 #include "private/parser.h"

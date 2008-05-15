@@ -99,13 +99,13 @@ static void _rect_draw(void *engine_data, void *context, ESVG_Rect *r, Eina_Rect
 		cairo_rectangle(c, x, y, w, h);
 	}
 	printf("painting rect\n");
-	_path_fill(c, &r->shape);
-	_path_stroke(c, &r->shape);
+	//_path_fill(c, &r->shape);
+	//_path_stroke(c, &r->shape);
 }
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-ESVG_Engine esvg_engine_cairo = {
+ESVG_Engine_Func esvg_engine_cairo = {
 	.context_new = _context_new,
 	.context_free = _context_free,
 	.rect_draw = _rect_draw,

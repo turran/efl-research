@@ -6,6 +6,7 @@
 #include "Ekeko.h"
 
 #include "esvg_core.h"
+#include "esvg_document.h"
 #include "esvg_engine.h"
 #include "esvg_element.h"
 #include "esvg_shape.h"
