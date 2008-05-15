@@ -39,11 +39,11 @@ Ekeko_Object_Class _rect_class = {
 	.free = _free,
 };
 /* Classs */
-static void _constructor(ESVG_Svg *s)
+static void _constructor(ESVG_Rect *r)
 {
 	printf("rect constructor\n");
 }
-static void _destructor(ESVG_Svg *s)
+static void _destructor(ESVG_Rect *r)
 {
 	
 }
@@ -71,9 +71,9 @@ EAPI Eobj_Class * esvg_rect_class_get(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI ESVG_Rect * esvg_rect_new(void)
+EAPI ESVG_Element * esvg_rect_new(void)
 {
-	return (ESVG_Rect *)esvg_element_new(ESVG_RECT_CLASS, NULL);
+	return esvg_element_new(ESVG_RECT_CLASS, NULL);
 }
 /**
  * To be documented

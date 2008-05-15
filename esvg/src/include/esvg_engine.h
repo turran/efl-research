@@ -10,6 +10,10 @@
  * is resized and moved and keep track of the union of every bounding box
  */ 
 
+#define ESVG_ENGINE_CLASS       (esvg_engine_class_get())
+#define ESVG_ENGINE(obj)       (EOBJ_OBJECT_CAST((obj), ESVG_ENGINE_CLASS, ESVG_Engine))
+#define ESVG_IS_ENGINE(obj)    (EOBJ_OBJECT_CHECK_CLASS((obj), ESVG_ENGINE_CLASS))
+
 typedef enum _ESVG_Engine_Type
 {
 	ESVG_ENGINE_UNKNOWN,
@@ -18,7 +22,17 @@ typedef enum _ESVG_Engine_Type
 	ESVG_ENGINES,
 } ESVG_Engine_Type;
 
-EAPI Eina_Bool esvg_engine_output_size_set(unsigned int width, unsigned int height);
-EAPI Eina_Bool esvg_engine_set(ESVG_Engine_Type type, void *engine_data);
+typedef struct _ESVG_Engine_Func ESVG_Engine_Func;
+
+struct _ESVG_Engine
+{
+	void *data;
+	unsigned int w;
+	unsigned int h;
+	ESVG_Engine_Type type;
+	ESVG_Engine_Func *func;
+};
+
+EAPI ESVG_Engine * esvg_engine_new(void);
 
 #endif /*ESVG_ENGINE_H_*/

@@ -1,48 +1,36 @@
 #include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
-/* For now we can only have one engine, i.e one ESVG instance
- * this code is very bad, we allocate an engine on every property
- * change
- */
-typedef struct _ESVG_Engine ESVG_Engine;
-
-struct _ESVG_Engine
-{
-	void *data;
-	unsigned int w;
-	unsigned int h;
-	ESVG_Engine_Type type;
-	ESVG_Engine_Func *func;
-};
-
-static ESVG_Engine *_engine = NULL;
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-void _engine_new(void)
+/* Classs */
+static void _constructor(ESVG_Engine *e)
 {
-	if (!_engine)
-	{
-		_engine = calloc(1, sizeof(ESVG_Engine));
-	}
+	printf("engine constructor\n");
+	e->h = 0;
+	e->w = 0;
+}
+static void _destructor(ESVG_Engine *e)
+{
+	printf("engine destructor\n");
 }
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-void * esvg_engine_context_new(void)
+void * esvge_context_new(ESVG_Engine *e)
 {
-	return _engine->func->context_new(_engine->data);
+	return e->func->context_new(e->data);
 }
 
-void esvg_engine_context_free(void *context)
+void esvge_context_free(ESVG_Engine *e, void *context)
 {
-	_engine->func->context_free(_engine->data, context);
+	e->func->context_free(e->data, context);
 }
 
-void esvg_engine_rect_draw(void *context, ESVG_Rect *r, Eina_Rectangle *rclip)
+void esvge_rect_draw(ESVG_Engine *e, void *context, ESVG_Rect *r, Eina_Rectangle *rclip)
 {
-	_engine->func->rect_draw(_engine->data, context, r, rclip);
+	e->func->rect_draw(e->data, context, r, rclip);
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -51,56 +39,55 @@ void esvg_engine_rect_draw(void *context, ESVG_Rect *r, Eina_Rectangle *rclip)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool esvg_engine_output_size_get(unsigned int *width, unsigned int *height)
+EAPI Eobj_Class * esvg_engine_class_get(void)
 {
-	if (!_engine)
-		_engine_new();
-	if (width) *width = _engine->w;
-	if (height) *height = _engine->h;
+	static Eobj_Class *c = NULL;
+	
+	if (!c)
+	{
+		c = eobj_class_new("ESVG_Engine", EOBJ_OBJECT_CLASS,
+				sizeof(ESVG_Engine), EOBJ_CONSTRUCTOR(_constructor),
+				EOBJ_DESTRUCTOR(_destructor), NULL);
+	}
+	return c;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool esvg_engine_output_size_set(unsigned int width, unsigned int height)
+EAPI void esvg_engine_output_size_get(ESVG_Engine *e, unsigned int *width, unsigned int *height)
 {
-	if (!_engine)
-		_engine_new();
-	if ((_engine->w == width) && (_engine->h == height))
+	if (width) *width = e->w;
+	if (height) *height = e->h;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Eina_Bool esvg_engine_output_size_set(ESVG_Engine *e, unsigned int width, unsigned int height)
+{
+	if ((e->w == width) && (e->h == height))
 		return EINA_TRUE;
-	_engine->w = width;
-	_engine->h = height;
-	/* notify the change to the topmost svg */
-#if 0	
-	if (!e->background)
-		return EINA_TRUE;
-	
-	/* if the size of the canvas is relative update the background size */
-	if (esvg_length_type_is_relative(e->background->width.type))
-		esvg_length_calculate(&e->background->width, e->width);
-	if (esvg_length_type_is_relative(e->background->height.type))
-		esvg_length_calculate(&e->background->width, e->height);
-	printf("relative!!\n");
-#endif
+	e->w = width;
+	e->h = height;
+	//eobj_object_notify()
 	return EINA_TRUE;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool esvg_engine_set(ESVG_Engine_Type type, void *engine_data)
+EAPI Eina_Bool esvg_engine_set(ESVG_Engine *e, ESVG_Engine_Type type, void *engine_data)
 {
 	/* engine already set */
-	if ((_engine) && (_engine->type != ESVG_ENGINE_UNKNOWN))
+	if (e->type != ESVG_ENGINE_UNKNOWN)
 		return EINA_FALSE;
-	if (!_engine)
-		_engine_new();
-	_engine->data = engine_data;
-	_engine->type = type;
+	e->data = engine_data;
+	e->type = type;
 	switch (type)
 	{
 		case ESVG_ENGINE_CAIRO:
-		_engine->func = &esvg_engine_cairo;
+		e->func = &esvg_engine_cairo;
 		break;
 		
 		default:
@@ -108,3 +95,12 @@ EAPI Eina_Bool esvg_engine_set(ESVG_Engine_Type type, void *engine_data)
 	}
 	return EINA_TRUE;
 }
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI ESVG_Engine * esvg_engine_new(void)
+{
+	return ESVG_ENGINE(eobj_object_new(ESVG_ENGINE_CLASS, NULL));
+}
+

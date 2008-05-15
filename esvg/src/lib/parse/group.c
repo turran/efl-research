@@ -5,7 +5,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static Eina_Bool group_parse(ESVG_Parser *svg, ESVG_Element *parent)
+static Eina_Bool group_parse(ESVG_Parser *svg, ESVG_Element *parent, ESVG_Element **new_element)
 {
 	printf("group parse\n");
 }

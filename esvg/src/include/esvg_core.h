@@ -1,6 +1,13 @@
 #ifndef ESVG_CORE_H_
 #define ESVG_CORE_H_
 
+/* remove crossed reference names */
+typedef struct _ESVG_Element ESVG_Element;
+typedef struct _ESVG_Svg ESVG_Svg;
+typedef struct _ESVG_Container ESVG_Container;
+typedef struct _ESVG_Engine ESVG_Engine;
+
+
 typedef unsigned int ESVG_Color;
 typedef float ESVG_Length_Value;
 typedef ESVG_Length_Value ESVG_Coord_Value;

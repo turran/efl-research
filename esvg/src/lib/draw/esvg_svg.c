@@ -5,6 +5,7 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+/* Ekeko Canvas */
 static int _flush(void *data, Eina_Rectangle *rects)
 {
 	ESVG_Svg *e = data;
@@ -30,15 +31,22 @@ static void _shape_changed(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, vo
 /* Container */
 static void _child_add(ESVG_Container *container, ESVG_Element *element)
 {
-	
+	esvg_element_ancestor_set(element, ESVG_SVG(container));
+	printf("adding child\n");
 }
 static void _child_remove(ESVG_Container *container, ESVG_Element *element)
 {
-	
+	esvg_element_ancestor_set(element, NULL);
+	printf("removing child\n");
 }
 /* Classs */
 static void _constructor(ESVG_Svg *s)
 {
+	s->engine = NULL;
+	s->canvas = ekeko_canvas_new(&_canvas_class, s, EKEKO_TILER_SPLITTER, 0, 0);
+	ESVG_CONTAINER(s)->child_add = _child_add;
+	ESVG_CONTAINER(s)->child_remove = _child_remove;
+	
 	printf("svg constructor\n");
 }
 static void _destructor(ESVG_Svg *s)
@@ -141,7 +149,33 @@ EAPI ESVG_Element * esvg_svg_element_by_id_get(ESVG_Svg *s, const char *id)
 	 * esvg_container_for_each_data(s, callback, data);
 	 */
 }
-
+/**
+ * To be documented
+ * FIXME: To be fixed 
+ */
+EAPI void esvg_svg_redraw_force(ESVG_Svg *s)
+{
+	/* process the canvas */
+	/* in case we have an engine set */
+}
+/**
+ * To be documented
+ * FIXME: To be fixed 
+ */
+EAPI void esvg_svg_engine_set(ESVG_Svg *s, ESVG_Engine *engine)
+{
+	/* only can be set once ? */
+	s->engine = engine;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed 
+ */
+EAPI ESVG_Engine * esvg_svg_engine_get(ESVG_Svg *s)
+{
+	/* can only be set once ? */
+	return s->engine;
+}
 /* svg element interface */
 #if 0
 void          unsuspendRedraw ( in unsigned long suspend_handle_id )

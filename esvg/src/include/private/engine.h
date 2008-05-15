@@ -1,7 +1,7 @@
 #ifndef ENGINE_H_
 #define ENGINE_H_
 
-typedef struct _ESVG_Engine_Func
+struct _ESVG_Engine_Func
 {
 	/* context functions */
 	void * (*context_new)(void *engine_data);
@@ -9,10 +9,10 @@ typedef struct _ESVG_Engine_Func
 	/* attributes */
 	/* rect */
 	void (*rect_draw)(void *engine_data, void *context, ESVG_Rect *r, Eina_Rectangle *rclip);
-} ESVG_Engine_Func;
+};
 
-void * esvg_engine_context_new(void);
-void esvg_engine_context_free(void *context);
+void * esvg_engine_context_new(ESVG_Engine *e);
+void esvg_engine_context_free(ESVG_Engine *e, void *context);
 
 extern ESVG_Engine_Func esvg_engine_cairo;
 

@@ -27,7 +27,7 @@ int sdl_init(unsigned int w, unsigned int h)
 	return 1;
 }
 
-int sdl_loop(ESVG *svg)
+int sdl_loop(ESVG_Svg *svg)
 {
 	SDL_Event event;
 	
@@ -55,8 +55,12 @@ int sdl_loop(ESVG *svg)
 			//ekeko_input_feed_mouse_up(input, event.button.state, EKEKO_BUTTON_NONE, 0);
 			break;
 		case SDL_VIDEORESIZE:
-			esvg_output_size_set(svg, event.resize.w, event.resize.h);
+		{
+			ESVG_Engine *engine = esvg_svg_engine_get(svg);
+			esvg_engine_output_size_set(engine, event.resize.w, event.resize.h);
+
 			break;
+		}
 		case SDL_QUIT:
 			return 1;
 			break;

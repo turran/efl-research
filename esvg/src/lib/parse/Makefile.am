@@ -10,7 +10,7 @@ noinst_LTLIBRARIES = libesvg_parse.la
 
 # make all the sources but main.c to be optional
 libesvg_parse_la_SOURCES = \
-document.c \
+svg.c \
 group.c \
 main.c \
 polygon.c \

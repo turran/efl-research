@@ -5,23 +5,47 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-/* Classs */
-static void _constructor(ESVG_Svg *s)
+/* Element */
+static void _ancestor_cb(Eobj_Object *o, const char *pname, void *data)
 {
-	printf("shape constructor\n");
+	ESVG_Svg *ancestor;
+	ESVG_Shape *s = ESVG_SHAPE(o);
+	
+	ancestor = esvg_element_ancestor_get(ESVG_ELEMENT(o));
+	/* create a new ekeko object */
+	if (ancestor)
+	{
+		
+		/*if (s->object)
+			ekeko_object_delete(s->object);*/
+		//s->object = ekeko_object_add(ancestor->canvas)
+	}
+	/* recreate the attributes based on the ancestor */
+	printf("ancestor cb called\n");
 }
-static void _destructor(ESVG_Svg *s)
+/* Classs */
+static void _constructor(ESVG_Shape *s)
+{
+	/* default values */
+	s->object = NULL;
+	/* register the notification callbacks */
+	eobj_object_notification_callback_add(EOBJ_OBJECT(s), "ancestor", _ancestor_cb, NULL);
+}
+static void _destructor(ESVG_Shape *s)
 {
 	
 }
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+/* called when a parent has been set */
 void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value width, ESVG_Length_Value height)
 {
 	/* TODO round values to up for positive or down for negatives */
 	//printf("%d %d %d %d\n", x, y, width, height);
-	/* TODO the geometry has to be calculated adding the stroke */
+	/* TODO the geometry has to be calculated adding the stroke
+	 * and the transformations, etc
+	 */
 	ekeko_object_move(s->object, x, y);
 	ekeko_object_resize(s->object, width, height);
 }

@@ -3,7 +3,9 @@ MAINTAINERCLEANFILES = Makefile.in
 ESVG_OTHERHEADERS = \
 esvg_container.h \
 esvg_core.h \
+esvg_document.h \
 esvg_element.h \
+esvg_engine.h \
 esvg_rect.h \
 esvg_svg.h\
 esvg_group.h \

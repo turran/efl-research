@@ -2,8 +2,8 @@
 #define ESVG_SHAPE_H_
 
 #define ESVG_SHAPE_CLASS       (esvg_shape_class_get())
-#define ESVG_SHAPE(obj)       (ESVG_OBJECT_CAST((obj), ESVG_SHAPE_CLASS, ESVG_Rect))
-#define ESVG_IS_SHAPE(obj)    (ESVG_OBJECT_CHECK_CLASS((obj), ESVG_SHAPE_CLASS))
+#define ESVG_SHAPE(obj)       (EOBJ_OBJECT_CAST((obj), ESVG_SHAPE_CLASS, ESVG_Shape))
+#define ESVG_IS_SHAPE(obj)    (EOBJ_OBJECT_CHECK_CLASS((obj), ESVG_SHAPE_CLASS))
 
 /**
  * A shape interacts with the canvas engine
@@ -37,8 +37,10 @@ struct _ESVG_Shape
 #endif
 		ESVG_Attribute_Cursor cursor;
 	} attributes;
+	/* interface */
+	void (*create_object)(ESVG_Shape *s);
+	void (*delete_object)(ESVG_Shape *s);
 	/* implementation */
-	//ESVG *canvas;
 	Ekeko_Object *object;
 	struct
 	{

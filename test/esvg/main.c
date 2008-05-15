@@ -23,7 +23,7 @@ static ESVG_Engine_Type parse_engine(const char *engine)
 
 int main(int argc, char **argv)
 {
-	ESVG *esvg;
+	ESVG_Svg *esvg;
 	unsigned int w, h;
 	unsigned int end = 0;
 	
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 	{
 		/* call the backend loop */
 		end = sdl_loop(esvg);
-		esvg_render(esvg);
+		esvg_svg_redraw_force(esvg);
 	}
 	/* call the backend shutdown */
 	sdl_shutdown();

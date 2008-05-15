@@ -41,15 +41,15 @@ EAPI Eobj_Class * esvg_container_class_get(void)
  */
 EAPI void esvg_container_add(ESVG_Container *c, ESVG_Element *e)
 {
-	
+	c->child_add(c, e);
 }
 /**
  * To be documented
  * FIXME: To be fixed 
  */
-EAPI void esvg_container_remove(ESVG_Element *e)
+EAPI void esvg_container_remove(ESVG_Container *c, ESVG_Element *e)
 {
-	
+	c->child_remove(c, e);
 }
 /* container types:
  * svg

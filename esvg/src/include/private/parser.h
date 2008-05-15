@@ -90,19 +90,17 @@ typedef enum _ESVG_Parser_Element
 
 typedef struct _ESVG_Parser
 {
+	ESVG_Engine *engine;
 	ESVG_Document *document;
+	ESVG_Svg *svg;
 	EXML *xml;
-	ESVG_Engine_Type type;
-	unsigned int w;
-	unsigned int h;
-	void *engine_data;
 } ESVG_Parser;
 
 /* TODO the parser callback should have some kind of parent element reference
  * in case we need it: pass ESVG_Element too
  */
 
-typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Parser *svg, ESVG_Element *el);
+typedef Eina_Bool (*ESVG_Document_Element_Parser)(ESVG_Parser *parser, ESVG_Element *parent, ESVG_Element **new_element);
 
 typedef struct _ESVG_Document_Element
 {
@@ -114,7 +112,7 @@ typedef struct _ESVG_Document_Element
 extern char *element_tags[ESVG_ELEMENTS];
 
 extern ESVG_Document_Element *esvg_elements[ESVG_ELEMENTS];
-extern ESVG_Document_Element element_document;
+extern ESVG_Document_Element element_svg;
 extern ESVG_Document_Element element_group;
 extern ESVG_Document_Element element_rect;
 
