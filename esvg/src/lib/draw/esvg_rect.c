@@ -41,6 +41,9 @@ Ekeko_Object_Class _rect_class = {
 /* Classs */
 static void _constructor(ESVG_Rect *r)
 {
+	/* default values */
+	/* shape class */
+	ESVG_SHAPE(r)->object_class = &_rect_class;
 	printf("rect constructor\n");
 }
 static void _destructor(ESVG_Rect *r)

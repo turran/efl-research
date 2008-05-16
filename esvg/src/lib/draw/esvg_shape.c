@@ -16,9 +16,11 @@ static void _ancestor_cb(Eobj_Object *o, const char *pname, void *data)
 	if (ancestor)
 	{
 		
-		/*if (s->object)
-			ekeko_object_delete(s->object);*/
-		//s->object = ekeko_object_add(ancestor->canvas)
+		if (s->object)
+		{
+			/* ekeko_object_delete(s->object); */
+		}
+		s->object = ekeko_object_add(ancestor->canvas, s->object_class, s);
 	}
 	/* recreate the attributes based on the ancestor */
 	printf("ancestor cb called\n");
@@ -38,6 +40,10 @@ static void _destructor(ESVG_Shape *s)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 /* called when a parent has been set */
 void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value y, ESVG_Length_Value width, ESVG_Length_Value height)
 {
@@ -52,7 +58,6 @@ void esvg_shape_geometry_set(ESVG_Shape *s, ESVG_Coord_Value x, ESVG_Coord_Value
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-
 /**
  * To be documented
  * FIXME: To be fixed
@@ -69,6 +74,7 @@ EAPI Eobj_Class * esvg_shape_class_get(void)
 	}
 	return c;
 }
+/* FIXME all this attributes go to esvg_element.c */
 /* Core Attributes */
 /**
  * To be documented

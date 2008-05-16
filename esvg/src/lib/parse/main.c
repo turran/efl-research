@@ -86,7 +86,7 @@ void element_child_parse(ESVG_Parser *ed, ESVG_Document_Element *ede, ESVG_Eleme
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-EAPI ESVG_Document * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data)
+EAPI ESVG_Svg * esvg_document_load(const char *file, unsigned int w, unsigned int h, ESVG_Engine_Type type, void *engine_data)
 {
 	ESVG_Engine *engine;
 	ESVG_Parser *parser;
@@ -115,5 +115,5 @@ EAPI ESVG_Document * esvg_document_load(const char *file, unsigned int w, unsign
 	esvg_elements[ESVG_ELEMENT_SVG]->parser(parser, NULL, (ESVG_Element **)&svg);
 	if (svg)
 		element_child_parse(parser, esvg_elements[ESVG_ELEMENT_SVG], ESVG_ELEMENT(svg));
-	return parser->document;
+	return svg;
 }

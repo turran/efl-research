@@ -16,7 +16,7 @@ Eina_Bool svg_parse(ESVG_Parser *parser, ESVG_Element *parent, ESVG_Element **ne
 	/* canvas */
 	if (!parent)
 	{
-		esvg_svg_engine_set(svg, parser->engine);
+		esvg_svg_engine_set(ESVG_SVG(svg), parser->engine);
 		parser->svg = ESVG_SVG(svg);
 	}
 	/* parse the attributes */
@@ -42,6 +42,7 @@ Eina_Bool svg_parse(ESVG_Parser *parser, ESVG_Element *parent, ESVG_Element **ne
 		esvg_container_add(ESVG_CONTAINER(parent), svg);
 	}
 	*new_element = svg;
+	return EINA_TRUE;
 }
 /*============================================================================*
  *                                 Global                                     * 

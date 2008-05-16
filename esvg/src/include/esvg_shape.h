@@ -38,10 +38,9 @@ struct _ESVG_Shape
 		ESVG_Attribute_Cursor cursor;
 	} attributes;
 	/* interface */
-	void (*create_object)(ESVG_Shape *s);
-	void (*delete_object)(ESVG_Shape *s);
 	/* implementation */
 	Ekeko_Object *object;
+	Ekeko_Object_Class *object_class;
 	struct
 	{
 		void *context;

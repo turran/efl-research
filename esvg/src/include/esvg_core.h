@@ -13,6 +13,14 @@ typedef float ESVG_Length_Value;
 typedef ESVG_Length_Value ESVG_Coord_Value;
 
 /* basic types */
+typedef struct _ESVG_Rectangle
+{
+	float x;
+	float y;
+	float w;
+	float h;
+} ESVG_Rectangle;
+
 typedef enum _ESVG_Length_Type
 {
 	ESVG_LENGTH_TYPE_UNKNOWN,

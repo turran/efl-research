@@ -26,9 +26,9 @@ typedef struct _ESVG_Engine_Func ESVG_Engine_Func;
 
 struct _ESVG_Engine
 {
+	Eobj_Object object;
+	ESVG_Rectangle geometry;
 	void *data;
-	unsigned int w;
-	unsigned int h;
 	ESVG_Engine_Type type;
 	ESVG_Engine_Func *func;
 };

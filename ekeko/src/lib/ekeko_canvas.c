@@ -119,6 +119,7 @@ EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
 
 	c = calloc(1, sizeof(Ekeko_Canvas));
 	c->tiler = ekeko_tiler_new(type, w, h);
+	c->tiler_type = type;
 	c->cclass = cclass;
 	c->cdata = cdata;
 
@@ -163,10 +164,25 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	int i = 0;
 
 	assert(c);
+	/* if the canvas hasnt changed, do nothing */
+	if (!c->changed)
+		return;
+	
 	/* 1. check changed objects */
 	_objects_changed(c);
 	/* 2. add damages */
 	_damages_add(c);
+	/* 3*. if the size has changed add the whole canvas and skip the damages */
+	if (c->size_changed)
+	{
+		Eina_Rectangle r;
+		
+		ekeko_tiler_free(c->tiler);
+		c->tiler = ekeko_tiler_new(c->tiler_type, c->w, c->h);
+		eina_rectangle_coords_from(&r, 0, 0, c->w, c->h);
+		ekeko_tiler_rect_add(c->tiler, &r);
+		c->size_changed = EINA_FALSE;
+	}
 	/* 3. remove obscures */
 	_obscures_remove(c);
 	/* 4. get all rectangles to redraw */
@@ -205,6 +221,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	/* 7. clear the rectangles */
 	ekeko_tiler_clear(c->tiler);
 	/* 8. delete all objects that should be deleted */
+	c->changed = EINA_FALSE;
 }
 /**
  * To be documented
@@ -219,6 +236,19 @@ EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Eina_Rectangle *r)
 	r->y = 0;
 	r->w = c->w;
 	r->h = c->h;
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_canvas_geometry_set(Ekeko_Canvas *c, unsigned int w, unsigned int h)
+{
+	assert(c);
+	
+	c->w = w;
+	c->h = h;
+	c->changed = EINA_TRUE;
+	c->size_changed = EINA_TRUE;
 }
 /**
  * To be documented

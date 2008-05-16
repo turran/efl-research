@@ -28,6 +28,12 @@ static void _shape_changed(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, vo
 	eina_rectangle_union(&svg->shape_area, &r);
 }
 #endif
+/* Engine */
+static void _geometry_cb(Eobj_Object *o, const char *pname, void *data)
+{
+	ESVG_Rectangle *r;
+	printf("output size set!!!\n");
+}
 /* Container */
 static void _child_add(ESVG_Container *container, ESVG_Element *element)
 {
@@ -42,6 +48,10 @@ static void _child_remove(ESVG_Container *container, ESVG_Element *element)
 /* Classs */
 static void _constructor(ESVG_Svg *s)
 {
+	/*s->x = 0;
+	s->y = 0;
+	s->width = 0;
+	s->height = 0;*/
 	s->engine = NULL;
 	s->canvas = ekeko_canvas_new(&_canvas_class, s, EKEKO_TILER_SPLITTER, 0, 0);
 	ESVG_CONTAINER(s)->child_add = _child_add;
@@ -112,6 +122,7 @@ EAPI ESVG_Element * esvg_svg_new(void)
  */
 EAPI void esvg_svg_x_set(ESVG_Svg *s, ESVG_Length *x)
 {
+	/* only valid for non topmost element */
 	s->x.base = *x;
 }
 /**
@@ -120,6 +131,7 @@ EAPI void esvg_svg_x_set(ESVG_Svg *s, ESVG_Length *x)
  */
 EAPI void esvg_svg_y_set(ESVG_Svg *s, ESVG_Length *y)
 {
+	/* only valid for non topmost element */
 	s->y.base = *y;
 }
 /**
@@ -155,8 +167,10 @@ EAPI ESVG_Element * esvg_svg_element_by_id_get(ESVG_Svg *s, const char *id)
  */
 EAPI void esvg_svg_redraw_force(ESVG_Svg *s)
 {
-	/* process the canvas */
-	/* in case we have an engine set */
+	if ((!s->canvas) || (!s->engine))
+		return;
+	/* process the canvas in case we have an engine set */
+	ekeko_canvas_process(s->canvas);
 }
 /**
  * To be documented
@@ -164,8 +178,13 @@ EAPI void esvg_svg_redraw_force(ESVG_Svg *s)
  */
 EAPI void esvg_svg_engine_set(ESVG_Svg *s, ESVG_Engine *engine)
 {
-	/* only can be set once ? */
+	/* only can be set once for now */
+	if (s->engine)
+		return;
 	s->engine = engine;
+	/* when the engine has changed the output size resize the canvas */
+	eobj_object_notification_callback_add(EOBJ_OBJECT(engine), "geometry", _geometry_cb, NULL);
+	ekeko_canvas_geometry_set(s->canvas, engine->geometry.w, engine->geometry.h);
 }
 /**
  * To be documented

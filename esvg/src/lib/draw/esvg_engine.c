@@ -4,12 +4,26 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-/* Classs */
+enum
+{
+	ESVG_ENGINE_PROPERTY_GEOMETRY,
+};
+/* Class */
+static void _property_get(Eobj_Object *object, int property_id, Eobj_Property_Value *value)
+{
+	
+}
+static void _property_set(Eobj_Object *object, int property_id, Eobj_Property_Value *value)
+{
+	
+}
 static void _constructor(ESVG_Engine *e)
 {
 	printf("engine constructor\n");
-	e->h = 0;
-	e->w = 0;
+	e->geometry.x = 0;
+	e->geometry.y = 0;
+	e->geometry.w = 0;
+	e->geometry.h = 0;
 }
 static void _destructor(ESVG_Engine *e)
 {
@@ -48,6 +62,11 @@ EAPI Eobj_Class * esvg_engine_class_get(void)
 		c = eobj_class_new("ESVG_Engine", EOBJ_OBJECT_CLASS,
 				sizeof(ESVG_Engine), EOBJ_CONSTRUCTOR(_constructor),
 				EOBJ_DESTRUCTOR(_destructor), NULL);
+		eobj_class_property_add(c, "geometry", ESVG_ENGINE_PROPERTY_GEOMETRY,
+				EOBJ_PROPERTY_POINTER, EOBJ_PROPERTY_READABLE_WRITABLE,
+				eobj_property_value_pointer(NULL));
+		c->property_set = _property_set;
+		c->property_get = _property_get;
 	}
 	return c;
 }
@@ -57,8 +76,8 @@ EAPI Eobj_Class * esvg_engine_class_get(void)
  */
 EAPI void esvg_engine_output_size_get(ESVG_Engine *e, unsigned int *width, unsigned int *height)
 {
-	if (width) *width = e->w;
-	if (height) *height = e->h;
+	if (width) *width = e->geometry.w;
+	if (height) *height = e->geometry.h;
 }
 /**
  * To be documented
@@ -66,11 +85,12 @@ EAPI void esvg_engine_output_size_get(ESVG_Engine *e, unsigned int *width, unsig
  */
 EAPI Eina_Bool esvg_engine_output_size_set(ESVG_Engine *e, unsigned int width, unsigned int height)
 {
-	if ((e->w == width) && (e->h == height))
+	if ((e->geometry.w == width) && (e->geometry.h == height))
 		return EINA_TRUE;
-	e->w = width;
-	e->h = height;
-	//eobj_object_notify()
+	e->geometry.w = width;
+	e->geometry.h = height;
+	eobj_object_notify(EOBJ_OBJECT(e), "geometry");
+	
 	return EINA_TRUE;
 }
 /**
