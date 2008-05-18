@@ -35,6 +35,7 @@ struct _Ekeko_Object
 	Ekeko_Object_Cb *callbacks[EKEKO_EVENTS];
 	Eina_Bool delete_me;
 	Eina_Bool changed;
+	Eina_Bool valid;
 	/* TODO
 	 * add a way to pass the event to the objects behind
 	 */

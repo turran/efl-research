@@ -124,11 +124,14 @@ void sdl_loop(void)
 			ekeko_input_feed_mouse_move(input, event.button.x, event.button.y, 0);
 			ekeko_input_feed_mouse_up(input, event.button.state, EKEKO_BUTTON_NONE, 0);
 			break;
-		default:
+		case SDL_VIDEORESIZE:
+			ekeko_canvas_geometry_set(c->canvas, event.resize.w, event.resize.h);
+			object_resize(background1, event.resize.w, event.resize.h);
 			break;
-			//case SDL_VIDEORESIZE:
 		case SDL_QUIT:
 			end = 1;
+			break;
+		default:
 			break;
 		}
 	}	

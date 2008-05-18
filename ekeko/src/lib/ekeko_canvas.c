@@ -1,5 +1,8 @@
 #include "Ekeko.h"
 #include "ekeko_private.h"
+/* Remove every reference to objects because we should use the list of
+ * valid objects only
+ */
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
@@ -110,7 +113,7 @@ static Eina_Bool _at_coordinate(Ekeko_Object *o, void *data)
  *============================================================================*/
 /**
  * To be documented
- * FIXME: To be fixed
+ * FIXME: To be fixed, remove the w and h and use the geometry_set
  */
 EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
 		int type, int w, int h)
@@ -122,12 +125,16 @@ EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
 	c->tiler_type = type;
 	c->cclass = cclass;
 	c->cdata = cdata;
+	c->size.w = w;
+	c->size.h = h;
 
 	return c;
 }
 /**
- * To be documented
- * FIXME: To be fixed
+ * @brief Marks a rectangle on the canvas as damaged, this area will be
+ * processed again. When the canvas process that area it will no longer be
+ * a damaged area
+ * @param r Rectangle that defines the area damaged 
  */
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
@@ -138,8 +145,10 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 	c->damages = eina_inlist_append(c->damages, er);
 }
 /**
- * To be documented
- * FIXME: To be fixed
+ * @brief Marks a rectangle area on the canvas that will never be processed.
+ * The area is kept on the canvas until it is cleared with
+ * ekeko_canvas_obscure_del()
+ * @param r Rectangle that defines the obscure area 
  */
 EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
@@ -154,8 +163,9 @@ EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r)
 	
 }
 /**
- * To be documented
- * FIXME: To be fixed
+ * @brief Process the canvas. Every object that needs to be processed again
+ * will get it's class called. Every damaged area is cleared after this call
+ * @param c Canvas to process
  */
 EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 {
@@ -178,10 +188,11 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 		Eina_Rectangle r;
 		
 		ekeko_tiler_free(c->tiler);
-		c->tiler = ekeko_tiler_new(c->tiler_type, c->w, c->h);
-		eina_rectangle_coords_from(&r, 0, 0, c->w, c->h);
+		c->tiler = ekeko_tiler_new(c->tiler_type, c->size.w, c->size.h);
+		eina_rectangle_coords_from(&r, 0, 0, c->size.w, c->size.h);
 		ekeko_tiler_rect_add(c->tiler, &r);
 		c->size_changed = EINA_FALSE;
+		/* TODO regenerate the list of valid and invalid objects */
 	}
 	/* 3. remove obscures */
 	_obscures_remove(c);
@@ -224,35 +235,34 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	c->changed = EINA_FALSE;
 }
 /**
+ * @brief Gets the width and height of the canvas
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, unsigned int *w, unsigned int *h)
 {
 	assert(c);
-	assert(r);
 	
-	r->x = 0;
-	r->y = 0;
-	r->w = c->w;
-	r->h = c->h;
+	if (w) *w = c->size.w;
+	if (h) *h = c->size.h;
 }
 /**
- * To be documented
- * FIXME: To be fixed
+ * @brief Gets the width and height of the canvas
+ * @param w Width of the canvas
+ * @param h Height of the canvas
  */
 EAPI void ekeko_canvas_geometry_set(Ekeko_Canvas *c, unsigned int w, unsigned int h)
 {
 	assert(c);
 	
-	c->w = w;
-	c->h = h;
+	c->size.w = w;
+	c->size.h = h;
 	c->changed = EINA_TRUE;
 	c->size_changed = EINA_TRUE;
 }
 /**
- * To be documented
- * FIXME: To be fixed
+ * @brief Retrieves the data associated with the canvas class
+ * @param c The canvas to get the class data from
  */
 EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
 {

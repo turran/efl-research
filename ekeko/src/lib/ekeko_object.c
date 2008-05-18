@@ -3,12 +3,20 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+static inline Eina_Bool _object_is_valid(Ekeko_Object *o)
+{
+	return o->valid;
+}
 static void _object_change(Ekeko_Object *o)
 {
 	if (o->changed == EINA_TRUE)
 		return;
 	o->changed = EINA_TRUE;
-	ekeko_canvas_change(o->canvas);
+	if (o->valid)
+	{
+		printf("canvas changed!!\n");
+		ekeko_canvas_change(o->canvas);
+	}
 }
 
 /*============================================================================*
@@ -66,6 +74,8 @@ Eina_Bool ekeko_object_intersection_get(Ekeko_Object *o, Ekeko_Rectangle *r, Ein
  */
 void ekeko_object_pre_process(Ekeko_Object *o)
 {
+	if (!o->valid)
+		printf("error pre processing an invalid object\n");
 	/* check visibility */
 	if (o->curr.visible ^ o->prev.visible)
 	{
@@ -124,7 +134,12 @@ void ekeko_object_post_process(Ekeko_Object *o)
  */
 void ekeko_object_validate(Ekeko_Object *o)
 {
-	
+	printf("validating\n");
+	if (o->valid)
+		return;
+	o->valid = EINA_TRUE;
+	o->canvas->valid = eina_list_append(o->canvas->valid, o);
+	o->canvas->invalid = eina_list_remove(o->canvas->invalid, o);
 }
 /**
  * Invalidate an object, remove the object from the list of valid objects
@@ -132,6 +147,12 @@ void ekeko_object_validate(Ekeko_Object *o)
  */
 void ekeko_object_invalidate(Ekeko_Object *o)
 {
+	printf("invalidating\n");
+	if (!o->valid)
+		return;
+	o->valid = EINA_FALSE;
+	o->canvas->invalid = eina_list_append(o->canvas->invalid, o);
+	o->canvas->valid = eina_list_remove(o->canvas->valid, o);
 	
 }
 /*============================================================================*
@@ -181,7 +202,7 @@ EAPI void ekeko_object_change_notify(Ekeko_Object *o)
 	_object_change(o);
 }
 /**
- * Moves an object to the given coordinate
+ * @brief Moves an object to the given coordinate
  * @param o Object to move
  * @param x X coordinate
  * @param y Y coordinate
@@ -191,15 +212,20 @@ EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 	Eina_Inlist *l;
 	
 	assert(o);
+	
 	if ((o->curr.geometry.x == x) && (o->curr.geometry.y == y))
 	{
 		goto callback;
 	}
-	// FIXME check states
 	o->curr.geometry.x = x;
 	o->curr.geometry.y = y;
+	/* valid */
+	if (eina_rectangles_intersect(&o->curr.geometry, &o->canvas->size))
+		ekeko_object_validate(o);
+	else
+		ekeko_object_invalidate(o);
 	_object_change(o);
-	
+	/* FIXME this should happen only on the valid objects */
 	for (l = (Eina_Inlist *)o->canvas->inputs; l; l = l->next)
 	{
 		Ekeko_Input *i = (Ekeko_Input *)l;
@@ -219,30 +245,9 @@ callback:
 	ekeko_object_event_move_call(o);
 }
 /**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_object_show(Ekeko_Object *o)
-{
-	assert(o);
-	o->curr.visible = EINA_TRUE;
-	_object_change(o);
-//callback:
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_object_hide(Ekeko_Object *o)
-{
-	assert(o);
-	o->curr.visible = EINA_FALSE;
-	_object_change(o);
-//callback:
-}
-/**
- * To be documented
- * FIXME: To be fixed
+ * @brief Resize an object
+ * @param w New width of the object
+ * @param h New height of the object
  */
 EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 {
@@ -253,9 +258,35 @@ EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 	}
 	o->curr.geometry.w = w;
 	o->curr.geometry.h = h;
+	if (eina_rectangles_intersect(&o->curr.geometry, &o->canvas->size))
+		ekeko_object_validate(o);
+	else
+		ekeko_object_invalidate(o);
 	_object_change(o);
 callback:
 	ekeko_object_event_resize_call(o);
+}
+/**
+ * @brief Shows the object on the canvas
+ * @param o Object to show
+ */
+EAPI void ekeko_object_show(Ekeko_Object *o)
+{
+	assert(o);
+	o->curr.visible = EINA_TRUE;
+	_object_change(o);
+//callback:
+}
+/**
+ * @brief Hides the object from the canvas
+ * @param o Object to hide
+ */
+EAPI void ekeko_object_hide(Ekeko_Object *o)
+{
+	assert(o);
+	o->curr.visible = EINA_FALSE;
+	_object_change(o);
+//callback:
 }
 /**
  * To be documented
@@ -388,3 +419,4 @@ EAPI Eina_Bool ekeko_object_geometry_is_inside(Ekeko_Object *o, Eina_Rectangle *
 {
 	return eina_rectangles_intersect(&o->curr.geometry, r);
 }
+

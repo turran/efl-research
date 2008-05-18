@@ -15,8 +15,8 @@
  *                                   API                                      * 
  *============================================================================*/
 /**
- * To be documented
- * FIXME: To be fixed
+ * @brief Creates a new input source
+ * @param c The canvas the new input source will belong
  */
 Ekeko_Input * ekeko_input_new(Ekeko_Canvas *c)
 {

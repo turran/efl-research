@@ -3,8 +3,6 @@
 
 struct _Ekeko_Canvas
 {
-	int w;
-	int h;
 	/* possible callbacks */
 	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
 	// what about post processing of the canvas??
@@ -16,6 +14,7 @@ struct _Ekeko_Canvas
 	// obscures
 	Ekeko_Canvas_Class *cclass;
 	void *cdata;
+	Eina_Rectangle size;
 	Eina_List *valid;  /* objects that need to be draw */
 	Eina_List *invalid;  /* objects that dont need to be draw */
 	Eina_Bool changed; /* main flag that checks if the canvas has changed in any way */
