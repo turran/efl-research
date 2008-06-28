@@ -148,23 +148,25 @@ namespace Enlightenment.Evas
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_free(IntPtr cursor);
 		
-		public void Free();
+		public void Free()
 		{
 			evas_textblock_cursor_free(Raw);
 		}
-		/* IMPLEMENT THE FOLLOWING
-		 *
-		 * void
-		 * evas_textblock_cursor_free(Evas_Textblock_Cursor *cur);
-		 *
-		 */
 
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_text_append(IntPtr cursor, string text);
 		
-		publuc void TextAppend(string text)
+		public void TextAppend(string text)
 		{
 			evas_textblock_cursor_text_append(Raw, text);
+		}
+		
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_text_prepend(IntPtr cursor, string text);
+		
+		public void TextPrepend(string text)
+		{
+			evas_textblock_cursor_text_prepend(Raw, text);
 		}
 
 		 /*
