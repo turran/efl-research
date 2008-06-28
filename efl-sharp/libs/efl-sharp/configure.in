@@ -54,7 +54,6 @@ PKG_CHECK_MODULES(EFLSHARP, [
 	eet
 	embryo
 	etk
-	ewl
 ])
 
 if test "x${exec_prefix}" = "xNONE"; then

@@ -140,9 +140,9 @@ namespace Enlightenment.Evas
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_copy(IntPtr cursor1, IntPtr cursor2);
 
-		public void Copy(TextBlockCursor cursor1, TextBlockCursor cursor2)
+		public void Copy(TextBlockCursor cursor)
 		{
-			evas_textblock_cursor_copy(Raw, cursor1.Raw, Raw, cursor2.Raw);
+			evas_textblock_cursor_copy(Raw, cursor.Raw);
 		}
 
 		[DllImport(Library)]
@@ -204,13 +204,13 @@ namespace Enlightenment.Evas
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_range_delete(IntPtr cursor1, IntPtr cursor2);
 
-		public void RangeDelete(TextBlockCursor cursor1, TextBlockCursor cursor2)
+		public void RangeDelete(TextBlockCursor cursor)
 		{
-			evas_textblock_cursor_range_delete(Raw, cursor1.Raw, Raw, cursor2.Raw);
+			evas_textblock_cursor_range_delete(Raw, cursor.Raw);
 		}
 		
 		[DllImport(Library)]
-		private external string evas_textblock_cursor_node_text_get(IntPtr cursor);
+		private extern static string evas_textblock_cursor_node_text_get(IntPtr cursor);
 		
 		public string NodeTextGet()
 		{
