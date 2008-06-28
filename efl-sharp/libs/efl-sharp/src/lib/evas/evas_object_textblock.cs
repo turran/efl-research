@@ -210,14 +210,14 @@ namespace Enlightenment.Evas
 		}
 		
 		[DllImport(Library)]
-		private external const char evas_textblock_cursor_node_text_get(IntPtr cursor, string);
+		private external string evas_textblock_cursor_node_text_get(IntPtr cursor);
 		
-		public string NodeTextGet(TextBlockCursor cursor)
+		public string NodeTextGet()
 		{
-			return evas_textblock_cursor_node_text_get(Raw cursor.Raw, string);
+			return evas_textblock_cursor_node_text_get(Raw);
 		}
-		 /*
 
+		/*
 		 *
 		 * const char
 		 * *evas_textblock_cursor_node_text_get(const Evas_Textblock_Cursor

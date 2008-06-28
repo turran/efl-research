@@ -2,8 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 
 SUBDIRS = test \
-fonts \
-eblocks
+fonts 
 
 
 # FILES = flower.edj images/e.png fonts/Vera.ttf

@@ -6,7 +6,7 @@ namespace Enlightenment.Ecore
   using System.Runtime.InteropServices;
   using Enlightenment.Ecore.X;
    
-  public class Canvas
+  public class Window
   {
 
     public Hashtable events = new Hashtable();    
@@ -27,7 +27,7 @@ namespace Enlightenment.Ecore
     }
 	
     public delegate void PrivEventHandler(IntPtr ee);
-    public delegate void EventHandler(Enlightenment.Ecore.Canvas ee);
+    public delegate void EventHandler(Enlightenment.Ecore.Window ee);
     public delegate void ecore_evas_callback_add(IntPtr ee, PrivEventHandler cb);
 	
     public class EventController
@@ -35,31 +35,31 @@ namespace Enlightenment.Ecore
       const string Library = "ecore_evas";
 	   
       EcoreEvasCallback evnt_num;
-      Enlightenment.Ecore.Canvas canvas;
+      Enlightenment.Ecore.Window window;
       EventHandler user_callback;
       PrivEventHandler private_callback;
       ecore_evas_callback_add event_clib_callback;     
       public event EventHandler InternalHandler;
 	   
-      public EventController(EcoreEvasCallback Event, Enlightenment.Ecore.Canvas c)
+      public EventController(EcoreEvasCallback Event, Enlightenment.Ecore.Window c)
       {
-	canvas = c;
+	window = c;
 	evnt_num = Event;
 	private_callback = new PrivEventHandler(EventCallback);
 	switch(evnt_num) 
 	{
-	 case EcoreEvasCallback.Resize: ecore_evas_callback_resize_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.Move: ecore_evas_callback_move_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.Show: ecore_evas_callback_show_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.Hide: ecore_evas_callback_hide_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.DeleteRequest: ecore_evas_callback_delete_request_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.Destroy: ecore_evas_callback_destroy_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.FocusIn: ecore_evas_callback_focus_in_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.FocusOut: ecore_evas_callback_focus_out_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.MouseIn: ecore_evas_callback_mouse_in_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.MouseOut: ecore_evas_callback_mouse_out_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.PreRender: ecore_evas_callback_pre_render_set(canvas.Raw, private_callback); break;
-	 case EcoreEvasCallback.PostRender: ecore_evas_callback_post_render_set(canvas.Raw, private_callback); break;
+	 case EcoreEvasCallback.Resize: ecore_evas_callback_resize_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.Move: ecore_evas_callback_move_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.Show: ecore_evas_callback_show_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.Hide: ecore_evas_callback_hide_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.DeleteRequest: ecore_evas_callback_delete_request_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.Destroy: ecore_evas_callback_destroy_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.FocusIn: ecore_evas_callback_focus_in_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.FocusOut: ecore_evas_callback_focus_out_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.MouseIn: ecore_evas_callback_mouse_in_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.MouseOut: ecore_evas_callback_mouse_out_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.PreRender: ecore_evas_callback_pre_render_set(window.Raw, private_callback); break;
+	 case EcoreEvasCallback.PostRender: ecore_evas_callback_post_render_set(window.Raw, private_callback); break;
 	}
       }
 	   
@@ -76,7 +76,7 @@ namespace Enlightenment.Ecore
 	     
       public void EventCallback(IntPtr ee)
       {
-	InternalHandler(canvas);
+	InternalHandler(window);
       }	     	     
     }	
 	
@@ -425,7 +425,7 @@ namespace Enlightenment.Ecore
 		/* we cant instantiate this, we use one of the get calls
 		 * to get an ecore_evas specific to an engine
 		 */
-    protected Canvas()
+    protected Window()
     { }
 	
     /* ************************* */
@@ -449,9 +449,9 @@ namespace Enlightenment.Ecore
 	
     /* ************************* */
 	
-    public static Canvas SoftwareX11New(string disp_name, Canvas parent, int x, int y, int w, int h)
+    public static Window SoftwareX11New(string disp_name, Window parent, int x, int y, int w, int h)
     {
-			Canvas canvas = new Canvas();
+			Window window = new Window();
 			IntPtr parentIntPtr;
 
 			if (parent != null)
@@ -463,26 +463,26 @@ namespace Enlightenment.Ecore
 				parentIntPtr = IntPtr.Zero;
 			}
 
-      canvas.objRaw = new HandleRef(canvas, ecore_evas_software_x11_new(disp_name, parentIntPtr, x, y, w, h));
-			return canvas;
+      window.objRaw = new HandleRef(window, ecore_evas_software_x11_new(disp_name, parentIntPtr, x, y, w, h));
+			return window;
     }
 	
 	
-    /* FIXME: Make this look what type of canvas we have and return the window accordingly */
-    public Ecore.X.Window Window
+    /* FIXME: Make this look what type of window we have and return the window accordingly */
+    public Ecore.X.XWindow XWindow
     {
-      get { return new Window(ecore_evas_software_x11_window_get(Raw)); }
+      get { return new XWindow(ecore_evas_software_x11_window_get(Raw)); }
     }
 		
-    public Ecore.X.Window SubWindow
+    public Ecore.X.XWindow SubWindow
     {
-      get { return new Window(ecore_evas_software_x11_subwindow_get(Raw)); }
+      get { return new XWindow(ecore_evas_software_x11_subwindow_get(Raw)); }
     }
     
 	
-    public Window SoftwareX11WindowGet()
+    public XWindow SoftwareX11WindowGet()
     {
-      return new Window(ecore_evas_software_x11_window_get(Raw));
+      return new XWindow(ecore_evas_software_x11_window_get(Raw));
     }
 	
     public IntPtr SoftwareX11SubWindowGet()
@@ -816,7 +816,7 @@ namespace Enlightenment.Ecore
       get { return objRaw.Handle; }
     }
 	
-    ~Canvas()
+    ~Window()
     {
       ecore_evas_free(Raw);
     }   	

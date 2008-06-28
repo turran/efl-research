@@ -40,26 +40,26 @@ namespace Enlightenment.Ecore.X {
 	   }
    }
    
-   public class WindowSize
+   public class XWindowSize
    {
 	   public int X;
 	   public int Y;
 
-	   public WindowSize(int x, int y)
+	   public XWindowSize(int x, int y)
 	   {
 		   X = x;
 		   Y = y;
 	   }
    }
 
-   public class WindowGeometry
+   public class XWindowGeometry
    {
 	   public int X;
 	   public int Y;
 	   public int W;
 	   public int H;
 
-	   public WindowGeometry(int x, int y, int w, int h)
+	   public XWindowGeometry(int x, int y, int w, int h)
 	   {
 		   X = x;
 		   Y = y;
@@ -68,7 +68,7 @@ namespace Enlightenment.Ecore.X {
 	   }
    }
 
-   public class WindowProperty
+   public class XWindowProperty
    {
 	   public uint type;
 	   public uint format;
@@ -76,7 +76,7 @@ namespace Enlightenment.Ecore.X {
 	   public string data;
 	   public int number;
 
-	   public WindowProperty (uint t, uint f, int s, string d, int n)
+	   public XWindowProperty (uint t, uint f, int s, string d, int n)
 	   {
 		   type = t;
 		   format = f;
@@ -103,7 +103,7 @@ namespace Enlightenment.Ecore.X {
 	   }
    }
 
-   public class Window
+   public class XWindow
    {
 	   const string Library = "ecore_x";
 
@@ -146,10 +146,10 @@ namespace Enlightenment.Ecore.X {
 	   [DllImport(Library)]
 	   private extern static IntPtr ecore_x_window_input_new(IntPtr parent, int x, int y, int w, int h);
 
-	   public static Window WindowInput (Window parent, int x, int y, int w, int h)
+	   public static XWindow XWindowInput (XWindow parent, int x, int y, int w, int h)
 	   {
 		   IntPtr win = ecore_x_window_input_new (parent.Raw, x, y, w, h);
-		   return new Window (win);
+		   return new XWindow (win);
 	   }
 
 	   [DllImport(Library)]
@@ -160,21 +160,21 @@ namespace Enlightenment.Ecore.X {
 	   /* FIXME - we need to see what happens if the user passed 'null'
 	    * instead of a valid window
 	    */
-	   public Window (Window parent, int x, int y, int w, int h)
+	   public XWindow (XWindow parent, int x, int y, int w, int h)
 	   {
 		   objRaw = new HandleRef(this, ecore_x_window_new(parent.Raw, x, y, w, h));
 		   Dnd = new XDnd(this);
 		   Selection = new XSelection(this);
 	   }
 
-	   public Window (int x, int y, int w, int h)
+	   public XWindow (int x, int y, int w, int h)
 	   {
 		   objRaw = new HandleRef(this, ecore_x_window_new(IntPtr.Zero, x, y,  w, h));
 		   Dnd = new XDnd(this);
 		   Selection = new XSelection(this);
 	   }
 
-	   public Window (Window parent, int x, int y, int w, int h, bool option)
+	   public XWindow (XWindow parent, int x, int y, int w, int h, bool option)
 	   {
 		   EcoreXWindowNew func;
 
@@ -188,14 +188,14 @@ namespace Enlightenment.Ecore.X {
 		   Selection = new XSelection(this);
 	   }
 
-	   public Window (IntPtr win)
+	   public XWindow (IntPtr win)
 	   {
 		   objRaw = new HandleRef(this, win);
 		   Dnd = new XDnd(this);
 		   Selection = new XSelection(this);
 	   }
 
-	   public Window ()
+	   public XWindow ()
 	   {
 		   Dnd = new XDnd();
 		   Selection = new XSelection();
@@ -209,7 +209,7 @@ namespace Enlightenment.Ecore.X {
 							       int stack_mode);
 
 	   public void Configure(ConfigureMask mask, int x, int y, int w, int h,
-				 int border_width, Window sibling, int stack_mode)
+				 int border_width, XWindow sibling, int stack_mode)
 	   {
 		   ecore_x_window_configure(Raw, mask, x, y, w, h, border_width,
 					    sibling.Raw, stack_mode);
@@ -283,9 +283,9 @@ namespace Enlightenment.Ecore.X {
 	   [DllImport(Library)]
 	   private extern static IntPtr ecore_x_window_focus_get();
 
-	   public static Window FocusGet()
+	   public static XWindow FocusGet()
 	   {
-		   return new Window(ecore_x_window_focus_get());
+		   return new XWindow(ecore_x_window_focus_get());
 	   }
 
 	   [DllImport(Library)]
@@ -317,7 +317,7 @@ namespace Enlightenment.Ecore.X {
 							      IntPtr new_parent,
 							      int x, int y);
 
-	   public void Reparent(Window new_parent, int x, int y)
+	   public void Reparent(XWindow new_parent, int x, int y)
 	   {
 		   ecore_x_window_reparent(Raw, new_parent.Raw, x, y);
 	   }
@@ -327,12 +327,12 @@ namespace Enlightenment.Ecore.X {
 							      out int x,
 							      out int y);
 
-	   public WindowSize Size
+	   public XWindowSize Size
 	   {
 		   get {
 			   int x, y;
 			   ecore_x_window_size_get(Raw, out x, out y);
-			   return new WindowSize(x, y);
+			   return new XWindowSize(x, y);
 		   }
 	   }
 
@@ -343,12 +343,12 @@ namespace Enlightenment.Ecore.X {
 								  out int w,
 								  out int h);
 
-	   public WindowGeometry Geometry
+	   public XWindowGeometry Geometry
 	   {
 		   get {
 			   int x, y, w, h;
 			   ecore_x_window_geometry_get(Raw, out x, out y, out w, out h);
-			   return new WindowGeometry(x, y, w, h);
+			   return new XWindowGeometry(x, y, w, h);
 		   }
 	   }
 
@@ -401,17 +401,17 @@ namespace Enlightenment.Ecore.X {
 	   [DllImport(Library)]
 	   private extern static IntPtr ecore_x_window_at_xy_get(int x, int y);
 
-	   public static Window AtXY(int x, int y)
+	   public static XWindow AtXY(int x, int y)
 	   {
-		   return new Window(ecore_x_window_at_xy_get(x, y));
+		   return new XWindow(ecore_x_window_at_xy_get(x, y));
 	   }
 
 	   [DllImport(Library)]
 	   private extern static IntPtr ecore_x_window_parent_get(IntPtr win);
 
-	   public Window Parent
+	   public XWindow Parent
 	   {
-		   get { return new Window(ecore_x_window_parent_get(Raw)); }
+		   get { return new XWindow(ecore_x_window_parent_get(Raw)); }
 	   }
 
 	   [DllImport(Library)]
@@ -456,7 +456,7 @@ namespace Enlightenment.Ecore.X {
 								       out int size,
 								       out string data,
 								       out int number);
-	   public WindowProperty Property
+	   public XWindowProperty Property
 	   {
 		   get {
 			   uint type;
@@ -467,7 +467,7 @@ namespace Enlightenment.Ecore.X {
 			   ecore_x_window_prop_property_get(Raw, out type, out format,
 							    out size, out data, out number
 							    );
-			   return new WindowProperty(type, format, size, data, number);
+			   return new XWindowProperty(type, format, size, data, number);
 		   }
 		   set {
 			   ecore_x_window_prop_property_set(Raw, value.type, value.format,
@@ -522,7 +522,7 @@ namespace Enlightenment.Ecore.X {
 		   ecore_x_window_del(Raw);
 	   }
 
-	   ~Window()
+	   ~XWindow()
 	   {
 		   //ecore_x_window_del(Raw);
 	   }
@@ -533,9 +533,9 @@ namespace Enlightenment.Ecore.X {
    {
 	   const string Library = "ecore_x";
 
-	   Window win;
+	   XWindow win;
 
-	   public XSelection(Window w)
+	   public XSelection(XWindow w)
 	   {
 		   win = w;
 	   }
@@ -577,9 +577,9 @@ namespace Enlightenment.Ecore.X {
 	   const string Library = "ecore_x";
 	   const string LibraryGlue = "libeflsharpglue";
 
-	   Window win;
+	   XWindow win;
 
-	   public XDnd(Window w)
+	   public XDnd(XWindow w)
 	   {
 		   win = w;
 	   }

@@ -151,8 +151,8 @@ namespace Enlightenment.Ecore
 
    public class EcoreEventDndEnter
    {
-	   public Window win;
-	   public Window src;
+	   public XWindow win;
+	   public XWindow src;
 	   public string[] types;
 	   public int num_types;
 
@@ -163,8 +163,8 @@ namespace Enlightenment.Ecore
 	   {
 		   _EcoreEventDndEnter e = new _EcoreEventDndEnter();
 		   e = (_EcoreEventDndEnter)Marshal.PtrToStructure(EventInfo, typeof(_EcoreEventDndEnter));
-		   win = new Window(e.win);
-		   src = new Window(e.src);
+		   win = new XWindow(e.win);
+		   src = new XWindow(e.src);
 		   types = Common.PtrToStringArray(e.num_types, e.types);
 		   num_types = e.num_types;
 	   }

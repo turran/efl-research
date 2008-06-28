@@ -58,7 +58,7 @@ build_sources = $(addprefix $(srcdir)/, $(FILES))
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(MCS) -warn:0 -out:$@ -target:library $(build_sources)
+	$(COMPILER) -warn:0 -out:$@ -target:library $(build_sources)
 
 assemblydir = $(libdir)
 assembly_DATA = $(ASSEMBLY)
