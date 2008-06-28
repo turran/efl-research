@@ -140,11 +140,18 @@ namespace Enlightenment.Evas
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_copy(IntPtr cursor1, IntPtr cursor2);
 
-		public void Compeare(TextBlockCursor cursor)
+		public void Copy(TextBlockCursor cursor1, TextBlockCursor cursor2)
 		{
-			evas_textblock_cursor_copy(Raw, cursor.Raw);
+			evas_textblock_cursor_copy(Raw, cursor1.Raw, Raw, cursor2.Raw);
 		}
 
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_free(IntPtr cursor);
+		
+		public void Free(TextBlockCursor cursor);
+		{
+			evas_textblock_cursor_free(Raw, cursor.Raw);
+		}
 		/* IMPLEMENT THE FOLLOWING
 		 *
 		 * void
