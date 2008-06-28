@@ -226,13 +226,13 @@ namespace Enlightenment.Evas
 		}
 		
 		[DllImport(Library)]
-		private external static void evas_textblock_cursor_char_geometry_get(IntPtr cursor, out int x, out int y, out int w, out int h);
+		private extern static void evas_textblock_cursor_char_geometry_get(IntPtr cursor, out int x, out int y, out int w, out int h);
 		
 		public virtual Evas.Geometry Geometry
 		{
 			get {
 				int x, y, w, h;
-				evas_textblock_cursor_char_geometry_get(Raw cursor.Raw, out x, out y, out w, out h);
+				evas_textblock_cursor_char_geometry_get(Raw, out x, out y, out w, out h);
 				return new Evas.Geometry(x, y, w, h);
 			}
 		}
