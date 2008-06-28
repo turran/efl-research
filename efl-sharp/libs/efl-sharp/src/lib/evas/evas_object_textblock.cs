@@ -168,33 +168,56 @@ namespace Enlightenment.Evas
 		{
 			evas_textblock_cursor_text_prepend(Raw, text);
 		}
+		
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_format_append(IntPtr cursor, string text);
+		
+		public void FormatAppend(string text)
+		{
+			evas_textblock_cursor_format_append(Raw, text);
+		}
 
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_format_prepend(IntPtr cursor, string text);
+		
+		public void FormatPrepend(string text)
+		{
+			evas_textblock_cursor_format_prepend(Raw, text);
+		}
+		
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_node_delete(IntPtr cursor);
+
+		public void NodeDelete()
+		{
+			evas_textblock_cursor_node_delete(Raw);
+		}
+		
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_char_delete(IntPtr cursor);
+
+		public void CharDelete()
+		{
+			evas_textblock_cursor_char_delete(Raw);
+		}
+		
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_range_delete(IntPtr cursor1, IntPtr cursor2);
+
+		public void RangeDelete(TextBlockCursor cursor1, TextBlockCursor cursor2)
+		{
+			evas_textblock_cursor_range_delete(Raw, cursor1.Raw, Raw, cursor2.Raw);
+		}
+		
+		[DllImport(Library)]
+		private external const char evas_textblock_cursor_node_text_get(IntPtr cursor, string);
+		
+		public string NodeTextGet(Raw cursor.Raw)
+		{
+			return evas_textblock_cursor_node_text_get(Raw cursor.Raw, string);
+		}
 		 /*
-		 * void
-		 * evas_textblock_cursor_text_prepend(Evas_Textblock_Cursor *cur, const
-		 * char *text);
-		 *
-		 *
-		 * void
-		 * evas_textblock_cursor_format_append(Evas_Textblock_Cursor *cur, const
-		 * char *format);
-		 *
-		 * void
-		 * evas_textblock_cursor_format_prepend(Evas_Textblock_Cursor *cur,
-		 * const char *format)
-		 *
-		 * void
-		 * evas_textblock_cursor_node_delete(Evas_Textblock_Cursor *cur);
-		 *
-		 *
-		 * void
-		 * evas_textblock_cursor_char_delete(Evas_Textblock_Cursor *cur);
-		 *
-		 *
-		 * void
-		 * evas_textblock_cursor_range_delete(Evas_Textblock_Cursor *cur1,
-		 * Evas_Textblock_Cursor *cur2);
-		 *
+
 		 *
 		 * const char
 		 * *evas_textblock_cursor_node_text_get(const Evas_Textblock_Cursor
