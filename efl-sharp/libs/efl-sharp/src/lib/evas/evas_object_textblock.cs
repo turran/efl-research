@@ -200,15 +200,7 @@ namespace Enlightenment.Evas
 		{
 			evas_textblock_cursor_char_delete(Raw);
 		}
-		
-		[DllImport(Library)]
-		private extern static void evas_textblock_cursor_range_delete(IntPtr cursor1, IntPtr cursor2);
-
-		public void RangeDelete(TextBlockCursor cursor)
-		{
-			evas_textblock_cursor_range_delete(Raw, cursor.Raw);
-		}
-		
+				
 		[DllImport(Library)]
 		private extern static string evas_textblock_cursor_node_text_get(IntPtr cursor);
 		
@@ -231,12 +223,7 @@ namespace Enlightenment.Evas
 		 *
 		 * const char
 		 * *evas_textblock_cursor_node_format_get(const Evas_Textblock_Cursor *cur);
-		 *
-		 * char
-		 * *evas_textblock_cursor_range_text_get(const Evas_Textblock_Cursor
-		 * *cur1, const Evas_Textblock_Cursor *cur2, Evas_Textblock_Text_Type
-		 * format);
-		 *
+		 *		 
 		 *
 		 * int
 		 * evas_textblock_cursor_char_geometry_get(const Evas_Textblock_Cursor
@@ -258,12 +245,7 @@ namespace Enlightenment.Evas
 		 * int
 		 * evas_textblock_cursor_line_coord_set(Evas_Textblock_Cursor *cur,
 		 * Evas_Coord y);
-		 *
-		 *
-		 * Evas_List
-		 * *evas_textblock_cursor_range_geometry_get(const Evas_Textblock_Cursor
-		 * *cur1, const Evas_Textblock_Cursor *cur2);
-		 *
+		 *		 
 		 */
 	}
 
@@ -356,7 +338,26 @@ namespace Enlightenment.Evas
 	     objRaw = new HandleRef(this, evas_object_textblock_add(c.Raw));
 	  }
 	
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_range_delete(IntPtr cursor1, IntPtr cursor2);
+
+		public void RangeDelete(TextBlockCursor cursor1, TextBlockCursor cursor2)
+		{
+			evas_textblock_cursor_range_delete(cursor1.Raw, cursor2.Raw);
+		}
+
 		/* IMPLEMENT THE FOLLOWING
+		 *
+ 		 * char
+		 * *evas_textblock_cursor_range_text_get(const Evas_Textblock_Cursor
+		 * *cur1, const Evas_Textblock_Cursor *cur2, Evas_Textblock_Text_Type
+		 * format);
+		 *
+		 *
+		 * Evas_List
+		 * *evas_textblock_cursor_range_geometry_get(const Evas_Textblock_Cursor
+		 * *cur1, const Evas_Textblock_Cursor *cur2);
+		 *
 		 *
 		 * void
 		 * evas_object_textblock_style_set(Evas_Object *obj,
