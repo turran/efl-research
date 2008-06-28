@@ -148,9 +148,9 @@ namespace Enlightenment.Evas
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_free(IntPtr cursor);
 		
-		public void Free(TextBlockCursor cursor);
+		public void Free();
 		{
-			evas_textblock_cursor_free(Raw, cursor.Raw);
+			evas_textblock_cursor_free(Raw);
 		}
 		/* IMPLEMENT THE FOLLOWING
 		 *
