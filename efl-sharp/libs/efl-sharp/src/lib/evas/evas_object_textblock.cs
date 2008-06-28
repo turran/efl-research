@@ -208,23 +208,23 @@ namespace Enlightenment.Evas
 		{
 			return evas_textblock_cursor_node_text_get(Raw);
 		}
+		
+		[DllImport(Library)]
+		private extern static int evas_textblock_cursor_node_text_length_get(IntPtr cursor);
+		
+		public int NodeTextLengthGet()
+		{
+			return evas_textblock_cursor_node_text_length_get(Raw);
+		}
 
+		[DllImport(Library)]
+		private extern static string evas_textblock_cursor_node_format_get(IntPtr cursor);
+		
+		public string NodeFormatGet()
+		{
+			return evas_textblock_cursor_node_format_get(Raw);
+		}
 		/*
-		 *
-		 * const char
-		 * *evas_textblock_cursor_node_text_get(const Evas_Textblock_Cursor
-		 * *cur);
-		 *
-		 *
-		 * int
-		 * evas_textblock_cursor_node_text_length_get(const
-		 * Evas_Textblock_Cursor *cur);
-		 *
-		 *
-		 * const char
-		 * *evas_textblock_cursor_node_format_get(const Evas_Textblock_Cursor *cur);
-		 *		 
-		 *
 		 * int
 		 * evas_textblock_cursor_char_geometry_get(const Evas_Textblock_Cursor
 		 * *cur, Evas_Coord *cx, Evas_Coord *cy, Evas_Coord *cw, Evas_Coord
