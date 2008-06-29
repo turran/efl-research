@@ -237,17 +237,6 @@ namespace Enlightenment.Evas
 			}
 		}
 /*
-		 * int
-		 * evas_textblock_cursor_char_geometry_get(const Evas_Textblock_Cursor
-		 * *cur, Evas_Coord *cx, Evas_Coord *cy, Evas_Coord *cw, Evas_Coord
-		 * *ch);
-		 *
-		 *
-		 * int
-		 * evas_textblock_cursor_line_geometry_get(const Evas_Textblock_Cursor
-		 * *cur, Evas_Coord *cx, Evas_Coord *cy, Evas_Coord *cw, Evas_Coord
-		 * *ch);
-		 *
 		 *
 		 * Evas_Bool
 		 * evas_textblock_cursor_char_coord_set(Evas_Textblock_Cursor *cur,
