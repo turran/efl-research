@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -13,6 +14,10 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <dirent.h>
+
+
+#define DEBUG
+#include <assert.h>
 
 #ifndef _WIN32
 # include <sys/mman.h>
@@ -128,5 +133,19 @@ void          _eina_fps_debug_runtime_add(double t);
 
 
 extern int    _eina_fps_debug;
+
+
+/* old code finish */
+/* mp */
+typedef struct _Eina_Mp_Backend
+{
+	void *(*init)(unsigned int size, const char *options, va_list args);
+	void (*push)(void *data, void *element);
+	void *(*pop)(void *data, unsigned int size);
+	void (*garbage_collect)(void);
+	void (*statistics)(void);
+	void (*shutdown)(void *data);
+} Eina_Mp_Backend;
+
 
 #endif

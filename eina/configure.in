@@ -45,6 +45,8 @@ eina.pc
 src/Makefile
 src/include/Makefile
 src/lib/Makefile
+src/modules/Makefile
+src/modules/mm_policies/Makefile
 ])
 
 

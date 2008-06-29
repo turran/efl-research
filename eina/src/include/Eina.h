@@ -18,10 +18,12 @@ extern "C" {
 #include "eina_f16p16.h"
 #include "eina_rectangle.h"
 #include "eina_inlist.h"
+#include "eina_file.h"
 #include "eina_list.h"
 #include "eina_hash.h"
 #include "eina_lalloc.h"
 #include "eina_module.h"
+#include "eina_mp.h"
 
 #ifdef __cplusplus
 }
