@@ -1,9 +1,10 @@
 #include "Eina.h"
 #include "eina_private.h"
-
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
- * Lis all files on the directory calling the function for every file
- * found
+ * Lis all files on the directory calling the function for every file found
  * @param recursive Iterate recursively in the directory
  */
 EAPI void eina_file_dir_list(const char *dir, int recursive, Eina_File_Dir_List_Cb cb, void *data)
@@ -48,7 +49,7 @@ EAPI void eina_file_path_nth_get(const char *path, int n, char **left, char **ri
 	int inc;
 	int num = 0;
 	
-	if (!left || !right)
+	if (!left && !right)
 		return;
 	
 	if (n > 0)

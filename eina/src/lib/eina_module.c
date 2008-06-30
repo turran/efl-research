@@ -4,10 +4,6 @@
 #include <dirent.h>
 #include <string.h>
 #include <dlfcn.h>
-
-/**
- * TODO also store the referenced file name
- */
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
@@ -191,7 +187,10 @@ EAPI Eina_Module * eina_module_new(const char *file)
 EAPI void eina_module_free(Eina_Module *m)
 {
 	assert(m);
-	
+
+#ifdef DEBUG
+	/* TODO check the magic */
+#endif
 	if (m->handle)
 		eina_module_unload(m);
 	free(m->file);
@@ -204,7 +203,9 @@ EAPI void eina_module_free(Eina_Module *m)
 EAPI void eina_module_unload(Eina_Module *m)
 {
 	assert(m);
-	
+#ifdef DEBUG
+	/* TODO check the magic */
+#endif
 	if (!m->handle)
 		return;
 	dlclose(m->handle);
@@ -216,7 +217,9 @@ EAPI void eina_module_unload(Eina_Module *m)
 EAPI void * eina_module_symbol_get(Eina_Module *m, const char *symbol)
 {
 	assert(m);
-	
+#ifdef DEBUG
+	/* TODO check the magic */
+#endif
 	return dlsym(m->handle, symbol);	
 }
 /**
@@ -228,7 +231,9 @@ EAPI char * eina_module_path_get(Eina_Module *m)
 	char *path;
 	
 	assert(m);
-	
+#ifdef DEBUG
+	/* TODO check the magic */
+#endif
 	eina_file_path_nth_get(m->file, -1, &path, NULL);
 	
 	return path;
@@ -242,7 +247,9 @@ EAPI char * eina_module_name_get(Eina_Module *m)
 	char *name;
 	
 	assert(m);
-	
+#ifdef DEBUG
+	/* TODO check the magic */
+#endif
 	eina_file_path_nth_get(m->file, -1, NULL, &name);
 	
 	return name;

@@ -35,7 +35,7 @@ static Eina_Mp * _new_from_buffer(const char *name, void *buffer,
 			eina_module_load(m);
 			mp->module = m;
 			mp->backend = eina_module_symbol_get(m, "mp_backend");
-			mp->backend_data = mp->backend->init(size, options, args);
+			mp->backend_data = mp->backend->init(buffer, size, options, args);
 
 			return mp;
 		}
@@ -50,16 +50,27 @@ static Eina_Mp * _new_from_buffer(const char *name, void *buffer,
  */
 EAPI int eina_mp_init(void)
 {
+	if (!_init_count) 
+	{
+		_modules = eina_module_list_get("/usr/local/lib/eina/mm_policies", 0, NULL, NULL);
+	}
 	/* get all the modules */
-	_modules = eina_module_list_get("/usr/local/lib/eina/mm_policies", 0, NULL, NULL);	
+	return ++_init_count;
 }
 /**
  * 
  */
-EAPI void eina_mp_shutdown(void)
+EAPI int eina_mp_shutdown(void)
 {
-	/* remove the list of modules */
-	eina_module_list_delete(_modules);
+	if (!_init_count)
+		return _init_count;
+	_init_count--;
+	if (!_init_count)
+	{
+		/* remove the list of modules */
+		eina_module_list_delete(_modules);
+	}
+	return _init_count;
 }
 /**
  * 
@@ -114,20 +125,28 @@ EAPI void eina_mp_delete(Eina_Mp *mp)
 /**
  * 
  */
-EAPI void * eina_mp_pop(Eina_Mp *mp, unsigned int size)
+EAPI void * eina_mp_realloc(Eina_Mp *mp, void *element, unsigned int size)
 {
-	assert(mp);
-	assert(mp->backend->pop);
 	
-	return mp->backend->pop(mp->backend_data, size);
 }
 /**
  * 
  */
-EAPI void eina_mp_push(Eina_Mp *mp, void *element)
+EAPI void * eina_mp_alloc(Eina_Mp *mp, unsigned int size)
 {
 	assert(mp);
-	assert(mp->backend->push);
+	assert(mp->backend->alloc);
 	
-	mp->backend->push(mp->backend_data, element);
+	eina_error_pwarn("hola\n");
+	return mp->backend->alloc(mp->backend_data, size);
+}
+/**
+ * 
+ */
+EAPI void eina_mp_free(Eina_Mp *mp, void *element)
+{
+	assert(mp);
+	assert(mp->backend->free);
+	
+	mp->backend->free(mp->backend_data, element);
 }

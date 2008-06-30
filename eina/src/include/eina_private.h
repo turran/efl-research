@@ -139,9 +139,10 @@ extern int    _eina_fps_debug;
 /* mp */
 typedef struct _Eina_Mp_Backend
 {
-	void *(*init)(unsigned int size, const char *options, va_list args);
-	void (*push)(void *data, void *element);
-	void *(*pop)(void *data, unsigned int size);
+	void *(*init)(void *buffer, unsigned int size, const char *options, va_list args);
+	void (*free)(void *data, void *element);
+	void *(*alloc)(void *data, unsigned int size);
+	void *(*realloc)(void *data, void *element, unsigned int size);
 	void (*garbage_collect)(void);
 	void (*statistics)(void);
 	void (*shutdown)(void *data);

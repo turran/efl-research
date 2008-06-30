@@ -23,7 +23,7 @@ static void shutdown(void *data)
 Eina_Mp_Backend mp_backend = {
 	.init = &init,
 	.shutdown = &shutdown,
-	.pop = &pop,
-	.push = &push,
+	.alloc = &pop,
+	.free = &push,
 };
 
