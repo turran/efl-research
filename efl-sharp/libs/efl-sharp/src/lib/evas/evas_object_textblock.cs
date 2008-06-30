@@ -236,6 +236,14 @@ namespace Enlightenment.Evas
 				return new Evas.Geometry(x, y, w, h);
 			}
 		}
+
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_char_coord_set(IntPtr cursor, int x, int y);
+
+		public void CharCoordSet(TextblockCursor cursor, int x, int y)
+		{
+			evas_textblock_cursor_char_coord_set(Raw cursor.Raw, int x, int y);
+		}
 /*
 		 *
 		 * Evas_Bool
