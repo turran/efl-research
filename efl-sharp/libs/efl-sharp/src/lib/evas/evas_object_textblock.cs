@@ -244,13 +244,16 @@ namespace Enlightenment.Evas
 		{
 			evas_textblock_cursor_char_coord_set(Raw, x, y);
 		}
+
+		[DllImport(Library)]
+		private extern static void evas_textblock_cursor_line_coord_set(IntPtr cursor, int y);
+
+		public void LineCoordSet(int y)
+		{
+			evas_textblock_cursor_line_coord_set(Raw, y);
+		}
+		
 /*
-		 *
-		 * Evas_Bool
-		 * evas_textblock_cursor_char_coord_set(Evas_Textblock_Cursor *cur,
-		 * Evas_Coord x, Evas_Coord y);
-		 *
-		 *
 		 * int
 		 * evas_textblock_cursor_line_coord_set(Evas_Textblock_Cursor *cur,
 		 * Evas_Coord y);
