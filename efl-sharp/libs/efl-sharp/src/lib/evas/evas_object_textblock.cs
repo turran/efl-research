@@ -253,12 +253,6 @@ namespace Enlightenment.Evas
 			evas_textblock_cursor_line_coord_set(Raw, y);
 		}
 		
-/*
-		 * int
-		 * evas_textblock_cursor_line_coord_set(Evas_Textblock_Cursor *cur,
-		 * Evas_Coord y);
-		 *		 
-		 */
 	}
 
 	/**
@@ -302,6 +296,7 @@ namespace Enlightenment.Evas
 	/**
 	 * Structure that represents the text block's size.
 	 */
+	
 	public struct TextBlockSize
 	{
 		/**
@@ -326,7 +321,6 @@ namespace Enlightenment.Evas
 			H = h;
 	  }
 	}
-	
 	/**
 	 * TextBlock object.
 	 *
@@ -350,6 +344,12 @@ namespace Enlightenment.Evas
 	     objRaw = new HandleRef(this, evas_object_textblock_add(c.Raw));
 	  }
 	
+		public enum TextBlockTextFormat
+		{
+			Raw = 0,
+			Plain = 1
+		}
+
 		[DllImport(Library)]
 		private extern static void evas_textblock_cursor_range_delete(IntPtr cursor1, IntPtr cursor2);
 
@@ -358,11 +358,18 @@ namespace Enlightenment.Evas
 			evas_textblock_cursor_range_delete(cursor1.Raw, cursor2.Raw);
 		}
 
+		[DllImport(Library)]
+		private extern static string evas_textblock_cursor_range_text_get(IntPtr cursor1, IntPtr cursor2, char TextBlockTextFormat);
+
+		public string RangeTextGet(char TextBlockTextFormat);
+		{
+			return evas_textblock_cursor_range_text_get(Raw);
+		}
 		/* IMPLEMENT THE FOLLOWING
 		 *
  		 * char
 		 * *evas_textblock_cursor_range_text_get(const Evas_Textblock_Cursor
-		 * *cur1, const Evas_Textblock_Cursor *cur2, Evas_Textblock_Text_Type
+		 * *cur1, const Evas_Textblock_Cursor *cur2, 
 		 * format);
 		 *
 		 *
