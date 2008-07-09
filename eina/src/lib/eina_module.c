@@ -123,7 +123,15 @@ EAPI Eina_List * eina_module_list_get(const char *path, unsigned int recursive, 
  */
 EAPI void eina_module_list_load(Eina_List *list)
 {
+	Eina_List *l;
 	
+	for (l = list; l; l = eina_list_next(l))
+	{
+		Eina_Module *m;
+		
+		m = eina_list_data(l);
+		eina_module_load(m);
+	}
 }
 /**
  * To be documented
@@ -131,16 +139,32 @@ EAPI void eina_module_list_load(Eina_List *list)
  */
 EAPI void eina_module_list_unload(Eina_List *list)
 {
+	Eina_List *l;
 	
+	for (l = list; l; l = eina_list_next(l))
+	{
+		Eina_Module *m;
+		
+		m = eina_list_data(l);
+		eina_module_unload(m);
+	}
 }
 /**
  * Helper function that iterates over the list of modules and calls
  * eina_module_delete on each
  * 
  */
-EAPI void eina_module_list_delete(Eina_List *list)
+EAPI void eina_module_list_free(Eina_List *list)
 {
-
+	Eina_List *l;
+	
+	for (l = list; l; l = eina_list_next(l))
+	{
+		Eina_Module *m;
+		
+		m = eina_list_data(l);
+		eina_module_free(m);
+	}
 }
 /**
  * To be documented

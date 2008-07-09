@@ -20,7 +20,7 @@ static void shutdown(void *data)
 	
 }
 
-Eina_Mp_Backend mp_backend = {
+Eina_Mempool_Backend mp_backend = {
 	.init = &init,
 	.shutdown = &shutdown,
 	.alloc = &pop,

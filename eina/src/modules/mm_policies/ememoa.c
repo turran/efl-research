@@ -821,7 +821,7 @@ static void ememoa_shutdown(void *data)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
-Eina_Mp_Backend mp_backend = {
+Eina_Mempool_Backend mp_backend = {
 		.init = &ememoa_init,
 		.shutdown = &ememoa_shutdown,
 		.realloc = &ememoa_realloc,

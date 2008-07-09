@@ -6,16 +6,16 @@
 static Eina_List *_modules;
 static int _init_count = 0;
 
-struct _Eina_Mp
+struct _Eina_Mempool
 {
 #ifdef DEBUG
 	unsigned int magic;
 #endif
 	Eina_Module *module;
-	Eina_Mp_Backend *backend;
+	Eina_Mempool_Backend *backend;
 	void *backend_data;
 };
-static Eina_Mp * _new_from_buffer(const char *name, void *buffer,
+static Eina_Mempool * _new_from_buffer(const char *name, void *buffer,
 		unsigned int size, const char *options, va_list args)
 {
 	Eina_List *l;
@@ -29,9 +29,9 @@ static Eina_Mp * _new_from_buffer(const char *name, void *buffer,
 		/* check if the requested module name exists */
 		if (!strncmp(eina_module_name_get(m), name, strlen(name)))
 		{
-			Eina_Mp *mp;
+			Eina_Mempool *mp;
 
-			mp = malloc(sizeof(Eina_Mp));
+			mp = malloc(sizeof(Eina_Mempool));
 			eina_module_load(m);
 			mp->module = m;
 			mp->backend = eina_module_symbol_get(m, "mp_backend");
@@ -48,7 +48,7 @@ static Eina_Mp * _new_from_buffer(const char *name, void *buffer,
 /**
  * 
  */
-EAPI int eina_mp_init(void)
+EAPI int eina_mempool_init(void)
 {
 	if (!_init_count) 
 	{
@@ -60,7 +60,7 @@ EAPI int eina_mp_init(void)
 /**
  * 
  */
-EAPI int eina_mp_shutdown(void)
+EAPI int eina_mempool_shutdown(void)
 {
 	if (!_init_count)
 		return _init_count;
@@ -68,17 +68,17 @@ EAPI int eina_mp_shutdown(void)
 	if (!_init_count)
 	{
 		/* remove the list of modules */
-		eina_module_list_delete(_modules);
+		eina_module_list_free(_modules);
 	}
 	return _init_count;
 }
 /**
  * 
  */
-EAPI Eina_Mp * eina_mp_new_from_buffer(const char *name, void *buffer,
+EAPI Eina_Mempool * eina_mempool_new_from_buffer(const char *name, void *buffer,
 		unsigned int size, const char *options, ...)
 {
-	Eina_Mp *mp;
+	Eina_Mempool *mp;
 	va_list args;
 	
 	assert(name);
@@ -93,10 +93,10 @@ EAPI Eina_Mp * eina_mp_new_from_buffer(const char *name, void *buffer,
 /**
  * 
  */
-EAPI Eina_Mp * eina_mp_new(const char *name, unsigned int size, const char 
+EAPI Eina_Mempool * eina_mempool_new(const char *name, unsigned int size, const char 
 		*options, ...)
 {
-	Eina_Mp *mp;
+	Eina_Mempool *mp;
 	void *buffer;
 	va_list args;
 	
@@ -112,7 +112,7 @@ EAPI Eina_Mp * eina_mp_new(const char *name, unsigned int size, const char
 /**
  * 
  */
-EAPI void eina_mp_delete(Eina_Mp *mp)
+EAPI void eina_mempool_delete(Eina_Mempool *mp)
 {
 	Eina_List *l;
 	
@@ -125,14 +125,14 @@ EAPI void eina_mp_delete(Eina_Mp *mp)
 /**
  * 
  */
-EAPI void * eina_mp_realloc(Eina_Mp *mp, void *element, unsigned int size)
+EAPI void * eina_mempool_realloc(Eina_Mempool *mp, void *element, unsigned int size)
 {
 	
 }
 /**
  * 
  */
-EAPI void * eina_mp_alloc(Eina_Mp *mp, unsigned int size)
+EAPI void * eina_mempool_alloc(Eina_Mempool *mp, unsigned int size)
 {
 	assert(mp);
 	assert(mp->backend->alloc);
@@ -143,7 +143,7 @@ EAPI void * eina_mp_alloc(Eina_Mp *mp, unsigned int size)
 /**
  * 
  */
-EAPI void eina_mp_free(Eina_Mp *mp, void *element)
+EAPI void eina_mempool_free(Eina_Mempool *mp, void *element)
 {
 	assert(mp);
 	assert(mp->backend->free);

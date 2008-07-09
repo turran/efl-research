@@ -11,7 +11,7 @@ eina_hash.c \
 eina_lalloc.c \
 eina_inlist.c \
 eina_file.c \
-eina_mp.c \
+eina_mempool.c \
 eina_list.c \
 eina_module.c \
 eina_value.c

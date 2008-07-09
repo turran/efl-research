@@ -19,9 +19,9 @@ struct _Eina_List_Accounting
 
 static int _eina_list_alloc_error = 0;
 
-typedef struct _Eina_Mempool Eina_Mempool;
+typedef struct _Eina_Mempool2 Eina_Mempool2;
 
-struct _Eina_Mempool
+struct _Eina_Mempool2
 {
    int           item_size;
    int           pool_size;
@@ -29,26 +29,26 @@ struct _Eina_Mempool
    void         *first, *last;
 };
 
-void *eina_mempool_malloc(Eina_Mempool *pool, int size)
+void *_mempool2_malloc(Eina_Mempool2 *pool, int size)
 {
 	return malloc(size);
 }
-void  eina_mempool_free(Eina_Mempool *pool, void *ptr)
+void  _mempool2_free(Eina_Mempool2 *pool, void *ptr)
 {
 	free(ptr);
 }
-void *eina_mempool_calloc(Eina_Mempool *pool, int size)
+void *_mempool2_calloc(Eina_Mempool2 *pool, int size)
 {
 	return calloc(1, size);
 }
 
-static Eina_Mempool _eina_list_mempool =
+static Eina_Mempool2 _eina_list_mempool =
 {
    sizeof(Eina_List),
    320,
    0, NULL, NULL
 };
-static Eina_Mempool _eina_list_accounting_mempool =
+static Eina_Mempool2 _eina_list_accounting_mempool =
 {
    sizeof(Eina_List_Accounting),
    80,
@@ -93,7 +93,7 @@ eina_list_append(Eina_List *list, const void *data)
    Eina_List *l, *new_l;
 
    _eina_list_alloc_error = 0;
-   new_l = eina_mempool_malloc(&_eina_list_mempool, sizeof(Eina_List));
+   new_l = _mempool2_malloc(&_eina_list_mempool, sizeof(Eina_List));
    if (!new_l)
      {
 	_eina_list_alloc_error = 1;
@@ -104,11 +104,11 @@ eina_list_append(Eina_List *list, const void *data)
    if (!list)
      {
 	new_l->prev = NULL;
-	new_l->accounting = eina_mempool_malloc(&_eina_list_accounting_mempool, sizeof(Eina_List_Accounting));
+	new_l->accounting = _mempool2_malloc(&_eina_list_accounting_mempool, sizeof(Eina_List_Accounting));
 	if (!new_l->accounting)
 	  {
 	     _eina_list_alloc_error = 1;
-	     eina_mempool_free(&_eina_list_mempool, new_l);
+	     _mempool2_free(&_eina_list_mempool, new_l);
 	     return list;
 	  }
 	new_l->accounting->last = new_l;
@@ -156,7 +156,7 @@ eina_list_prepend(Eina_List *list, const void *data)
    Eina_List *new_l;
 
    _eina_list_alloc_error = 0;
-   new_l = eina_mempool_malloc(&_eina_list_mempool, sizeof(Eina_List));
+   new_l = _mempool2_malloc(&_eina_list_mempool, sizeof(Eina_List));
    if (!new_l)
      {
 	_eina_list_alloc_error = 1;
@@ -167,11 +167,11 @@ eina_list_prepend(Eina_List *list, const void *data)
    if (!list)
      {
 	new_l->next = NULL;
-	new_l->accounting = eina_mempool_malloc(&_eina_list_accounting_mempool, sizeof(Eina_List_Accounting));
+	new_l->accounting = _mempool2_malloc(&_eina_list_accounting_mempool, sizeof(Eina_List_Accounting));
 	if (!new_l->accounting)
 	  {
 	     _eina_list_alloc_error = 1;
-	     eina_mempool_free(&_eina_list_mempool, new_l);
+	     _mempool2_free(&_eina_list_mempool, new_l);
 	     return list;
 	  }
 	new_l->accounting->last = new_l;
@@ -242,7 +242,7 @@ eina_list_append_relative_list(Eina_List *list, const void *data, Eina_List *rel
    
    if ((!list) || (!relative)) return eina_list_append(list, data);
    _eina_list_alloc_error = 0;
-   new_l = eina_mempool_malloc(&_eina_list_mempool, sizeof(Eina_List));
+   new_l = _mempool2_malloc(&_eina_list_mempool, sizeof(Eina_List));
    if (!new_l)
      {
 	_eina_list_alloc_error = 1;
@@ -331,7 +331,7 @@ eina_list_prepend_relative_list(Eina_List *list, const void *data, Eina_List *re
    
    if ((!list) || (!relative)) return eina_list_prepend(list, data);
    _eina_list_alloc_error = 0;
-   new_l = eina_mempool_malloc(&_eina_list_mempool, sizeof(Eina_List));
+   new_l = _mempool2_malloc(&_eina_list_mempool, sizeof(Eina_List));
    if (!new_l)
      {
 	_eina_list_alloc_error = 1;
@@ -426,8 +426,8 @@ eina_list_remove_list(Eina_List *list, Eina_List *remove_list)
      list->accounting->last = remove_list->prev;
    list->accounting->count--;
    if (list->accounting->count == 0)
-     eina_mempool_free(&_eina_list_accounting_mempool, list->accounting);
-   eina_mempool_free(&_eina_list_mempool, remove_list);
+     _mempool2_free(&_eina_list_accounting_mempool, list->accounting);
+   _mempool2_free(&_eina_list_mempool, remove_list);
    return return_l;
 }
 
@@ -585,12 +585,12 @@ eina_list_free(Eina_List *list)
    Eina_List *l, *free_l;
 
    if (!list) return NULL;
-   eina_mempool_free(&_eina_list_accounting_mempool, list->accounting);
+   _mempool2_free(&_eina_list_accounting_mempool, list->accounting);
    for (l = list; l;)
      {
 	free_l = l;
 	l = l->next;
-	eina_mempool_free(&_eina_list_mempool, free_l);
+	_mempool2_free(&_eina_list_mempool, free_l);
      }
    return NULL;
 }

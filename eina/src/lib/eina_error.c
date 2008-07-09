@@ -5,6 +5,8 @@
  * using a queue, usful for multiple threads printing
  * + add a wapper for assert?
  * + add common error numbers, messages
+ * + add a calltrace of erros, not only store the last error but a list of them
+ * and also store the function that set it
  */
 /*============================================================================*
  *                                  Local                                     * 

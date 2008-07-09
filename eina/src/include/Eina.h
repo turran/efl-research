@@ -23,7 +23,7 @@ extern "C" {
 #include "eina_hash.h"
 #include "eina_lalloc.h"
 #include "eina_module.h"
-#include "eina_mp.h"
+#include "eina_mempool.h"
 #include "eina_error.h"
 
 #ifdef __cplusplus

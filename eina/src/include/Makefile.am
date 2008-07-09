@@ -8,7 +8,7 @@ eina_lalloc.h \
 eina_inlist.h \
 eina_list.h \
 eina_file.h \
-eina_mp.h \
+eina_mempool.h \
 eina_module.h \
 eina_rectangle.h \
 eina_types.h

@@ -137,7 +137,7 @@ extern int    _eina_fps_debug;
 
 /* old code finish */
 /* mp */
-typedef struct _Eina_Mp_Backend
+typedef struct _Eina_Mempool_Backend
 {
 	void *(*init)(void *buffer, unsigned int size, const char *options, va_list args);
 	void (*free)(void *data, void *element);
@@ -146,7 +146,7 @@ typedef struct _Eina_Mp_Backend
 	void (*garbage_collect)(void);
 	void (*statistics)(void);
 	void (*shutdown)(void *data);
-} Eina_Mp_Backend;
+} Eina_Mempool_Backend;
 
 
 #endif
