@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -17,7 +18,11 @@
 #define ESHMD_NAME "eshmd"
 #define ESHMD_PORT 0x1b
 
-extern Ecore_Con_Server *eshm_server;
+/*
+ * TODO
+ * change the name from reply to payload, this is getting confusing
+ */
+
 /* protocol structures */
 typedef enum
 {
@@ -32,8 +37,12 @@ typedef enum
  */
 typedef enum
 {
-	ESHM_ERR_CODEC,
-	ESHM_ERR_TIMEOUT,
+	ESHM_ERR_NONE,
+	ESHM_ERR_ACCESS,  /* permission errors */
+	ESHM_ERR_EXIST,  /* a request for new segment that already exists */
+	ESHM_ERR_NEXIST,  /* a request for a segment that no longer exists */
+	ESHM_ERR_CODEC,   /* bad encoding or decoding */
+	ESHM_ERR_TIMEOUT, /* timeout error */
 	ESHM_ERRORS,
 } Eshm_Error;
 
@@ -44,6 +53,8 @@ typedef enum
 {
 	ESHM_MSG_NAME_SEGMENT_NEW,
 	ESHM_MSG_NAME_SEGMENT_NEWR,
+	ESHM_MSG_NAME_SEGMENT_GET,
+	ESHM_MSG_NAME_SEGMENT_GETR,
 	ESHM_MSG_NAME_SEGMENT_LOCK,
 	ESHM_MSG_NAME_SEGMENT_UNLOCK,
 	ESHM_MSG_NAME_SEGMENT_DELETE,
@@ -54,6 +65,8 @@ typedef enum
 {
 	ESHM_MSG_TYPE_SEGMENT_NEW    = ((ESHM_MSG_NAME_SEGMENT_NEW << 1) | ESHM_MSG_REPLY),
 	ESHM_MSG_TYPE_SEGMENT_NEWR   = ((ESHM_MSG_NAME_SEGMENT_NEWR << 1) | ESHM_MSG_NO_REPLY),
+	ESHM_MSG_TYPE_SEGMENT_GET    = ((ESHM_MSG_NAME_SEGMENT_GET << 1) | ESHM_MSG_REPLY),
+	ESHM_MSG_TYPE_SEGMENT_GETR   = ((ESHM_MSG_NAME_SEGMENT_GETR << 1) | ESHM_MSG_NO_REPLY),
 	ESHM_MSG_TYPE_SEGMENT_LOCK   = ((ESHM_MSG_NAME_SEGMENT_LOCK << 1) | ESHM_MSG_REPLY),
 	ESHM_MSG_TYPE_SEGMENT_UNLOCK = ((ESHM_MSG_NAME_SEGMENT_UNLOCK << 1) | ESHM_MSG_REPLY),
 	ESHM_MSG_TYPE_SEGMENT_DELETE = ((ESHM_MSG_NAME_SEGMENT_DELETE << 1) | ESHM_MSG_NO_REPLY),
@@ -81,6 +94,27 @@ typedef struct _Eshm_Message_Segment_New
 	unsigned int size;
 } Eshm_Message_Segment_New;
 
+typedef struct _Eshm_Message_Segment_Get
+{
+	const char *id;
+} Eshm_Message_Segment_Get;
+
+typedef struct _Eshm_Message_Segment_Delete
+{
+	const char *id;
+} Eshm_Message_Segment_Delete;
+
+typedef struct _Eshm_Message_Segment_Lock
+{
+	const char *id;
+	unsigned char write;
+} Eshm_Message_Segment_Lock;
+
+typedef struct _Eshm_Message_Segment_Unlock
+{
+	const char *id;
+} Eshm_Message_Segment_Unlock;
+
 /* 
  * A reply is composed of:
  * +----+-------+------+-----------------
@@ -101,6 +135,10 @@ typedef struct _Eshm_Reply_Segment_New
 	int shmid;
 } Eshm_Reply_Segment_New;
 
+typedef struct _Eshm_Reply_Segment_Get
+{
+	int shmid;
+} Eshm_Reply_Segment_Get;
 
 /* eshmd_main.c */
 Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **rdata);

@@ -64,6 +64,27 @@ void eshm_message_init(void)
 	edd = eet_data_descriptor2_new(&_eddc);
 	_descriptors[ESHM_MSG_NAME_SEGMENT_NEWR] = edd;
 	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Reply_Segment_New, "shmid", shmid, EET_T_UINT);
+	/* segment get */
+	edd = eet_data_descriptor2_new(&_eddc);
+	_descriptors[ESHM_MSG_NAME_SEGMENT_GET] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Message_Segment_Get, "id", id, EET_T_INLINED_STRING);
+	/* segment get reply */
+	edd = eet_data_descriptor2_new(&_eddc);
+	_descriptors[ESHM_MSG_NAME_SEGMENT_GETR] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Reply_Segment_Get, "shmid", shmid, EET_T_UINT);
+	/* segment lock */
+	edd = eet_data_descriptor2_new(&_eddc);
+	_descriptors[ESHM_MSG_NAME_SEGMENT_LOCK] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Message_Segment_Lock, "id", id, EET_T_INLINED_STRING);
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Message_Segment_Lock, "write", write, EET_T_UCHAR);
+	/* segment unlock */
+	edd = eet_data_descriptor2_new(&_eddc);
+	_descriptors[ESHM_MSG_NAME_SEGMENT_UNLOCK] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Message_Segment_Lock, "id", id, EET_T_INLINED_STRING);
+	/* segment delete */
+	edd = eet_data_descriptor2_new(&_eddc);
+	_descriptors[ESHM_MSG_NAME_SEGMENT_DELETE] = edd;
+	EET_DATA_DESCRIPTOR_ADD_BASIC(edd, Eshm_Message_Segment_Delete, "id", id, EET_T_INLINED_STRING);
 }
 
 void eshm_message_shutdown(void)

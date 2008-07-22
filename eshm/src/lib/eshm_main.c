@@ -49,15 +49,38 @@ static int _server_data(void *data, int type, void *event)
 	if (_eshm.length < sizeof(Eshm_Reply))
 		return 0;
 	
-	
 	_eshm.reply = (Eshm_Reply *)_eshm.buffer;
 	m_length = sizeof(Eshm_Reply) + _eshm.reply->size;
 	if (_eshm.length < m_length)
 		return 0;
 	
 	/* ok we have a full message */
-	eshm_message_reply_name_get(_eshm.msg->type, &rname);
-	_eshm.rbody = eshm_message_decode(rname, _eshm.buffer + sizeof(Eshm_Reply), _eshm.reply->size);
+	if (_eshm.reply->size)
+	{
+		eshm_message_reply_name_get(_eshm.msg->type, &rname);
+		_eshm.rbody = eshm_message_decode(rname, _eshm.buffer + sizeof(Eshm_Reply), _eshm.reply->size);
+	}
+	/* copy the reply into a new buffer */
+	_eshm.reply = malloc(sizeof(Eshm_Reply));
+	memcpy(_eshm.reply, _eshm.buffer, sizeof(Eshm_Reply));
+	/* realloc the tmp buffer */
+	if (_eshm.length > m_length)
+	{
+		unsigned char *tmp;
+		unsigned int n_length;
+			
+		tmp = _eshm.buffer;
+		n_length = _eshm.length - m_length;
+			
+		_eshm.buffer = malloc(n_length);
+		memcpy(_eshm.buffer, tmp + m_length, n_length);
+		free(tmp);
+	}
+	else
+	{
+		free(_eshm.buffer);
+		_eshm.buffer = NULL;
+	}
 	
 	printf("server data\n");
 
@@ -89,15 +112,17 @@ static int _timeout_cb(void *data)
  */
 Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **rdata)
 {
-	int ret;
+	Eshm_Error error;
 	Ecore_Timer *timer;
+	int ret;
 	
 	_eshm.msg = m;
+	printf("Sending message of type %d and id %d\n", m->type, m->id);
 	ret = ecore_con_server_send(_eshm.svr, m, sizeof(Eshm_Message));
 	ret = ecore_con_server_send(_eshm.svr, data, m->size);
 	
 	if (eshm_message_reply_has(m->type) == EINA_FALSE)
-		return 1;
+		return ESHM_ERR_NONE;
 	
 	/* TODO register a timeout callback */
 	if (timeout)
@@ -109,18 +134,32 @@ Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **
 	}
 	if (timeout)
 		ecore_timer_del(timer);
+
+	printf("finished lock reply of type %d\n", _eshm.reply->id);
 	
-	/* TODO free the msg */
+	error = _eshm.reply->error;
 	
-	/* TODO free the reply */
-	*rdata = _eshm.rbody;
+	if (rdata)
+		*rdata = _eshm.rbody;
+	free(_eshm.reply);
+	free(_eshm.msg);
+	_eshm.msg = NULL;
 	_eshm.reply = NULL;
-	/* TODO check if we have an error */
 	
-	printf("finished lock reply of type\n");	
-
+	return error;
 }
-
+void eshm_common_init(void)
+{	
+	ecore_init();
+	ecore_con_init();
+	eshm_message_init();
+}
+void eshm_common_shutdown(void)
+{
+	eshm_message_shutdown();
+	ecore_con_shutdown();
+	ecore_shutdown();
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -155,6 +194,7 @@ EAPI int eshm_shutdown(void)
 {
 	if (!--_init)
 	{
+		eshm_message_shutdown();
 		ecore_con_shutdown();
 		ecore_shutdown();
 	}

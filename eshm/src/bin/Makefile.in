@@ -172,8 +172,6 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 version_info = @version_info@
-
-#SUBDIRS = daemon test
 INCLUDES = \
 -I. \
 -I$(top_srcdir)/src/include \
