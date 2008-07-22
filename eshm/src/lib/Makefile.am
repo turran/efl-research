@@ -1,17 +1,22 @@
 ## Process this file with automake to produce Makefile.in
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES = \
+Makefile.in
 
-INCLUDES             = -I. @ESHM_CFLAGS@
-lib_LTLIBRARIES      = libeshm.la
-include_HEADERS      = Eshm.h
+AM_CPPFLAGS = \
+-I. \
+-I$(top_srcdir)/src/include \
+@ESHM_CFLAGS@
 
-libeshm_la_SOURCES  = \
-eshm.c \
-eshm_element.c \
-eshm_segment.c \
-eshm_manager.c \
-eshm_private.h
+lib_LTLIBRARIES = libeshm.la
 
-libeshm_la_LIBADD       =
-#libeshm_la_DEPENDENCIES = $(top_builddir)/config.h
-libeshm_la_LDFLAGS      = -version-info 0:1:0
+libeshm_la_SOURCES = \
+eshm_main.c \
+eshm_message.c \
+eshm_segment.c
+
+libeshm_la_LIBADD = \
+@ESHM_LIBS@
+
+libeshm_la_DEPENDENCIES =
+
+libeshm_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@

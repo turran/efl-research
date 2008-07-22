@@ -1,15 +1,34 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src 
+SUBDIRS = src examples
+
+MAINTAINERCLEANFILES = \
+Makefile.in \
+aclocal.m4 \
+config.guess \
+config.h.in \
+config.sub \
+configure \
+install-sh \
+ltconfig \
+ltmain.sh \
+missing mkinstalldirs \
+stamp-h.in \
+build-stamp \
+configure-stamp \
+depcomp \
+eshm.pc \
+eshm_docs.tar.gz
 
 EXTRA_DIST = \
-	README AUTHORS COPYING elicit.spec \
-	debian/changelog \
-	debian/rules debian/control debian/copyright \
-	debian/elicit.files elicit.spec.in
+AUTHORS \
+COPYING \
+gendoc \
+Doxyfile \
+README \
+eshm.pc.in
 
-MAINTAINERCLEANFILES = Makefile.in aclocal.m4 config.guess \
-                       config.h.in config.sub configure install-sh \
-		       ltconfig ltmain.sh missing mkinstalldirs \
-		       stamp-h.in debian/changelog elicit.spec
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = eshm.pc
+
 
