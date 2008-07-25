@@ -11,9 +11,29 @@ struct _Eshm_Segment
 	Eina_Bool locked;
 };
 
-static int _error_to_eina(Eshm_Error err)
+static void _error_to_eina(Eshm_Error err)
 {
-	return 0;
+	int error = 0;
+	
+	switch (err)
+	{			
+		case ESHM_ERR_ACCESS:
+			error = ESHM_ERROR_ACCESS;
+			break;
+		case ESHM_ERR_EXIST:
+			error = ESHM_ERROR_EXIST;
+			break;
+		case ESHM_ERR_NEXIST:
+			error = ESHM_ERROR_NEXIST;
+			break;
+		case ESHM_ERR_CODEC:
+			error = ESHM_ERROR_CODEC;
+			break;
+	}
+	if (error)
+	{
+		eina_error_set(error);
+	}
 }
 /*============================================================================*
  *                                   API                                      * 
@@ -36,11 +56,11 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, unsigned int size)
 	error = eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_NEW, &m, 0, (void **)&r);
 	if (error)
 	{
+		_error_to_eina(error);
+		EINA_ERROR_PWARN("Unable to create new segment with id = %s\n", id);
 		return NULL;
 	}
 	/* allocate the new segment and give it back to user */
-	printf("segment new id = %d\n", r->shmid);
-	
 	s = calloc(1, sizeof(Eshm_Segment));
 	
 	s->shmid = r->shmid;
@@ -49,7 +69,7 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, unsigned int size)
 	
 	free(r);
 	
-	printf("data allocated at %p\n", s->data);
+	EINA_ERROR_PDBG("New segment of id %s created with numeric id %d\n", s->id, r->shmid);
 	return s;
 }
 /**
@@ -68,20 +88,21 @@ EAPI Eshm_Segment * eshm_segment_get(const char *id)
 	error = eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_GET, &m, 0, (void **)&r);
 	if (error)
 	{
+		_error_to_eina(error);
+		EINA_ERROR_PWARN("Unable to request a segment with id = %s\n", id);
 		return NULL;
 	}
 	/* allocate the new segment and give it back to user */
-	printf("segment get id = %d\n", r->shmid);
-		
+	EINA_ERROR_PDBG("Requested segment id = %d\n", r->shmid);
+
 	s = calloc(1, sizeof(Eshm_Segment));
-		
+
 	s->shmid = r->shmid;
 	s->id = strdup(id);
 	s->data = shmat(s->shmid, NULL, 0);
-		
+
 	free(r);
-		
-	printf("data allocated at %p\n", s->data);
+
 	return s;	
 }
 /**
@@ -95,7 +116,7 @@ EAPI void eshm_segment_delete(Eshm_Segment *s)
 	m.id = s->id;
 	
 	eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_DELETE, &m, 0, NULL);
-	printf("segment deleted\n");
+	EINA_ERROR_PDBG("Segment with id \"%s\" deleted\n", s->id);
 }
 /**
  *  Locks the segment for read or write
@@ -116,11 +137,16 @@ EAPI Eina_Bool eshm_segment_lock(Eshm_Segment *s, Eina_Bool write)
 	m.id = s->id;
 	m.write = write;
 	error = eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_LOCK, &m, 0, NULL);
-	printf("segment locked %d\n", error);
+	
 	if (error)
+	{
+		_error_to_eina(error);
+		EINA_ERROR_PWARN("Unable to lock segment with id \"%s\"\n", s->id);
 		return EINA_FALSE;
+	}
 	else
 	{
+		EINA_ERROR_PDBG("Segment with id \"%s\" locked\n", s->id);
 		s->locked = EINA_TRUE;
 		return EINA_TRUE;
 	}
@@ -138,7 +164,7 @@ EAPI void eshm_segment_unlock(Eshm_Segment *s)
 	
 	m.id = s->id;
 	eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_UNLOCK, &m, 0, NULL);
-	printf("segment unlocked\n");
+	EINA_ERROR_PDBG("Segment with id \"%s\" unlocked\n", s->id);
 }
 /**
  * Writes the header information into the segment. The signature is composed

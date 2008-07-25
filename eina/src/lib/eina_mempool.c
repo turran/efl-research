@@ -137,7 +137,6 @@ EAPI void * eina_mempool_alloc(Eina_Mempool *mp, unsigned int size)
 	assert(mp);
 	assert(mp->backend->alloc);
 	
-	eina_error_pwarn("hola\n");
 	return mp->backend->alloc(mp->backend_data, size);
 }
 /**

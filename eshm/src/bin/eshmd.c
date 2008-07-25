@@ -1,6 +1,15 @@
 #include "Eshm.h"
 #include "eshm_private.h"
 
+#include <getopt.h>
+
+
+/* TODO
+ * handle command line parameters, to daemonize or not, etc
+ * Use eina error info/error handling
+ *
+ */
+
 /* TODO check if this structure can be shared with the one at the library */
 typedef struct _Eshmd_Segment
 {
@@ -50,13 +59,13 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	struct shmid_ds ds;
 	key_t key;
 	
-	printf("requesting segment new of name %s\n", sn->id);
+	EINA_ERROR_PINFO("Requesting a new segment with id %s\n", sn->id);
 	
 	/* check if the segment already exists on the hash of segments */
 	s = eina_hash_find(_eshmd.hash, sn->id);
 	if (s)
 	{
-		printf("Segment found\n");
+		EINA_ERROR_PINFO("Segment with id %s already exists\n", sn->id);
 		return ESHM_ERR_EXIST;
 	}
 	/* create a new segment */
@@ -77,10 +86,10 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	s = calloc(1, sizeof(Eshmd_Segment));
 	s->shmid = rsn->shmid;
 	s->ref++;
+	s->owner = c;
 	_eshmd.hash = eina_hash_add(_eshmd.hash, sn->id, s);
 	
-	
-	printf("New segment created with id %d\n", rsn->shmid);
+	EINA_ERROR_PINFO("New Segment created with id number %d\n", rsn->shmid);
 	
 	return ESHM_ERR_NONE;
 }
@@ -90,7 +99,7 @@ static Eshm_Error msg_segment_get(Ecore_Con_Client *c, Eshm_Message_Segment_Get 
 	Eshmd_Segment *s;
 	Eshm_Reply_Segment_Get *rsn;
 	
-	printf("requesting segment new of name %s\n", sn->id);
+	EINA_ERROR_PINFO("Requesting segment of name %s\n", sn->id);
 	
 	/* check if the segment already exists on the hash of segments */
 	s = eina_hash_find(_eshmd.hash, sn->id);
@@ -120,7 +129,7 @@ static int msg_segment_lock(Ecore_Con_Client *c, Eshm_Message_Segment_Lock *m, v
 	Eshmd_Segment *s;
 	
 	/* lock the segment */
-	printf("locking the segment\n");
+	EINA_ERROR_PINFO("Locking the segment with id %s\n", m->id);
 	s = eina_hash_find(_eshmd.hash, m->id);
 	if (!s)
 		return ESHM_ERR_NEXIST;
@@ -134,7 +143,7 @@ static int msg_segment_lock(Ecore_Con_Client *c, Eshm_Message_Segment_Lock *m, v
 static int msg_segment_unlock(Ecore_Con_Client *c, Eshm_Message_Segment_Unlock *m, void **reply)
 {
 	/* unlock the segment */
-	printf("unlocking the segment\n");
+	EINA_ERROR_PINFO("Unlocking the segment with id %s\n", m->id);
 	return ESHM_ERR_NONE;
 }
 
@@ -143,7 +152,7 @@ int _client_add(void *data, int type, void *event)
 	Ecore_Con_Event_Client_Add *e = event;
 	Eshmd_Client *c;
 	
-	printf("client add\n");
+	EINA_ERROR_PDBG("Client added %p\n", e->client);
 	c = calloc(1, sizeof(Eshmd_Client));
 	ecore_con_client_data_set(e->client, c);
 }
@@ -153,7 +162,7 @@ int _client_del(void *data, int type, void *event)
 	Ecore_Con_Event_Client_Add *e = event;
 	Eshmd_Client *c;
 	
-	printf("client del\n");
+	EINA_ERROR_PDBG("Client deleted %p\n", e->client);
 	c = ecore_con_client_data_get(e->client);
 	/* TODO unref all the segments */
 }
@@ -189,12 +198,12 @@ int _client_data(void *data, int type, void *event)
 	if (_eshmd.length < m_length)
 		return 0;
 	/* parse the header */
-	printf("client message of type %d with msg num %d of size %d\n", m->type, m->id, m->size);
+	EINA_ERROR_PDBG("Message received of type %d with msg num %d of size %d\n", m->type, m->id, m->size);
 	
 	body = eshm_message_decode(eshm_message_name_get(m->type), (unsigned char *)m + sizeof(Eshm_Message), m->size);
 	if (!body)
 	{
-		printf("Error Decoding\n");
+		EINA_ERROR_PERR("Error Decoding\n");
 		/* TODO check if the message needed a reply and if so
 		 * send it the error number */
 		goto shift;
@@ -225,11 +234,11 @@ shift:
 		Eshm_Message_Name rname;
 		void *rbody;
 		
-		printf("Sending reply\n");
+		EINA_ERROR_PDBG("Sending reply\n");
 		r.id = m->id;
 		r.error = err;
 		eshm_message_reply_name_get(m->type, &rname);
-		printf("message encoded %d %d\n", rname, eshm_message_name_get(m->type));
+		EINA_ERROR_PDBG("Message encoded %d %d\n", rname, eshm_message_name_get(m->type));
 		if (reply)
 			rbody = eshm_message_encode(rname, reply, &r.size);	
 		else
@@ -262,25 +271,54 @@ shift:
 
 int main(int argc, char **argv)
 {
+	char *short_options = "bd";
+	struct option long_options[] = {
+		{"background", 0, 0, 'b'},
+		{"debug", 0, 0, 'd'},
+		{0, 0, 0, 0}
+	};
+	int option;
+	char c;
+	int background = 0;
+	int debug = 0;
+	
+	/* handle the parameters */
+	while ((c = getopt_long(argc, argv, short_options, long_options,
+	                                &option)) != -1)
+	{
+		switch (c)
+		{
+			case 'b':
+				background = 1;
+				break;
+			case 'd':
+				debug = 1;
+				break;
+			
+		}
+	}
+	
 	ecore_init();
 	ecore_con_init();
-	
+
 	_eshmd.buffer = NULL;
 	_eshmd.srv = ecore_con_server_add(ECORE_CON_LOCAL_USER, ESHMD_NAME, ESHMD_PORT, NULL);
 	if (!_eshmd.srv)
 	{
-		printf("error\n");
+		EINA_ERROR_PERR("Can't create the server\n");
+		goto err_server;
 	}
 	ecore_event_handler_add(ECORE_CON_EVENT_CLIENT_ADD, _client_add, NULL);
 	ecore_event_handler_add(ECORE_CON_EVENT_CLIENT_DEL, _client_del, NULL);
 	ecore_event_handler_add(ECORE_CON_EVENT_CLIENT_DATA, _client_data, NULL);
-	
+
 	eshm_message_init();
 	ecore_main_loop_begin();
 	eshm_message_shutdown();
+err_server:
 	ecore_con_shutdown();
 	ecore_shutdown();
-		
+
 	return 0;
 }
 

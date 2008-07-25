@@ -5,6 +5,7 @@
 
 /* Possible API */
 
+extern int ESHM_ERROR_ACCESS;  /* not enough permission for such request */
 extern int ESHM_ERROR_EXIST;   /* a request for new segment that already exists */
 extern int ESHM_ERROR_NEXIST;  /* a request for a segment that no longer exists */
 extern int ESHM_ERROR_CODEC;   /* bad encoding or decoding */

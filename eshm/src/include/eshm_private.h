@@ -39,7 +39,7 @@ typedef enum
 {
 	ESHM_ERR_NONE,
 	ESHM_ERR_ACCESS,  /* permission errors */
-	ESHM_ERR_EXIST,  /* a request for new segment that already exists */
+	ESHM_ERR_EXIST,   /* a request for new segment that already exists */
 	ESHM_ERR_NEXIST,  /* a request for a segment that no longer exists */
 	ESHM_ERR_CODEC,   /* bad encoding or decoding */
 	ESHM_ERR_TIMEOUT, /* timeout error */

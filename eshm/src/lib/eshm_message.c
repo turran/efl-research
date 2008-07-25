@@ -98,7 +98,6 @@ void eshm_message_shutdown(void)
 
 void * eshm_message_encode(Eshm_Message_Name name, const void *data, int *size)
 {
-	printf("%p %d\n", _descriptors[name], name);
 	return eet_data_descriptor_encode(_descriptors[name], data, size);
 }
 

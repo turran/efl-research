@@ -355,7 +355,7 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (sr)
 	{
 		/* TODO check the return value of the intersection */
-		eina_rectangle_rectangle_intersection_get(&cdr, dr);
+		eina_rectangle_intersection(&cdr, dr);
 		if (eina_rectangle_is_empty(&cdr))
 		{
 			ENESIM_ERROR(ENESIM_ERROR_DSTRECT_INVALID);
@@ -369,7 +369,7 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (dr)
 	{
 		/* TODO check the return value of the intersection */
-		eina_rectangle_rectangle_intersection_get(&csr, sr);
+		eina_rectangle_intersection(&csr, sr);
 		if (eina_rectangle_is_empty(&csr))
 		{
 			ENESIM_ERROR(ENESIM_ERROR_SRCRECT_INVALID);

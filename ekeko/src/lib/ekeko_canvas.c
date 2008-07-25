@@ -182,7 +182,7 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	_objects_changed(c);
 	/* 2. add damages */
 	_damages_add(c);
-	/* 3*. if the size has changed add the whole canvas and skip the damages */
+	/* 3. if the size has changed add the whole canvas and skip the damages */
 	if (c->size_changed)
 	{
 		Eina_Rectangle r;
@@ -194,11 +194,11 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 		c->size_changed = EINA_FALSE;
 		/* TODO regenerate the list of valid and invalid objects */
 	}
-	/* 3. remove obscures */
+	/* 4. remove obscures */
 	_obscures_remove(c);
-	/* 4. get all rectangles to redraw */
+	/* 5. get all rectangles to redraw */
 	redraws = ekeko_tiler_rects_get(c->tiler);
-	/* 5. process al objects that intersect with the rects */
+	/* 6. process al objects that intersect with the rects */
 	for (lr = (Eina_Inlist *)redraws; lr; lr = lr->next)
 	{
 		Ekeko_Rectangle *r = (Ekeko_Rectangle *)lr;
