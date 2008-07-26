@@ -47,18 +47,18 @@ typedef struct _Color
 
 typedef struct _Plane
 {
-	Color colors[COLORS];
-	unsigned int length;
-	unsigned int num_colors;
-	unsigned int type;
+	Color colors[COLORS]; /* an array of colors this plane has */
+	unsigned int num_colors; /* number of colors */
+	unsigned int length; /* the length in bits of the plane */
+	unsigned int type; /* the data type to use */
 } Plane;
 
 typedef struct _Format
 {
-	Plane planes[MAX_PLANES];
-	unsigned int num_planes;
-	const char *name;
-	unsigned char premul;
+	Plane planes[MAX_PLANES]; /* an array of planes a format has */
+	unsigned int num_planes; /* number of planes */
+	const char *name; /* name of the format */
+	unsigned char premul; /* is it premul data? */
 } Format;
 
 extern const char *type_names[TYPES];

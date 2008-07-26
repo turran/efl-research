@@ -1,5 +1,17 @@
 #include "enesim_generator.h"
 
+/**
+ * The enesim_generator application can generate the following files
+ * include/private/surface_SURFACE_FORMAT_core.h
+ * src/lib/drawer/SURFACE_FORMAT.c
+ * 
+ * In order to add a new surface format, you should follow the next steps:
+ * 1. Create a new format description, look for the examples below
+ * 2. 
+ * 3. 
+ * 
+ */
+
 const char *type_names[TYPES] = {
 	"uint8_t",
 	"uint16_t",
@@ -109,7 +121,6 @@ Format argb8888 = {
 	.num_planes = 1,
 	.premul = 0,
 };
-
 /*============================================================================*
  *                                   rgb565                                   * 
  *============================================================================*/
@@ -138,6 +149,7 @@ Format rgb565 = {
 		},
 		.num_colors = 3,
 		.type = TYPE_UINT16,
+		.length = 16,
 	},
 	.planes[1] = {
 		.colors = {
@@ -150,6 +162,52 @@ Format rgb565 = {
 		},
 		.num_colors = 1,
 		.type = TYPE_UINT8,
+		.length = 8,
+	},
+	.num_planes = 2,
+	.premul = 1,
+};
+/*============================================================================*
+ *                               rgb565_b1a3                                  * 
+ *============================================================================*/
+Format rgb565_b1a3 = {
+	.name = "rgb565_b1a3",
+	.planes[0] = {
+		.colors = {
+			{
+				.offset = 0,
+				.length = 5,
+				.name = COLOR_BLUE,
+				.type = TYPE_UINT8,
+			},
+			{
+				.offset = 5,
+				.length = 6,
+				.name = COLOR_GREEN,
+				.type = TYPE_UINT8,
+			},
+			{
+				.offset = 11,
+				.length = 5,
+				.name = COLOR_RED,
+				.type = TYPE_UINT8,
+			},
+			},
+			.num_colors = 3,
+			.type = TYPE_UINT16,
+		},
+	.planes[1] = {
+		.colors = {
+			{
+				.offset = 0,
+				.length = 3,
+				.name = COLOR_ALPHA,
+				.type = TYPE_UINT8,
+			},
+		},
+		.num_colors = 1,
+		.type = TYPE_UINT8,
+		.length = 4,
 	},
 	.num_planes = 2,
 	.premul = 1,
@@ -161,7 +219,6 @@ Format *formats[] = {
 	&rgb565,
 	NULL,
 };
-
 
 static void help(void)
 {

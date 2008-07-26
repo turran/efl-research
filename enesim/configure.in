@@ -9,7 +9,7 @@ AC_CANONICAL_HOST
 AC_ISC_POSIX
 
 AM_INIT_AUTOMAKE(1.6 dist-bzip2)
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(src/include/config.h)
 
 AC_PROG_CC
 AM_PROG_CC_STDC
@@ -45,6 +45,11 @@ build_example="no"
 if test "x$have_sdl" = "xyes" && test "x$have_png" = "xyes"; then 
 	build_example="yes"
 fi
+
+## Add conditionals for every surface format
+ENESIM_SURFACE_FORMAT(argb8888, [yes])
+ENESIM_SURFACE_FORMAT(argb8888_pre, [yes])
+ENESIM_SURFACE_FORMAT(rgb565, [no])
 
 EXAMPLE_CFLAGS="$SDL_CFLAGS $PNG_CFLAGS"
 EXAMPLE_LIBS="$SDL_LIBS $PNG_LIBS"
@@ -97,9 +102,12 @@ echo
 echo
 echo "Configuration Options Summary:"
 echo
-echo "  Build example...........: $build_example"
+echo "  Build example........................: $build_example"
+echo "  Build ARGB8888 format support........: $format_argb8888"
+echo "  Build ARGB8888_PRE format support....: $format_argb8888_pre"
+echo "  Build RGB565 format support..........: $format_rgb565"
 echo
-echo "Installation Path.........: $prefix"
+echo "Installation Path..................: $prefix"
 echo
 echo "Now type 'make' ('gmake' on some systems) to compile $PACKAGE,"
 echo "and then afterwards as root (or the user who will install this), type"

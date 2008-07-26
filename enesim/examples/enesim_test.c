@@ -190,6 +190,7 @@ int main(int argc, char **argv)
 		SDL_Quit();
 		return 1;
 	}
+	enesim_init();
 	screen_clear();
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
 	while (!end)
@@ -229,5 +230,6 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+	enesim_shutdown();
 	return 0;
 }

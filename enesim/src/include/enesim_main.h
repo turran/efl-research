@@ -10,6 +10,15 @@ typedef enum
 	ENESIM_FILL,
 	ENESIM_ROPS
 } Enesim_Rop;
+
+/*
+ * TODO rename this file to enesim_main.h
+ */
+EAPI int enesim_init(void);
+EAPI void enesim_shutdown(void);
+
+/* TODO
+ * remove this error handling and use eina's approach */
 /*
  * TODO normalize this errors
  *
@@ -24,6 +33,7 @@ typedef enum
 	ENESIM_ERROR_DSTRECT_INVALID,
 	ENESIM_ERROR_TRANSFORMATION_NOT_SUPPORTED,
 } Enesim_Error;
+
 
 /**
  * 

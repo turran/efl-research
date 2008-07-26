@@ -1,6 +1,9 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
+/**
+ * TODO remove this error handling, use eina's 
+ */
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/

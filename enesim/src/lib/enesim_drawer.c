@@ -1,9 +1,6 @@
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
-/*============================================================================*
- *                                   API                                      * 
- *============================================================================*/
 /* 
  * 
  * rop functions 
@@ -13,15 +10,89 @@
  * mask_color
  * pixel_mask
  */
+/*============================================================================*
+ *                                  Local                                     * 
+ *============================================================================*/
+static void _unbuilt_drawer_pt(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
+		unsigned int color, unsigned char *mask)
+{
+	
+}
+static void _unbuilt_drawer_span(Enesim_Surface_Data *d, unsigned int len,
+		Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
+{
+	
+}
 
+Enesim_Drawer _unbuilt;
+
+#ifdef BUILD_SURFACE_ARGB888_PRE
 extern Enesim_Drawer argb8888_pre_drawer;
+#endif
+
+#ifdef BUILD_SURFACE_ARGB888
 extern Enesim_Drawer argb8888_drawer;
+#endif
 
 Enesim_Drawer *drawer[ENESIM_SURFACE_FORMATS] = {
+#ifdef BUILD_SURFACE_ARGB888
 		[ENESIM_SURFACE_ARGB8888] = &argb8888_drawer,
+#else
+		[ENESIM_SURFACE_ARGB8888] = &_unbuilt,
+#endif
+#ifdef BUILD_SURFACE_ARGB888_PRE
 		[ENESIM_SURFACE_ARGB8888_PRE] = &argb8888_pre_drawer,
+#else
+		[ENESIM_SURFACE_ARGB8888] = &_unbuilt,
+#endif
 };
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+void enesim_drawer_init(void)
+{
+	int i;
+	int j;
+	
+	for (i = 0; i < ENESIM_ROPS; i++)
+	{
+		int j;
+		
+		/* sp_color, pt_color */
+		_unbuilt.sp_color[i] = &_unbuilt_drawer_span;
+		_unbuilt.pt_color[i] = &_unbuilt_drawer_pt;
+		/* sp_pixel, sp_pixel_mask, pt_pixel, pt_pixel_mask */
+		for (j = 0; j < ENESIM_SURFACE_FORMATS; j++)
+		{
+			int k;
+			
+			_unbuilt.sp_pixel[i][j] = &_unbuilt_drawer_span;
+			_unbuilt.sp_pixel_mask[i][j] = &_unbuilt_drawer_span;
+			_unbuilt.pt_pixel_mask[i][j] = &_unbuilt_drawer_pt;
+			_unbuilt.pt_pixel_mask[i][j] = &_unbuilt_drawer_pt;
+			/* sp_pixel_color, pt_pixel_color */
+			for (k = 0; k < COLOR_TYPES; k++)
+			{
+				_unbuilt.pt_pixel_color[i][j][k] = _unbuilt_drawer_pt;
+				_unbuilt.sp_pixel_color[i][j][k] = _unbuilt_drawer_span;
+			}
+		}
+		/* sp_mask_color, pt_mask_color */
+		for (j = 0; j < COLOR_TYPES; j++)
+		{
+			_unbuilt.pt_mask_color[i][j] = &_unbuilt_drawer_pt;
+			_unbuilt.sp_mask_color[i][j] = &_unbuilt_drawer_span;
+		}
+	}
+}
 
+void enesim_drawer_shutdown(void)
+{
+	/* do nothing */
+}
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * 
  */

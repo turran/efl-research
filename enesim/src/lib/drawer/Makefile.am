@@ -11,4 +11,3 @@ noinst_LTLIBRARIES = libenesim_drawer.la
 libenesim_drawer_la_SOURCES = \
 argb8888.c \
 argb8888_pre.c
-

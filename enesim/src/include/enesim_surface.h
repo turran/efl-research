@@ -4,6 +4,11 @@
 /**
  * @defgroup Enesim_Surface_Group Surface
  * @{
+ * 
+ * TODO
+ * remove RGB565 and rename it to RGB565_A8, RGB565_bA3, etc
+ * same thing for RGB888, etc. I mean make the alpha relative
+ * not always A8
  */
 typedef struct _Enesim_Surface 	Enesim_Surface; /**< Surface Handler */
 /**
@@ -16,6 +21,7 @@ typedef enum
 	ENESIM_SURFACE_RGB565, /**< */
 	ENESIM_SURFACE_RGB888, /**< */
 	ENESIM_SURFACE_A8, /**< */
+	ENESIM_SURFACE_b1A3, /**< */
 	ENESIM_SURFACE_FORMATS,
 } Enesim_Surface_Format;
 /**
@@ -48,6 +54,13 @@ typedef struct _A8_Data
 {
 	uint8_t 	*plane0; /* a8 plane */
 } A8_Data;
+/**
+ * 
+ */
+typedef struct _b1A3_Data
+{
+	uint8_t *plane0; /* b1A3 plane */
+} bA3_Data;
 /**
  * 
  */
