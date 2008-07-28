@@ -1,6 +1,11 @@
 #ifndef ENESIM_DRAWER_H_
 #define ENESIM_DRAWER_H_
 
+/*
+ * TODO, the mask can be a surface by itself, we just need to call the
+ * FORMAT_alpha_get on that surface
+ */
+
 /**
  * Function to draw a point
  * d = Destination surface data

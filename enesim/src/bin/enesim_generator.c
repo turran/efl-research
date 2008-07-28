@@ -2,14 +2,9 @@
 
 /**
  * The enesim_generator application can generate the following files
- * include/private/surface_SURFACE_FORMAT_core.h
- * src/lib/drawer/SURFACE_FORMAT.c
- * 
- * In order to add a new surface format, you should follow the next steps:
- * 1. Create a new format description, look for the examples below
- * 2. 
- * 3. 
- * 
+ * include/private/surface_SURFACE_FORMAT_core.h (core)
+ * src/lib/drawer/SURFACE_FORMAT.c (drawer)
+ *  
  */
 
 const char *type_names[TYPES] = {
@@ -45,186 +40,22 @@ const char *pixel_types[PIXELS] = {
 
 FILE *fout = NULL;
 
-/*============================================================================*
- *                              argb8888_pre                                  * 
- *============================================================================*/
-Format argb8888_pre = {
-	.name = "argb8888_pre",
-	.planes[0] = {
-		.colors = {
-			{
-				.offset = 0,
-				.length = 8,
-				.name = COLOR_BLUE,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 8,
-				.length = 8,
-				.name = COLOR_GREEN,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 16,
-				.length = 8,
-				.name = COLOR_RED,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 24,
-				.length = 8,
-				.type = TYPE_UINT8,
-				.name = COLOR_ALPHA,
-			},
-		},
-		.num_colors = 4,
-		.type = TYPE_UINT32,
-	},
-	.num_planes = 1,
-	.premul = 1,
-};
-/*============================================================================*
- *                                  argb8888                                  * 
- *============================================================================*/
-Format argb8888 = {
-	.name = "argb8888",
-	.planes[0] = {
-		.colors = {
-			{
-				.offset = 0,
-				.length = 8,
-				.name = COLOR_BLUE,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 8,
-				.length = 8,
-				.name = COLOR_GREEN,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 16,
-				.length = 8,
-				.name = COLOR_RED,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 24,
-				.length = 8,
-				.type = TYPE_UINT8,
-				.name = COLOR_ALPHA,
-			},
-		},
-		.num_colors = 4,
-		.type = TYPE_UINT32,
-	},
-	.num_planes = 1,
-	.premul = 0,
-};
-/*============================================================================*
- *                                   rgb565                                   * 
- *============================================================================*/
-Format rgb565 = {
-	.name = "rgb565",
-	.planes[0] = {
-		.colors = {
-			{
-				.offset = 0,
-				.length = 5,
-				.name = COLOR_BLUE,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 5,
-				.length = 6,
-				.name = COLOR_GREEN,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 11,
-				.length = 5,
-				.name = COLOR_RED,
-				.type = TYPE_UINT8,
-			},
-		},
-		.num_colors = 3,
-		.type = TYPE_UINT16,
-		.length = 16,
-	},
-	.planes[1] = {
-		.colors = {
-			{
-				.offset = 0,
-				.length = 5,
-				.name = COLOR_ALPHA,
-				.type = TYPE_UINT8,
-			},
-		},
-		.num_colors = 1,
-		.type = TYPE_UINT8,
-		.length = 8,
-	},
-	.num_planes = 2,
-	.premul = 1,
-};
-/*============================================================================*
- *                               rgb565_b1a3                                  * 
- *============================================================================*/
-Format rgb565_b1a3 = {
-	.name = "rgb565_b1a3",
-	.planes[0] = {
-		.colors = {
-			{
-				.offset = 0,
-				.length = 5,
-				.name = COLOR_BLUE,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 5,
-				.length = 6,
-				.name = COLOR_GREEN,
-				.type = TYPE_UINT8,
-			},
-			{
-				.offset = 11,
-				.length = 5,
-				.name = COLOR_RED,
-				.type = TYPE_UINT8,
-			},
-			},
-			.num_colors = 3,
-			.type = TYPE_UINT16,
-		},
-	.planes[1] = {
-		.colors = {
-			{
-				.offset = 0,
-				.length = 3,
-				.name = COLOR_ALPHA,
-				.type = TYPE_UINT8,
-			},
-		},
-		.num_colors = 1,
-		.type = TYPE_UINT8,
-		.length = 4,
-	},
-	.num_planes = 2,
-	.premul = 1,
-};
-
-Format *formats[] = {
-	&argb8888,
-	&argb8888_pre,
-	&rgb565,
-	NULL,
-};
 
 static void help(void)
 {
+	Format *f;
+	int i = 1;
+	
 	printf("enesim_generator OPTION FORMAT FILE\n");
 	printf("OPTION: core, drawer\n");
-	printf("FORMAT: argb8888, argb8888_pre, rgb565\n");
+	printf("FORMAT: argb8888");
+	f = formats[1];
+	while (f)
+	{
+		printf(", %s", f->name);
+		f = formats[++i];
+	}
+	printf("\n");
 }
 
 static void header(void)
@@ -242,6 +73,20 @@ void strupr(char *dst, const char *src)
 		src++;
 	}
 	*dst = '\0';
+}
+
+Format * format_from_format(Enesim_Surface_Format fmt)
+{
+	int i = 0;
+	Format *f = formats[i];
+	
+	while (f)
+	{
+		if (f->sformat == fmt)
+			return f;
+		f = formats[++i];
+	}
+	return NULL;
 }
 
 int main(int argc, char **argv)

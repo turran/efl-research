@@ -13,7 +13,7 @@
  * FIXME: To be fixed
  */
 EAPI Enesim_Surface *
-enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Data *sdata)
+enesim_surface_new_data_from(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Data *sdata)
 {
 	Enesim_Surface *s;
 	
@@ -24,6 +24,43 @@ enesim_surface_new(Enesim_Surface_Format f, int w, int h, Enesim_Surface_Data *s
 	s->data = *sdata;
 	ENESIM_MAGIC_SET(s, ENESIM_SURFACE_MAGIC);
 	
+	return s;
+}
+/**
+ * 
+ */
+EAPI Enesim_Surface *
+enesim_surface_new(Enesim_Surface_Format f, int w, int h)
+{
+	Enesim_Surface *s;
+		
+	s = calloc(1, sizeof(Enesim_Surface));
+	s->w = w;
+	s->h = h;
+	s->format = f;
+	
+	ENESIM_MAGIC_SET(s, ENESIM_SURFACE_MAGIC);
+	switch (s->format)
+	{
+		case ENESIM_SURFACE_ARGB8888:
+		s->data.argb8888.plane0 = calloc(w * h, sizeof(unsigned int));
+		break;
+		
+#ifdef BUILD_SURFACE_ARGB888_UNPRE
+		case ENESIM_SURFACE_ARGB8888_UNPRE:
+		s->data.argb8888_unpre.plane0 = calloc(w * h, sizeof(unsigned int));
+		break;
+#endif
+
+#ifdef BUILD_SURFACE_RGB565_XA5
+		case ENESIM_SURFACE_RGB565_XA5:
+		s->data.rgb565.plane0 = calloc(w * h, sizeof(unsigned short int));
+		s->data.rgb565.plane1 = calloc(w * h, sizeof(unsigned char));
+		break;
+#endif
+		default:
+		break;
+	}
 	return s;
 }
 /**
@@ -127,12 +164,16 @@ enesim_surface_data_increment(Enesim_Surface_Data *sdata, Enesim_Surface_Format 
 	case ENESIM_SURFACE_ARGB8888:
 		argb8888_data_increment(sdata, len);
 		break;
-	case ENESIM_SURFACE_ARGB8888_PRE:
-		argb8888_pre_data_increment(sdata, len);
+#ifdef BUILD_SURFACE_ARGB888_UNPRE
+	case ENESIM_SURFACE_ARGB8888_unpre:
+		argb8888_unpre_data_increment(sdata, len);
 		break;
-	case ENESIM_SURFACE_RGB565:
+#endif
+#ifdef BUILD_SURFACE_RGB565_XA5
+	case ENESIM_SURFACE_RGB565_XA5:
 		rgb565_data_increment(sdata, len);
 		break;
+#endif
 	default:
 		break;
 	}
@@ -153,12 +194,16 @@ enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sf
 	case ENESIM_SURFACE_ARGB8888:
 		argb8888_to_argb(&argb, *(sdata->argb8888.plane0));
 		break;
-	case ENESIM_SURFACE_ARGB8888_PRE:
-		argb8888_pre_to_argb(&argb, *(sdata->argb8888_pre.plane0));
+#ifdef BUILD_SURFACE_ARGB888_UNPRE
+	case ENESIM_SURFACE_ARGB8888_UNPRE:
+		argb8888_unpre_to_argb(&argb, *(sdata->argb8888_unpre.plane0));
 		break;
-	case ENESIM_SURFACE_RGB565:
+#endif
+#ifdef BUILD_SURFACE_RGB565_XA5
+	case ENESIM_SURFACE_RGB565_XA5:
 		rgb565_to_argb(&argb, *(sdata->rgb565.plane0), *(sdata->rgb565.plane1));
 		break;
+#endif
 	default:
 		break;
 	}

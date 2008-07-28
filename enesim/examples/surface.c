@@ -7,20 +7,20 @@ Enesim_Surface * surface_new(int w, int h, Enesim_Surface_Format fmt)
 	
 	switch(fmt)
 	{
-		case ENESIM_SURFACE_ARGB8888_PRE:
-		sdata.argb8888_pre.plane0 = calloc(1, sizeof(unsigned int) * w * h);
-		s = enesim_surface_new(fmt, w, h, &sdata);
-		break;
-
 		case ENESIM_SURFACE_ARGB8888:
 		sdata.argb8888.plane0 = calloc(1, sizeof(unsigned int) * w * h);
-		s = enesim_surface_new(fmt, w, h, &sdata);
+		s = enesim_surface_new_data_from(fmt, w, h, &sdata);
+		break;
+
+		case ENESIM_SURFACE_ARGB8888_UNPRE:
+		sdata.argb8888_unpre.plane0 = calloc(1, sizeof(unsigned int) * w * h);
+		s = enesim_surface_new_data_from(fmt, w, h, &sdata);
 		break;
 	
-		case ENESIM_SURFACE_RGB565:
+		case ENESIM_SURFACE_RGB565_XA5:
 		sdata.rgb565.plane0 = calloc(1, sizeof(unsigned short int) * w * h);
 		sdata.rgb565.plane1 = calloc(1, sizeof(unsigned char) * w * h);
-		s = enesim_surface_new(fmt, w, h, &sdata);
+		s = enesim_surface_new_data_from(fmt, w, h, &sdata);
 		break;
 		
 		default:
@@ -39,15 +39,15 @@ void surface_free(Enesim_Surface *s)
 	
 	switch(fmt)
 	{
-		case ENESIM_SURFACE_ARGB8888_PRE:
-		free(sdata.argb8888_pre.plane0);
-		break;
-	
 		case ENESIM_SURFACE_ARGB8888:
 		free(sdata.argb8888.plane0);
 		break;
+	
+		case ENESIM_SURFACE_ARGB8888_UNPRE:
+		free(sdata.argb8888_unpre.plane0);
+		break;
 		
-		case ENESIM_SURFACE_RGB565:
+		case ENESIM_SURFACE_RGB565_XA5:
 		free(sdata.rgb565.plane0);
 		free(sdata.rgb565.plane1);
 		break;
@@ -73,7 +73,7 @@ void surface_blt(Enesim_Surface *s, SDL_Surface *sdl)
 	switch (fmt)
 	{
 		
-		case ENESIM_SURFACE_ARGB8888_PRE:
+		case ENESIM_SURFACE_ARGB8888:
 		amask = 0xff000000;
 		rmask = 0x00ff0000;
 		gmask = 0x0000ff00;
@@ -98,17 +98,17 @@ void surface_blt(Enesim_Surface *s, SDL_Surface *sdl)
 		}
 		break;
 		
-		case ENESIM_SURFACE_ARGB8888:
+		case ENESIM_SURFACE_ARGB8888_UNPRE:
 		amask = 0xff000000;
 		rmask = 0x00ff0000;
 		gmask = 0x0000ff00;
 		bmask = 0x000000ff;
 		pitch = 4 * w;
 		bpp = 32;
-		data = sdata.argb8888.plane0;
+		data = sdata.argb8888_unpre.plane0;
 		break;
 		
-		case ENESIM_SURFACE_RGB565:
+		case ENESIM_SURFACE_RGB565_XA5:
 		amask = 0x00000000;
 		rmask = 0x0000f800;
 		gmask = 0x000007e0;

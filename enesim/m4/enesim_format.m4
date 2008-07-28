@@ -17,9 +17,9 @@ ifelse("x$2", "xno",
     [ format_[]DOWN=no ]
   )
 ], [
-  AC_ARG_ENABLE(convert-[]DOWN,
+  AC_ARG_ENABLE(format-[]DOWN,
     AC_HELP_STRING(
-      [--disable-convert-[]DOWN],
+      [--disable-format-[]DOWN],
       [disable the $1 surface format]
     ),
     [ format_[]DOWN=$enableval ],
@@ -31,8 +31,10 @@ AC_MSG_CHECKING(whether to build $1 surface format support)
 AC_MSG_RESULT($format_[]DOWN)
 
 if test "x$format_[]DOWN" = "xyes" ; then
-  AC_DEFINE(BUILD_SURFACE_[]UP, 1, [$1 Surface Fromat Support])
+  AC_DEFINE(BUILD_SURFACE_[]UP, 1, [$1 Surface Fromat Support])  
 fi
+
+AM_CONDITIONAL(BUILD_SURFACE_[]UP, test "x$format_[]DOWN" = "xyes")
 
 popdef([UP])
 popdef([DOWN])

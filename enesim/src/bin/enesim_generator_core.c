@@ -1,5 +1,14 @@
 #include "enesim_generator.h"
 
+/*
+ * The functions the core generator do are:
+ * static inline void FORMAT_data_copy(Enesim_Surface_Data *s, Enesim_Surface_Data *d)
+ * static inline void FORMAT_data_increment(Enesim_Surface_Data *d, unsigned int len)
+ * static inline void FORMAT_data_offset(Enesim_Surface_Data *s, Enesim_Surface_Data *d, unsigned int offset)
+ * static inline unsigned char FORMAT_data_alpha_get(Enesim_Surface_Data *d)
+ * 
+ * 
+ */
 /* given a format generate the parameters for a function */
 void data_parameters(Format *f)
 {
@@ -87,6 +96,26 @@ end:
 	fprintf(fout, "}\n");
 }
 
+/* core functions for a pixel format */
+void core_functions(Format *f)
+{
+	int i = 0;
+	char upper[256];
+	
+	strupr(upper, f->name);
+	fprintf(fout, "#ifndef SURFACE_%s_CORE_H_\n", upper);
+	fprintf(fout, "#define SURFACE_%s_CORE_H_\n\n", upper);
+	//plane_pack(sf->name, p, i);
+	//argb_conv(f);
+	data_copy(f);
+	data_increment(f);
+	data_offset(f);
+	data_alpha_get(f);
+	
+	fprintf(fout, "\n#endif\n");
+}
+/* unused functions */
+
 #if 0
 /* print the format plane's mask when converting the plane data into a 32bit
  * value, like: rgb565 should be r5r5g6g6b5b5
@@ -98,7 +127,7 @@ static void mask(Format *f)
 		fprintf(fout, "#define MASK 0x\n");
 	}
 }
-#endif
+
 
 /* function to pack a pixel from its components */
 static void plane_pack(const char *name, Plane *p, unsigned int num)
@@ -204,21 +233,4 @@ static void pointer_get(Plane *p)
 {
 	
 }
-/* core functions for a pixel format */
-void core_functions(Format *f)
-{
-	int i = 0;
-	char upper[256];
-	
-	strupr(upper, f->name);
-	fprintf(fout, "#ifndef SURFACE_%s_CORE_H_\n", upper);
-	fprintf(fout, "#define SURFACE_%s_CORE_H_\n", upper);
-	//plane_pack(sf->name, p, i);
-	//argb_conv(f);
-	data_copy(f);
-	data_increment(f);
-	data_offset(f);
-	data_alpha_get(f);
-	
-	fprintf(fout, "#endif\n");
-}
+#endif

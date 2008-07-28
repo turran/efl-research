@@ -20,7 +20,7 @@ static Enesim_Surface * tiger_draw(void)
 {
 	Enesim_Surface *s;
 	
-	s = surface_new(TIGER_WIDTH, TIGER_HEIGHT, ENESIM_SURFACE_ARGB8888);
+	s = surface_new(TIGER_WIDTH, TIGER_HEIGHT, ENESIM_SURFACE_ARGB8888_UNPRE);
 	png_load(s, PACKAGE_DATA_DIR"/tiger.png");
 	
 	return s;
@@ -64,7 +64,7 @@ static void test4(void)
 	Enesim_Scanline_Alias sl[100];
 	Enesim_Renderer *renderer;
 	
-	dst = surface_new(SCREEN_WIDTH, SCREEN_HEIGHT, ENESIM_SURFACE_ARGB8888_PRE);
+	dst = surface_new(SCREEN_WIDTH, SCREEN_HEIGHT, ENESIM_SURFACE_ARGB8888);
 	/* fill color renderer */
 	renderer = enesim_fill_color_new();
 	enesim_fill_color_color_set(renderer, 0xffff0000);
@@ -102,7 +102,7 @@ static void test3(void)
 	float m1[9], m2[9];
 
 	src = tiger_draw();
-	dst = surface_new(TIGER_WIDTH, TIGER_HEIGHT, ENESIM_SURFACE_ARGB8888_PRE);
+	dst = surface_new(TIGER_WIDTH, TIGER_HEIGHT, ENESIM_SURFACE_ARGB8888);
 	tx = enesim_transformation_new();
 	
 	enesim_surface_size_get(src, &w, &h);

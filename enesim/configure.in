@@ -46,10 +46,12 @@ if test "x$have_sdl" = "xyes" && test "x$have_png" = "xyes"; then
 	build_example="yes"
 fi
 
-## Add conditionals for every surface format
-ENESIM_SURFACE_FORMAT(argb8888, [yes])
-ENESIM_SURFACE_FORMAT(argb8888_pre, [yes])
-ENESIM_SURFACE_FORMAT(rgb565, [no])
+## Add conditionals for every surface format but the argb8888_pre, it is
+## the core format and cannot be optional
+ENESIM_SURFACE_FORMAT(argb8888_unpre, [yes])
+ENESIM_SURFACE_FORMAT(rgb888_a8, [no])
+ENESIM_SURFACE_FORMAT(rgb565_xa5, [no])
+ENESIM_SURFACE_FORMAT(rgb565_b1a3, [no])
 
 EXAMPLE_CFLAGS="$SDL_CFLAGS $PNG_CFLAGS"
 EXAMPLE_LIBS="$SDL_LIBS $PNG_LIBS"
@@ -102,10 +104,11 @@ echo
 echo
 echo "Configuration Options Summary:"
 echo
-echo "  Build example........................: $build_example"
-echo "  Build ARGB8888 format support........: $format_argb8888"
-echo "  Build ARGB8888_PRE format support....: $format_argb8888_pre"
-echo "  Build RGB565 format support..........: $format_rgb565"
+echo "  Build example.............................: $build_example"
+echo "  Build ARGB8888_UNPRE format support.......: $format_argb8888_unpre"
+echo "  Build RGB8888_A8 format support...........: $format_rgb888_a8"
+echo "  Build RGB565_XA5 format support...........: $format_rgb565_xa5"
+echo "  Build RGB565_b1A3 format support..........: $format_rgb565_b1a3"
 echo
 echo "Installation Path..................: $prefix"
 echo

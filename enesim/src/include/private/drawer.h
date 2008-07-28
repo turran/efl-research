@@ -34,4 +34,9 @@ typedef struct _Enesim_Drawer
 } Enesim_Drawer;
 
 
+void enesim_drawer_pt_unbuilt(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
+		unsigned int color, unsigned char *mask);
+void enesim_drawer_span_unbuilt(Enesim_Surface_Data *d, unsigned int len,
+		Enesim_Surface_Data *s, unsigned int color, unsigned char *mask);
+
 #endif /*DRAWER_H_*/

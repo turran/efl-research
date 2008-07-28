@@ -13,42 +13,56 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _unbuilt_drawer_pt(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
-		unsigned int color, unsigned char *mask)
-{
-	
-}
-static void _unbuilt_drawer_span(Enesim_Surface_Data *d, unsigned int len,
-		Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
-{
-	
-}
-
 Enesim_Drawer _unbuilt;
 
-#ifdef BUILD_SURFACE_ARGB888_PRE
-extern Enesim_Drawer argb8888_pre_drawer;
+/* this is the main surface format drawer */
+extern Enesim_Drawer argb8888_drawer;
+
+
+#ifdef BUILD_SURFACE_ARGB888_UNPRE
+extern Enesim_Drawer argb8888_unpre_drawer;
 #endif
 
-#ifdef BUILD_SURFACE_ARGB888
-extern Enesim_Drawer argb8888_drawer;
+#ifdef BUILD_SURFACE_RGB565_XA5
+extern Enesim_Drawer rgb565_xa5_drawer;
+#endif
+
+#ifdef BUILD_SURFACE_RGB565_B1A3
+extern Enesim_Drawer rgb565_b1a3_drawer;
 #endif
 
 Enesim_Drawer *drawer[ENESIM_SURFACE_FORMATS] = {
-#ifdef BUILD_SURFACE_ARGB888
 		[ENESIM_SURFACE_ARGB8888] = &argb8888_drawer,
+#ifdef BUILD_SURFACE_ARGB888_UNPRE
+		[ENESIM_SURFACE_ARGB8888_UNPRE] = &argb8888_unpre_drawer,
 #else
-		[ENESIM_SURFACE_ARGB8888] = &_unbuilt,
+		[ENESIM_SURFACE_ARGB8888_UNPRE] = &_unbuilt,
 #endif
-#ifdef BUILD_SURFACE_ARGB888_PRE
-		[ENESIM_SURFACE_ARGB8888_PRE] = &argb8888_pre_drawer,
+#ifdef BUILD_SURFACE_RGB565_XA5
+		[ENESIM_SURFACE_RGB565_XA5] = &rgb565_xa5_drawer,
 #else
-		[ENESIM_SURFACE_ARGB8888] = &_unbuilt,
+		[ENESIM_SURFACE_RGB565_XA5] = &_unbuilt,
+#endif
+#ifdef BUILD_SURFACE_RGB565_B1A3
+		[ENESIM_SURFACE_RGB565_B1A3] = &rgb565_b1a3_drawer,
+#else
+		[ENESIM_SURFACE_RGB565_B1A3] = &_unbuilt,
 #endif
 };
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+void enesim_drawer_pt_unbuilt(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
+		unsigned int color, unsigned char *mask)
+{
+	
+}
+void enesim_drawer_span_unbuilt(Enesim_Surface_Data *d, unsigned int len,
+		Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
+{
+	
+}
+
 void enesim_drawer_init(void)
 {
 	int i;
@@ -59,29 +73,29 @@ void enesim_drawer_init(void)
 		int j;
 		
 		/* sp_color, pt_color */
-		_unbuilt.sp_color[i] = &_unbuilt_drawer_span;
-		_unbuilt.pt_color[i] = &_unbuilt_drawer_pt;
+		_unbuilt.sp_color[i] = &enesim_drawer_span_unbuilt;
+		_unbuilt.pt_color[i] = &enesim_drawer_pt_unbuilt;
 		/* sp_pixel, sp_pixel_mask, pt_pixel, pt_pixel_mask */
 		for (j = 0; j < ENESIM_SURFACE_FORMATS; j++)
 		{
 			int k;
 			
-			_unbuilt.sp_pixel[i][j] = &_unbuilt_drawer_span;
-			_unbuilt.sp_pixel_mask[i][j] = &_unbuilt_drawer_span;
-			_unbuilt.pt_pixel_mask[i][j] = &_unbuilt_drawer_pt;
-			_unbuilt.pt_pixel_mask[i][j] = &_unbuilt_drawer_pt;
+			_unbuilt.sp_pixel[i][j] = &enesim_drawer_span_unbuilt;
+			_unbuilt.sp_pixel_mask[i][j] = &enesim_drawer_span_unbuilt;
+			_unbuilt.pt_pixel_mask[i][j] = &enesim_drawer_pt_unbuilt;
+			_unbuilt.pt_pixel_mask[i][j] = &enesim_drawer_pt_unbuilt;
 			/* sp_pixel_color, pt_pixel_color */
 			for (k = 0; k < COLOR_TYPES; k++)
 			{
-				_unbuilt.pt_pixel_color[i][j][k] = _unbuilt_drawer_pt;
-				_unbuilt.sp_pixel_color[i][j][k] = _unbuilt_drawer_span;
+				_unbuilt.pt_pixel_color[i][j][k] = enesim_drawer_pt_unbuilt;
+				_unbuilt.sp_pixel_color[i][j][k] = enesim_drawer_span_unbuilt;
 			}
 		}
 		/* sp_mask_color, pt_mask_color */
 		for (j = 0; j < COLOR_TYPES; j++)
 		{
-			_unbuilt.pt_mask_color[i][j] = &_unbuilt_drawer_pt;
-			_unbuilt.sp_mask_color[i][j] = &_unbuilt_drawer_span;
+			_unbuilt.pt_mask_color[i][j] = &enesim_drawer_pt_unbuilt;
+			_unbuilt.sp_mask_color[i][j] = &enesim_drawer_span_unbuilt;
 		}
 	}
 }

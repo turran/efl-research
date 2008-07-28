@@ -106,9 +106,9 @@ static void point_functions(Format *f, const char *rop)
 				Plane *p = &sf->planes[j];
 					
 				if (j == sf->num_planes - 1)
-					fprintf(fout, "*s->%s.plane%d);\n", sf->name, j);
+					fprintf(fout, "s->%s.plane%d);\n", sf->name, j);
 				else
-					fprintf(fout, "*s->%s.plane%d, ", sf->name, j);
+					fprintf(fout, "s->%s.plane%d, ", sf->name, j);
 			}
 			fprintf(fout, "\t%s_from_argb(argb, ", f->name);
 			for (j = 0; j < f->num_planes; j++)
@@ -176,7 +176,7 @@ static void span_functions(Format *f, const char *rop)
 	fprintf(fout, "\t\t%s_data_increment(&dtmp, 1);\n", f->name);
 	fprintf(fout, "\t}\n");
 	span_prototype_end(f);
-	/* pixel */			
+	/* pixel */
 	sf = formats[0];
 	while (sf)
 	{
@@ -196,7 +196,8 @@ static void span_functions(Format *f, const char *rop)
 		sf = formats[++i];
 	}
 	/* pixel_color */
-	sf = formats[0];
+	i = 0;
+	sf = formats[i];
 	while (sf)
 	{
 		fprintf(fout, "static void %s_sp_pixel_color_%s_%s", f->name, rop, sf->name);
@@ -216,7 +217,6 @@ static void span_functions(Format *f, const char *rop)
 	}
 	/* mask_color */
 	/* pixel_mask */
-
 }
 
 static void drawer_definition(Format *f)
@@ -227,22 +227,38 @@ static void drawer_definition(Format *f)
 	fprintf(fout, "Enesim_Drawer %s_drawer = {\n", f->name);
 	for (rop = 0; rop < ROPS; rop++)
 	{
-		int i = 0;
-		Format *sf = formats[0];
-		char fupper[256];
+		int i;
 		
 		strupr(rupper, rop_names[rop]);
 		/* sp/pt_color */
 		fprintf(fout, "\t.sp_color[ENESIM_%s] = %s_sp_color_%s,\n", rupper, f->name, rop_names[rop]);			
 		fprintf(fout, "\t.pt_color[ENESIM_%s] = %s_pt_color_%s,\n", rupper, f->name, rop_names[rop]);
 		/* sp/pt pixel */
-		while (sf)
+		for (i = 0; i < ENESIM_SURFACE_FORMATS; i++)
 		{
-			strupr(fupper, sf->name);
-			fprintf(fout, "\t.sp_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_sp_pixel_%s_%s,\n", rupper, fupper, f->name, rop_names[rop], sf->name);
-			fprintf(fout, "\t.pt_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_pt_pixel_%s_%s,\n", rupper, fupper, f->name, rop_names[rop], sf->name);
-			
-			sf = formats[++i];
+			Format *sf = formats[0];
+			char *enum_name = surface_format_name[i];
+			if (!enum_name)
+				continue;
+			/* if the source format was chosen for build, add the
+			 * function if not point it to the unbuilt function
+			 */
+			sf = format_from_format(i);
+			/* unbuilt function */
+			if (!sf)
+			{
+				fprintf(fout, "\t.sp_pixel[ENESIM_%s][%s] = enesim_drawer_span_unbuilt,\n", rupper, enum_name);
+				fprintf(fout, "\t.pt_pixel[ENESIM_%s][%s] = enesim_drawer_pt_unbuilt,\n", rupper, enum_name);
+			}
+			/* we have done a function */
+			else
+			{
+				char fupper[256];
+				
+				strupr(fupper, sf->name);
+				fprintf(fout, "\t.sp_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_sp_pixel_%s_%s,\n", rupper, fupper, f->name, rop_names[rop], sf->name);
+				fprintf(fout, "\t.pt_pixel[ENESIM_%s][ENESIM_SURFACE_%s] = %s_pt_pixel_%s_%s,\n", rupper, fupper, f->name, rop_names[rop], sf->name);
+			}				
 		}
 	}
 	/*

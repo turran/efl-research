@@ -17,15 +17,21 @@
  * 
  * To add a new surface format you should follow the next steps:
  * 1. Add a new entry to Enesim_Surface_Format enumaration in enesim_surface.h
+ *    the format is TODO
  * 2. Create a new ENESIM_SURFACE_FORMAT(name, [yes | no]) entry into
  *    configure.in 
- * 3. Create a data struct for that format, every plane should be named as 
- *    planeX in enesim_surface.h
- * 4. Go to enesim_generator.c and follow the instructions on the beginning of
+ * 3. Create a data struct for that format in enesim_surface.h, every plane 
+ *    should be named as planeX, in case the pixel length is smaller than the 
+ *    data type and contiguous you should also create a planeX_pixel variable. 
+ * 4. Add your new data type to the Enesim_Surface_Data union, it should be of
+ *    the same name as the format type
+ * 5. Go to enesim_generator.c and follow the instructions on the beginning of
  *    the file
- * 5. Add the drawer to the array of drawers in enesim_drawer.c, with the
+ * 6. Add a rule to generate the core headers in src/include/Makefile.am
+ * 7. Add a rule to generate the drawer source files in src/lib/drawer/Makefile.am
+ * 8. Add the drawer to the array of drawers in enesim_drawer.c, with the
  *    conditional building of course
- * 6. 
+ * 9. Add your includes in enesim_private.h in a similar way
  * 
  */
 
