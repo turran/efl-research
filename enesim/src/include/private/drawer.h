@@ -33,6 +33,8 @@ typedef struct _Enesim_Drawer
 	Enesim_Drawer_Point pt_pixel_mask[ENESIM_ROPS][ENESIM_SURFACE_FORMATS];
 } Enesim_Drawer;
 
+void enesim_drawer_init(void);
+void enesim_drawer_shutdown(void);
 
 void enesim_drawer_pt_unbuilt(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
 		unsigned int color, unsigned char *mask);

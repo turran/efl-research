@@ -65,7 +65,7 @@ static Eina_Bool _draw(Enesim_Renderer *r, int type, void *sl, Enesim_Surface *d
 		ret = _draw_mask(r, sl, dst);
 	else
 	{
-		ENESIM_ERROR(ENESIM_ERROR_HANDLE_INVALID);
+//		ENESIM_ERROR(ENESIM_ERROR_HANDLE_INVALID);
 	}
 	return ret;
 }

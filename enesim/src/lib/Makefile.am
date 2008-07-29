@@ -13,7 +13,6 @@ lib_LTLIBRARIES = libenesim.la
 
 libenesim_la_SOURCES = \
 enesim_main.c \
-enesim_core.c \
 enesim_converter.c \
 enesim_drawer.c \
 enesim_rasterizer.c \

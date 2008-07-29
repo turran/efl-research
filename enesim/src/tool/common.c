@@ -98,7 +98,7 @@ Format argb8888 = {
  *                                rgb565_xa5                                  * 
  *============================================================================*/
 #ifdef BUILD_SURFACE_RGB565_XA5
-Format rgb565 _xa5 = {
+Format rgb565_xa5 = {
 	.sformat = ENESIM_SURFACE_RGB565_XA5,
 	.name = "rgb565_xa5",
 	.planes[0] = {

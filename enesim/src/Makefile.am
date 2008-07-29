@@ -1,3 +1,3 @@
-SUBDIRS = bin include lib
+SUBDIRS = tool include lib
 
 MAINTAINERCLEANFILES = Makefile.in

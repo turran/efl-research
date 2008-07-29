@@ -42,7 +42,7 @@ typedef enum
 #define ENESIM_MAGIC_SET(p, m)
 #define ENESIM_ASSERT(cond, err)
 #define ENESIM_ERROR(err) \
-	enesim_error_set(err); \
+	/* enesim_error_set(err);*/  \
 	return EINA_FALSE; \
 #define ENESIM_ERROR_COND(err, cond) \
 	if (!(cond)) \
@@ -56,13 +56,13 @@ typedef enum
 #define ENESIM_MAGIC_CHECK(p, m) \
 	if (p->magic != m) \
 	{ \
-		fprintf(stderr, "[Enesim] Magic Failed. %s at %s:%d - %s():\n", enesim_error_to_str(ENESIM_ERROR_HANDLE_INVALID), __FILE__, __LINE__, __FUNCTION__); \
+		/*fprintf(stderr, "[Enesim] Magic Failed. %s at %s:%d - %s():\n", enesim_error_to_str(ENESIM_ERROR_HANDLE_INVALID), __FILE__, __LINE__, __FUNCTION__); */ \
 		abort(); \
 	}
 
 #define ENESIM_ERROR(err) \
-	fprintf(stderr, "[Enesim] %s at %s:%d - %s():\n", enesim_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); \
-	enesim_error_set(err); \
+	/* fprintf(stderr, "[Enesim] %s at %s:%d - %s():\n", enesim_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); */ \
+	/* enesim_error_set(err); */ \
 	return EINA_FALSE; \
 
 #define ENESIM_ERROR_COND(err, cond) \
@@ -73,7 +73,7 @@ typedef enum
 #define ENESIM_ASSERT(cond, err) \
 	if (!(cond)) \
 	{ \
-		fprintf(stderr, "[Enesim] %s at %s:%d - %s():\n", enesim_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); \
+		/* fprintf(stderr, "[Enesim] %s at %s:%d - %s():\n", enesim_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); */ \
 		abort(); \
 	}
 #endif

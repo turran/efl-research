@@ -14,12 +14,12 @@
  * mask = in case of using a mask
  */
 typedef void (*Enesim_Drawer_Point)(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
-		unsigned int color, unsigned char *mask);
+		unsigned int color, Enesim_Surface_Data *m);
 /**
  * 
  */
 typedef void (*Enesim_Drawer_Span)(Enesim_Surface_Data *d, unsigned int len,
-		Enesim_Surface_Data *s, unsigned int color, unsigned char *mask);
+		Enesim_Surface_Data *s, unsigned int color, Enesim_Surface_Data *m);
 
 EAPI Enesim_Drawer_Point enesim_drawer_point_color_get(Enesim_Rop rop, Enesim_Surface_Format dfmt, unsigned int color);
 EAPI Enesim_Drawer_Span enesim_drawer_span_color_get(Enesim_Rop rop, Enesim_Surface_Format dfmt, unsigned int color);

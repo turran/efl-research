@@ -118,7 +118,7 @@ void core_functions(Format *f)
 
 #if 0
 /* print the format plane's mask when converting the plane data into a 32bit
- * value, like: rgb565 should be r5r5g6g6b5b5
+ * value, like: rgb565_xa5 should be r5r5g6g6b5b5
  */
 static void mask(Format *f)
 {

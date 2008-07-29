@@ -19,7 +19,7 @@ Enesim_Drawer _unbuilt;
 extern Enesim_Drawer argb8888_drawer;
 
 
-#ifdef BUILD_SURFACE_ARGB888_UNPRE
+#ifdef BUILD_SURFACE_ARGB8888_UNPRE
 extern Enesim_Drawer argb8888_unpre_drawer;
 #endif
 
@@ -33,7 +33,7 @@ extern Enesim_Drawer rgb565_b1a3_drawer;
 
 Enesim_Drawer *drawer[ENESIM_SURFACE_FORMATS] = {
 		[ENESIM_SURFACE_ARGB8888] = &argb8888_drawer,
-#ifdef BUILD_SURFACE_ARGB888_UNPRE
+#ifdef BUILD_SURFACE_ARGB8888_UNPRE
 		[ENESIM_SURFACE_ARGB8888_UNPRE] = &argb8888_unpre_drawer,
 #else
 		[ENESIM_SURFACE_ARGB8888_UNPRE] = &_unbuilt,
@@ -48,6 +48,18 @@ Enesim_Drawer *drawer[ENESIM_SURFACE_FORMATS] = {
 #else
 		[ENESIM_SURFACE_RGB565_B1A3] = &_unbuilt,
 #endif
+#ifdef BUILD_SURFACE_RGB888_A8
+#else
+		[ENESIM_SURFACE_RGB888_A8] = &_unbuilt,
+#endif
+#ifdef BUILD_SURFACE_A8
+#else
+		[ENESIM_SURFACE_A8] = &_unbuilt,
+#endif
+#ifdef BUILD_SURFACE_B1A3
+#else
+		[ENESIM_SURFACE_b1A3] = &_unbuilt,
+#endif
 };
 /*============================================================================*
  *                                 Global                                     * 
@@ -55,19 +67,21 @@ Enesim_Drawer *drawer[ENESIM_SURFACE_FORMATS] = {
 void enesim_drawer_pt_unbuilt(Enesim_Surface_Data *d, Enesim_Surface_Data *s,
 		unsigned int color, unsigned char *mask)
 {
-	
+	//EINA_ERROR_PWARN("Point function not supported\n");
 }
 void enesim_drawer_span_unbuilt(Enesim_Surface_Data *d, unsigned int len,
 		Enesim_Surface_Data *s, unsigned int color, unsigned char *mask)
 {
-	
+	//EINA_ERROR_PWARN("Span function not supported\n");
 }
 
 void enesim_drawer_init(void)
 {
 	int i;
 	int j;
-	
+
+	memset(&_unbuilt, 0, sizeof(Enesim_Drawer));
+#if 0
 	for (i = 0; i < ENESIM_ROPS; i++)
 	{
 		int j;
@@ -98,6 +112,7 @@ void enesim_drawer_init(void)
 			_unbuilt.sp_mask_color[i][j] = &enesim_drawer_span_unbuilt;
 		}
 	}
+#endif
 }
 
 void enesim_drawer_shutdown(void)

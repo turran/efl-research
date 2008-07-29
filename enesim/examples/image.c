@@ -4,7 +4,7 @@
 
 /* TODO
  * fix all this mess */
-void png_load(Enesim_Surface *s, char *file)
+void image_load(Enesim_Surface *s, const char *file)
 {
 	png_uint_32 w32, h32;
 	int w, h;
@@ -114,7 +114,7 @@ void png_load(Enesim_Surface *s, char *file)
         //enesim_color_data_argb_premul(sdata, w * h);
 }
 
-void png_save(Enesim_Surface *s, char *file, int compress)
+void image_save(Enesim_Surface *s, const char *file, int compress)
 {
 	FILE *f;
 	int num_passes = 1, pass;
@@ -192,7 +192,6 @@ void png_save(Enesim_Surface *s, char *file, int compress)
 	for (pass = 0; pass < num_passes; pass++)
 	{
 		ptr = data;
-		printf("%x\n", *data);
 
         for (y = 0; y < h; y++)
           {

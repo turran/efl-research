@@ -1,6 +1,8 @@
 #ifndef ENESIM_GENERATOR_H_
 #define ENESIM_GENERATOR_H_
 
+#include <ctype.h>
+#include <string.h>
 #include "common.h"
 
 extern const char *type_names[TYPES];
@@ -16,5 +18,6 @@ void rop_functions(Format *sf, Format *df);
 void core_functions(Format *f);
 void drawer_functions(Format *f);
 void data_parameters(Format *f);
+void strupr(char *dst, const char *src);
 
 #endif /*ENESIM_GENERATOR_H_*/

@@ -21,7 +21,7 @@ static Enesim_Surface * tiger_draw(void)
 	Enesim_Surface *s;
 	
 	s = surface_new(TIGER_WIDTH, TIGER_HEIGHT, ENESIM_SURFACE_ARGB8888_UNPRE);
-	png_load(s, PACKAGE_DATA_DIR"/tiger.png");
+	image_load(s, PACKAGE_DATA_DIR"/tiger.png");
 	
 	return s;
 }

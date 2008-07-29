@@ -18,8 +18,8 @@ typedef enum
 {
 	ENESIM_SURFACE_ARGB8888, /**< */
 	ENESIM_SURFACE_ARGB8888_UNPRE, /**< */
-	ENESIM_SURFACE_RGB565_B1A3, /**< */
 	ENESIM_SURFACE_RGB565_XA5, /**< */
+	ENESIM_SURFACE_RGB565_B1A3, /**< */
 	ENESIM_SURFACE_RGB888_A8, /**< */
 	ENESIM_SURFACE_A8, /**< */
 	ENESIM_SURFACE_b1A3, /**< */
@@ -40,6 +40,15 @@ typedef struct _Rgb565_Xa5_Data
 	uint16_t	*plane0; /* r5g6b5 plane */
 	uint8_t 	*plane1; /* a5 plane */
 } Rgb565_Xa5_Data;
+/**
+ * 
+ * 
+ */
+typedef struct _Rgb565_B1a3_Data
+{
+	uint16_t	*plane0; /* r5g6b5 plane */
+	uint8_t 	*plane1; /* a5 plane */
+} Rgb565_B1a3_Data;
 /**
  * 
  */
@@ -67,17 +76,18 @@ typedef struct _A8_Data
  *     1       3        1        3
  * <------P0------>.<------P1------>.
  */
-typedef struct _b1A3_Data
+typedef struct _B1a3_Data
 {
 	uint8_t *plane0; /* b1A3 plane */
 	unsigned long plane0_pixel;
-} bA3_Data;
+} B1a3_Data;
 /**
  * 
  */
 typedef union _Enesim_Surface_Data
 {
-	Rgb565_Xa5_Data rgb565;
+	Rgb565_Xa5_Data rgb565_xa5;
+	Rgb565_B1a3_Data rgb565_b1a3;
 	Rgb888_Data rgb888;
 	A8_Data a8;
 	Argb8888_Unpre_Data argb8888_unpre;
@@ -91,8 +101,10 @@ EAPI void enesim_surface_size_set(Enesim_Surface *s, int w, int h);
 EAPI Enesim_Surface_Format enesim_surface_format_get(const Enesim_Surface *s);
 EAPI void enesim_surface_data_get(const Enesim_Surface *s, Enesim_Surface_Data *sdata);
 EAPI void enesim_surface_data_set(Enesim_Surface *s, const Enesim_Surface_Data *sdata);
+EAPI unsigned int enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sfmt);
 EAPI void enesim_surface_data_increment(Enesim_Surface_Data *sdata, Enesim_Surface_Format sfmt, unsigned int len);
 EAPI void enesim_surface_delete(Enesim_Surface *s);
+EAPI const char * enesim_surface_format_name_get(Enesim_Surface_Format f);
 /** @} */ //End of Enesim_Surface_Group
 
 

@@ -358,7 +358,7 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 		eina_rectangle_intersection(&cdr, dr);
 		if (eina_rectangle_is_empty(&cdr))
 		{
-			ENESIM_ERROR(ENESIM_ERROR_DSTRECT_INVALID);
+			//ENESIM_ERROR(ENESIM_ERROR_DSTRECT_INVALID);
 		}
 	}
 	/* setup the source clipping */
@@ -372,7 +372,7 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 		eina_rectangle_intersection(&csr, sr);
 		if (eina_rectangle_is_empty(&csr))
 		{
-			ENESIM_ERROR(ENESIM_ERROR_SRCRECT_INVALID);
+			//ENESIM_ERROR(ENESIM_ERROR_SRCRECT_INVALID);
 		}
 	}
 	/* check if we are going to scale */
@@ -390,7 +390,7 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	/* TODO use xscale and yscale */
 	if (!(tfunc = _functions[t->type]))
 	{
-		ENESIM_ERROR(ENESIM_ERROR_TRANSFORMATION_NOT_SUPPORTED);
+		//ENESIM_ERROR(ENESIM_ERROR_TRANSFORMATION_NOT_SUPPORTED);
 	}
 	tfunc(t, s, sr, d, dr);
 	return EINA_TRUE;

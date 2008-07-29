@@ -50,7 +50,7 @@ fi
 ## the core format and cannot be optional
 ENESIM_SURFACE_FORMAT(argb8888_unpre, [yes])
 ENESIM_SURFACE_FORMAT(rgb888_a8, [no])
-ENESIM_SURFACE_FORMAT(rgb565_xa5, [no])
+ENESIM_SURFACE_FORMAT(rgb565_xa5, [yes])
 ENESIM_SURFACE_FORMAT(rgb565_b1a3, [no])
 
 EXAMPLE_CFLAGS="$SDL_CFLAGS $PNG_CFLAGS"
@@ -72,7 +72,7 @@ Makefile
 enesim.pc
 src/Makefile
 src/include/Makefile
-src/bin/Makefile
+src/tool/Makefile
 src/lib/Makefile
 src/lib/rasterizer/Makefile
 src/lib/renderer/Makefile
@@ -85,11 +85,6 @@ examples/Makefile
 data/Makefile
 ],[
 ])
-#deprecated
-#src/lib/raster/scanline/Makefile
-#src/lib/raster/surface/rop/Makefile
-#src/lib/raster/surface/rop/blend/Makefile
-
 
 #####################################################################
 ## Info

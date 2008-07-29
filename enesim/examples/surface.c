@@ -18,8 +18,8 @@ Enesim_Surface * surface_new(int w, int h, Enesim_Surface_Format fmt)
 		break;
 	
 		case ENESIM_SURFACE_RGB565_XA5:
-		sdata.rgb565.plane0 = calloc(1, sizeof(unsigned short int) * w * h);
-		sdata.rgb565.plane1 = calloc(1, sizeof(unsigned char) * w * h);
+		sdata.rgb565_xa5.plane0 = calloc(1, sizeof(unsigned short int) * w * h);
+		sdata.rgb565_xa5.plane1 = calloc(1, sizeof(unsigned char) * w * h);
 		s = enesim_surface_new_data_from(fmt, w, h, &sdata);
 		break;
 		
@@ -48,8 +48,8 @@ void surface_free(Enesim_Surface *s)
 		break;
 		
 		case ENESIM_SURFACE_RGB565_XA5:
-		free(sdata.rgb565.plane0);
-		free(sdata.rgb565.plane1);
+		free(sdata.rgb565_xa5.plane0);
+		free(sdata.rgb565_xa5.plane1);
 		break;
 		
 		default:
@@ -115,7 +115,7 @@ void surface_blt(Enesim_Surface *s, SDL_Surface *sdl)
 		bmask = 0x0000001f;
 		pitch = 2 * w;
 		bpp = 16;
-		data = sdata.rgb565.plane0;
+		data = sdata.rgb565_xa5.plane0;
 		break;
 
 		default:
