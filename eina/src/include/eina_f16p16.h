@@ -55,7 +55,7 @@ static inline Eina_F16p16 eina_f16p16_add(Eina_F16p16 a, Eina_F16p16 b)
  * To be documented
  * FIXME: To be fixed
  */
-static inline Eina_F16p16 eina_f16p16_sub(a, b)
+static inline Eina_F16p16 eina_f16p16_sub(Eina_F16p16 a, Eina_F16p16 b)
 {
 	return a - b;
 }
@@ -63,7 +63,7 @@ static inline Eina_F16p16 eina_f16p16_sub(a, b)
  * To be documented
  * FIXME: To be fixed
  */
-static inline Eina_F16p16 eina_f16p16_mul(a, b)
+static inline Eina_F16p16 eina_f16p16_mul(Eina_F16p16 a, Eina_F16p16 b)
 {
 	return (a * b) >> 16;
 }
