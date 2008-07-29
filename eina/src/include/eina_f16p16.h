@@ -26,7 +26,7 @@ static inline int32_t eina_f16p16_int_to(Eina_F16p16 v)
 /**
  * To be documented
  * FIXME: To be fixed
- */	
+ */
 static inline Eina_F16p16 eina_f16p16_float_from(float v)
 {
 	Eina_F16p16 r;
@@ -74,7 +74,7 @@ static inline Eina_F16p16 eina_f16p16_mul(Eina_F16p16 a, Eina_F16p16 b)
 static inline Eina_F16p16 eina_f16p16_sqrt(Eina_F16p16 a)
 {
 	unsigned int root, remHi, remLo, testDiv, count;
-	
+
 	root = 0; /* Clear root */
 	remHi = 0; /* Clear high part of partial remainder */
 	remLo = a; /* Get argument into low part of partial remainder */
@@ -91,7 +91,7 @@ static inline Eina_F16p16 eina_f16p16_sqrt(Eina_F16p16 a)
 			root++;
 		}
 	} while (count-- != 0);
-	return (root);	
+	return (root);
 }
 /**
  * To be documented

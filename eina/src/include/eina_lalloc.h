@@ -5,6 +5,7 @@
  * @defgroup Array_Group Array
  * @{
  */
+
 typedef void (*Eina_Array_Alloc) (void *user_data, int num);
 #define EINA_ARRAY_ALLOC(function) ((Eina_Array_Alloc)function)
 typedef void (*Eina_Array_Free) (void *user_data);

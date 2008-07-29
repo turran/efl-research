@@ -1,6 +1,10 @@
 #ifndef EINA_PRIVATE_H_
 #define EINA_PRIVATE_H_
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -18,14 +22,6 @@
 
 #define DEBUG
 #include <assert.h>
-
-#ifndef _WIN32
-# include <sys/mman.h>
-#endif
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #ifndef PATH_MAX
 # define PATH_MAX 4096
@@ -149,4 +145,4 @@ typedef struct _Eina_Mempool_Backend
 } Eina_Mempool_Backend;
 
 
-#endif
+#endif /* EINA_PRIVATE_H_ */

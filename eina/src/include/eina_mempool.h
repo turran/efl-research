@@ -1,5 +1,6 @@
 #ifndef EINA_MEMPOOL_H_
 #define EINA_MEMPOOL_H_
+
 /**
  * @defgroup Memory_Pool_Group Memory Pool
  * @{
@@ -16,5 +17,7 @@ EAPI Eina_Mempool * eina_mempool_new(const char *name, unsigned int size, const 
 EAPI void * eina_mempool_realloc(Eina_Mempool *mp, void *element, unsigned int size);
 EAPI void * eina_mempool_alloc(Eina_Mempool *mp, unsigned int size);
 EAPI void eina_mempool_free(Eina_Mempool *mp, void *element);
+
 /** @} */
-#endif /*EINA_MEMPOOL_H_*/
+
+#endif /* EINA_MEMPOOL_H_ */

@@ -1,9 +1,11 @@
 #ifndef EINA_MODULE_H_
 #define EINA_MODULE_H_
+
 /**
  * @defgroup Module_Group Module
  * @{
  */
+
 typedef struct _Eina_Module Eina_Module;
 
 typedef int (*Eina_Module_Cb)(Eina_Module *m, void *data);
@@ -19,5 +21,7 @@ EAPI Eina_List * eina_module_list_get(const char *path, unsigned int recursive, 
 EAPI void eina_module_list_load(Eina_List *list);
 EAPI void eina_module_list_unload(Eina_List *list);
 EAPI void eina_module_list_free(Eina_List *list);
+
 /** @} */
+
 #endif /*EINA_MODULE_H_*/

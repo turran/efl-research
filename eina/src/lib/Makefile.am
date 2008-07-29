@@ -16,5 +16,6 @@ eina_list.c \
 eina_module.c \
 eina_value.c
 
-libeina_la_LIBADD = -lm -ldl
-libeina_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
+libeina_la_LIBADD = -ldl
+libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -version-info @version_info@
+libeina_la_DEPENDENCIES = $(top_builddir)/config.h

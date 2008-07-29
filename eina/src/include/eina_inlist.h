@@ -5,6 +5,7 @@
  * @defgroup Inline_List_Group Inline List
  * @{
  */
+
 /* TODO change the prototype to use an Eina_Inlist */
 typedef struct _Eina_Inlist Eina_Inlist;
 
@@ -27,5 +28,6 @@ EAPI void * eina_inlist_find(void *in_list, void *in_item);
 #define EINA_ITER_NEXT(list, l) for (l = (Eina_Inlist *)list; l; l = l->next)
 #define EINA_ITER_LAST(list, l) for (l = ((Eina_Inlist *)list)->last; l; l = l->prev)
 
-/** } */
+/** @} */
+
 #endif /*EINA_INLIST_H_*/

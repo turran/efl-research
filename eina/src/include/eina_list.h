@@ -33,4 +33,5 @@ EAPI int eina_list_alloc_error(void);
 
 
 /** @} */
-#endif /* EINA_LIST_H */
+
+#endif /* EINA_LIST_H_ */

@@ -1,5 +1,6 @@
 #ifndef EINA_RECTANGLE_H_
 #define EINA_RECTANGLE_H_
+
 /**
  * @file
  * @{
@@ -11,10 +12,10 @@
  */
 typedef struct _Eina_Rectangle
 {
-	int 	x;
-	int 	y;
-	int 	w;
-	int 	h;
+	int	x;
+	int	y;
+	int	w;
+	int	h;
 } Eina_Rectangle;
 
 /**
@@ -66,7 +67,7 @@ eina_rectangles_intersect(Eina_Rectangle *r1, Eina_Rectangle *r2)
 static inline Eina_Bool
 eina_rectangle_hspan_inside(Eina_Rectangle *r, int x, int l)
 {
-	
+
 }
 /**
  * To be documented
@@ -75,7 +76,7 @@ eina_rectangle_hspan_inside(Eina_Rectangle *r, int x, int l)
 static inline Eina_Bool
 eina_rectangle_vspan_inside(Eina_Rectangle *r, int y, int l)
 {
-	
+
 }
 /**
  * To be documented
@@ -139,7 +140,7 @@ eina_rectangle_intersection(Eina_Rectangle *dst, Eina_Rectangle *src)
 {
 	if (!(eina_rectangles_intersect(dst, src)))
 		return EINA_FALSE;
-	
+
 	/* left */
 	if (dst->x < src->x)
 	{
@@ -162,7 +163,7 @@ eina_rectangle_intersection(Eina_Rectangle *dst, Eina_Rectangle *src)
 	/* bottom */
 	if ((dst->y + dst->h) > (src->y + src->h))
 		dst->h = src->y + src->h - dst->y;
-	
+
 	return EINA_TRUE;
 }
 
@@ -191,4 +192,5 @@ eina_rectangle_rescale_out(Eina_Rectangle *out, Eina_Rectangle *in, Eina_Rectang
 }
 
 /** @} */
+
 #endif /*_ENESIM_RECTANGLE_H_*/
