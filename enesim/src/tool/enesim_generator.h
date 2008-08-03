@@ -5,6 +5,7 @@
 #include <string.h>
 #include "common.h"
 
+extern const int type_lengths[TYPES];
 extern const char *type_names[TYPES];
 extern const char *color_names[COLORS];
 extern const int argb_offsets[COLORS];

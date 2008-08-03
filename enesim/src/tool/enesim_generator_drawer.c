@@ -1,5 +1,22 @@
 #include "enesim_generator.h"
 
+/* TODO
+ * color mask
+ * pixel mask
+ * plane length < colors length and contiguous
+ * 
+ * 
+ * Optimizatons:
+ * 
+ * Span Color: should translate the color from argb to source format and pass
+ * that color to the pt_color function. This means that the pt color function
+ * should be split on two, the one the drawer expects and another one that
+ * actually does the operation with color already transformed, the span function
+ * should call the second version.
+ * 
+ * Span/Pt Pixel: if the source and destination formats are the same, there's
+ * no need to transform to and from argb, just pass the data directly 
+ */
 /* color mask code */
 #if 0
 uint32_t *d, *e;
@@ -36,7 +53,7 @@ static void point_prototype_start(Format *f)
 {
 	int i;
 	
-	fprintf(fout, "(Enesim_Surface_Data *d, Enesim_Surface_Data *s, unsigned int color, Enesim_Surface_Data *m)\n");
+	fprintf(fout, "(Enesim_Surface_Data *d, Enesim_Surface_Data *s, Enesim_Color color, Enesim_Surface_Data *m)\n");
 	fprintf(fout, "{\n");
 	
 	for (i = 0; i < f->num_planes; i++)
@@ -75,8 +92,15 @@ static void point_functions(Format *f, const char *rop)
 	for (i = 0; i < f->num_planes; i++)
 	{
 		Plane *p = &f->planes[i];
-			
-		fprintf(fout, "d->%s.plane%d, ", f->name, i);
+		
+		if ((p->contiguous) && (p->length < type_lengths[p->type]))
+		{
+			fprintf(fout, "d->%s.plane%d, d->%s.pixel_plane%d, ", f->name, i, f->name, i);
+		}
+		else
+		{
+			fprintf(fout, "d->%s.plane%d, ", f->name, i);
+		}
 	}
 	for (i = 0; i < f->num_planes; i++)
 	{
@@ -98,17 +122,27 @@ static void point_functions(Format *f, const char *rop)
 		fprintf(fout, "static void %s_pt_pixel_%s_%s", f->name, rop, sf->name);
 		point_prototype_start(f);
 		fprintf(fout, "\tunsigned int argb;\n");
-		if (f != sf)
+		//if (f != sf)
 		{
 			fprintf(fout, "\t%s_to_argb(&argb, ", sf->name);
 			for (j = 0; j < sf->num_planes; j++)
 			{
 				Plane *p = &sf->planes[j];
-					
-				if (j == sf->num_planes - 1)
-					fprintf(fout, "*(s->%s.plane%d));\n", sf->name, j);
+				
+				if ((p->contiguous) && (p->length < type_lengths[p->type]))
+				{
+					if (j == sf->num_planes - 1)
+						fprintf(fout, "*(s->%s.plane%d), s->%s.pixel_plane%d);\n", sf->name, j, sf->name, j);
+					else
+						fprintf(fout, "*(s->%s.plane%d), s->%s.pixel_plane%d, ", sf->name, j, sf->name, j);
+				}
 				else
-					fprintf(fout, "*(s->%s.plane%d), ", sf->name, j);
+				{
+					if (j == sf->num_planes - 1)
+						fprintf(fout, "*(s->%s.plane%d));\n", sf->name, j);
+					else
+						fprintf(fout, "*(s->%s.plane%d), ", sf->name, j);
+				}
 			}
 			fprintf(fout, "\t%s_from_argb(argb, ", f->name);
 			for (j = 0; j < f->num_planes; j++)
@@ -121,12 +155,20 @@ static void point_functions(Format *f, const char *rop)
 					fprintf(fout, "&data%d, ", j);
 			}
 		}
+		/* rop */
 		fprintf(fout, "\t%s_%s(", f->name, rop);
 		for (j = 0; j < f->num_planes; j++)
 		{
 			Plane *p = &f->planes[j];
-				
-			fprintf(fout, "d->%s.plane%d, ", f->name, j);
+			
+			if ((p->contiguous) && (p->length < type_lengths[p->type]))
+			{
+				fprintf(fout, "d->%s.plane%d, d->%s.pixel_plane%d, ", f->name, j, f->name, j);
+			}
+			else
+			{
+				fprintf(fout, "d->%s.plane%d, ", f->name, j);
+			}
 		}
 		for (j = 0; j < f->num_planes; j++)
 		{
@@ -148,7 +190,7 @@ static void point_functions(Format *f, const char *rop)
 
 static void span_prototype_start(Format *f)
 {
-	fprintf(fout, "(Enesim_Surface_Data *d, unsigned int len, Enesim_Surface_Data *s, unsigned int color, Enesim_Surface_Data *m)\n");
+	fprintf(fout, "(Enesim_Surface_Data *d, unsigned int len, Enesim_Surface_Data *s, Enesim_Color color, Enesim_Surface_Data *m)\n");
 	fprintf(fout, "{\n");
 }
 

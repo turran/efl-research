@@ -6,6 +6,12 @@
  * src/lib/drawer/SURFACE_FORMAT.c (drawer)
  *  
  */
+const int type_lengths[TYPES] = {
+	8,
+	16,
+	32,
+};
+
 
 const char *type_names[TYPES] = {
 	"uint8_t",

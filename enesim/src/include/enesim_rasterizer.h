@@ -29,6 +29,9 @@ typedef struct _Enesim_Scanline_Mask
 	uint8_t *coverages;
 } Enesim_Scanline_Mask;
 
+/**
+ * 
+ */
 enum {
 	ENESIM_SCANLINE_ALIAS  	    = (1 << 0),
 	ENESIM_SCANLINE_ANTIALIAS   = (1 << 1),
@@ -36,14 +39,19 @@ enum {
 	ENESIM_SCANLINES
 };
 
+/**
+ * 
+ */
 typedef void (*Enesim_Scanline_Callback)(void *sl, int type, void *data);
 
 typedef struct _Enesim_Scanline Enesim_Scanline; /**< Scanline Handler */
 EAPI Enesim_Scanline 	*enesim_scanline_alias_new(void);
 EAPI void 		enesim_scanline_delete(Enesim_Scanline *sl);
 
-
-typedef enum
+/**
+ * 
+ */
+typedef enum _Enesim_Rasterizer_Fill_Rule
 {
 	ENESIM_RASTERIZER_FILL_RULE_EVENODD,
 	ENESIM_RASTERIZER_FILL_RULE_NONEZERO,
@@ -59,6 +67,9 @@ EAPI void enesim_rasterizer_fill_rule_set(Enesim_Rasterizer *r, Enesim_Rasterize
 
 EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Eina_Rectangle boundaries);
 
+/**
+ * 
+ */
 typedef enum
 {
 	ENESIM_RASTERIZER_KIIA_COUNT_8,

@@ -3,6 +3,8 @@
 
 /**
  * @defgroup Enesim_Renderer_Group Renderer
+ * TODO
+ * remove the fill prefix, all of the renderers fill! :)
  * @{
  */
 typedef struct _Enesim_Renderer Enesim_Renderer; /**< Renderer Handler */

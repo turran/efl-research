@@ -331,6 +331,13 @@ EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 /**
  * 
  */
+EAPI void enesim_transformation_rop_set(Enesim_Transformation *t, Enesim_Rop rop)
+{
+	t->rop = rop;
+}
+/**
+ * 
+ */
 EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d, Eina_Rectangle *dr)
 {
 	Eina_Rectangle csr, cdr;

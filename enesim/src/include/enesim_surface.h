@@ -30,15 +30,15 @@ typedef enum
  */
 typedef struct _Argb8888_Data
 {
-	uint32_t	*plane0; /* a8r8g8b8 plane */
+	uint32_t *plane0; /* a8r8g8b8 plane */
 } Argb8888_Unpre_Data, Argb8888_Data;
 /**
  * 
  */
 typedef struct _Rgb565_Xa5_Data
 {
-	uint16_t	*plane0; /* r5g6b5 plane */
-	uint8_t 	*plane1; /* a5 plane */
+	uint16_t *plane0; /* r5g6b5 plane */
+	uint8_t *plane1; /* a5 plane */
 } Rgb565_Xa5_Data;
 /**
  * 
@@ -46,16 +46,17 @@ typedef struct _Rgb565_Xa5_Data
  */
 typedef struct _Rgb565_B1a3_Data
 {
-	uint16_t	*plane0; /* r5g6b5 plane */
-	uint8_t 	*plane1; /* a5 plane */
+	uint16_t *plane0; /* r5g6b5 plane */
+	uint8_t *plane1; /* b1a3 plane */
+	uint8_t pixel_plane1; /* which of the pixel of plane1 to access */
 } Rgb565_B1a3_Data;
 /**
  * 
  */
 typedef struct _Rgb888_Data
 {
-	uint8_t 	*plane0; /* r8g8b8 plane */
-	uint8_t 	*plane1; /* a8 plane */
+	uint8_t *plane0; /* r8g8b8 plane */
+	uint8_t *plane1; /* a8 plane */
 } Rgb888_Data;
 /**
  * +---------------+----------------+
@@ -78,8 +79,8 @@ typedef struct _A8_Data
  */
 typedef struct _B1a3_Data
 {
+	uint8_t pixel_plane0; /* which of the pixel to access */
 	uint8_t *plane0; /* b1A3 plane */
-	unsigned long plane0_pixel;
 } B1a3_Data;
 /**
  * 

@@ -7,6 +7,9 @@ AM_CPPFLAGS = \
 
 bin_PROGRAMS = enesim_generator
 
+enesim_generator_LDADD = \
+@COVERAGE_LIBS@
+
 enesim_generator_DEPENDENCIES =
 enesim_generator_SOURCES = \
 enesim_generator.c \

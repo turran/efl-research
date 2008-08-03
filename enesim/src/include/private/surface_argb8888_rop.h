@@ -1,9 +1,14 @@
 #ifndef SURFACE_ARGB8888_ROP_H_
 #define SURFACE_ARGB8888_ROP_H_
 
+#define MUL_256(a, c) \
+ ( (((((c) >> 8) & 0x00ff00ff) * (a)) & 0xff00ff00) + \
+   (((((c) & 0x00ff00ff) * (a)) >> 8) & 0x00ff00ff) )
+
 
 static inline unsigned int mul_256(unsigned char a, unsigned int c)
 {
+	//printf("%x %x\n", a, c);
 	return  ( (((((c) >> 8) & 0x00ff00ff) * (a)) & 0xff00ff00) +
 	(((((c) & 0x00ff00ff) * (a)) >> 8) & 0x00ff00ff) );
 }
@@ -65,4 +70,4 @@ static inline void argb8888_fill(unsigned int *dplane0, unsigned int splane0)
 	*dplane0 = splane0;
 }
 
-#endif /*SURFACE_ARGB8888_H_*/
+#endif /*SURFACE_ARGB8888_ROP_H_*/

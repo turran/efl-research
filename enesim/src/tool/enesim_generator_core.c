@@ -1,5 +1,9 @@
 #include "enesim_generator.h"
 
+/* TODO
+ * plane length < colors length and contiguous
+ */
+
 /*
  * The functions the core generator do are:
  * static inline void FORMAT_data_copy(Enesim_Surface_Data *s, Enesim_Surface_Data *d)
@@ -35,7 +39,22 @@ static void data_increment(Format *f)
 	for (i = 0; i < f->num_planes; i++)
 	{
 		Plane *p = &f->planes[i];
-		fprintf(fout, "\td->%s.plane%d += len;\n", f->name, i);
+		
+		/* TODO this can be abstracted on a function
+		 * handle the multiple pixels per memory unit case */
+		if ((p->contiguous) && (p->length < type_lengths[p->type]))
+		{
+			int num;
+			
+			num = type_lengths[p->type] / p->length;
+			fprintf(fout, "\td->%s.pixel_plane%d = (d->%s.pixel_plane%d + len) %% %d;\n", f->name, i, f->name, i, num);
+			fprintf(fout, "\td->%s.plane%d += (d->%s.pixel_plane%d + len) / %d;\n", f->name, i, f->name, i, num);
+		}
+		/* */
+		else
+		{
+			fprintf(fout, "\td->%s.plane%d += len;\n", f->name, i);	
+		}
 	}
 	fprintf(fout, "}\n");
 }
@@ -49,7 +68,13 @@ static void data_copy(Format *f)
 	for (i = 0; i < f->num_planes; i++)
 	{
 		Plane *p = &f->planes[i];
-		fprintf(fout, "\td->%s.plane%d = s->%s.plane%d;\n", f->name, i, f->name, i);	
+		
+		/* handle the multiple pixels per memory unit case */
+		if ((p->contiguous) && (p->length < type_lengths[p->type]))
+		{
+			fprintf(fout, "\td->%s.pixel_plane%d = s->%s.pixel_plane%d;\n", f->name, i, f->name, i);
+		}
+		fprintf(fout, "\td->%s.plane%d = s->%s.plane%d;\n", f->name, i, f->name, i);
 	}
 	fprintf(fout, "}\n");
 }
@@ -63,7 +88,20 @@ static void data_offset(Format *f)
 	for (i = 0; i < f->num_planes; i++)
 	{
 		Plane *p = &f->planes[i];
-		fprintf(fout, "\td->%s.plane%d = s->%s.plane%d + offset;\n", f->name, i, f->name, i);	
+		
+		/* handle the multiple pixels per memory unit case */
+		if ((p->contiguous) && (p->length < type_lengths[p->type]))
+		{
+			int num;
+					
+			num = type_lengths[p->type] / p->length;
+			fprintf(fout, "\td->%s.plane%d = s->%s.plane%d + ((s->%s.pixel_plane%d + offset) / %d);\n", f->name, i, f->name, i, f->name, i, num);
+			fprintf(fout, "\td->%s.pixel_plane%d = ((s->%s.pixel_plane%d + offset) %% %d);\n", f->name, i, f->name, i, num);
+		}
+		else
+		{
+			fprintf(fout, "\td->%s.plane%d = s->%s.plane%d + offset;\n", f->name, i, f->name, i);
+		}
 	}
 	fprintf(fout, "}\n");
 }

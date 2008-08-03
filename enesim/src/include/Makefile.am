@@ -26,12 +26,14 @@ endif
 BUILT_SOURCES = \
 private/surface_argb8888_core.h \
 $(ARGB8888_UNPRE_REQ) \
-$(RGB565_XA5_REQ)
+$(RGB565_XA5_REQ) \
+$(RGB565_B1A3_REQ)
 
 CLEANFILES = \
 private/surface_argb8888_core.h \
 $(ARGB8888_UNPRE_REQ) \
-$(RGB565_XA5_REQ)
+$(RGB565_XA5_REQ) \
+$(RGB565_B1A3_REQ)
 
 private/surface_argb8888_core.h: Makefile
 	$(top_builddir)/src/tool/enesim_generator core argb8888 $@

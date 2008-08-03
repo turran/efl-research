@@ -1,15 +1,24 @@
 #ifndef ENESIM_CORE_H_
 #define ENESIM_CORE_H_
 
+/**
+ * TODO every function that expects a color must be cnahed to this
+ * type
+ * The color is premultiplied!!!!!!
+ */
+typedef uint32_t Enesim_Color;
+
 /*
  * 
  */
 typedef enum
 {
-	ENESIM_BLEND,
-	ENESIM_FILL,
+	ENESIM_BLEND, /* D = S + D(1 - Sa) */
+	ENESIM_FILL, /* D = S */
 	ENESIM_ROPS
 } Enesim_Rop;
+
+EAPI void enesim_color_get(Enesim_Color *color, uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
 /*
  * TODO rename this file to enesim_main.h

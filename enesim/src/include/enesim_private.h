@@ -116,6 +116,8 @@ static inline int enesim_hline_cut(int x, int *w, int *rx, int *rw, int cx)
 /* now the surface format backends */
 #include "private/surface_argb8888_core.h"
 #include "private/surface_argb8888_rop.h"
+/* common rgb565 code in case some other uses it */
+#include "private/surface_rgb565_rop.h"
 
 #ifdef BUILD_SURFACE_ARGB8888_UNPRE
 #include "private/surface_argb8888_unpre_core.h"

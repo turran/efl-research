@@ -57,6 +57,8 @@ enesim_surface_new(Enesim_Surface_Format f, int w, int h)
 
 		case ENESIM_SURFACE_RGB565_B1A3:
 		s->data.rgb565_b1a3.plane0 = calloc(w * h, sizeof(unsigned short int));
+		/* TODO FIX THIS */
+		s->data.rgb565_b1a3.plane1 = calloc(w * h, sizeof(unsigned char));
 		break;
 		
 		case ENESIM_SURFACE_RGB888_A8:
@@ -141,6 +143,7 @@ enesim_surface_convert(Enesim_Surface *s, Enesim_Surface *d)
 	tx = enesim_transformation_new();
 	enesim_transformation_matrix_identity(matrix);
 	enesim_transformation_set(tx, matrix);
+	enesim_transformation_rop_set(tx, ENESIM_FILL);
 	eina_rectangle_coords_from(&sr, 0, 0, s->w, s->h);
 	eina_rectangle_coords_from(&dr, 0, 0, d->w, d->h);
 	enesim_transformation_apply(tx, s, &sr, d, &dr);
@@ -193,8 +196,8 @@ enesim_surface_data_increment(Enesim_Surface_Data *sdata, Enesim_Surface_Format 
 	case ENESIM_SURFACE_ARGB8888:
 		argb8888_data_increment(sdata, len);
 		break;
-#ifdef BUILD_SURFACE_ARGB888_UNPRE
-	case ENESIM_SURFACE_ARGB8888_unpre:
+#ifdef BUILD_SURFACE_ARGB8888_UNPRE
+	case ENESIM_SURFACE_ARGB8888_UNPRE:
 		argb8888_unpre_data_increment(sdata, len);
 		break;
 #endif
@@ -203,7 +206,13 @@ enesim_surface_data_increment(Enesim_Surface_Data *sdata, Enesim_Surface_Format 
 		rgb565_xa5_data_increment(sdata, len);
 		break;
 #endif
+#ifdef BUILD_SURFACE_RGB565_B1A3
+	case ENESIM_SURFACE_RGB565_B1A3:
+		rgb565_b1a3_data_increment(sdata, len);
+		break;
+#endif
 	default:
+		EINA_ERROR_PERR("Format not supported\n");
 		break;
 	}
 }
@@ -233,7 +242,13 @@ enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sf
 		rgb565_xa5_to_argb(&argb, *(sdata->rgb565_xa5.plane0), *(sdata->rgb565_xa5.plane1));
 		break;
 #endif
+#ifdef BUILD_SURFACE_RGB565_B1A3
+	case ENESIM_SURFACE_RGB565_B1A3:
+		rgb565_b1a3_to_argb(&argb, *(sdata->rgb565_xa5.plane0), *(sdata->rgb565_xa5.plane1), sdata->rgb565_b1a3.pixel_plane1);
+		break;
+#endif
 	default:
+		EINA_ERROR_PERR("Format not supported\n");
 		break;
 	}
 	return argb;

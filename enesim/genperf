@@ -1,0 +1,3 @@
+#!/bin/sh
+
+examples/enesim_bench -t 100 -f debug/performance.txt

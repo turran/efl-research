@@ -59,7 +59,8 @@ static inline void argb8888_unpre_to_argb(unsigned int *argb, unsigned int plane
 static inline void argb8888_unpre_from_argb(unsigned int argb, unsigned int *plane0)
 {
 	unsigned int a = argb8888_alpha_get(argb);
-	if ((a > 1) && (a < 255))
+	
+	if ((a > 0) && (a < 255))
 	{
 		unsigned char r, g, b;
 			
@@ -81,6 +82,7 @@ static inline void argb8888_unpre_blend(unsigned int *dplane0, unsigned int spla
 
 static inline void argb8888_unpre_fill(unsigned int *dplane0, unsigned int splane0)
 {
+	//printf("filling unpre %08x %08x\n", *dplane0, splane0);
 	*dplane0 = splane0;
 }
 

@@ -154,7 +154,7 @@ void image_save(Enesim_Surface *s, const char *file, int compress)
             png_destroy_info_struct(png_ptr, (png_infopp) & info_ptr);
             return;
           }
-	memcpy(data, esdata.argb8888.plane0, w * h * sizeof(uint32_t));
+	memcpy(data, esdata.argb8888_unpre.plane0, w * h * sizeof(uint32_t));
         //enesim_color_data_argb_unpremul(data, w * h);
         png_init_io(png_ptr, f);
         png_set_IHDR(png_ptr, info_ptr, w, h, 8,
