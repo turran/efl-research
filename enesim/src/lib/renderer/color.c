@@ -1,3 +1,20 @@
+/* ENESIM - Direct Rendering Library
+ * Copyright (C) 2007-2008 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
@@ -5,17 +22,17 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-typedef struct _Fill_Color
+typedef struct _Renderer_Color
 {
 #ifdef DEBUG
 	unsigned int magic;
 #endif
 	uint32_t	color;
-} Fill_Color;
+} Renderer_Color;
 
 static Eina_Bool _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enesim_Surface *dst)
 {
-	Fill_Color *f;
+	Renderer_Color *f;
 	Enesim_Drawer_Span cfnc;
 	Enesim_Surface_Data ddata;
 	Enesim_Surface_Format sfmt;
@@ -39,7 +56,7 @@ static Eina_Bool _draw_alias(Enesim_Renderer *r, Enesim_Scanline_Alias *sl, Enes
 static Eina_Bool _draw_mask(Enesim_Renderer *r, Enesim_Scanline_Mask *sl, Enesim_Surface *dst)
 {
 #if 0
-	Fill_Color *f;
+	Renderer_Color *f;
 	Span_Color_Mask_Func cfnc;
 	int nsl;
 	int offset;
@@ -58,7 +75,7 @@ static Eina_Bool _draw(Enesim_Renderer *r, int type, void *sl, Enesim_Surface *d
 {
 	Eina_Bool ret;
 	
-	ENESIM_MAGIC_CHECK(((Fill_Color *)(r->data)), ENESIM_RENDERER_FILLCOLOR_MAGIC);
+	ENESIM_MAGIC_CHECK(((Renderer_Color *)(r->data)), ENESIM_RENDERER_FILLCOLOR_MAGIC);
 	if (type == ENESIM_SCANLINE_ALIAS)
 		ret = _draw_alias(r, sl, dst);
 	else if (type == ENESIM_SCANLINE_MASK)
@@ -86,12 +103,12 @@ static Enesim_Renderer_Func f_func = {
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Enesim_Renderer * enesim_fill_color_new(void)
+EAPI Enesim_Renderer * enesim_renderer_color_new(void)
 {
-	Fill_Color *f;
+	Renderer_Color *f;
 	Enesim_Renderer *r;
 
-	f = calloc(1, sizeof(Fill_Color));
+	f = calloc(1, sizeof(Renderer_Color));
 	
 	r = enesim_renderer_new();
 	r->data = f;
@@ -104,9 +121,9 @@ EAPI Enesim_Renderer * enesim_fill_color_new(void)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void enesim_fill_color_color_set(Enesim_Renderer *r, uint32_t color)
+EAPI void enesim_renderer_color_color_set(Enesim_Renderer *r, uint32_t color)
 {
-	Fill_Color *f;
+	Renderer_Color *f;
 	int i;
 	
 	i = ENESIM_RENDERER_MAGIC;

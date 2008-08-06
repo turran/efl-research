@@ -22,12 +22,14 @@ enesim_transformer.c
 
 libenesim_la_LIBADD = \
 util/libenesim_util.la \
+rasterizer/libenesim_rasterizer.la \
 renderer/libenesim_renderer.la \
 drawer/libenesim_drawer.la \
 @ENESIM_LIBS@
 
 libenesim_la_DEPENDENCIES = \
 util/libenesim_util.la \
+rasterizer/libenesim_rasterizer.la \
 drawer/libenesim_drawer.la \
 renderer/libenesim_renderer.la
 

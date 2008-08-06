@@ -1,3 +1,20 @@
+/* ENESIM - Direct Rendering Library
+ * Copyright (C) 2007-2008 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "enesim_common.h"
 #include "Enesim.h"
 #include "enesim_private.h"
@@ -116,7 +133,7 @@ static void _vertex_add(Cpsc *r, float x, float y)
 {
 	int n = r->num_vertices;
 
-	eina_array_element_add(r->a);
+	eina_lalloc_element_add(r->a);
 	r->vertices[n].x = x;
 	r->vertices[n].y = y;
 	r->vertices[n].i = n;
@@ -241,8 +258,8 @@ EAPI Enesim_Rasterizer * enesim_rasterizer_cpsc_new(Eina_Rectangle boundaries)
 	Cpsc *c;
 
 	c = calloc(1, sizeof(Cpsc));
-	c->a = eina_array_new(c, EINA_ARRAY_ALLOC(_a_alloc),
-		EINA_ARRAY_FREE(_a_free), 0);
+	c->a = eina_lalloc_new(c, EINA_LALLOC_ALLOC(_a_alloc),
+		EINA_LALLOC_FREE(_a_free), 0);
 	r = enesim_rasterizer_new(c, &cpsc_func, boundaries, ENESIM_SCANLINE_ALIAS);
 	c->r = r;
 	return r;

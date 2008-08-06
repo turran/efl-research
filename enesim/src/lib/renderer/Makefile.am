@@ -9,5 +9,5 @@ AM_CPPFLAGS = \
 noinst_LTLIBRARIES = libenesim_renderer.la
 
 libenesim_renderer_la_SOURCES = \
-fill_color.c
+color.c
 # fill_surface.c

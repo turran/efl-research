@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
 
 if BUILD_EXAMPLE
 
-bin_PROGRAMS = enesim_test enesim_bench
+bin_PROGRAMS = enesim_bench
 
 enesim_bench_DEPENDENCIES = $(top_builddir)/src/lib/libenesim.la
 enesim_bench_LDADD = \
@@ -20,17 +20,5 @@ $(top_builddir)/src/lib/libenesim.la \
 enesim_bench_SOURCES = \
 enesim_bench.c \
 image.c
-
-enesim_test_DEPENDENCIES = $(top_builddir)/src/lib/libenesim.la
-
-enesim_test_SOURCES = \
-surface.c \
-image.c \
-enesim_test.c
-
-enesim_test_LDADD = \
-$(top_builddir)/src/lib/libenesim.la \
-@ENESIM_LIBS@ \
-@EXAMPLE_LIBS@
 
 endif

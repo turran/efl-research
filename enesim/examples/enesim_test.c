@@ -37,8 +37,8 @@ static void rectangle_draw(Eina_Rectangle *r, Enesim_Surface *dst, unsigned int 
 	Enesim_Scanline_Alias sl;
 	Enesim_Renderer *renderer;
 	
-	renderer = enesim_fill_color_new();
-	enesim_fill_color_color_set(renderer, color);
+	renderer = enesim_renderer_color_new();
+	enesim_renderer_color_color_set(renderer, color);
 	enesim_renderer_rop_set(renderer, rop);
 	for (i = 0; i < r->h; i++)
 	{
@@ -66,8 +66,8 @@ static void test4(void)
 	
 	dst = surface_new(SCREEN_WIDTH, SCREEN_HEIGHT, ENESIM_SURFACE_ARGB8888);
 	/* fill color renderer */
-	renderer = enesim_fill_color_new();
-	enesim_fill_color_color_set(renderer, 0xffff0000);
+	renderer = enesim_renderer_color_new();
+	enesim_renderer_color_color_set(renderer, 0xffff0000);
 	enesim_renderer_rop_set(renderer, ENESIM_FILL);
 	for (i = 0; i < 100; i++)
 	{
@@ -76,7 +76,7 @@ static void test4(void)
 		sl[i].w = 200;
 		enesim_renderer_draw(renderer, ENESIM_SCANLINE_ALIAS, &sl[i], dst);
 	}
-	enesim_fill_color_color_set(renderer, 0x5500ff00);
+	enesim_renderer_color_color_set(renderer, 0x5500ff00);
 	enesim_renderer_rop_set(renderer, ENESIM_BLEND);
 	for (i = 0; i < 100; i++)
 	{

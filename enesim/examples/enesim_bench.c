@@ -14,9 +14,9 @@
 
 #include "image.h"
 
+int shift = 0;
 int width = 256;
 int height = 256;
-int shift = 0;
 int times = 1;
 FILE *f;
 char *file = "benchmark.txt";
@@ -54,7 +54,7 @@ double get_time(void)
 void surface_save(Enesim_Surface *s, const char *name)
 {
 	Enesim_Surface *img;
-	
+
 	img = enesim_surface_new(ENESIM_SURFACE_ARGB8888_UNPRE, width, height);
 	//printf("Saving image %s\n", name);
 	enesim_surface_convert(s, img);
@@ -64,7 +64,7 @@ void surface_save(Enesim_Surface *s, const char *name)
 			int i = 0;
 			int j = 0;
 			Enesim_Surface_Data sdata;
-			
+
 			printf("name = %s\n", name);
 			enesim_surface_data_get(img, &sdata);
 			for (j = 0; j < height / 2; j++)
@@ -88,7 +88,7 @@ void test_gradient(Enesim_Surface *s)
 	Enesim_Surface_Format sfmt;
 	int i;
 	Enesim_Color color;
-	
+
 	enesim_surface_data_get(s, &sdata);
 	sfmt = enesim_surface_format_get(s);
 	/* create a simple gradient */
@@ -100,7 +100,7 @@ void test_gradient(Enesim_Surface *s)
 	for (i = 0; i < height; i++)
 	{
 		unsigned char col = ((height - 1) - i) >> shift;
-		
+
 		enesim_color_get(&color, col, col, 0, col);
 		dspan(&sdata, width, NULL, color, NULL);
 		enesim_surface_data_increment(&sdata, sfmt, width);
@@ -115,7 +115,7 @@ void test_gradient2(Enesim_Surface *s)
 	Enesim_Surface_Format sfmt;
 	int i;
 	Enesim_Color color;
-	
+
 	enesim_surface_data_get(s, &sdata);
 	sfmt = enesim_surface_format_get(s);
 	/* create a simple gradient */
@@ -127,7 +127,7 @@ void test_gradient2(Enesim_Surface *s)
 	for (i = 0; i < height; i++)
 	{
 		unsigned char col = i >> shift;
-		
+
 		enesim_color_get(&color, col, 0, 0, col);
 		dspan(&sdata, width, NULL, color, NULL);
 		enesim_surface_data_increment(&sdata, sfmt, width);
@@ -169,7 +169,7 @@ void test_finish(const char *name, Enesim_Rop rop, Enesim_Surface *dst,
 		snprintf(tmp2, 256, "%s_source.png", tmp);
 		if (debug)
 			surface_save(src, tmp2);
-		
+
 	}
 	snprintf(file, 256, "%s.png", tmp);
 	if (debug)
@@ -203,12 +203,12 @@ void span_pixel_draw(Enesim_Drawer_Span span, Enesim_Surface *dst, unsigned int 
 	int t;
 	Enesim_Surface_Format dfmt = enesim_surface_format_get(dst);
 	Enesim_Surface_Format sfmt = enesim_surface_format_get(src);
-		
+
 	for (t = 0; t < times; t++)
 	{
 		Enesim_Surface_Data dtmp;
 		Enesim_Surface_Data stmp;
-			
+
 		enesim_surface_data_get(dst, &dtmp);
 		enesim_surface_data_get(src, &stmp);
 		for (i = 0; i < height; i++)
@@ -230,7 +230,7 @@ void drawer_span_color_solid_bench(Enesim_Rop rop, Enesim_Surface_Format dsf)
 	Enesim_Surface *dst;
 	Enesim_Surface_Data ddata;
 	Enesim_Drawer_Span dspan;
-	
+
 	dst = enesim_surface_new(dsf, width, height);
 	test_gradient2(dst);
 	enesim_color_get(&color, 0xff, 0xff, 0x89, 0x89);
@@ -258,7 +258,7 @@ void drawer_span_color_transparent_bench(Enesim_Rop rop, Enesim_Surface_Format d
 	Enesim_Surface_Data ddata;
 	Enesim_Drawer_Span dspan;
 	Enesim_Color color;
-	
+
 	dst = enesim_surface_new(dsf, width, height);
 	test_gradient2(dst);
 	enesim_color_get(&color, 0x55, 0x00, 0xff, 0x00);
@@ -286,7 +286,7 @@ void drawer_span_pixel_bench(Enesim_Rop rop, Enesim_Surface_Format dsf, Enesim_S
 	Enesim_Surface *dst, *src;
 	Enesim_Surface_Data ddata;
 	Enesim_Drawer_Span dspan;
-	
+
 	dst = enesim_surface_new(dsf, width, height);
 	test_gradient2(dst);
 	src = enesim_surface_new(ssf, width, height);
@@ -313,7 +313,7 @@ void drawer_span_pixel_bench(Enesim_Rop rop, Enesim_Surface_Format dsf, Enesim_S
 void drawer_bench(void)
 {
 	int rop;
-	
+
 	/* TODO test all drawer functions and all formats from/to */
 	printf("****************\n");
 	printf("* Drawer Bench *\n");
@@ -321,17 +321,17 @@ void drawer_bench(void)
 	for (rop = 0; rop < ENESIM_ROPS; rop++)
 	{
 		Enesim_Surface_Format dsf;
-		
+
 		printf("operation %s\n", rop_name(rop));
 		for (dsf = ENESIM_SURFACE_ARGB8888; dsf < ENESIM_SURFACE_FORMATS; dsf++)
 		{
 			Enesim_Surface_Format ssf;
-		
+
 			printf("%s:\n", enesim_surface_format_name_get(dsf));
-			
+
 			drawer_span_color_solid_bench(rop, dsf);
 			drawer_span_color_transparent_bench(rop, dsf);
-			
+
 			printf("    Span pixel\n");
 			for (ssf = ENESIM_SURFACE_ARGB8888; ssf < ENESIM_SURFACE_FORMATS; ssf++)
 			{
@@ -353,12 +353,55 @@ void transformer_bench(void)
 /******************************************************************************
  *                      Rasterizer benchmark functions                        *
  ******************************************************************************/
+/* this callbacks wont draw anything */
+void rasterizer_callback(void *sl_data, int sl_type, void *data)
+{
+
+}
 void rasterizer_bench(void)
 {
+	static struct Points {
+		float x, y;
+	} points[] = {
+		{ 170, 42.85 },
+		{ 90, 354.28 },
+		{ 332.85, 92.85 },
+		{ 37.14, 107.14 },
+		{ 334.28, 324.28 },
+		{ 170, 42.85 },
+	};
+	Eina_Rectangle rect;
+        Enesim_Rasterizer *rs;
+        int i;
+        int t;
+	double start, end;
+
+#define POINTS_NUM 6
+#define MAX_X 335
+#define MAX_Y 325
 	printf("********************\n");
 	printf("* Rasterizer Bench *\n");
 	printf("********************\n");
 	/* Test every rasterizer */
+	eina_rectangle_coords_from(&rect, 0, 0, MAX_X, MAX_Y);
+	rs = enesim_rasterizer_cpsc_new(rect);
+	//rs = enesim_rasterizer_kiia_new(ENESIM_RASTERIZER_KIIA_COUNT_8, rect);
+	for (i = 0; i < POINTS_NUM; i++)
+	{
+		enesim_rasterizer_vertex_add(rs, points[i].x, points[i].y);
+	}
+	start = get_time();
+	for (t = 0; t < times; t++)
+	{
+		enesim_rasterizer_generate(rs, rasterizer_callback, NULL);
+	}
+	end = get_time();
+	printf("CPSC [%3.3f sec]\n", end - start);
+	enesim_rasterizer_delete(rs);
+
+#undef POINTS_NUM
+#undef MAX_X
+#undef MAX_Y
 }
 
 void help(void)
@@ -384,11 +427,14 @@ int main(int argc, char **argv)
 	};
 	int option;
 	char c;
-		
+
 	/* handle the parameters */
 	while ((c = getopt_long(argc, argv, short_options, long_options,
 	                                &option)) != -1)
 	{
+		/* arm bug ? */
+		if (c == 255)
+			goto ok;
 		switch (c)
 		{
 			case 'h':
@@ -403,8 +449,11 @@ int main(int argc, char **argv)
 			case 'd':
 				debug = 1;
 				break;
+			default:
+				break;
 		}
 	}
+ok:
 	f = fopen(file, "w+");
 	if (!f)
 	{
@@ -413,6 +462,7 @@ int main(int argc, char **argv)
 	}
 	enesim_init();
 	drawer_bench();
+	rasterizer_bench();
 	enesim_shutdown();
 	return 0;
 }

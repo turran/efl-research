@@ -1,6 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src examples data
+if TOOLS_ONLY
+SUBDIRS = src
+else
+SUBDIRS = $(native_tools) src examples data
+endif
 
 MAINTAINERCLEANFILES = \
 Makefile.in \
@@ -27,8 +31,11 @@ Doxyfile \
 README \
 enesim.pc.in
 
+if TOOLS_ONLY
+else
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = enesim.pc
+endif
 
 # Unit tests
 

@@ -2,10 +2,11 @@ MAINTAINERCLEANFILES = \
 Makefile.in
 
 AM_CPPFLAGS = \
+-I$(top_srcdir)/src/include \
 -I. \
 @ENESIM_CFLAGS@
 
-bin_PROGRAMS = enesim_generator
+noinst_PROGRAMS = enesim_generator
 
 enesim_generator_LDADD = \
 @COVERAGE_LIBS@

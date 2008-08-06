@@ -32,13 +32,13 @@ $(RGB565_XA5_REQ) \
 $(RGB565_B1A3_REQ)
 
 argb8888.c: Makefile
-	$(top_builddir)/src/tool/enesim_generator drawer argb8888 $@
+	$(top_builddir)/$(native_tools)/src/tool/enesim_generator drawer argb8888 $@
 $(ARGB8888_UNPRE_REQ): Makefile
-	$(top_builddir)/src/tool/enesim_generator drawer argb8888_unpre $@
+	$(top_builddir)/$(native_tools)/src/tool/enesim_generator drawer argb8888_unpre $@
 $(RGB565_XA5_REQ): Makefile
-	$(top_builddir)/src/tool/enesim_generator drawer rgb565_xa5 $@
+	$(top_builddir)/$(native_tools)/src/tool/enesim_generator drawer rgb565_xa5 $@
 $(RGB565_B1A3_REQ): Makefile
-	$(top_builddir)/src/tool/enesim_generator drawer rgb565_b1a3 $@
+	$(top_builddir)/$(native_tools)/src/tool/enesim_generator drawer rgb565_b1a3 $@
 
 AM_CPPFLAGS = \
 -I. \
