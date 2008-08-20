@@ -284,6 +284,7 @@ EAPI void enesim_transformation_matrix_rotate(float *t, float rad)
 	float c = cos(rad);
 	float s = sin(rad);
 	
+	printf("%f %f\n", c, s);
 	t[MATRIX_XX] = c;
 	t[MATRIX_XY] = -s;
 	t[MATRIX_XZ] = 0;
@@ -344,6 +345,7 @@ EAPI void enesim_transformation_set(Enesim_Transformation *t, float *tx)
 	/* TODO the type should on the fixed or on the float */
 	_transformation_to_fixed(t->matrix, t->matrix_fixed);
 	t->type = _transformation_get(t->matrix);
+	printf("Transformation type = %d\n", t->type);
 }
 /**
  * 
@@ -355,7 +357,9 @@ EAPI void enesim_transformation_rop_set(Enesim_Transformation *t, Enesim_Rop rop
 /**
  * 
  */
-EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d, Eina_Rectangle *dr)
+EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t,
+		Enesim_Surface *s, Eina_Rectangle *sr, Enesim_Surface *d,
+		Eina_Rectangle *dr)
 {
 	Eina_Rectangle csr, cdr;
 	Enesim_Transformer_Func tfunc;
@@ -371,6 +375,8 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	
 	xscale = ENESIM_SCALE_NO;
 	yscale = ENESIM_SCALE_NO;
+	
+	/* TODO check if we are out of bounds */
 	/* setup the destination clipping */
 	cdr.x = 0;
 	cdr.y = 0;
@@ -379,10 +385,12 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (sr)
 	{
 		/* TODO check the return value of the intersection */
-		eina_rectangle_intersection(&cdr, dr);
+		if (eina_rectangle_intersection(&cdr, dr) == EINA_FALSE)
+			return EINA_FALSE;
 		if (eina_rectangle_is_empty(&cdr))
 		{
 			//ENESIM_ERROR(ENESIM_ERROR_DSTRECT_INVALID);
+			return EINA_FALSE;
 		}
 	}
 	/* setup the source clipping */
@@ -393,10 +401,12 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (dr)
 	{
 		/* TODO check the return value of the intersection */
-		eina_rectangle_intersection(&csr, sr);
+		if (eina_rectangle_intersection(&csr, sr) == EINA_FALSE)
+			return EINA_FALSE;
 		if (eina_rectangle_is_empty(&csr))
 		{
 			//ENESIM_ERROR(ENESIM_ERROR_SRCRECT_INVALID);
+			return EINA_FALSE;
 		}
 	}
 	/* check if we are going to scale */
@@ -415,7 +425,9 @@ EAPI Eina_Bool enesim_transformation_apply(Enesim_Transformation *t, Enesim_Surf
 	if (!(tfunc = _functions[t->type]))
 	{
 		//ENESIM_ERROR(ENESIM_ERROR_TRANSFORMATION_NOT_SUPPORTED);
+		return EINA_FALSE;
 	}
+	printf("%p\n", tfunc);
 	tfunc(t, s, sr, d, dr);
 	return EINA_TRUE;
 }

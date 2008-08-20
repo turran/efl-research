@@ -349,6 +349,10 @@ void transformer_bench(void)
 	printf("*********************\n");
 	printf("* Transformer Bench *\n");
 	printf("*********************\n");
+	/* identity matrix */
+	/* affine matrix */
+	/* rotate */
+	/* scale */
 }
 /******************************************************************************
  *                      Rasterizer benchmark functions                        *

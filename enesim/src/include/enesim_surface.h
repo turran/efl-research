@@ -23,9 +23,8 @@
  * @{
  * 
  * TODO
- * remove RGB565 and rename it to RGB565_A8, RGB565_bA3, etc
- * same thing for RGB888, etc. I mean make the alpha relative
- * not always A8
+ * Add a pitch, this is good for different planes, still the width and height
+ * are good things to have so the pitch
  */
 typedef struct _Enesim_Surface 	Enesim_Surface; /**< Surface Handler */
 /**

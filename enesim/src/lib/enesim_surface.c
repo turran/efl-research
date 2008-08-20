@@ -145,20 +145,29 @@ enesim_surface_convert(Enesim_Surface *s, Enesim_Surface *d)
 	float matrix[9];
 	Eina_Rectangle sr, dr;
 	
+	
 	ENESIM_ASSERT(s, ENESIM_ERROR_HANDLE_INVALID);
 	ENESIM_ASSERT(d, ENESIM_ERROR_HANDLE_INVALID);
 	ENESIM_MAGIC_CHECK(s, ENESIM_SURFACE_MAGIC);
 	ENESIM_MAGIC_CHECK(d, ENESIM_SURFACE_MAGIC);
 	
-	if ((s->w != d->w) && (s->h != d->h))
+	
+	tx = enesim_transformation_new();
+	
+	if ((s->w != d->w) || (s->h != d->h))
 	{
-		printf("warning\n");
+		printf("scaling %d %d (%f) %d %d (%f)\n", d->w, s->w, (float)d->w/s->w, d->h, s->h, (float)d->h/s->h);
+		enesim_transformation_matrix_scale(matrix, d->w / s->w, d->h / s->h);
+	}
+	else
+	{
+		printf("identity\n");
+		enesim_transformation_matrix_identity(matrix);	
 	}
 	/* TODO call the correct convert function based on the src
 	 * and dst format, the src and dst flags, etc
 	 */
-	tx = enesim_transformation_new();
-	enesim_transformation_matrix_identity(matrix);
+	
 	enesim_transformation_set(tx, matrix);
 	enesim_transformation_rop_set(tx, ENESIM_FILL);
 	eina_rectangle_coords_from(&sr, 0, 0, s->w, s->h);
@@ -249,7 +258,7 @@ enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sf
 	case ENESIM_SURFACE_ARGB8888:
 		argb8888_to_argb(&argb, *(sdata->argb8888.plane0));
 		break;
-#ifdef BUILD_SURFACE_ARGB888_UNPRE
+#ifdef BUILD_SURFACE_ARGB8888_UNPRE
 	case ENESIM_SURFACE_ARGB8888_UNPRE:
 		argb8888_unpre_to_argb(&argb, *(sdata->argb8888_unpre.plane0));
 		break;
@@ -261,11 +270,11 @@ enesim_surface_data_to_argb(Enesim_Surface_Data *sdata, Enesim_Surface_Format sf
 #endif
 #ifdef BUILD_SURFACE_RGB565_B1A3
 	case ENESIM_SURFACE_RGB565_B1A3:
-		rgb565_b1a3_to_argb(&argb, *(sdata->rgb565_xa5.plane0), *(sdata->rgb565_xa5.plane1), sdata->rgb565_b1a3.pixel_plane1);
+		rgb565_b1a3_to_argb(&argb, *(sdata->rgb565_b1a3.plane0), *(sdata->rgb565_b1a3.plane1), sdata->rgb565_b1a3.pixel_plane1);
 		break;
 #endif
 	default:
-		EINA_ERROR_PERR("Format not supported\n");
+		EINA_ERROR_PERR("Format %d not supported\n", sfmt);
 		break;
 	}
 	return argb;
