@@ -9,7 +9,7 @@ AC_CANONICAL_HOST
 AC_ISC_POSIX
 
 AM_INIT_AUTOMAKE(1.6 dist-bzip2)
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(src/include/config.h)
 
 AC_PROG_CC
 AM_PROG_CC_STDC
@@ -38,6 +38,18 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
+PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
+
+EMAGE_CFLAGS="$EINA_CFLAGS $ENESIM_CFLAGS"
+EMAGE_LIBS="$EINA_LIBS $ENESIM_LIBS"
+AC_SUBST(EMAGE_CFLAGS)
+AC_SUBST(EMAGE_LIBS)
+
+AC_DEFINE_UNQUOTED(PACKAGE_LIB_DIR, "${ac_default_prefix}/lib", [Installation directory for libraries])
+
+## Different Modules
+PKG_CHECK_MODULES(PNG, [libpng >= 0.22], [enable_png="yes"], [enable_png="no"])
+AM_CONDITIONAL(EMAGE_ENABLE_PNG, test "x${have_png}" = "xyes")
 
 ## Make the debug preprocessor configurable
 
@@ -47,6 +59,7 @@ emage.pc
 src/Makefile
 src/include/Makefile
 src/lib/Makefile
+src/modules/Makefile
 ])
 
 
