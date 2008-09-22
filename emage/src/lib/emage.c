@@ -11,7 +11,7 @@ typedef Eina_Bool (*Module_Init)(void);
 int _fifo[2]; /* the communication between the main thread and the async ones */ 
 
 Eina_Error EMAGE_ERROR_EXIST;
-Eina_Error EMAGE_ERROR_LOADER;
+Eina_Error EMAGE_ERROR_PROVIDER;
 Eina_Error EMAGE_ERROR_FORMAT;
 Eina_Error EMAGE_ERROR_SIZE;
 
@@ -23,6 +23,7 @@ typedef struct _Emage_Job
 	Enesim_Surface **s;
 	Emage_Load_Callback cb;
 	void *data;
+	Eina_Error err;
 } Emage_Job;
 
 
@@ -38,14 +39,100 @@ int _module_cb(Eina_Module *m, void *data)
 	return mi();
 }
 
+void _provider_info_load(Emage_Provider *p, const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
+{
+	int pw, ph;
+	Enesim_Surface_Format pfmt;
+	
+	/* get the info from the image */
+	p->info_get(file, &pw, &ph, &pfmt);
+	if (w) *w = pw;
+	if (h) *h = ph;
+	if (sfmt) *sfmt = pfmt;
+}
+
+void _provider_data_load(Emage_Provider *p, const char *file, Enesim_Surface **s)
+{
+	Enesim_Surface *ls;
+	Enesim_Surface *stmp;
+	int w, h;
+	Enesim_Surface_Format sfmt;
+	
+	_provider_info_load(p, file, &w, &h, &sfmt);
+	if (*s)
+	{
+		int sw, sh;
+		Enesim_Surface_Format ssfmt;
+		
+		ssfmt = enesim_surface_format_get(*s);
+		enesim_surface_size_get(*s, &sw, &sh);
+		/* create a temporary surface */
+		if ((ssfmt != sfmt) || (sw != w) || (sh != h))
+		{
+			ls = enesim_surface_new(sfmt, w, h);
+		}
+		else
+			ls = *s;
+	}
+	/* create a temporary surface */
+	else
+	{
+		ls = enesim_surface_new(sfmt, w, h);
+		*s = ls;
+	}
+	/* load the file */
+	if (p->load(file, ls) == EINA_FALSE)
+		return;
+	/* convert if needed */
+	if (ls != *s)
+	{
+		enesim_surface_convert(ls, *s);
+		enesim_surface_delete(ls);
+	}
+}
+
+Emage_Provider * _provider_get(const char *file)
+{
+	Eina_List *tmp;
+	Emage_Provider *p;
+	struct stat stmp;
+
+	if ((!file) || (stat(file, &stmp) < 0))
+		return NULL;
+	/* iterate over the list of providers and check for a compatible loader */
+	for (tmp = _providers; tmp; tmp = eina_list_next(tmp))
+	{
+		p = eina_list_data(tmp);
+		/* TODO priority loaders */
+		/* check if the provider can load the image */
+		if (!p->loadable)
+			continue;
+		if (p->loadable(file) == EINA_TRUE)
+			return p;
+	}
+	return NULL;
+}
+
+void _thread_finish(Emage_Job *j)
+{
+	int ret;
+	ret = write(_fifo[1], &j, sizeof(j));
+}
+
 void * _thread_load(void *data)
 {
+	Emage_Provider *prov;
 	Emage_Job *j = data;
-	int ret;
-	
-	printf("thread created\n");
-	ret = write(_fifo[1], &j, sizeof(j));
-	printf("%d %d\n", ret, sizeof(j));
+
+	prov = _provider_get(j->file);
+	if (!prov)
+	{
+		j->err = EMAGE_ERROR_PROVIDER;
+		_thread_finish(j);
+		return NULL;
+	}
+	_provider_data_load(prov, j->file, j->s);
+	_thread_finish(j);
 	return NULL;
 }
 /*============================================================================*
@@ -66,7 +153,7 @@ EAPI int emage_init(void)
 		eina_init();
 		/* the errors */
 		EMAGE_ERROR_EXIST = eina_error_register("Files does not exist");
-		EMAGE_ERROR_LOADER = eina_error_register("No loader for such file");
+		EMAGE_ERROR_PROVIDER = eina_error_register("No provider for such file");
 		EMAGE_ERROR_FORMAT = eina_error_register("Wrong surface format");
 		EMAGE_ERROR_SIZE = eina_error_register("Size missmatch");
 		/* the modules */
@@ -98,6 +185,7 @@ EAPI void emage_shutdown(void)
 		png_provider_exit();
 #endif
 		/* shutdown every provider */
+		/* TODO what if we shutdown while some thread is active? */
 		/* the fifo */
 		close(_fifo[0]);
 		close(_fifo[1]);
@@ -106,29 +194,34 @@ EAPI void emage_shutdown(void)
 /**
  * 
  */
-EAPI void emage_info_load(const char *file, Enesim_Surface **s)
+EAPI Eina_Bool emage_info_load(const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
 {
+	Emage_Provider *prov;
 	
+	prov = _provider_get(file);
+	if (!prov)
+	{
+		eina_error_set(EMAGE_ERROR_PROVIDER);
+		return EINA_FALSE;
+	}
+	_provider_info_load(prov, file, w, h, sfmt);
+	return EINA_TRUE;
 }
 /**
  * 
  */
 EAPI Eina_Bool emage_load(const char *file, Enesim_Surface **s)
 {
-	Eina_List *tmp;
+	Emage_Provider *prov;
 	
-	if (!file)
-		return EINA_FALSE;
-	/* iterate over the list of providers and check for a compatible loader */
-	for (tmp = _providers; tmp; tmp = eina_list_next(tmp))
+	prov = _provider_get(file);
+	if (!prov)
 	{
-		Emage_Provider *p = eina_list_data(tmp);
-		
-		if (p->load(file, s) == EINA_TRUE)
-			return EINA_TRUE;
+		eina_error_set(EMAGE_ERROR_PROVIDER);
+		return EINA_FALSE;
 	}
-	eina_error_set(EMAGE_ERROR_LOADER);
-	return EINA_FALSE;
+	_provider_data_load(prov, file, s);
+	return EINA_TRUE;
 }
 /**
  * 
@@ -143,6 +236,7 @@ EAPI void emage_load_async(const char *file, Enesim_Surface **s,
 	j->cb = cb;
 	j->data = data;
 	j->s = s;
+	j->err = 0;
 	/* create a thread that loads the image on background and sends
 	 * a command into the fifo fd */
 	pthread_create(&tid, NULL, _thread_load, j);
@@ -163,21 +257,15 @@ EAPI void emage_dispatch(void)
 	FD_SET(_fifo[0], &readset);
 	t.tv_sec = 0;
 	t.tv_usec = 0;
-	printf("entering\n");
+
 	if (select(_fifo[0] + 1, &readset, NULL, NULL, &t) <= 0)
-	{
-		printf("nothing to read\n");
 		return;
-	}
-	printf("reading\n");
 	/* read from the fifo fd and call the needed callbacks */
 	while (read(_fifo[0], &j, sizeof(j)) > 0)
 	{
-		printf("job for file %s finished\n", j->file);
-		j->cb(j->s ? *j->s : NULL, j->data, 0);
+		j->cb(j->s ? *j->s : NULL, j->data, j->err);
 		free(j);
 	}
-	printf("exiting\n");
 }
 /**
  * 
@@ -191,9 +279,28 @@ EAPI Enesim_Surface * emage_save(const char *file)
  */
 EAPI int emage_provider_register(Emage_Provider *p)
 {
-	printf("called\n");
+	if (!p)
+		return EINA_FALSE;
+	/* check for mandatory functions */
+	if (!p->loadable)
+	{
+		EINA_ERROR_PERR("Provider %s doesn't provide the loadable() function\n", p->name);
+		goto err;
+	}
+	if (!p->info_get)
+	{
+		EINA_ERROR_PERR("Provider %s doesn't provide the info_get() function\n", p->name);
+		goto err;
+	}
+	if (!p->load)
+	{
+		EINA_ERROR_PERR("Provider %s doesn't provide the load() function\n", p->name);
+		goto err;
+	}
 	_providers = eina_list_append(_providers, p);
 	return EINA_TRUE;
+err:
+	return EINA_FALSE;
 }
 /**
  * 

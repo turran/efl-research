@@ -8,12 +8,75 @@
 /* number to checks for magic png info */
 #define PNG_BYTES_TO_CHECK 4
 
-Eina_Bool _png_info_load(const char *file, Enesim_Surface **s)
+Eina_Bool _png_loadable(const char *file)
 {
+	FILE *f;
+	unsigned char buf[PNG_BYTES_TO_CHECK];
 	
+	f = fopen(file, "rb");
+	fread(buf, 1, PNG_BYTES_TO_CHECK, f);
+	if (!png_check_sig(buf, PNG_BYTES_TO_CHECK))
+	{
+		fclose(f);
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
 }
 
-Eina_Bool _png_load(const char *file, Enesim_Surface **s)
+Eina_Bool _png_info_load(const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
+{
+	Enesim_Surface *s;
+	FILE *f;
+	int bit_depth, color_type, interlace_type;
+	char hasa, hasg;
+	int i;
+		
+	png_uint_32 w32, h32;
+	png_structp png_ptr = NULL;
+	png_infop info_ptr = NULL;
+		
+	Enesim_Surface_Data sdata;
+	Eina_Bool ret = EINA_TRUE;
+
+	hasa = 0;
+	hasg = 0;
+	f = fopen(file, "rb");
+	if (!f)
+	{
+		eina_error_set(EMAGE_ERROR_EXIST);
+		return EINA_FALSE;
+	}
+
+	rewind(f);
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, 
+	NULL);
+	if (!png_ptr)
+	{
+		fclose(f);
+		return EINA_FALSE;
+	}
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_read_struct(&png_ptr, NULL, NULL);
+		fclose(f);
+		return EINA_FALSE;
+	}
+	if (setjmp(png_ptr->jmpbuf))
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		fclose(f);
+		return EINA_FALSE;
+	}
+	png_init_io(png_ptr, f);
+	png_read_info(png_ptr, info_ptr);
+	png_get_IHDR(png_ptr, info_ptr, (png_uint_32 *) (&w32), (png_uint_32 *) (&h32), &bit_depth, &color_type, &interlace_type, NULL, NULL);
+	if (w) *w = w32;
+	if (h) *h = h32;
+	if (sfmt) *sfmt = ENESIM_SURFACE_ARGB8888_UNPRE;
+}
+
+Eina_Bool _png_load(const char *file, Enesim_Surface *s)
 {
 	FILE *f;
 	int bit_depth, color_type, interlace_type;
@@ -26,7 +89,6 @@ Eina_Bool _png_load(const char *file, Enesim_Surface **s)
 	png_structp png_ptr = NULL;
 	png_infop info_ptr = NULL;
 	
-	Enesim_Surface *tmp;
 	Enesim_Surface_Data sdata;
 	Eina_Bool ret = EINA_TRUE;
 
@@ -72,44 +134,6 @@ Eina_Bool _png_load(const char *file, Enesim_Surface **s)
 			(png_uint_32 *) (&h32), &bit_depth, &color_type,
 			&interlace_type, NULL, NULL);
 	
-	if (*s)
-	{
-		int w, h;
-		
-		enesim_surface_size_get(*s, &w, &h);
-		if ((w32 != w) || (h32 != h))
-		{
-			ret = EINA_FALSE;
-			eina_error_set(EMAGE_ERROR_SIZE);
-			goto err_setup;
-		}
-		if (enesim_surface_format_get(*s) != ENESIM_SURFACE_ARGB8888_UNPRE)
-		{
-			tmp = enesim_surface_new(ENESIM_SURFACE_ARGB8888_UNPRE, w32, h32);
-			if (!tmp)
-			{
-				ret = EINA_FALSE;
-				eina_error_set(EMAGE_ERROR_LOADER);
-				goto err_setup;
-			}
-		}
-		else
-			tmp = *s;
-	}
-	/* create the surface in case it wasnt created before */
-	else
-	{
-		printf("creating\n");
-		*s = enesim_surface_new(ENESIM_SURFACE_ARGB8888_UNPRE, w32, h32);
-		if (!*s)
-		{
-			ret = EINA_FALSE;
-			eina_error_set(EMAGE_ERROR_LOADER);
-			goto err_setup;
-		}
-		tmp = *s;
-	}
-
 	if (color_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_expand(png_ptr);
 	if (info_ptr->color_type == PNG_COLOR_TYPE_RGB_ALPHA)
@@ -147,23 +171,13 @@ Eina_Bool _png_load(const char *file, Enesim_Surface **s)
 			png_set_gray_1_2_4_to_8(png_ptr);
 	}
 	/* setup the pointers */
-	enesim_surface_data_get(tmp, &sdata);
+	enesim_surface_data_get(s, &sdata);
 	for (i = 0; i < h32; i++)
 		lines[i] = ((unsigned char *)(sdata.argb8888_unpre.plane0)) + (i * w32
 				* sizeof(uint32_t));
 	png_read_image(png_ptr, lines);
 	png_read_end(png_ptr, info_ptr);
-	/* convert the image */ 
-	if (enesim_surface_format_get(*s) != ENESIM_SURFACE_ARGB8888_UNPRE)
-	{
-		printf("converting\n");
-		enesim_surface_convert(tmp, *s);
-	}
-	if (tmp != *s)
-	{
-		printf("deleting\n");
-		enesim_surface_delete(tmp);
-	}
+	
 err_setup:
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
 	fclose(f);
@@ -292,7 +306,10 @@ Eina_Bool _png_save(void)
 
 static Emage_Provider _provider = {
 	.name = "png",
+	.type = EMAGE_PROVIDER_SW,
 	.load = _png_load,
+	.info_get = _png_info_load,
+	.loadable = _png_loadable,
 };
 
 int png_provider_init(void)
