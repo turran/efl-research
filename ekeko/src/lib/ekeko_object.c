@@ -1,5 +1,12 @@
 #include "Ekeko.h"
 #include "ekeko_private.h"
+/* TODO
+ * + move this to locatable or renderable
+ * + this should be an abstract class, i.e no namespace or name, only
+ * abstract functions so the user has to fill those functions, what about
+ * namespace and name then? how a canvas can know when a child can be appended
+ * here? check if an object inherits from a renderable / locatable object?
+ */
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/

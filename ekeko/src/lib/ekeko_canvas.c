@@ -1,7 +1,12 @@
 #include "Ekeko.h"
 #include "ekeko_private.h"
-/* Remove every reference to objects because we should use the list of
+/* 
+ * TODO
+ * + Remove every reference to objects because we should use the list of
  * valid objects only
+ * + Make the canvas be an object approach, similar to what has to be done
+ * with the renderables / locatable
+ * + Make the canvas class actually abstract functions
  */
 /*============================================================================*
  *                                  Local                                     * 

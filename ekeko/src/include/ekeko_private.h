@@ -61,10 +61,11 @@ typedef enum
 #endif
 
 
-
-#include "ekeko_input.h"
-#include "ekeko_tiler.h"
-#include "ekeko_object.h"
-#include "ekeko_canvas.h"
+#include "private/class.h"
+#include "private/element.h"
+#include "private/input.h"
+#include "private/tiler.h"
+#include "private/object.h"
+#include "private/canvas.h"
 
 #endif /*EKEKO_PRIVATE_H_*/

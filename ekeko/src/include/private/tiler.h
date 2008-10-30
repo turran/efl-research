@@ -1,5 +1,5 @@
-#ifndef EKEKO_TILER_H_
-#define EKEKO_TILER_H_
+#ifndef TILER_H_
+#define TILER_H_
 
 typedef struct _Ekeko_Tiler Ekeko_Tiler;
 typedef struct _Ekeko_Tiler_Class Ekeko_Tiler_Class;
@@ -51,7 +51,9 @@ extern Ekeko_Tiler_Class tiler_rect_splitter;
 extern Ekeko_Tiler_Class tiler_tilebuf;
 
 /* refactor this */
+#ifndef UNLIKELY
 #define UNLIKELY(x) (x)
+#endif
 #define SPANS_COMMON(x1, w1, x2, w2) \
 (!((((x2) + (w2)) <= (x1)) || ((x2) >= ((x1) + (w1)))))
 

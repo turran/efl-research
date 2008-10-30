@@ -1,5 +1,5 @@
-#ifndef EKEKO_INPUT_H_
-#define EKEKO_INPUT_H_
+#ifndef INPUT_H_
+#define INPUT_H_
 
 struct _Ekeko_Input
 {

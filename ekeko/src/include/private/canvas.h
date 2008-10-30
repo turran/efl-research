@@ -1,7 +1,7 @@
-#ifndef EKEKO_CANVAS_H_
-#define EKEKO_CANVAS_H_
+#ifndef CANVAS_H_
+#define CANVAS_H_
 
-struct _Ekeko_Canvas
+struct _Ekeko_Canvas_Private
 {
 	/* possible callbacks */
 	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)

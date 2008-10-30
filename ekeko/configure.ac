@@ -3,7 +3,7 @@ rm -f config.cache
 
 AC_INIT(ekeko, 0.0.1, enlightenment-devel@lists.sourceforge.net)
 AC_PREREQ(2.52)
-AC_CONFIG_SRCDIR(configure.in)
+AC_CONFIG_SRCDIR(configure.ac)
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
@@ -37,9 +37,9 @@ case "$host_os" in
 esac
 AC_SUBST(create_shared_lib)
 
-PKG_CHECK_MODULES(EINA, [eina >= 0.0.1])
-PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
-PKG_CHECK_MODULES(SDL, [sdl >= 1.2.10], [have_sdl="yes"], [have_sdl="no"])
+PKG_CHECK_MODULES(EINA, [eina-0])
+#PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
+#PKG_CHECK_MODULES(SDL, [sdl >= 1.2.10], [have_sdl="yes"], [have_sdl="no"])
 
 AM_CONDITIONAL(HAVE_SDL, test "x$have_sdl" = "xyes")
 

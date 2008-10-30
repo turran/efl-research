@@ -1,5 +1,5 @@
-#ifndef EKEKO_OBJECT_H_
-#define EKEKO_OBJECT_H_
+#ifndef OBJECT_H_
+#define OBJECT_H_
 
 typedef struct _Ekeko_Object_Cb Ekeko_Object_Cb;
 
