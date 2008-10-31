@@ -12,7 +12,7 @@ struct _Ekeko_Canvas_Private
 	Ekeko_Input *inputs;
 	Ekeko_Rectangle *damages;
 	// obscures
-	Ekeko_Canvas_Class *cclass;
+	//Ekeko_Canvas_Class *cclass;
 	void *cdata;
 	Eina_Rectangle size;
 	Eina_List *valid;  /* objects that need to be draw */

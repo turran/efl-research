@@ -1,12 +1,12 @@
 #include "Edom.h"
-#include "edom_private.h"
+#include "ekeko_private.h"
 
-void edom_init(void)
+EAPI void ekeko_init(void)
 {
 	eina_init();
 }
 
-void edom_shutdown(void)
+EAPI void ekeko_shutdown(void)
 {
 	eina_shutdown();
 }

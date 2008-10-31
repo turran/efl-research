@@ -15,7 +15,7 @@ struct _Edom_Element
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Edom_Element * edom_element_new(void)
+EAPI Edom_Element * edom_element_new(void)
 {
 	Edom_Element *e;
 
@@ -25,7 +25,7 @@ Edom_Element * edom_element_new(void)
 	return e;
 }
 
-void edom_element_process(Edom_Element *e)
+EAPI void edom_element_process(Edom_Element *e)
 {
 	Eina_Iterator *it;
 	Edom_Attribute *a;
@@ -46,7 +46,7 @@ void edom_element_process(Edom_Element *e)
 	assert(!e->changed);
 }
 
-void edom_element_attribute_remove(Edom_Element *e, const char *name)
+EAPI void edom_element_attribute_remove(Edom_Element *e, const char *name)
 {
 	assert(e);
 
@@ -54,7 +54,7 @@ void edom_element_attribute_remove(Edom_Element *e, const char *name)
 	/* TODO delete the attribute */
 }
 
-void edom_element_attribute_add(Edom_Element *e, const char *name, Edom_Attribute_Type type,
+EAPI void edom_element_attribute_add(Edom_Element *e, const char *name, Edom_Attribute_Type type,
 		Edom_Value *def, Edom_Attribute_Update cb, void *data)
 {
 	Edom_Attribute *a;
@@ -65,7 +65,7 @@ void edom_element_attribute_add(Edom_Element *e, const char *name, Edom_Attribut
 	
 }
 
-Eina_Bool edom_element_attribute_set(Edom_Element *e, const char *name, Edom_Value *v)
+EAPI Eina_Bool edom_element_attribute_set(Edom_Element *e, const char *name, Edom_Value *v)
 {
 	Edom_Attribute *a;
 	Eina_Bool changed_bef, changed_now;
@@ -95,7 +95,7 @@ Eina_Bool edom_element_attribute_set(Edom_Element *e, const char *name, Edom_Val
 }
 
 
-Eina_Bool edom_element_attribute_get(Edom_Element *e, const char *name, Edom_Value *v)
+EAPI Eina_Bool edom_element_attribute_get(Edom_Element *e, const char *name, Edom_Value *v)
 {
 	Edom_Attribute *a;
 

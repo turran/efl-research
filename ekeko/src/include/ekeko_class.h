@@ -1,7 +1,7 @@
 #ifndef EKEKO_CLASS_H_
 #define EKEKO_CLASS_H_
 
-typedef struct _Edom_Class_Description
+typedef struct _Ekeko_Class_Description
 {
 	/* common description */
 	const char *namespace;
@@ -9,15 +9,15 @@ typedef struct _Edom_Class_Description
         int size;
         int priv_size;
         /* mandatory functions */
-        void (*init)(Edom_Class *, Edom_Element *);
-        void (*shutdown)(Edom_Element *);
-        Eina_Bool (*appendable)(Edom_Element *, Edom_Element *, Edom_Exception *ex);
-        Eina_Bool (*attribute_set)(Edom_Element *e, const char *attr,
-        		Edom_Value *val, Edom_Exception *ex);
-        Eina_Bool (*attribute_get)(Edom_Element *e, const char *attr,
-        		Edom_Value *val, Edom_Exception *ex);
-} Edom_Class_Description;
+        void (*init)(Ekeko_Class *, Ekeko_Element *);
+        void (*shutdown)(Ekeko_Element *);
+        Eina_Bool (*appendable)(Ekeko_Element *, Ekeko_Element *, Ekeko_Exception *ex);
+        Eina_Bool (*attribute_set)(Ekeko_Element *e, const char *attr,
+        		Ekeko_Value *val, Ekeko_Exception *ex);
+        Eina_Bool (*attribute_get)(Ekeko_Element *e, const char *attr,
+        		Ekeko_Value *val, Ekeko_Exception *ex);
+} Ekeko_Class_Description;
 
-EAPI Edom_Class * edom_class_new(Edom_Class_Description *cd, Edom_Class *c);
+EAPI Ekeko_Class * edom_class_new(Ekeko_Class_Description *cd, Ekeko_Class *c);
 
 #endif /*EKEKO_CLASS_H_*/

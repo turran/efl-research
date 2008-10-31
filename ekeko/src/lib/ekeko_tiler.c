@@ -113,7 +113,7 @@ void ekeko_tiler_rects_free(Ekeko_Rectangle *rects)
 		Ekeko_Rectangle *r;
 
 		r = rects;
-		rects = eina_inlist_remove(rects, r);
+		rects = eina_inlist_remove(EINA_INLIST_GET(rects), EINA_INLIST_GET(r));
 		free(r);
 	}
 }

@@ -61,7 +61,6 @@ typedef enum
 #endif
 
 
-#include "private/class.h"
 #include "private/element.h"
 #include "private/input.h"
 #include "private/tiler.h"

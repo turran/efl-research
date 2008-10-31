@@ -2,7 +2,6 @@
 #define EKEKO_H_
 
 #include <Eina.h>
-#include <Enesim.h>
 /**
  * @mainpage Ekeko
  * @section intro Introduction
@@ -101,100 +100,33 @@ enum
  * if so, add another base object, like renderable, so it has a bounding box, etc
  * 
  */
-typedef enum Edom_Exception
+typedef enum Ekeko_Exception
 {
-	EDOM_EXCEPTION_INDEX_SIZE_ERR                 = 1,
-	EDOM_EXCEPTION_DOMSTRING_SIZE_ERR             = 2,
-	EDOM_EXCEPTION_HIERARCHY_REQUEST_ERR          = 3,
-	EDOM_EXCEPTION_WRONG_DOCUMENT_ERR             = 4,
-	EDOM_EXCEPTION_INVALID_CHARACTER_ERR          = 5,
-	EDOM_EXCEPTION_NO_DATA_ALLOWED_ERR            = 6,
-	EDOM_EXCEPTION_NO_MODIFICATION_ALLOWED_ERR    = 7,
-	EDOM_EXCEPTION_NOT_FOUND_ERR                  = 8,
-	EDOM_EXCEPTION_NOT_SUPPORTED_ERR              = 9,
-	EDOM_EXCEPTION_INUSE_ATTRIBUTE_ERR            = 10,
+	EKEKO_EXCEPTION_INDEX_SIZE_ERR                 = 1,
+	EKEKO_EXCEPTION_DOMSTRING_SIZE_ERR             = 2,
+	EKEKO_EXCEPTION_HIERARCHY_REQUEST_ERR          = 3,
+	EKEKO_EXCEPTION_WRONG_DOCUMENT_ERR             = 4,
+	EKEKO_EXCEPTION_INVALID_CHARACTER_ERR          = 5,
+	EKEKO_EXCEPTION_NO_DATA_ALLOWED_ERR            = 6,
+	EKEKO_EXCEPTION_NO_MODIFICATION_ALLOWED_ERR    = 7,
+	EKEKO_EXCEPTION_NOT_FOUND_ERR                  = 8,
+	EKEKO_EXCEPTION_NOT_SUPPORTED_ERR              = 9,
+	EKEKO_EXCEPTION_INUSE_ATTRIBUTE_ERR            = 10,
 	/* DOM Level 2 */
-	EDOM_EXCEPTION_INVALID_STATE_ERR              = 11,
-	EDOM_EXCEPTION_SYNTAX_ERR                     = 12,
-	EDOM_EXCEPTION_INVALID_MODIFICATION_ERR       = 13,
-	EDOM_EXCEPTION_NAMESPACE_ERR                  = 14,
-	EDOM_EXCEPTION_INVALID_ACCESS_ERR             = 15, 
-} Edom_Exception;
+	EKEKO_EXCEPTION_INVALID_STATE_ERR              = 11,
+	EKEKO_EXCEPTION_SYNTAX_ERR                     = 12,
+	EKEKO_EXCEPTION_INVALID_MODIFICATION_ERR       = 13,
+	EKEKO_EXCEPTION_NAMESPACE_ERR                  = 14,
+	EKEKO_EXCEPTION_INVALID_ACCESS_ERR             = 15, 
+} Ekeko_Exception;
 
-typedef enum _Edom_Attribute_Flags
-{
-	EDOM_ATTRIBUTE_ABSOLUTE  = (1 << 0),
-	EDOM_ATTRIBUTE_RELATIVE  = (1 << 1),
-	EDOM_ATTRIBUTE_INHERITED = (1 << 2),
-} Edom_Attribute_Flag;
+typedef struct _Ekeko_Class Ekeko_Class;
 
-typedef enum _Edom_Attribute_Type
-{
-	EDOM_ATTRIBUTE_NONE, /**< Used when the property is uninitialized */
-	EDOM_ATTRIBUTE_INT, /**< The value of the property is an integer */
-	EDOM_ATTRIBUTE_BOOL, /**< The value of the property is a boolean (Eina_Bool) */
-	EDOM_ATTRIBUTE_CHAR, /**< The value of the property is a char */
-	EDOM_ATTRIBUTE_FLOAT, /**< The value of the property is a float */
-	EDOM_ATTRIBUTE_DOUBLE, /**< The value of the property is a double */
-	EDOM_ATTRIBUTE_SHORT, /**< The value of the property is a short */
-	EDOM_ATTRIBUTE_LONG, /**< The value of the property is a long */
-	EDOM_ATTRIBUTE_POINTER, /**< The value of the property is a pointer (void *) */
-	EDOM_ATTRIBUTE_STRING, /**< The value of the property is a string (char *) */	
-} Edom_Attribute_Type;
-
-
-typedef struct _Edom_Class Edom_Class;
-typedef struct _Edom_Element_Private Edom_Element_Private;
-typedef struct _Edom_Element
-{
-	Edom_Element_Private *priv;
-} Edom_Element;
-
-typedef enum _Edom_Attribute_Type
-{
-	EDOM_ATTRIBUTE_INT,
-	EDOM_ATTRIBUTE_RECTANGLE,
-	// EDOM_ATTRIBUTE_ELEMENT, How to handle the compare? per pointer + changed flag?
-	EDOM_ATTRIBUTES,
-} Edom_Attribute_Type;
-
-typedef struct _Edom_Element Edom_Element;
-typedef struct _Edom_Attribute Edom_Attribute;
-typedef struct _Edom_Value
-{
-	Edom_Attribute_Type type;
-	union 	{
-		int i;
-		Eina_Rectangle r;
-		unsigned char *s;
-		unsigned char c;
-		Edom_Element *e;
-	} v;
-} Edom_Value;
-
-typedef void (*Edom_Attribute_Update)(Edom_Element *, const Edom_Value *, const Edom_Value *, void *);
-typedef Eina_Bool (*Edom_Value_Compare)(const Edom_Value *a, const Edom_Value *b);
-
-void edom_init(void);
-void edom_shutdown(void);
-
-Edom_Element * edom_element_new(void);
-void edom_element_process(Edom_Element *e);
-void edom_element_attribute_remove(Edom_Element *e, const char *name);
-void edom_element_attribute_add(Edom_Element *e, const char *name, Edom_Attribute_Type type,
-		Edom_Value *def, Edom_Attribute_Update cb, void *data);
-Eina_Bool edom_element_attribute_set(Edom_Element *e, const char *name, Edom_Value *v);
-Eina_Bool edom_element_attribute_get(Edom_Element *e, const char *name, Edom_Value *v);
-
-void edom_value_int_from(Edom_Value *v, int i);
-void edom_value_rectangle_from(Edom_Value *v, Eina_Rectangle *r);
-void edom_value_string_from(Edom_Value *v, const char *string);
-
-
-
+#include "ekeko_main.h"
 #include "ekeko_value.h"
-#include "ekeko_class.h"
 #include "ekeko_element.h"
+#include "ekeko_attribute.h"
+#include "ekeko_class.h"
 #include "ekeko_canvas.h"
 #include "ekeko_renderable.h"
 #include "ekeko_input.h"

@@ -7,7 +7,7 @@ typedef struct _Ekeko_Rectangle Ekeko_Rectangle;
 
 struct _Ekeko_Rectangle
 {
-	Eina_Inlist list;
+	EINA_INLIST;
 	Eina_Rectangle r;
 };
 

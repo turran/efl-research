@@ -1,26 +1,26 @@
-#include "Edom.h"
-#include "edom_private.h"
+#include "Ekeko.h"
+#include "ekeko_private.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-struct _Edom_Attribute
+struct _Ekeko_Attribute
 {
-	Edom_Attribute_Type type;
-	Edom_Value curr;
-	Edom_Value prev;
-	Edom_Attribute_Update cb;
+	Ekeko_Value_Type type;
+	Ekeko_Value curr;
+	Ekeko_Value prev;
+	Ekeko_Element_Update cb;
 	void *cb_data;
 	Eina_Bool changed;
 };
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Edom_Attribute * edom_attribute_new(Edom_Attribute_Type type, Edom_Value *def,
-		Edom_Attribute_Update cb, void *data)
+Ekeko_Attribute * ekeko_attribute_new(Ekeko_Value_Type type, Ekeko_Value *def,
+		Ekeko_Element_Update cb, void *data)
 {
-	Edom_Attribute *a;
+	Ekeko_Attribute *a;
 	
-	a = calloc(1, sizeof(Edom_Attribute));
+	a = calloc(1, sizeof(Ekeko_Attribute));
 	a->cb = cb;
 	a->type = type;
 	a->cb_data = data;
@@ -30,11 +30,11 @@ Edom_Attribute * edom_attribute_new(Edom_Attribute_Type type, Edom_Value *def,
 	
 	return a;
 }
-Eina_Bool edom_attribute_changed(Edom_Attribute *a)
+Eina_Bool ekeko_attribute_changed(Ekeko_Attribute *a)
 {
 	return a->changed;
 }
-Eina_Bool edom_attribute_update(Edom_Attribute *a, Edom_Element *e)
+Eina_Bool ekeko_attribute_update(Ekeko_Attribute *a, Ekeko_Element *e)
 {
 	if (!a->changed)
 		return EINA_FALSE;
@@ -46,7 +46,7 @@ Eina_Bool edom_attribute_update(Edom_Attribute *a, Edom_Element *e)
 	return EINA_TRUE;
 }
 
-Eina_Bool edom_attribute_value_set(Edom_Attribute *a, Edom_Value *v)
+Eina_Bool ekeko_attribute_value_set(Ekeko_Attribute *a, Ekeko_Value *v)
 {
 	Eina_Bool changed = EINA_FALSE;
 	
@@ -71,7 +71,7 @@ Eina_Bool edom_attribute_value_set(Edom_Attribute *a, Edom_Value *v)
 	return changed;
 }
 
-void edom_attribute_value_get(Edom_Attribute *a, Edom_Value *v)
+void ekeko_attribute_value_get(Ekeko_Attribute *a, Ekeko_Value *v)
 {
 	*v = a->curr;
 }
