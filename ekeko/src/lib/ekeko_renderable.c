@@ -5,16 +5,16 @@
  * + this should be an abstract class, i.e no namespace or name, only
  * abstract functions so the user has to fill those functions, what about
  * namespace and name then? how a canvas can know when a child can be appended
- * here? check if an object inherits from a renderable / locatable object?
+ * here? check if an renderable inherits from a renderable / locatable renderable?
  */
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static inline Eina_Bool _object_is_valid(Ekeko_Object *o)
+static inline Eina_Bool _renderable_is_valid(Ekeko_Renderable *o)
 {
 	return o->valid;
 }
-static void _object_change(Ekeko_Object *o)
+static void _renderable_change(Ekeko_Renderable *o)
 {
 	if (o->changed == EINA_TRUE)
 		return;
@@ -29,14 +29,14 @@ static void _object_change(Ekeko_Object *o)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-void ekeko_object_event_callback_call(Ekeko_Object *o, Ekeko_Event_Type ect, Ekeko_Event *ev)
+void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type ect, Ekeko_Event *ev)
 {
 	Eina_Inlist *l;
 	
 	for (l = (Eina_Inlist *)o->callbacks[ect]; l; l = l->next)
 	{
-		Ekeko_Object_Cb *cb;
-		cb = (Ekeko_Object_Cb *)l;
+		Ekeko_Renderable_Cb *cb;
+		cb = (Ekeko_Renderable_Cb *)l;
 		
 		//printf("calling callback for event %d\n", ect);
 		cb->func(o->canvas, o, ev, cb->data);
@@ -46,27 +46,27 @@ void ekeko_object_event_callback_call(Ekeko_Object *o, Ekeko_Event_Type ect, Eke
  * To be documented
  * FIXME: To be fixed
  */
-void ekeko_object_event_move_call(Ekeko_Object *o)
+void ekeko_renderable_event_move_call(Ekeko_Renderable *o)
 {
 	Ekeko_Event ev;
 	
-	ekeko_object_event_callback_call(o, EKEKO_EVENT_MOVE, &ev);
+	ekeko_renderable_event_callback_call(o, EKEKO_EVENT_MOVE, &ev);
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-void ekeko_object_event_resize_call(Ekeko_Object *o)
+void ekeko_renderable_event_resize_call(Ekeko_Renderable *o)
 {
 	Ekeko_Event ev;
 	
-	ekeko_object_event_callback_call(o, EKEKO_EVENT_RESIZE, &ev);
+	ekeko_renderable_event_callback_call(o, EKEKO_EVENT_RESIZE, &ev);
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-Eina_Bool ekeko_object_intersection_get(Ekeko_Object *o, Ekeko_Rectangle *r, Eina_Rectangle *drect)
+Eina_Bool ekeko_renderable_intersection_get(Ekeko_Renderable *o, Ekeko_Rectangle *r, Eina_Rectangle *drect)
 {
 	drect->x = o->curr.geometry.x;
 	drect->y = o->curr.geometry.y;
@@ -79,10 +79,10 @@ Eina_Bool ekeko_object_intersection_get(Ekeko_Object *o, Ekeko_Rectangle *r, Ein
  * To be documented
  * FIXME: To be fixed
  */
-void ekeko_object_pre_process(Ekeko_Object *o)
+void ekeko_renderable_pre_process(Ekeko_Renderable *o)
 {
 	if (!o->valid)
-		printf("error pre processing an invalid object\n");
+		printf("error pre processing an invalid renderable\n");
 	/* check visibility */
 	if (o->curr.visible ^ o->prev.visible)
 	{
@@ -120,7 +120,7 @@ ok:
  * To be documented
  * FIXME: To be fixed
  */
-void ekeko_object_process(Ekeko_Object *o, Eina_Rectangle *r)
+void ekeko_renderable_process(Ekeko_Renderable *o, Eina_Rectangle *r)
 {
 	/* call class function */
 	o->oclass->process(o->cdata, r);
@@ -129,17 +129,17 @@ void ekeko_object_process(Ekeko_Object *o, Eina_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-void ekeko_object_post_process(Ekeko_Object *o)
+void ekeko_renderable_post_process(Ekeko_Renderable *o)
 {	
 	/* call class function */
 	o->changed = EINA_FALSE;
 	o->oclass->post_process(o->cdata);
 }
 /**
- * Validate an object, add the object to the list of valid objects
+ * Validate an renderable, add the renderable to the list of valid renderables
  * FIXME: To be fixed
  */
-void ekeko_object_validate(Ekeko_Object *o)
+void ekeko_renderable_validate(Ekeko_Renderable *o)
 {
 	printf("validating\n");
 	if (o->valid)
@@ -149,10 +149,10 @@ void ekeko_object_validate(Ekeko_Object *o)
 	o->canvas->invalid = eina_list_remove(o->canvas->invalid, o);
 }
 /**
- * Invalidate an object, remove the object from the list of valid objects
+ * Invalidate an renderable, remove the renderable from the list of valid renderables
  * FIXME: To be fixed
  */
-void ekeko_object_invalidate(Ekeko_Object *o)
+void ekeko_renderable_invalidate(Ekeko_Renderable *o)
 {
 	printf("invalidating\n");
 	if (!o->valid)
@@ -165,56 +165,58 @@ void ekeko_object_invalidate(Ekeko_Object *o)
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+//EAPI void ekeko_renderable_add()
+
 /**
  * To be documented
  * FIXME: To be fixed
- * FIXME this function and the object class create aren't too good, refactor them :)
+ * FIXME this function and the renderable class create aren't too good, refactor them :)
  */
-EAPI Ekeko_Object * ekeko_object_add(Ekeko_Canvas *c, Ekeko_Object_Class *oclass, void *cdata)
+EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_Class *oclass, void *cdata)
 {
-	Ekeko_Object *o;
+	Ekeko_Renderable *o;
 
 	assert(oclass);
 	
-	o = calloc(1, sizeof(Ekeko_Object));
+	o = calloc(1, sizeof(Ekeko_Renderable));
 	assert(o);
 	o->canvas = c;
 	
-	/* default object properties */
+	/* default renderable properties */
 	o->curr.visible = EINA_FALSE; 
 	
 	/* TODO check the class */
 	o->oclass = oclass;
 	o->cdata = cdata;
 	
-	c->objects = eina_inlist_append(c->objects, o);
+	c->renderables = eina_inlist_append(c->renderables, o);
 	return o;
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_delete(Ekeko_Object *o)
+EAPI void ekeko_renderable_delete(Ekeko_Renderable *o)
 {
 	/* TODO change the valid/invalid lists */
-	/* update the object's list */
+	/* update the renderable's list */
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_change_notify(Ekeko_Object *o)
+EAPI void ekeko_renderable_change_notify(Ekeko_Renderable *o)
 {
 	assert(o);
-	_object_change(o);
+	_renderable_change(o);
 }
 /**
- * @brief Moves an object to the given coordinate
- * @param o Object to move
+ * @brief Moves an renderable to the given coordinate
+ * @param o Renderable to move
  * @param x X coordinate
  * @param y Y coordinate
  */
-EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
+EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y)
 {
 	Eina_Inlist *l;
 	
@@ -228,35 +230,35 @@ EAPI void ekeko_object_move(Ekeko_Object *o, int x, int y)
 	o->curr.geometry.y = y;
 	/* valid */
 	if (eina_rectangles_intersect(&o->curr.geometry, &o->canvas->size))
-		ekeko_object_validate(o);
+		ekeko_renderable_validate(o);
 	else
-		ekeko_object_invalidate(o);
-	_object_change(o);
-	/* FIXME this should happen only on the valid objects */
+		ekeko_renderable_invalidate(o);
+	_renderable_change(o);
+	/* FIXME this should happen only on the valid renderables */
 	for (l = (Eina_Inlist *)o->canvas->inputs; l; l = l->next)
 	{
 		Ekeko_Input *i = (Ekeko_Input *)l;
 		
-		/* if the object is inside any input, call the callback */
+		/* if the renderable is inside any input, call the callback */
 		if (eina_rectangle_coords_inside(&o->curr.geometry, i->pointer.x, i->pointer.y))
 		{
 			ekeko_input_feed_mouse_move(i, i->pointer.x, i->pointer.y, i->last_timestamp);
 		}
-		/* if the object was one of the inside objects, call the callback */
+		/* if the renderable was one of the inside renderables, call the callback */
 		else if (o == i->pointer.obj)
 		{
 			ekeko_input_feed_mouse_move(i, i->pointer.x, i->pointer.y, i->last_timestamp);
 		}
 	}
 callback:
-	ekeko_object_event_move_call(o);
+	ekeko_renderable_event_move_call(o);
 }
 /**
- * @brief Resize an object
- * @param w New width of the object
- * @param h New height of the object
+ * @brief Resize an renderable
+ * @param w New width of the renderable
+ * @param h New height of the renderable
  */
-EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
+EAPI void ekeko_renderable_resize(Ekeko_Renderable *o, int w, int h)
 {
 	assert(o);
 	if ((o->curr.geometry.w == w) && (o->curr.geometry.h == h))
@@ -266,58 +268,58 @@ EAPI void ekeko_object_resize(Ekeko_Object *o, int w, int h)
 	o->curr.geometry.w = w;
 	o->curr.geometry.h = h;
 	if (eina_rectangles_intersect(&o->curr.geometry, &o->canvas->size))
-		ekeko_object_validate(o);
+		ekeko_renderable_validate(o);
 	else
-		ekeko_object_invalidate(o);
-	_object_change(o);
+		ekeko_renderable_invalidate(o);
+	_renderable_change(o);
 callback:
-	ekeko_object_event_resize_call(o);
+	ekeko_renderable_event_resize_call(o);
 }
 /**
- * @brief Shows the object on the canvas
- * @param o Object to show
+ * @brief Shows the renderable on the canvas
+ * @param o Renderable to show
  */
-EAPI void ekeko_object_show(Ekeko_Object *o)
+EAPI void ekeko_renderable_show(Ekeko_Renderable *o)
 {
 	assert(o);
 	o->curr.visible = EINA_TRUE;
-	_object_change(o);
+	_renderable_change(o);
 //callback:
 }
 /**
- * @brief Hides the object from the canvas
- * @param o Object to hide
+ * @brief Hides the renderable from the canvas
+ * @param o Renderable to hide
  */
-EAPI void ekeko_object_hide(Ekeko_Object *o)
+EAPI void ekeko_renderable_hide(Ekeko_Renderable *o)
 {
 	assert(o);
 	o->curr.visible = EINA_FALSE;
-	_object_change(o);
+	_renderable_change(o);
 //callback:
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_stack_above(Ekeko_Object *o, Ekeko_Object *object_rel)
+EAPI void ekeko_renderable_stack_above(Ekeko_Renderable *o, Ekeko_Renderable *renderable_rel)
 {
 	assert(o);
-	assert(object_rel);
+	assert(renderable_rel);
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_stack_below(Ekeko_Object *o, Ekeko_Object *object_rel)
+EAPI void ekeko_renderable_stack_below(Ekeko_Renderable *o, Ekeko_Renderable *renderable_rel)
 {
 	assert(o);
-	assert(object_rel);
+	assert(renderable_rel);
 }
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void * ekeko_object_class_data_get(Ekeko_Object *o)
+EAPI void * ekeko_renderable_class_data_get(Ekeko_Renderable *o)
 {
 	assert(o);
 	
@@ -327,7 +329,7 @@ EAPI void * ekeko_object_class_data_get(Ekeko_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
+EAPI Ekeko_Canvas * ekeko_renderable_canvas_get(Ekeko_Renderable *o)
 {
 	assert(o);
 	
@@ -337,7 +339,7 @@ EAPI Ekeko_Canvas * ekeko_object_canvas_get(Ekeko_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Eina_Rectangle *r)
+EAPI void ekeko_renderable_geometry_get(Ekeko_Renderable *o, Eina_Rectangle *r)
 {
 	assert(o);
 	assert(r);
@@ -351,7 +353,7 @@ EAPI void ekeko_object_geometry_get(Ekeko_Object *o, Eina_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool ekeko_object_is_visible(Ekeko_Object *o)
+EAPI Eina_Bool ekeko_renderable_is_visible(Ekeko_Renderable *o)
 {
 	return o->curr.visible;
 }
@@ -359,11 +361,11 @@ EAPI Eina_Bool ekeko_object_is_visible(Ekeko_Object *o)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_object_event_callback_add(Ekeko_Object *o, Ekeko_Event_Type etype, Ekeko_Event_Cb cb, void *data)
+EAPI void ekeko_renderable_event_callback_add(Ekeko_Renderable *o, Ekeko_Event_Type etype, Ekeko_Event_Cb cb, void *data)
 {
-	Ekeko_Object_Cb *ocb;
+	Ekeko_Renderable_Cb *ocb;
 	
-	ocb = malloc(sizeof(Ekeko_Object_Cb));
+	ocb = malloc(sizeof(Ekeko_Renderable_Cb));
 	ocb->func = cb;
 	ocb->data = data;
 	
@@ -373,7 +375,7 @@ EAPI void ekeko_object_event_callback_add(Ekeko_Object *o, Ekeko_Event_Type etyp
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ekeko_Object * ekeko_object_rel_get_up(Ekeko_Object *rel, Ekeko_Object_Cmp_Func cmp, void *data)
+EAPI Ekeko_Renderable * ekeko_renderable_rel_get_up(Ekeko_Renderable *rel, Ekeko_Renderable_Cmp_Func cmp, void *data)
 {
 	Eina_Inlist *l;
 
@@ -382,7 +384,7 @@ EAPI Ekeko_Object * ekeko_object_rel_get_up(Ekeko_Object *rel, Ekeko_Object_Cmp_
 	
 	for (l = (Eina_Inlist *)rel; l; l = l->prev)
 	{
-		Ekeko_Object *o = (Ekeko_Object*)l;
+		Ekeko_Renderable *o = (Ekeko_Renderable*)l;
 		if (cmp(o, data))
 			return o;
 	}
@@ -391,7 +393,7 @@ EAPI Ekeko_Object * ekeko_object_rel_get_up(Ekeko_Object *rel, Ekeko_Object_Cmp_
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Ekeko_Object * ekeko_object_rel_get_down(Ekeko_Object *rel, Ekeko_Object_Cmp_Func cmp, void *data)
+EAPI Ekeko_Renderable * ekeko_renderable_rel_get_down(Ekeko_Renderable *rel, Ekeko_Renderable_Cmp_Func cmp, void *data)
 {
 	Eina_Inlist *l;
 	
@@ -400,7 +402,7 @@ EAPI Ekeko_Object * ekeko_object_rel_get_down(Ekeko_Object *rel, Ekeko_Object_Cm
 			
 	for (l = (Eina_Inlist *)rel; l; l = l->next)
 	{
-		Ekeko_Object *o = (Ekeko_Object*)l;
+		Ekeko_Renderable *o = (Ekeko_Renderable*)l;
 		if (cmp(o, data))
 			return o;
 	}
@@ -409,9 +411,9 @@ EAPI Ekeko_Object * ekeko_object_rel_get_down(Ekeko_Object *rel, Ekeko_Object_Cm
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Eina_Rectangle *r)
+EAPI Eina_Bool ekeko_renderable_is_inside(Ekeko_Renderable *o, Eina_Rectangle *r)
 {
-	if (!(ekeko_object_geometry_is_inside(o, r)))
+	if (!(ekeko_renderable_geometry_is_inside(o, r)))
 		return EINA_FALSE;
 	
 	if (!(o->oclass->is_inside))
@@ -422,7 +424,7 @@ EAPI Eina_Bool ekeko_object_is_inside(Ekeko_Object *o, Eina_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI Eina_Bool ekeko_object_geometry_is_inside(Ekeko_Object *o, Eina_Rectangle *r)
+EAPI Eina_Bool ekeko_renderable_geometry_is_inside(Ekeko_Renderable *o, Eina_Rectangle *r)
 {
 	return eina_rectangles_intersect(&o->curr.geometry, r);
 }

@@ -70,7 +70,7 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int
 	}
 	else
 	{
-		Ekeko_Object *inside;
+		Ekeko_Renderable *inside;
 		
 		inside = ekeko_canvas_object_get_at_coordinate(i->canvas, x, y);
 		/* TODO check the visibility */
@@ -106,7 +106,7 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int
  */
 EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i, unsigned int timestamp)
 {
-	Ekeko_Object *inside;
+	Ekeko_Renderable *inside;
 	Ekeko_Event ev;
 	
 	if (i->pointer.inside) return;

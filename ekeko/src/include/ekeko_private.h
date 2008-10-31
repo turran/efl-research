@@ -64,7 +64,7 @@ typedef enum
 #include "private/element.h"
 #include "private/input.h"
 #include "private/tiler.h"
-#include "private/object.h"
+#include "private/renderable.h"
 #include "private/canvas.h"
 
 #endif /*EKEKO_PRIVATE_H_*/

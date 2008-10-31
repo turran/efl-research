@@ -46,8 +46,7 @@
  */
 typedef unsigned int Ekeko_Coord;
 typedef unsigned int Ekeko_Length;
-typedef struct _Ekeko_Object Ekeko_Object;
-typedef Eina_Bool (*Ekeko_Object_Cmp_Func)(Ekeko_Object *o, void *data);
+typedef struct _Ekeko_Renderable Ekeko_Renderable;
 
 typedef enum
 {

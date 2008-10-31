@@ -3,7 +3,7 @@
 
 struct _Ekeko_Input
 {
-	Eina_Inlist list;
+	EINA_INLIST;
 	Ekeko_Canvas *canvas; /* canvas associated with this input */
 	struct {
 		Eina_Bool inside;
@@ -11,7 +11,7 @@ struct _Ekeko_Input
 		unsigned int button;
 		unsigned int x;
 		unsigned int y;
-		Ekeko_Object *obj; /* only one object below the cursor */
+		Ekeko_Renderable *obj; /* only one object below the cursor */
 	} pointer;
 	struct {
 		

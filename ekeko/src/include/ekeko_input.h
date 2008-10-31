@@ -43,7 +43,7 @@ typedef enum _Ekeko_Event_Type
 	EKEKO_EVENT_MOUSE_UP, /**< Mouse Button Up Event */
 	EKEKO_EVENT_MOUSE_MOVE, /**< Mouse Move Event */
 	EKEKO_EVENT_MOUSE_WHEEL, /**< Mouse Wheel Event */
-	EKEKO_EVENT_FREE, /**< Object Being Freed (Called after Del) */
+	EKEKO_EVENT_FREE, /**< Renderable Being Freed (Called after Del) */
 	EKEKO_EVENT_KEY_DOWN, /**< Key Press Event */	
 	EKEKO_EVENT_KEY_UP, /**< Key Release Event */
 	EKEKO_EVENT_FOCUS_IN, /**< Focus In Event */
@@ -54,7 +54,7 @@ typedef enum _Ekeko_Event_Type
 	EKEKO_EVENT_RESIZE, /**< Resize Event */
 	EKEKO_EVENT_RESTACK, /**< Restack Event */
 	EKEKO_EVENT_USER_CHANGE, /**< User provided change */
-	EKEKO_EVENT_DEL, /**< Object Being Deleted (called before Free) */
+	EKEKO_EVENT_DEL, /**< Renderable Being Deleted (called before Free) */
 	EKEKO_EVENT_HOLD, /**< Events go on/off hold */
 	EKEKO_EVENTS,
 } Ekeko_Event_Type; /**< The type of event to trigger the callback */
@@ -149,8 +149,8 @@ typedef struct _Ekeko_Event
 	} data;
 } Ekeko_Event;
 
-typedef void (*Ekeko_Event_Cb)(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *data);
-EAPI void ekeko_object_event_callback_add(Ekeko_Object *o, Ekeko_Event_Type etype, Ekeko_Event_Cb cb, void *data);
+typedef void (*Ekeko_Event_Cb)(Ekeko_Canvas *c, Ekeko_Renderable *o, Ekeko_Event *ev, void *data);
+EAPI void ekeko_object_event_callback_add(Ekeko_Renderable *o, Ekeko_Event_Type etype, Ekeko_Event_Cb cb, void *data);
 /** 
  * @}
  */

@@ -1014,7 +1014,7 @@ static Ekeko_Rectangle * _rects_get(Ekeko_Tiler *t)
 {
    list_node_t *n;
    splitter_t *sp;
-   Ekeko_Rectangle *rects = NULL;
+   Eina_Inlist *rects = NULL;
 
    sp = t->data;
    if (sp->need_merge) {
@@ -1042,18 +1042,18 @@ static Ekeko_Rectangle * _rects_get(Ekeko_Tiler *t)
 	    Ekeko_Rectangle *r;
 
 	    r = malloc(sizeof(Ekeko_Rectangle));
-	    r->list.next = NULL;
-	    r->list.prev = NULL;
-	    r->list.last = NULL;
+	    r->__in_list.next = NULL;
+	    r->__in_list.prev = NULL;
+	    r->__in_list.last = NULL;
 	    r->r.x = cur.left;
 	    r->r.y = cur.top;
 	    r->r.w = cur.width;
 	    r->r.h = cur.height;
 
-	    rects = eina_inlist_append(rects, r);
+	    rects = eina_inlist_append(rects, EINA_INLIST_GET(r));
 	 }
    }
-   return rects;
+   return (Ekeko_Rectangle *)rects;
 }
 
 

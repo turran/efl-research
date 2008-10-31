@@ -11,10 +11,11 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libekeko.la
 
 libekeko_la_SOURCES = \
+ekeko_document.c \
 ekeko_core.c \
 ekeko_canvas.c \
 ekeko_input.c \
-ekeko_object.c \
+ekeko_renderable.c \
 ekeko_tiler.c
 
 

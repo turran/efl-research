@@ -200,9 +200,8 @@ static void _clear(Ekeko_Tiler *t) {
 }
 
 static Ekeko_Rectangle * _rects_get(Ekeko_Tiler *t) {
-	Ekeko_Rectangle *rects = NULL;
+	Eina_Inlist *lrects = NULL;
 	tiles_t *ts = t->data;
-	//Tilebuf_Rect *rects = NULL;
 	Tilebuf_Tile *tbt;
 	int x, y;
 
@@ -217,9 +216,10 @@ static Ekeko_Rectangle * _rects_get(Ekeko_Tiler *t) {
 				int xx = 0, yy = 0;
 				//r = malloc(sizeof(Tilebuf_Rect));
 				r = malloc(sizeof(Ekeko_Rectangle));
-				r->list.next = NULL;
-				r->list.prev = NULL;
-				r->list.last = NULL;
+				/* FIXME */
+				r->__in_list.next = NULL;
+				r->__in_list.prev = NULL;
+				r->__in_list.last = NULL;
 
 				/* amalgamate tiles */
 #if 1
@@ -271,14 +271,13 @@ static Ekeko_Rectangle * _rects_get(Ekeko_Tiler *t) {
 				r->r.y = y * t->tile.h;
 				r->r.w = (xx) * t->tile.w;
 				r->r.h = (yy) * t->tile.h;
-				//rects = evas_object_list_append(rects, r);
-				rects = eina_inlist_append(rects, r);
+				lrects = eina_inlist_append(lrects, EINA_INLIST_GET(r));
 				x = x + (xx - 1);
 				tbt += xx - 1;
 			}
 		}
 	}
-	return rects;
+	return (Ekeko_Rectangle *)lrects;
 }
 
 Ekeko_Tiler_Class tiler_tilebuf = {
