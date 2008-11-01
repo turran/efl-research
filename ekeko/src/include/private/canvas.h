@@ -8,11 +8,11 @@ struct _Ekeko_Canvas
 	// what about post processing of the canvas??
 	Ekeko_Tiler *tiler;
 	int tiler_type; /* FIXME fix this to an enum */
-	Ekeko_Renderable *renderables;
-	Ekeko_Input *inputs;
-	Ekeko_Rectangle *damages;
+	Eina_Inlist *renderables;
+	Eina_Inlist *inputs;
+	Eina_Inlist *damages;
 	// obscures
-	//Ekeko_Canvas_Class *cclass;
+	Ekeko_Canvas_Class *cclass;
 	void *cdata;
 	Eina_Rectangle size;
 	Eina_List *valid; /* objects that need to be draw */

@@ -21,7 +21,7 @@ static void _renderables_changed(Ekeko_Canvas *c)
 {
 	Ekeko_Renderable *o;
 	
-	EINA_INLIST_FOREACH(EINA_INLIST_GET(c->renderables), o)
+	EINA_INLIST_FOREACH(c->renderables, o)
 	{
 		if (o->changed == EINA_TRUE)
 			_object_changed(c, o); 
@@ -32,10 +32,10 @@ static void _damages_add(Ekeko_Canvas *c)
 	Ekeko_Rectangle *r;
 
 	/* add the rectangles to the tiler */
-	EINA_INLIST_FOREACH(EINA_INLIST_GET(c->damages), r)
+	EINA_INLIST_FOREACH(c->damages, r)
 	{
 		ekeko_tiler_rect_add(c->tiler, &r->r);
-		c->damages = eina_inlist_remove(c->damages, r);
+		c->damages = eina_inlist_remove(c->damages, EINA_INLIST_GET(r));
 	}
 }
 static void _obscures_remove(Ekeko_Canvas *c)
@@ -271,6 +271,7 @@ EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
 	assert(c);
 	return c->cdata;
 }
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -296,7 +297,7 @@ EAPI Ekeko_Renderable * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekek
 	o = ekeko_renderable_rel_get_up(c->renderables, cmp, data);
 	return o;
 }
-
+#endif
 /* TODO
  * get renderables that are in a rect
  */

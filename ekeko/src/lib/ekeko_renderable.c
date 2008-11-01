@@ -189,7 +189,7 @@ EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_C
 	o->oclass = oclass;
 	o->cdata = cdata;
 	
-	c->renderables = eina_inlist_append(c->renderables, o);
+	c->renderables = eina_inlist_append(c->renderables, EINA_INLIST_GET(o));
 	return o;
 }
 /**
@@ -369,7 +369,7 @@ EAPI void ekeko_renderable_event_callback_add(Ekeko_Renderable *o, Ekeko_Event_T
 	ocb->func = cb;
 	ocb->data = data;
 	
-	o->callbacks[etype] = eina_inlist_append(o->callbacks[etype], ocb);
+	o->callbacks[etype] = eina_inlist_append(o->callbacks[etype], EINA_INLIST_GET(ocb));
 }
 /**
  * To be documented

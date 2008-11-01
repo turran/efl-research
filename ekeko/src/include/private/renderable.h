@@ -19,7 +19,7 @@ typedef struct _Ekeko_Renderable_State
 
 struct _Ekeko_Renderable_Cb
 {
-	Eina_Inlist list;
+	EINA_INLIST;
 	Ekeko_Event_Cb func;
 	void *data;
 };
@@ -32,7 +32,7 @@ struct _Ekeko_Renderable
 
 	Ekeko_Renderable_State curr;
 	Ekeko_Renderable_State prev;
-	Ekeko_Renderable_Cb *callbacks[EKEKO_EVENTS];
+	Eina_Inlist *callbacks[EKEKO_EVENTS];
 	Eina_Bool delete_me;
 	Eina_Bool changed;
 	Eina_Bool valid;
