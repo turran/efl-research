@@ -38,12 +38,15 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(EINA, [eina-0])
-#PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
-#PKG_CHECK_MODULES(SDL, [sdl >= 1.2.10], [have_sdl="yes"], [have_sdl="no"])
 
 AM_CONDITIONAL(HAVE_SDL, test "x$have_sdl" = "xyes")
 
 ## Make the debug preprocessor configurable
+EKEKO_CFLAGS="$EINA_CFLAGS"
+EKEKO_LIBS="$EINA_LIBS"
+AC_SUBST(EKEKO_CFLAGS)
+AC_SUBST(EKEKO_LIBS)
+
 
 AC_OUTPUT([
 Makefile

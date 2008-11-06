@@ -5,24 +5,25 @@ SUBDIRS = tiler
 AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/include \
-@EINA_CFLAGS@ \
-@ENESIM_CFLAGS@
+@EKEKO_CFLAGS@
 
 lib_LTLIBRARIES = libekeko.la
 
 libekeko_la_SOURCES = \
-ekeko_document.c \
-ekeko_core.c \
+ekeko_attribute.c \
+ekeko_element.c \
 ekeko_canvas.c \
+ekeko_document.c \
+ekeko_event.c \
 ekeko_input.c \
+ekeko_main.c \
 ekeko_renderable.c \
 ekeko_tiler.c
 
 
 libekeko_la_LIBADD = \
 tiler/libekeko_tiler.la \
-@EINA_LIBS@ \
-@ENESIM_LIBS@
+@EKEKO_LIBS@
 
 libekeko_la_DEPENDENCIES = \
 tiler/libekeko_tiler.la

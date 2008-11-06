@@ -8,6 +8,9 @@ struct _Ekeko_Element
 {
 	int changed;
 	Eina_Hash *attributes;
+#ifdef EKEKO_EVENT
+	Eina_Hash *events;
+#endif
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -59,8 +62,8 @@ EAPI void ekeko_element_attribute_remove(Ekeko_Element *e, const char *name)
 	/* TODO delete the attribute */
 }
 
-EAPI void ekeko_element_attribute_add(Ekeko_Element *e, const char *name, Ekeko_Attribute_Type type,
-		Ekeko_Value *def, Ekeko_Attribute_Update cb, void *data)
+EAPI void ekeko_element_attribute_add(Ekeko_Element *e, const char *name, Ekeko_Value_Type type,
+		Ekeko_Value *def, Ekeko_Element_Update cb, void *data)
 {
 	Ekeko_Attribute *a;
 	assert(e);

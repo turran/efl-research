@@ -55,7 +55,7 @@ Eina_Bool ekeko_attribute_value_set(Ekeko_Attribute *a, Ekeko_Value *v)
 	switch (a->curr.type)
 	{
 	/* First basic types */
-	case EDOM_ATTRIBUTE_INT:
+	case EKEKO_ATTRIBUTE_INT:
 		if (v->v.i != a->prev.v.i)
 		{
 			changed = EINA_TRUE;

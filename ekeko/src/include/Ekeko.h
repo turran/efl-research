@@ -47,6 +47,11 @@
 typedef unsigned int Ekeko_Coord;
 typedef unsigned int Ekeko_Length;
 typedef struct _Ekeko_Renderable Ekeko_Renderable;
+typedef struct _Ekeko_Document Ekeko_Document;
+typedef struct _Ekeko_Document_Type Ekeko_Document_Type;
+typedef struct _Ekeko_Element Ekeko_Element;
+typedef struct _Ekeko_Event Ekeko_Event;
+typedef struct _Ekeko_Input Ekeko_Input;
 
 typedef enum
 {
@@ -123,11 +128,13 @@ typedef struct _Ekeko_Class Ekeko_Class;
 
 #include "ekeko_main.h"
 #include "ekeko_value.h"
-#include "ekeko_element.h"
+#include "ekeko_document.h"
 #include "ekeko_attribute.h"
+#include "ekeko_input.h"
+#include "ekeko_event.h"
+#include "ekeko_element.h"
 #include "ekeko_class.h"
 #include "ekeko_canvas.h"
 #include "ekeko_renderable.h"
-#include "ekeko_input.h"
 
 #endif /*EKEKO_H_*/

@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 #include "config.h"
@@ -61,6 +62,10 @@ typedef enum
 #endif
 
 
+#define EKEKO_EVENT
+
+#include "private/attribute.h"
+#include "private/document.h"
 #include "private/element.h"
 #include "private/input.h"
 #include "private/tiler.h"

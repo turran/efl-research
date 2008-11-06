@@ -29,6 +29,7 @@ static void _renderable_change(Ekeko_Renderable *o)
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
+#if 0
 void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type ect, Ekeko_Event *ev)
 {
 	Eina_Inlist *l;
@@ -42,6 +43,7 @@ void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type 
 		cb->func(o->canvas, o, ev, cb->data);
 	}
 }
+#endif
 /**
  * To be documented
  * FIXME: To be fixed
@@ -357,6 +359,7 @@ EAPI Eina_Bool ekeko_renderable_is_visible(Ekeko_Renderable *o)
 {
 	return o->curr.visible;
 }
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -371,6 +374,7 @@ EAPI void ekeko_renderable_event_callback_add(Ekeko_Renderable *o, Ekeko_Event_T
 	
 	o->callbacks[etype] = eina_inlist_append(o->callbacks[etype], EINA_INLIST_GET(ocb));
 }
+#endif
 /**
  * To be documented
  * FIXME: To be fixed

@@ -1,8 +1,6 @@
 #ifndef EKEKO_ELEMENT_H_
 #define EKEKO_ELEMENT_H_
 
-typedef struct _Ekeko_Element Ekeko_Element;
-
 typedef void (*Ekeko_Element_Update)(Ekeko_Element *, const Ekeko_Value *, const Ekeko_Value *, void *);
 
 typedef void (*Ekeko_Attribute_Callback)(Ekeko_Element *e, Ekeko_Value *v, void *data);

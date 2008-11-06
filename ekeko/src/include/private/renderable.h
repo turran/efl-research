@@ -20,7 +20,9 @@ typedef struct _Ekeko_Renderable_State
 struct _Ekeko_Renderable_Cb
 {
 	EINA_INLIST;
+#if 0
 	Ekeko_Event_Cb func;
+#endif
 	void *data;
 };
 
