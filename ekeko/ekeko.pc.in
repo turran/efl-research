@@ -8,4 +8,4 @@ Description: Ekeko
 Requires: eina-0
 Version: @VERSION@
 Libs: -L${libdir} -lekeko
-Cflags: -I${includedir}
+Cflags: -I${includedir} -I${includedir}/ekeko
