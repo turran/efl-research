@@ -5,11 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "Eina.h"
-#include "Eobj.h"
+/*#include "Eobj.h"
 #include "Enesim.h"
 #include "Ekeko.h"
 #include "EXML.h"
-//#include "openvg.h"
+#include "openvg.h"*/
 
 #endif /*ESVG_COMMON_H_*/

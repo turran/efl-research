@@ -4,10 +4,10 @@
 
 EAPI void esvg_init(void)
 {
-	
+	ekeko_init();
 }
 
 EAPI void esvg_shutdown(void)
 {
-	
+	ekeko_shutdown();
 }

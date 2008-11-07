@@ -2,9 +2,11 @@
 #define _ESVG_H
 
 #include "Eina.h"
-#include "Eobj.h"
 #include "Ekeko.h"
 
+#include "esvg_rect.h"
+
+/*#include "esvg_dom.h"
 #include "esvg_core.h"
 #include "esvg_engine.h"
 #include "esvg_element.h"
@@ -12,10 +14,9 @@
 #include "esvg_shape.h"
 #include "esvg_container.h"
 #include "esvg_group.h"
-#include "esvg_rect.h"
 #include "esvg_svg.h"
 
-#include "esvg_parser.h"
+#include "esvg_parser.h"*/
 
 /**
  * TODO 

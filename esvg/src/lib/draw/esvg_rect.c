@@ -1,6 +1,7 @@
-#include "esvg_common.h"
 #include "ESVG.h"
 #include "esvg_private.h"
+
+#if 0
 /* rect
  * Core.attrib, Conditional.attrib, Style.attrib, GraphicalEvents.attrib, Paint.attrib, Paint.attrib, Opacity.attrib, Graphics.attrib, Cursor.attrib, Filter.attrib, Mask.attrib, GraphicalEvents.attrib, Clip.attrib, x, y, width, height, rx, ry, transform 
  */
@@ -50,9 +51,40 @@ static void _destructor(ESVG_Rect *r)
 {
 	
 }
+#endif
+
+void _rect_new(Ekeko_Element *e)
+{
+	//_esvg_shape_new(e);
+	//_ekeko_renderable_new(e);
+}
+void _rect_delete(Ekeko_Element *e)
+{
+	
+}
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+void esvg_rect_init(Ekeko_Document_Type *dt)
+{
+	ekeko_document_element_register(dt, "svg", "rect", _rect_new, _rect_delete);
+}
+
+void esvg_rect_shutdown(Ekeko_Document_Type *dt)
+{
+	//ekeko_element_unregister
+}
+
+EAPI Ekeko_Element * esvg_rect_new(Ekeko_Document *d)
+{
+}
+
+EAPI void esvg_rect_delete(Ekeko_Element *e)
+{
+	//ekeko_renderable_delete(e);
+}
+
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -111,3 +143,4 @@ EAPI void esvg_rect_del(ESVG_Rect *r)
 {
 	
 }
+#endif
