@@ -20,11 +20,11 @@ static void _object_changed(Ekeko_Canvas *c, Ekeko_Renderable *o)
 static void _renderables_changed(Ekeko_Canvas *c)
 {
 	Ekeko_Renderable *o;
-	
+
 	EINA_INLIST_FOREACH(c->renderables, o)
 	{
 		if (o->changed == EINA_TRUE)
-			_object_changed(c, o); 
+			_object_changed(c, o);
 	}
 }
 static void _damages_add(Ekeko_Canvas *c)
@@ -69,7 +69,7 @@ Ekeko_Renderable * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsign
 {
 	Eina_Inlist *l;
 	Eina_Rectangle r;
-	
+
 	r.x = x;
 	r.y = y;
 	r.w = 1;

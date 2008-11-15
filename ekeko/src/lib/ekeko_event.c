@@ -16,6 +16,10 @@ event {
 
 document_create_event: creates an event as if the implementation has created it,
 that means that the init function part of the event should be called after this
+Core event types:
+mutation: when the document structure has changed (attributes, text or name)
+pre-post mmutation??
+
 */
 /*============================================================================*
  *                                  Local                                     *
@@ -28,19 +32,22 @@ that means that the init function part of the event should be called after this
  *============================================================================*/
 typedef void (*Ekeko_Event_Listener)(Ekeko_Event *);
 
-EAPI void ekeko_event_listener_add(Ekeko_Element *e, char *type,
+/**
+ * Adds a listener for the event type ...
+ */
+EAPI void ekeko_event_listener_add(Ekeko_Element *e, const char *type,
 		Ekeko_Event_Listener el, Eina_Bool capture)
 {
-	
+
 }
 
-EAPI void ekeko_event_listener_remove(Ekeko_Element *e, char *type,
+EAPI void ekeko_event_listener_remove(Ekeko_Element *e, const char *type,
 		Ekeko_Event_Listener el, Eina_Bool capture)
 {
-	
+
 }
 
 EAPI Eina_Bool ekeko_event_dispatch(Ekeko_Element *e, Ekeko_Event *ev)
 {
-	
+
 }

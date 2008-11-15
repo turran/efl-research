@@ -37,13 +37,13 @@ EAPI void ekeko_element_process(Ekeko_Element *e)
 {
 	Eina_Iterator *it;
 	Ekeko_Attribute *a;
-	
+
 	assert(e);
-	
+
 	printf("Element changed %d\n", e->changed);
 	if (!e->changed)
 		return;
-	
+
 	it = eina_hash_iterator_data_new(e->attributes);
 	while (eina_iterator_next(it, (void **)&a))
 	{
@@ -62,15 +62,17 @@ EAPI void ekeko_element_attribute_remove(Ekeko_Element *e, const char *name)
 	/* TODO delete the attribute */
 }
 
+/* TODO 
+ * remove the callback and add a mutation event */
 EAPI void ekeko_element_attribute_add(Ekeko_Element *e, const char *name, Ekeko_Value_Type type,
-		Ekeko_Value *def, Ekeko_Element_Update cb, void *data)
+		Ekeko_Value *def)
 {
 	Ekeko_Attribute *a;
 	assert(e);
 
-	a = ekeko_attribute_new(type, def, cb, data);
+	//a = ekeko_attribute_new(type, def, cb, data);
+	a = ekeko_attribute_new(type, def, NULL, NULL);
 	eina_hash_add(e->attributes, name, a);
-	
 }
 
 EAPI Eina_Bool ekeko_element_attribute_set(Ekeko_Element *e, const char *name, Ekeko_Value *v)
@@ -110,16 +112,26 @@ EAPI Eina_Bool ekeko_element_attribute_get(Ekeko_Element *e, const char *name, E
 	assert(e);
 	a = eina_hash_find(e->attributes, name);
 	if (!a) return EINA_FALSE;
-	
+
 	ekeko_attribute_value_get(a, v);
 	return EINA_TRUE;
+}
+
+EAPI Eina_Bool ekeko_element_private_add(Ekeko_Element *e, const char *name, void *data)
+{
+	return EINA_TRUE;
+}
+
+EAPI void * ekeko_element_private_get(Ekeko_Element *e, const char *name)
+{
+	return NULL;
 }
 
 #if 0
 /* LATER */
 Eina_List * ekeko_element_attributes_list(Ekeko_Element *e)
 {
-	
+
 }
 
 

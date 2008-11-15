@@ -8,7 +8,7 @@
  * here? check if an renderable inherits from a renderable / locatable renderable?
  */
 /*============================================================================*
- *                                  Local                                     * 
+ *                                  Local                                     *
  *============================================================================*/
 static inline Eina_Bool _renderable_is_valid(Ekeko_Renderable *o)
 {
@@ -25,20 +25,19 @@ static void _renderable_change(Ekeko_Renderable *o)
 		ekeko_canvas_change(o->canvas);
 	}
 }
-
 /*============================================================================*
- *                                 Global                                     * 
+ *                                 Global                                     *
  *============================================================================*/
 #if 0
 void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type ect, Ekeko_Event *ev)
 {
 	Eina_Inlist *l;
-	
+
 	for (l = (Eina_Inlist *)o->callbacks[ect]; l; l = l->next)
 	{
 		Ekeko_Renderable_Cb *cb;
 		cb = (Ekeko_Renderable_Cb *)l;
-		
+
 		//printf("calling callback for event %d\n", ect);
 		cb->func(o->canvas, o, ev, cb->data);
 	}
@@ -51,7 +50,7 @@ void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type 
 void ekeko_renderable_event_move_call(Ekeko_Renderable *o)
 {
 	Ekeko_Event ev;
-	
+
 	ekeko_renderable_event_callback_call(o, EKEKO_EVENT_MOVE, &ev);
 }
 /**
@@ -61,7 +60,7 @@ void ekeko_renderable_event_move_call(Ekeko_Renderable *o)
 void ekeko_renderable_event_resize_call(Ekeko_Renderable *o)
 {
 	Ekeko_Event ev;
-	
+
 	ekeko_renderable_event_callback_call(o, EKEKO_EVENT_RESIZE, &ev);
 }
 /**
@@ -111,7 +110,6 @@ void ekeko_renderable_pre_process(Ekeko_Renderable *o)
 		o->prev.geometry.w = o->curr.geometry.w;
 		o->prev.geometry.h = o->curr.geometry.h;
 		goto ok;
-			
 	}
 	return;
 	/* call class function */
@@ -132,7 +130,7 @@ void ekeko_renderable_process(Ekeko_Renderable *o, Eina_Rectangle *r)
  * FIXME: To be fixed
  */
 void ekeko_renderable_post_process(Ekeko_Renderable *o)
-{	
+{
 	/* call class function */
 	o->changed = EINA_FALSE;
 	o->oclass->post_process(o->cdata);
@@ -162,12 +160,23 @@ void ekeko_renderable_invalidate(Ekeko_Renderable *o)
 	o->valid = EINA_FALSE;
 	o->canvas->invalid = eina_list_append(o->canvas->invalid, o);
 	o->canvas->valid = eina_list_remove(o->canvas->valid, o);
-	
 }
 /*============================================================================*
- *                                   API                                      * 
+ *                                   API                                      *
  *============================================================================*/
-//EAPI void ekeko_renderable_add()
+/* TODO this should also receive the parent document */
+EAPI void ekeko_renderable_new(Ekeko_Element *e, Ekeko_Renderable_Class *c)
+{
+	Ekeko_Value def;
+
+	/* setup the attributes for a renderable element */
+	eina_rectangle_coords_from(&def.v.r, 0, 0, 0, 0);
+	ekeko_element_attribute_add(e, "_rect", EKEKO_ATTRIBUTE_RECTANGLE, &def);
+	def.v.b = EINA_FALSE;
+	ekeko_element_attribute_add(e, "_visible", EKEKO_ATTRIBUTE_BOOL, &def);
+	ekeko_element_private_add(e, "_renderable_class", c);
+	/* TODO the parent document should implement the canvas interface? */
+}
 
 /**
  * To be documented
@@ -179,18 +188,18 @@ EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_C
 	Ekeko_Renderable *o;
 
 	assert(oclass);
-	
+
 	o = calloc(1, sizeof(Ekeko_Renderable));
 	assert(o);
 	o->canvas = c;
-	
+
 	/* default renderable properties */
-	o->curr.visible = EINA_FALSE; 
-	
+	o->curr.visible = EINA_FALSE;
+
 	/* TODO check the class */
 	o->oclass = oclass;
 	o->cdata = cdata;
-	
+
 	c->renderables = eina_inlist_append(c->renderables, EINA_INLIST_GET(o));
 	return o;
 }
@@ -221,9 +230,9 @@ EAPI void ekeko_renderable_change_notify(Ekeko_Renderable *o)
 EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y)
 {
 	Eina_Inlist *l;
-	
+
 	assert(o);
-	
+
 	if ((o->curr.geometry.x == x) && (o->curr.geometry.y == y))
 	{
 		goto callback;
@@ -240,7 +249,7 @@ EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y)
 	for (l = (Eina_Inlist *)o->canvas->inputs; l; l = l->next)
 	{
 		Ekeko_Input *i = (Ekeko_Input *)l;
-		
+
 		/* if the renderable is inside any input, call the callback */
 		if (eina_rectangle_coords_inside(&o->curr.geometry, i->pointer.x, i->pointer.y))
 		{
@@ -324,7 +333,7 @@ EAPI void ekeko_renderable_stack_below(Ekeko_Renderable *o, Ekeko_Renderable *re
 EAPI void * ekeko_renderable_class_data_get(Ekeko_Renderable *o)
 {
 	assert(o);
-	
+
 	return o->cdata;
 }
 /**
@@ -334,7 +343,7 @@ EAPI void * ekeko_renderable_class_data_get(Ekeko_Renderable *o)
 EAPI Ekeko_Canvas * ekeko_renderable_canvas_get(Ekeko_Renderable *o)
 {
 	assert(o);
-	
+
 	return o->canvas;
 }
 /**
@@ -345,7 +354,7 @@ EAPI void ekeko_renderable_geometry_get(Ekeko_Renderable *o, Eina_Rectangle *r)
 {
 	assert(o);
 	assert(r);
-	
+
 	r->x = o->curr.geometry.x;
 	r->y = o->curr.geometry.y;
 	r->w = o->curr.geometry.w;
@@ -367,11 +376,11 @@ EAPI Eina_Bool ekeko_renderable_is_visible(Ekeko_Renderable *o)
 EAPI void ekeko_renderable_event_callback_add(Ekeko_Renderable *o, Ekeko_Event_Type etype, Ekeko_Event_Cb cb, void *data)
 {
 	Ekeko_Renderable_Cb *ocb;
-	
+
 	ocb = malloc(sizeof(Ekeko_Renderable_Cb));
 	ocb->func = cb;
 	ocb->data = data;
-	
+
 	o->callbacks[etype] = eina_inlist_append(o->callbacks[etype], EINA_INLIST_GET(ocb));
 }
 #endif
@@ -385,7 +394,7 @@ EAPI Ekeko_Renderable * ekeko_renderable_rel_get_up(Ekeko_Renderable *rel, Ekeko
 
 	assert(rel);
 	assert(cmp);
-	
+
 	for (l = (Eina_Inlist *)rel; l; l = l->prev)
 	{
 		Ekeko_Renderable *o = (Ekeko_Renderable*)l;
@@ -400,10 +409,10 @@ EAPI Ekeko_Renderable * ekeko_renderable_rel_get_up(Ekeko_Renderable *rel, Ekeko
 EAPI Ekeko_Renderable * ekeko_renderable_rel_get_down(Ekeko_Renderable *rel, Ekeko_Renderable_Cmp_Func cmp, void *data)
 {
 	Eina_Inlist *l;
-	
+
 	assert(rel);
 	assert(cmp);
-			
+
 	for (l = (Eina_Inlist *)rel; l; l = l->next)
 	{
 		Ekeko_Renderable *o = (Ekeko_Renderable*)l;

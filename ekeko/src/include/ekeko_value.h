@@ -32,6 +32,7 @@ typedef struct _Ekeko_Value
 		long l;
 		void *p;
 		char *st;
+		Eina_Rectangle r;
 	} v;
 } Ekeko_Value;
 
