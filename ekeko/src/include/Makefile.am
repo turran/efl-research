@@ -10,8 +10,9 @@ ekeko_element.h \
 ekeko_attribute.h \
 ekeko_class.h \
 ekeko_canvas.h \
-ekeko_renderable.h
-
+ekeko_renderable.h \
+ekeko_node.h \
+ekeko_node_list.h
 
 include_HEADERS = \
 Ekeko.h

@@ -1,6 +1,7 @@
 #ifndef EKEKO_CANVAS_H_
 #define EKEKO_CANVAS_H_
 
+typedef void (*Ekeko_Canvas_Flush)(Ekeko_Element *e, Eina_Rectangle *r);
 
 typedef struct _Ekeko_Canvas Ekeko_Canvas;
 typedef struct _Ekeko_Canvas_Class
@@ -12,7 +13,9 @@ typedef struct _Ekeko_Canvas_Class
 	 **/
 } Ekeko_Canvas_Class;
 
-EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata, int type, int w, int h);
+EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush);
+
+//EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata, int type, int w, int h);
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r);

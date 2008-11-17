@@ -70,6 +70,7 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int
 	}
 	else
 	{
+#if 0
 		Ekeko_Renderable *inside;
 		
 		inside = ekeko_canvas_object_get_at_coordinate(i->canvas, x, y);
@@ -98,6 +99,7 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int
 				i->pointer.obj = inside;
 			}
 		}
+#endif
 	}
 }
 /**
@@ -118,7 +120,7 @@ EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i, unsigned int timestamp)
 	i->pointer.inside = EINA_TRUE;
 	i->last_timestamp = timestamp;
 	
-	ekeko_object_event_callback_call(inside, EKEKO_EVENT_MOUSE_IN, &ev);
+	//ekeko_object_event_callback_call(inside, EKEKO_EVENT_MOUSE_IN, &ev);
 	ekeko_input_feed_mouse_move(i, i->pointer.x, i->pointer.y, timestamp);
 }
 /**

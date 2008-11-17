@@ -52,6 +52,9 @@ typedef struct _Ekeko_Document_Type Ekeko_Document_Type;
 typedef struct _Ekeko_Element Ekeko_Element;
 typedef struct _Ekeko_Event Ekeko_Event;
 typedef struct _Ekeko_Input Ekeko_Input;
+typedef struct _Ekeko_Node Ekeko_Node;
+typedef Eina_Hash Ekeko_Node_Named_Map;
+typedef Eina_List Ekeko_Node_List;
 
 typedef enum
 {
@@ -128,6 +131,7 @@ typedef struct _Ekeko_Class Ekeko_Class;
 
 #include "ekeko_main.h"
 #include "ekeko_value.h"
+#include "ekeko_node.h"
 #include "ekeko_document.h"
 #include "ekeko_attribute.h"
 #include "ekeko_input.h"

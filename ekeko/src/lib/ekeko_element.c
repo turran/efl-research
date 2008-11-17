@@ -3,14 +3,11 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-
 struct _Ekeko_Element
 {
+	Ekeko_Node node;
 	int changed;
 	Eina_Hash *attributes;
-#ifdef EKEKO_EVENT
-	Eina_Hash *events;
-#endif
 };
 /*============================================================================*
  *                                 Global                                     *
@@ -33,27 +30,6 @@ EAPI Ekeko_Element * ekeko_element_new_ns(const char *ns)
 
 }
 
-EAPI void ekeko_element_process(Ekeko_Element *e)
-{
-	Eina_Iterator *it;
-	Ekeko_Attribute *a;
-
-	assert(e);
-
-	printf("Element changed %d\n", e->changed);
-	if (!e->changed)
-		return;
-
-	it = eina_hash_iterator_data_new(e->attributes);
-	while (eina_iterator_next(it, (void **)&a))
-	{
-		if (ekeko_attribute_update(a, e))
-			e->changed--;
-	}
-	/* post condition */
-	assert(!e->changed);
-}
-
 EAPI void ekeko_element_attribute_remove(Ekeko_Element *e, const char *name)
 {
 	assert(e);
@@ -70,8 +46,7 @@ EAPI void ekeko_element_attribute_add(Ekeko_Element *e, const char *name, Ekeko_
 	Ekeko_Attribute *a;
 	assert(e);
 
-	//a = ekeko_attribute_new(type, def, cb, data);
-	a = ekeko_attribute_new(type, def, NULL, NULL);
+	a = ekeko_attribute_new(name, def);
 	eina_hash_add(e->attributes, name, a);
 }
 
@@ -86,7 +61,8 @@ EAPI Eina_Bool ekeko_element_attribute_set(Ekeko_Element *e, const char *name, E
 	if (!a) return EINA_FALSE;
 
 	changed_bef = ekeko_attribute_changed(a);
-	changed_now = ekeko_attribute_value_set(a, v);
+	ekeko_attribute_value_set(a, v);
+	changed_now = ekeko_attribute_changed(a);
 
 	if (changed_bef && !changed_now)
 	{
@@ -97,9 +73,13 @@ EAPI Eina_Bool ekeko_element_attribute_set(Ekeko_Element *e, const char *name, E
 		e->changed++;
 	}
 	if (changed_now)
-		printf("Attribute %s changed now\n", name);
+	{
+		//printf("Attribute %s changed now\n", name);
+	}
 	if (changed_bef)
-		printf("Attribute %s changed before\n", name);
+	{
+		//printf("Attribute %s changed before\n", name);
+	}
 
 	return EINA_TRUE;
 }
@@ -115,16 +95,6 @@ EAPI Eina_Bool ekeko_element_attribute_get(Ekeko_Element *e, const char *name, E
 
 	ekeko_attribute_value_get(a, v);
 	return EINA_TRUE;
-}
-
-EAPI Eina_Bool ekeko_element_private_add(Ekeko_Element *e, const char *name, void *data)
-{
-	return EINA_TRUE;
-}
-
-EAPI void * ekeko_element_private_get(Ekeko_Element *e, const char *name)
-{
-	return NULL;
 }
 
 #if 0

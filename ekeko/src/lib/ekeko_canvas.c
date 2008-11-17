@@ -11,6 +11,30 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Ekeko_Canvas_Private
+{
+	/* possible callbacks */
+	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
+	// what about post processing of the canvas??
+	Ekeko_Tiler *tiler;
+	int tiler_type; /* FIXME fix this to an enum */
+	Eina_Inlist *renderables;
+	Eina_Inlist *inputs;
+	Eina_Inlist *damages;
+	// obscures
+	struct
+	{
+		Ekeko_Canvas_Flush flush;
+	} cb;
+	//void *cdata;
+	Eina_Rectangle size;
+	Eina_List *valid; /* objects that need to be draw */
+	Eina_List *invalid; /* objects that dont need to be draw */
+	Eina_Bool changed; /* main flag that checks if the canvas has changed in any way */
+	Eina_Bool size_changed; /* when what has changed is the size of the canvas */
+} Ekeko_Canvas_Private;
+
+
 /* TODO move this to object.c? */
 static void _object_changed(Ekeko_Canvas *c, Ekeko_Renderable *o)
 {
@@ -115,6 +139,24 @@ static Eina_Bool _at_coordinate(Ekeko_Renderable *o, void *data)
  *============================================================================*/
 /**
  * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
+{
+	Ekeko_Canvas_Private *c;
+	
+	/* private data */
+	c = calloc(1, sizeof(Ekeko_Canvas));
+	c->tiler = ekeko_tiler_new(type, w, h);
+	c->tiler_type = type;
+	c->cb.flush = flush;
+	c->size.w = 0;
+	c->size.h = 0;
+	/* setup the attributes */
+}
+#if 0
+/**
+ * To be documented
  * FIXME: To be fixed, remove the w and h and use the geometry_set
  */
 EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
@@ -132,6 +174,7 @@ EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
 
 	return c;
 }
+#endif
 /**
  * @brief Marks a rectangle on the canvas as damaged, this area will be
  * processed again. When the canvas process that area it will no longer be

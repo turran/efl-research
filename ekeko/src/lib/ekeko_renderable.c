@@ -25,6 +25,48 @@ static void _renderable_change(Ekeko_Renderable *o)
 		ekeko_canvas_change(o->canvas);
 	}
 }
+static void _rect_pre_cb(Ekeko_Event *e)
+{
+	// the input events
+	/* FIXME this should happen only on the valid renderables */
+#if 0
+	for (l = (Eina_Inlist *)o->canvas->inputs; l; l = l->next)
+	{
+		Ekeko_Input *i = (Ekeko_Input *)l;
+
+		/* if the renderable is inside any input, call the callback */
+		if (eina_rectangle_coords_inside(&o->curr.geometry,
+			i->pointer.x, i->pointer.y))
+		{
+			ekeko_input_feed_mouse_move(i, i->pointer.x,
+					i->pointer.y, i->last_timestamp);
+		}
+		/* if the renderable was one of the inside renderables, call the callback */
+		else if (o == i->pointer.obj)
+		{
+			ekeko_input_feed_mouse_move(i, i->pointer.x,
+					i->pointer.y, i->last_timestamp);
+		}
+	}
+#endif
+}
+static void _rect_mutation_cb(Ekeko_Event *e)
+{
+	/* add both rectangles, previous and new */
+	//printf("adding[1] %d %d %d %d\n", o->prev.geometry.x, o->prev.geometry.y, o->prev.geometry.w, o->prev.geometry.h);
+	//ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
+	//printf("adding[2] %d %d %d %d\n", o->curr.geometry.x, o->curr.geometry.y, o->curr.geometry.w, o->curr.geometry.h);
+	//ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
+}
+static void _visible_pre_cb(Ekeko_Event *e)
+{
+	// the input events
+}
+static void _visible_mutation_cb(Ekeko_Event *e)
+{
+	//ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
+	//ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -51,7 +93,7 @@ void ekeko_renderable_event_move_call(Ekeko_Renderable *o)
 {
 	Ekeko_Event ev;
 
-	ekeko_renderable_event_callback_call(o, EKEKO_EVENT_MOVE, &ev);
+	//ekeko_renderable_event_callback_call(o, EKEKO_EVENT_MOVE, &ev);
 }
 /**
  * To be documented
@@ -61,7 +103,7 @@ void ekeko_renderable_event_resize_call(Ekeko_Renderable *o)
 {
 	Ekeko_Event ev;
 
-	ekeko_renderable_event_callback_call(o, EKEKO_EVENT_RESIZE, &ev);
+	//ekeko_renderable_event_callback_call(o, EKEKO_EVENT_RESIZE, &ev);
 }
 /**
  * To be documented
@@ -87,8 +129,6 @@ void ekeko_renderable_pre_process(Ekeko_Renderable *o)
 	/* check visibility */
 	if (o->curr.visible ^ o->prev.visible)
 	{
-		ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
-		ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
 		/* update the visibility */
 		o->prev.visible = o->curr.visible;
 		goto ok;
@@ -99,11 +139,7 @@ void ekeko_renderable_pre_process(Ekeko_Renderable *o)
 			(o->curr.geometry.w != o->prev.geometry.w) ||
 			(o->curr.geometry.h != o->prev.geometry.h))
 	{
-		/* add both rectangles, previous and new */
-		//printf("adding[1] %d %d %d %d\n", o->prev.geometry.x, o->prev.geometry.y, o->prev.geometry.w, o->prev.geometry.h);
-		ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
-		//printf("adding[2] %d %d %d %d\n", o->curr.geometry.x, o->curr.geometry.y, o->curr.geometry.w, o->curr.geometry.h);
-		ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
+		
 		/* update the geometry */
 		o->prev.geometry.x = o->curr.geometry.x;
 		o->prev.geometry.y = o->curr.geometry.y;
@@ -172,9 +208,14 @@ EAPI void ekeko_renderable_new(Ekeko_Element *e, Ekeko_Renderable_Class *c)
 	/* setup the attributes for a renderable element */
 	eina_rectangle_coords_from(&def.v.r, 0, 0, 0, 0);
 	ekeko_element_attribute_add(e, "_rect", EKEKO_ATTRIBUTE_RECTANGLE, &def);
+	ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _rect_pre_cb, EINA_TRUE);
+	ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _rect_mutation_cb, EINA_TRUE);
 	def.v.b = EINA_FALSE;
 	ekeko_element_attribute_add(e, "_visible", EKEKO_ATTRIBUTE_BOOL, &def);
-	ekeko_element_private_add(e, "_renderable_class", c);
+	ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _visible_pre_cb, EINA_TRUE);
+	ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _visible_mutation_cb, EINA_TRUE);
+	/* setup the private class */
+	ekeko_node_user_set((Ekeko_Node *)e, "_renderable_class", c);
 	/* TODO the parent document should implement the canvas interface? */
 }
 
@@ -441,4 +482,3 @@ EAPI Eina_Bool ekeko_renderable_geometry_is_inside(Ekeko_Renderable *o, Eina_Rec
 {
 	return eina_rectangles_intersect(&o->curr.geometry, r);
 }
-

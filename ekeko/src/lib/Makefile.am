@@ -17,6 +17,7 @@ ekeko_document.c \
 ekeko_event.c \
 ekeko_input.c \
 ekeko_main.c \
+ekeko_node.c \
 ekeko_renderable.c \
 ekeko_tiler.c
 

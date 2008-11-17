@@ -68,6 +68,7 @@ typedef enum
 #include "private/document.h"
 #include "private/element.h"
 #include "private/input.h"
+#include "private/node.h"
 #include "private/tiler.h"
 #include "private/renderable.h"
 #include "private/canvas.h"
