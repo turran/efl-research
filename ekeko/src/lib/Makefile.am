@@ -19,8 +19,8 @@ ekeko_input.c \
 ekeko_main.c \
 ekeko_node.c \
 ekeko_renderable.c \
-ekeko_tiler.c
-
+ekeko_tiler.c \
+ekeko_value.c
 
 libekeko_la_LIBADD = \
 tiler/libekeko_tiler.la \

@@ -40,7 +40,7 @@ typedef enum _Ekeko_Renderable_Flag
 #endif
 
 typedef Eina_Bool (*Ekeko_Renderable_Cmp_Func)(Ekeko_Renderable *o, void *data);
-
+#if 0
 EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_Class *oclass, void *cdata);
 EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y);
 EAPI void ekeko_renderable_show(Ekeko_Renderable *o);
@@ -56,7 +56,7 @@ EAPI Ekeko_Renderable * ekeko_renderable_rel_get_down(Ekeko_Renderable *rel, Eke
 EAPI Ekeko_Renderable * ekeko_renderable_rel_get_up(Ekeko_Renderable *rel, Ekeko_Renderable_Cmp_Func cmp, void *data);
 EAPI Eina_Bool ekeko_renderable_is_inside(Ekeko_Renderable *o, Eina_Rectangle *r);
 EAPI Eina_Bool ekeko_renderable_geometry_is_inside(Ekeko_Renderable *o, Eina_Rectangle *r);
-
+#endif
 /** @} */
 
 

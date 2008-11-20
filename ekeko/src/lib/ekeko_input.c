@@ -14,6 +14,7 @@
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
+#if 0
 /**
  * @brief Creates a new input source
  * @param c The canvas the new input source will belong
@@ -25,7 +26,7 @@ Ekeko_Input * ekeko_input_new(Ekeko_Canvas *c)
 	i = calloc(1, sizeof(Ekeko_Input));
 	i->canvas = c;
 	/* attach the input to the list of canvas' inputs */
-	ekeko_canvas_input_add(c, i);
+	//ekeko_canvas_input_add(c, i);
 	
 	return i;
 }
@@ -108,12 +109,12 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int
  */
 EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i, unsigned int timestamp)
 {
-	Ekeko_Renderable *inside;
+	Ekeko_Renderable *inside = NULL;
 	Ekeko_Event ev;
 	
 	if (i->pointer.inside) return;
 	
-	inside = ekeko_canvas_object_get_at_coordinate(i->canvas, i->pointer.x, i->pointer.y);
+	//inside = ekeko_canvas_object_get_at_coordinate(i->canvas, i->pointer.x, i->pointer.y);
 	if (!inside) return;
 	/* call the _in_ callback */
 	i->pointer.obj = inside;
@@ -167,3 +168,4 @@ EAPI void ekeko_input_feed_hold(Ekeko_Input *i, int hold, unsigned int timestamp
 	
 }
 
+#endif

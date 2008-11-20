@@ -1,18 +1,12 @@
 #ifndef EKEKO_EVENT_H_
 #define EKEKO_EVENT_H_
 
-struct _Ekeko_Event
-{
-	const char *type;
-	Ekeko_Element *target;
-};
-
 /**
  * @defgroup Ekeko_Event_Group Event
  * @{
  */
 /* TODO rename all of this as ekeko_object_events */
-typedef enum _Ekeko_Event_Type
+typedef enum _Ekeko_Event_Type_Old
 {
 	EKEKO_EVENT_MOUSE_IN, /**< Mouse In Event */
 	EKEKO_EVENT_MOUSE_OUT, /**< Mouse Out Event */
@@ -34,7 +28,7 @@ typedef enum _Ekeko_Event_Type
 	EKEKO_EVENT_DEL, /**< Renderable Being Deleted (called before Free) */
 	EKEKO_EVENT_HOLD, /**< Events go on/off hold */
 	EKEKO_EVENTS,
-} Ekeko_Event_Type; /**< The type of event to trigger the callback */
+} Ekeko_Event_Type_Old; /**< The type of event to trigger the callback */
 
 struct _Ekeko_Event_Mouse_Down /** Mouse button press event */
 {
@@ -129,6 +123,77 @@ typedef struct _Ekeko_Event_old
 typedef void (*Ekeko_Event_Cb)(Ekeko_Canvas *c, Ekeko_Renderable *o, Ekeko_Event *ev, void *data);
 EAPI void ekeko_object_event_callback_add(Ekeko_Renderable *o, Ekeko_Event_Type etype, Ekeko_Event_Cb cb, void *data);
 #endif
+
+typedef void (*Ekeko_Event_Listener)(Ekeko_Event *);
+
+typedef enum _Ekeko_Event_Phase
+{
+	EKEKO_EVENT_PHASE_CAPTURING,
+	EKEKO_EVENT_PHASE_AT_TARGET,
+	EKEKO_EVENT_PHASE_BUBBLING,
+} Ekeko_Event_Phase;
+
+// Introduced in DOM Level 2:
+struct _Ekeko_Event
+{
+	Ekeko_Event_Phase phase;
+	const char *type;
+#if 0	
+  readonly attribute DOMString        type;
+  readonly attribute EventTarget      target;
+  readonly attribute EventTarget      currentTarget;
+  readonly attribute unsigned short   eventPhase;
+  readonly attribute boolean          bubbles;
+  readonly attribute boolean          cancelable;
+  readonly attribute DOMTimeStamp     timeStamp;
+  void               stopPropagation();
+  void               preventDefault();
+  void               initEvent(in DOMString eventTypeArg, 
+                               in boolean canBubbleArg, 
+                               in boolean cancelableArg);
+#endif
+};
+
+EAPI void ekeko_event_init(Ekeko_Event *e, const char *type, Eina_Bool can_bubble,
+		Eina_Bool can_cancel);
+
+typedef enum _Ekeko_Event_Mutation_Change
+{
+	EKEKO_EVENT_MUTATION_MODIFCATION = 1,
+	EKEKO_EVENT_MUTATION_ADDITION,
+	EKEKO_EVENT_MUTATION_REMOVAL,
+} Ekeko_Event_Mutation_Change;
+
+
+typedef struct _Ekeko_Event_Mutation
+{
+	Ekeko_Event event;
+	Ekeko_Event_Mutation_Change change;
+	Ekeko_Node *related;
+	Ekeko_Value *prev;
+	Ekeko_Value *curr;
+	char *attr;
+} Ekeko_Event_Mutation;
+
+EAPI void ekeko_event_mutation_init(Ekeko_Event_Mutation *e, const char *type,
+		Eina_Bool bubble, Eina_Bool cancelable, Ekeko_Node *rel,
+		Ekeko_Value *prev, Ekeko_Value *curr, const char *attr,
+		Ekeko_Event_Mutation_Change change);
+
+typedef enum _Ekeko_Event_Process_Phase
+{
+	EKEKO_EVENT_PROCESS_PHASE_PRE,
+	EKEKO_EVENT_PROCESS_PHASE,
+	EKEKO_EVENT_PROCESS_POST,
+} Ekeko_Event_Process_Phase;
+
+typedef struct _Ekeko_Event_Process
+{
+	Ekeko_Event event;
+	Ekeko_Event_Process_Phase phase;
+	Ekeko_Node *related;
+} Ekeko_Event_Process;
+
 /** 
 * @}
 */

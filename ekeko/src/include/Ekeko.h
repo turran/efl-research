@@ -48,13 +48,17 @@ typedef unsigned int Ekeko_Coord;
 typedef unsigned int Ekeko_Length;
 typedef struct _Ekeko_Renderable Ekeko_Renderable;
 typedef struct _Ekeko_Document Ekeko_Document;
-typedef struct _Ekeko_Document_Type Ekeko_Document_Type;
 typedef struct _Ekeko_Element Ekeko_Element;
-typedef struct _Ekeko_Event Ekeko_Event;
+typedef struct _Ekeko_Attribute Ekeko_Attribute;
 typedef struct _Ekeko_Input Ekeko_Input;
 typedef struct _Ekeko_Node Ekeko_Node;
+typedef struct _Ekeko_Event Ekeko_Event; 
 typedef Eina_Hash Ekeko_Node_Named_Map;
 typedef Eina_List Ekeko_Node_List;
+
+typedef struct _Ekeko_Document_Type Ekeko_Document_Type;
+typedef struct _Ekeko_Element_Type Ekeko_Element_Type;
+
 
 typedef enum
 {

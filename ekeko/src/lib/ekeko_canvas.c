@@ -11,7 +11,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Ekeko_Canvas_Private
+typedef struct _Ekeko_Canvas
 {
 	/* possible callbacks */
 	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
@@ -26,13 +26,9 @@ typedef struct _Ekeko_Canvas_Private
 	{
 		Ekeko_Canvas_Flush flush;
 	} cb;
-	//void *cdata;
-	Eina_Rectangle size;
 	Eina_List *valid; /* objects that need to be draw */
 	Eina_List *invalid; /* objects that dont need to be draw */
-	Eina_Bool changed; /* main flag that checks if the canvas has changed in any way */
-	Eina_Bool size_changed; /* when what has changed is the size of the canvas */
-} Ekeko_Canvas_Private;
+} Ekeko_Canvas;
 
 
 /* TODO move this to object.c? */
@@ -40,6 +36,7 @@ static void _object_changed(Ekeko_Canvas *c, Ekeko_Renderable *o)
 {
 	ekeko_renderable_pre_process(o);
 }
+#if 0
 /* refactor this to use the iterator */
 static void _renderables_changed(Ekeko_Canvas *c)
 {
@@ -50,6 +47,15 @@ static void _renderables_changed(Ekeko_Canvas *c)
 		if (o->changed == EINA_TRUE)
 			_object_changed(c, o);
 	}
+}
+#endif
+static void _damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
+{
+	/* TODO we use an inlist, this should be optimized */
+	Ekeko_Rectangle *er = calloc(1, sizeof(Ekeko_Rectangle));
+	
+	er->r = *r;
+	c->damages = eina_inlist_append(c->damages, EINA_INLIST_GET(er));	
 }
 static void _damages_add(Ekeko_Canvas *c)
 {
@@ -66,9 +72,88 @@ static void _obscures_remove(Ekeko_Canvas *c)
 {
 	/* remove the rectangles from the tiler */
 }
+
+static void _attr_updated_cb(Ekeko_Event *ee)
+{
+	Ekeko_Event_Mutation *e = (Ekeko_Event_Mutation *)ee;
+	int w, h;
+	Eina_Bool r = EINA_FALSE;
+	
+	/* if the size has changed we should damage the whole canvas */
+	if (!strcmp(e->attr, "_width"))
+	{
+		Ekeko_Value height;
+
+		r = EINA_TRUE;
+		ekeko_element_attribute_get((Ekeko_Element *)e->related, "_height", &height);
+		h = height.v.i;
+		w = e->curr->v.i;
+	}
+	else if (!strcmp(e->attr, "_height"))
+	{
+		Ekeko_Value width;
+
+		r = EINA_TRUE;
+		ekeko_element_attribute_get((Ekeko_Element *)e->related, "_width", &width);
+		w = width.v.i;
+		h = e->curr->v.i;
+	}
+	if (r)
+	{
+		Eina_Rectangle r;
+		Ekeko_Canvas *c;
+
+		c = ekeko_node_user_get(e->related, "canvas");
+		eina_rectangle_coords_from(&r, 0, 0, w, h);
+		if (c->tiler)
+			ekeko_tiler_free(c->tiler);
+		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, w, h);
+		/* TODO add a way to notify that the canvas' surface should resize */
+		_damage_add(c, &r);
+	}
+}
+
+static void _process_cb(Ekeko_Event *ee)
+{
+	Ekeko_Canvas *c;
+	Ekeko_Rectangle *redraw;
+	Eina_Iterator *rit;
+	Ekeko_Event_Process *e = (Ekeko_Event_Process *)ee;
+
+	c = ekeko_node_user_get(e->related, "canvas");
+	/* add every damage to the tiler */
+	/* FIXME this should be done at damage add, no need to do that here */
+	_damages_add(c);
+	/* delete all obscures */
+	_obscures_remove(c);
+	/* get all rectangles to redraw */
+	redraw = ekeko_tiler_rects_get(c->tiler);
+	/* iterate over all rectangles to redraw */
+	rit = eina_inlist_iterator_new(EINA_INLIST_GET(redraw));
+	while (eina_iterator_next(rit, (void **)&redraw))
+	{
+		Ekeko_Renderable *r;
+
+		/* iterate over all renderables from top to bottom and render them */
+		printf("Rectangle %d %d %d %d\n", redraw->r.x, redraw->r.y, redraw->r.w, redraw->r.h);
+		/* ekeko_renderable_render(element); */
+	}
+	eina_iterator_free(rit);
+	/* flush the rectangles on the canvas */
+	rit = eina_inlist_iterator_new(EINA_INLIST_GET(redraw));
+	while (eina_iterator_next(rit, (void **)&redraw))
+	{
+		if (!c->cb.flush((Ekeko_Element *)e->related, &redraw->r))
+			break;
+	}
+	eina_iterator_free(rit);
+	/* clear the rectangles */
+	ekeko_tiler_clear(c->tiler);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -133,7 +218,7 @@ static Eina_Bool _at_coordinate(Ekeko_Renderable *o, void *data)
 	
 	return EINA_FALSE;
 }
-
+#endif
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -143,51 +228,42 @@ static Eina_Bool _at_coordinate(Ekeko_Renderable *o, void *data)
  */
 EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 {
-	Ekeko_Canvas_Private *c;
-	
+	Ekeko_Canvas *c;
+	Ekeko_Value def;
+
+	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	if (c != NULL)
+		return;
 	/* private data */
 	c = calloc(1, sizeof(Ekeko_Canvas));
-	c->tiler = ekeko_tiler_new(type, w, h);
-	c->tiler_type = type;
+	c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, 0, 0);
+	//c->tiler_type = type;
 	c->cb.flush = flush;
-	c->size.w = 0;
-	c->size.h = 0;
-	/* setup the attributes */
+	ekeko_node_user_set((Ekeko_Node *)e, "canvas", c);
+	/* setup the attributes for a renderable element */
+	ekeko_value_int_from(&def, 0);
+	ekeko_element_attribute_set(e, "_width", &def);
+	ekeko_element_attribute_set(e, "_height", &def);
+	/* setup the events */
+	ekeko_node_event_listener_add(e, "ProcessEvents",  _process_cb, 
+			EINA_FALSE);
+	ekeko_node_event_listener_add(e, "DOMAttrUpdated",  _attr_updated_cb,
+			EINA_FALSE);
 }
-#if 0
-/**
- * To be documented
- * FIXME: To be fixed, remove the w and h and use the geometry_set
- */
-EAPI Ekeko_Canvas * ekeko_canvas_new(Ekeko_Canvas_Class *cclass, void *cdata,
-		int type, int w, int h)
-{
-	Ekeko_Canvas *c;
-
-	c = calloc(1, sizeof(Ekeko_Canvas));
-	c->tiler = ekeko_tiler_new(type, w, h);
-	c->tiler_type = type;
-	c->cclass = cclass;
-	c->cdata = cdata;
-	c->size.w = w;
-	c->size.h = h;
-
-	return c;
-}
-#endif
 /**
  * @brief Marks a rectangle on the canvas as damaged, this area will be
  * processed again. When the canvas process that area it will no longer be
  * a damaged area
  * @param r Rectangle that defines the area damaged 
  */
-EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_damage_add(Ekeko_Element *e, Eina_Rectangle *r)
 {
-	/* TODO we use an inlist, this should be optimized */
-	Ekeko_Rectangle *er = calloc(1, sizeof(Ekeko_Rectangle));
+	Ekeko_Canvas *c;
 	
-	er->r = *r;
-	c->damages = eina_inlist_append(c->damages, EINA_INLIST_GET(er));
+	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	if (!c)
+		return;
+	_damage_add(c, r);
 }
 /**
  * @brief Marks a rectangle area on the canvas that will never be processed.
@@ -195,7 +271,7 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
  * ekeko_canvas_obscure_del()
  * @param r Rectangle that defines the obscure area 
  */
-EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_obscure_add(Ekeko_Element *c, Eina_Rectangle *r)
 {
 	
 }
@@ -203,16 +279,62 @@ EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void ekeko_canvas_obscure_del(Ekeko_Canvas *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_obscure_del(Ekeko_Element *c, Eina_Rectangle *r)
 {
 	
+}
+/**
+ * @brief Gets the width and height of the canvas
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI void ekeko_canvas_size_get(Ekeko_Element *e, unsigned int *w, unsigned int *h)
+{
+	Ekeko_Canvas *c;
+
+	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	if (!c) return;
+	
+	if (w)
+	{
+		Ekeko_Value v;
+
+		ekeko_node_attribute_get((Ekeko_Node *)e, "_width", &v);
+		*h = v.v.i;
+	}
+	if (h)
+	{
+		Ekeko_Value v;
+
+		ekeko_node_attribute_get((Ekeko_Node *)e, "_height", &v);
+		*h = v.v.i;
+	}
+}
+/**
+ * @brief Gets the width and height of the canvas
+ * @param w Width of the canvas
+ * @param h Height of the canvas
+ */
+EAPI void ekeko_canvas_size_set(Ekeko_Element *e, unsigned int w, unsigned int h)
+{
+	Ekeko_Canvas *c;
+	Ekeko_Value v;
+		
+	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	if (!c) return;
+
+	ekeko_value_int_from(&v, w);
+	ekeko_node_attribute_set((Ekeko_Node *)e, "_width", &v);
+	ekeko_value_int_from(&v, h);
+	ekeko_node_attribute_set((Ekeko_Node *)e, "_height", &v);
 }
 /**
  * @brief Process the canvas. Every object that needs to be processed again
  * will get it's class called. Every damaged area is cleared after this call
  * @param c Canvas to process
  */
-EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
+#if 0
+EAPI void ekeko_canvas_process(Ekeko_Element *c)
 {
 	Ekeko_Rectangle *redraws;
 	Eina_Inlist *lr, *lo;
@@ -279,41 +401,8 @@ EAPI void ekeko_canvas_process(Ekeko_Canvas *c)
 	/* 8. delete all renderables that should be deleted */
 	c->changed = EINA_FALSE;
 }
-/**
- * @brief Gets the width and height of the canvas
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_canvas_geometry_get(Ekeko_Canvas *c, unsigned int *w, unsigned int *h)
-{
-	assert(c);
-	
-	if (w) *w = c->size.w;
-	if (h) *h = c->size.h;
-}
-/**
- * @brief Gets the width and height of the canvas
- * @param w Width of the canvas
- * @param h Height of the canvas
- */
-EAPI void ekeko_canvas_geometry_set(Ekeko_Canvas *c, unsigned int w, unsigned int h)
-{
-	assert(c);
-	
-	c->size.w = w;
-	c->size.h = h;
-	c->changed = EINA_TRUE;
-	c->size_changed = EINA_TRUE;
-}
-/**
- * @brief Retrieves the data associated with the canvas class
- * @param c The canvas to get the class data from
- */
-EAPI void * ekeko_canvas_class_data_get(Ekeko_Canvas *c)
-{
-	assert(c);
-	return c->cdata;
-}
+#endif
+
 #if 0
 /**
  * To be documented

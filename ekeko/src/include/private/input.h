@@ -4,7 +4,7 @@
 struct _Ekeko_Input
 {
 	EINA_INLIST;
-	Ekeko_Canvas *canvas; /* canvas associated with this input */
+	//Ekeko_Canvas *canvas; /* canvas associated with this input */
 	struct {
 		Eina_Bool inside;
 		int grabbed;
@@ -24,6 +24,5 @@ struct _Ekeko_Input
 	int            last_mouse_down_counter;
 	int            last_mouse_up_counter;
 };
-
 
 #endif /*EKEKO_INPUT_H_*/

@@ -30,7 +30,7 @@ struct _Ekeko_Renderable
 {
 	EINA_INLIST;
 	Ekeko_Renderable_Class *oclass;
-	Ekeko_Canvas *canvas;
+	//Ekeko_Canvas *canvas;
 
 	Ekeko_Renderable_State curr;
 	Ekeko_Renderable_State prev;
@@ -48,7 +48,7 @@ Eina_Bool ekeko_renderable_intersection_get(Ekeko_Renderable *o, Ekeko_Rectangle
 void ekeko_renderable_pre_process(Ekeko_Renderable *o);
 void ekeko_renderable_process(Ekeko_Renderable *o, Eina_Rectangle *r);
 void ekeko_renderable_post_process(Ekeko_Renderable *o);
-void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type type, Ekeko_Event *ev);
+//void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type type, Ekeko_Event *ev);
 void ekeko_renderable_validate(Ekeko_Renderable *o);
 void ekeko_renderable_invalidate(Ekeko_Renderable *o);
 

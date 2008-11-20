@@ -16,15 +16,17 @@ struct _Ekeko_Node
 	{
 		Ekeko_Value prev; 
 	} attr;
-	Ekeko_Node_List *childs;
+	Eina_Inlist *childs;
+	Ekeko_Node *parent;
 	Ekeko_Node_Named_Map *attributes;
+	Ekeko_Document *owner;
 	Eina_Hash *user;
-#ifdef EKEKO_EVENT
 	Eina_Hash *events;
-#endif
 };
 
 void ekeko_node_initialize(Ekeko_Node *n);
 Eina_Bool ekeko_node_changed(Ekeko_Node *n);
+Eina_Bool ekeko_node_event_dispatch(Ekeko_Node *n, Ekeko_Event *e);
+
 
 #endif /*NODE_H_*/

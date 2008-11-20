@@ -22,7 +22,7 @@ static void _renderable_change(Ekeko_Renderable *o)
 	if (o->valid)
 	{
 		printf("canvas changed!!\n");
-		ekeko_canvas_change(o->canvas);
+		//ekeko_canvas_change(o->canvas);
 	}
 }
 static void _rect_pre_cb(Ekeko_Event *e)
@@ -67,6 +67,10 @@ static void _visible_mutation_cb(Ekeko_Event *e)
 	//ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
 	//ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
 }
+typedef struct _Ekeko_Renderable_Private
+{
+	Ekeko_Element *canvas; /* the parent canvas */
+} Ekeko_Renderable_Private;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -178,11 +182,13 @@ void ekeko_renderable_post_process(Ekeko_Renderable *o)
 void ekeko_renderable_validate(Ekeko_Renderable *o)
 {
 	printf("validating\n");
+#if 0
 	if (o->valid)
 		return;
 	o->valid = EINA_TRUE;
 	o->canvas->valid = eina_list_append(o->canvas->valid, o);
 	o->canvas->invalid = eina_list_remove(o->canvas->invalid, o);
+#endif
 }
 /**
  * Invalidate an renderable, remove the renderable from the list of valid renderables
@@ -193,9 +199,11 @@ void ekeko_renderable_invalidate(Ekeko_Renderable *o)
 	printf("invalidating\n");
 	if (!o->valid)
 		return;
+#if 0
 	o->valid = EINA_FALSE;
 	o->canvas->invalid = eina_list_append(o->canvas->invalid, o);
 	o->canvas->valid = eina_list_remove(o->canvas->valid, o);
+#endif
 }
 /*============================================================================*
  *                                   API                                      *
@@ -207,18 +215,18 @@ EAPI void ekeko_renderable_new(Ekeko_Element *e, Ekeko_Renderable_Class *c)
 
 	/* setup the attributes for a renderable element */
 	eina_rectangle_coords_from(&def.v.r, 0, 0, 0, 0);
-	ekeko_element_attribute_add(e, "_rect", EKEKO_ATTRIBUTE_RECTANGLE, &def);
+	//ekeko_element_attribute_add(e, "_rect", EKEKO_ATTRIBUTE_RECTANGLE, &def);
 	ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _rect_pre_cb, EINA_TRUE);
 	ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _rect_mutation_cb, EINA_TRUE);
 	def.v.b = EINA_FALSE;
-	ekeko_element_attribute_add(e, "_visible", EKEKO_ATTRIBUTE_BOOL, &def);
+	//ekeko_element_attribute_add(e, "_visible", EKEKO_ATTRIBUTE_BOOL, &def);
 	ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _visible_pre_cb, EINA_TRUE);
 	ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _visible_mutation_cb, EINA_TRUE);
 	/* setup the private class */
 	ekeko_node_user_set((Ekeko_Node *)e, "_renderable_class", c);
 	/* TODO the parent document should implement the canvas interface? */
 }
-
+#if 0
 /**
  * To be documented
  * FIXME: To be fixed
@@ -240,8 +248,9 @@ EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_C
 	/* TODO check the class */
 	o->oclass = oclass;
 	o->cdata = cdata;
-
+#if 0
 	c->renderables = eina_inlist_append(c->renderables, EINA_INLIST_GET(o));
+#endif
 	return o;
 }
 /**
@@ -276,16 +285,19 @@ EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y)
 
 	if ((o->curr.geometry.x == x) && (o->curr.geometry.y == y))
 	{
-		goto callback;
+		//goto callback;
 	}
 	o->curr.geometry.x = x;
 	o->curr.geometry.y = y;
 	/* valid */
+#if 0
 	if (eina_rectangles_intersect(&o->curr.geometry, &o->canvas->size))
 		ekeko_renderable_validate(o);
 	else
 		ekeko_renderable_invalidate(o);
+#endif
 	_renderable_change(o);
+#if 0
 	/* FIXME this should happen only on the valid renderables */
 	for (l = (Eina_Inlist *)o->canvas->inputs; l; l = l->next)
 	{
@@ -304,6 +316,7 @@ EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y)
 	}
 callback:
 	ekeko_renderable_event_move_call(o);
+#endif
 }
 /**
  * @brief Resize an renderable
@@ -319,10 +332,12 @@ EAPI void ekeko_renderable_resize(Ekeko_Renderable *o, int w, int h)
 	}
 	o->curr.geometry.w = w;
 	o->curr.geometry.h = h;
+#if 0
 	if (eina_rectangles_intersect(&o->curr.geometry, &o->canvas->size))
 		ekeko_renderable_validate(o);
 	else
 		ekeko_renderable_invalidate(o);
+#endif
 	_renderable_change(o);
 callback:
 	ekeko_renderable_event_resize_call(o);
@@ -482,3 +497,4 @@ EAPI Eina_Bool ekeko_renderable_geometry_is_inside(Ekeko_Renderable *o, Eina_Rec
 {
 	return eina_rectangles_intersect(&o->curr.geometry, r);
 }
+#endif
