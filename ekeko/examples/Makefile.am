@@ -4,7 +4,6 @@ AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/include \
 @EINA_CFLAGS@ \
-@ENESIM_CFLAGS@ \
 @SDL_CFLAGS@
 
 if HAVE_SDL
@@ -18,13 +17,11 @@ ekeko_test.c \
 subcanvas.c \
 canvas.c \
 filter.c \
-object.c \
 rectangle.c
 
 ekeko_test_LDADD = \
 $(top_builddir)/src/lib/libekeko.la \
 @EINA_LIBS@ \
-@ENESIM_LIBS@ \
 @SDL_LIBS@
 
 endif

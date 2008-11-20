@@ -37,10 +37,8 @@ typedef enum _Ekeko_Renderable_Flag
 {
 	EKEKO_OBJECT_FLAG_HIDDEN_RECEIVE = (1 << 0),
 } Ekeko_Renderable_Flag;
-#endif
 
 typedef Eina_Bool (*Ekeko_Renderable_Cmp_Func)(Ekeko_Renderable *o, void *data);
-#if 0
 EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_Class *oclass, void *cdata);
 EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y);
 EAPI void ekeko_renderable_show(Ekeko_Renderable *o);

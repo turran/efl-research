@@ -3,52 +3,59 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static int _flush(void *data, Eina_Rectangle *r)
+typedef struct _Test_Canvas
 {
-	Canvas *c = data;
-	
+	SDL_Surface *s;
+} Test_Canvas;
+
+static Eina_Bool _flush(Ekeko_Element *e, Eina_Rectangle *r)
+{
+	printf("canvas flushing!!!\n");
 	//printf("RECT! %d %d %d %d\n", r->r.x, r->r.y, r->r.w, r->r.h);
 	// FIXME for now, update the rect like this, maybe call the
 	// UpdateRects directly? */
-	SDL_UpdateRect(c->surface, r->x, r->y, r->w, r->h);
+	//SDL_UpdateRect(c->surface, r->x, r->y, r->w, r->h);
 	//SDL_Flip(c->surface);
-	return 1;
+	
+	return EINA_FALSE;
 }
 
-static Ekeko_Canvas_Class _canvas_class = {
-	.flush = _flush,
-};
-
-
-/*============================================================================*
- *                                 Global                                     * 
- *============================================================================*/
-Canvas * canvas_new(int w, int h)
+static void _new(Ekeko_Element *e)
 {
-	Canvas *c;
-	SDL_Surface *surface;
-	
-	
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Surface *s;
+	Test_Canvas *tc;
 
-	if (!(surface = SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA | SDL_DOUBLEBUF)))
+	tc = malloc(sizeof(Test_Canvas));
+	tc->s = NULL;
+#if 0
+	/* TODO check if the document already has a canvas element */
+	SDL_Init(SDL_INIT_VIDEO);
+	if (!(s = SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA | SDL_DOUBLEBUF)))
 	{
 		fprintf(stderr, "%s\n", SDL_GetError());
 		SDL_Quit();
-		return NULL;
+		return;
 	}
-	
-	c = calloc(1, sizeof(Canvas));
-	//c->canvas = ekeko_canvas_new(&_canvas_class, c, EKEKO_TILER_TILEBUF, w, h);
-	c->surface = surface;
-	c->canvas = ekeko_canvas_new(&_canvas_class, c, EKEKO_TILER_SPLITTER, w, h);
-	
-	return c;
+#endif
+	ekeko_canvas_new(e, _flush);
+	ekeko_node_user_set((Ekeko_Node *)e, "test_canvas", tc);
 }
 
-void canvas_process(Canvas *c)
+static void _delete(Ekeko_Element *e)
 {
-	/* first process the list of subcanvas */
-	/* then the canvas*/
-	ekeko_canvas_process(c->canvas);
+
+}
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+void test_canvas_register(Ekeko_Document_Type *dt)
+{
+	Ekeko_Element_Type *et;
+	//Ekeko_Value def;
+
+	et = ekeko_document_type_element_register(dt, "test", "canvas",
+		_new, _delete);
+	//ekeko_value_int_from(&def, 100);
+	//ekeko_document_type_element_attribute_register(et, "width", &def);
+	//ekeko_document_type_element_attribute_register(et, "height", &def);
 }

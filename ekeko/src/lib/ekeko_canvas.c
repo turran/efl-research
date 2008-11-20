@@ -11,6 +11,25 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#if 0
+/* TODO move this to object.c? */
+static void _object_changed(Ekeko_Canvas *c, Ekeko_Renderable *o)
+{
+	ekeko_renderable_pre_process(o);
+}
+/* refactor this to use the iterator */
+static void _renderables_changed(Ekeko_Canvas *c)
+{
+	Ekeko_Renderable *o;
+
+	EINA_INLIST_FOREACH(c->renderables, o)
+	{
+		if (o->changed == EINA_TRUE)
+			_object_changed(c, o);
+	}
+}
+#endif
+
 typedef struct _Ekeko_Canvas
 {
 	/* possible callbacks */
@@ -30,25 +49,6 @@ typedef struct _Ekeko_Canvas
 	Eina_List *invalid; /* objects that dont need to be draw */
 } Ekeko_Canvas;
 
-
-/* TODO move this to object.c? */
-static void _object_changed(Ekeko_Canvas *c, Ekeko_Renderable *o)
-{
-	ekeko_renderable_pre_process(o);
-}
-#if 0
-/* refactor this to use the iterator */
-static void _renderables_changed(Ekeko_Canvas *c)
-{
-	Ekeko_Renderable *o;
-
-	EINA_INLIST_FOREACH(c->renderables, o)
-	{
-		if (o->changed == EINA_TRUE)
-			_object_changed(c, o);
-	}
-}
-#endif
 static void _damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
 	/* TODO we use an inlist, this should be optimized */
@@ -80,21 +80,21 @@ static void _attr_updated_cb(Ekeko_Event *ee)
 	Eina_Bool r = EINA_FALSE;
 	
 	/* if the size has changed we should damage the whole canvas */
-	if (!strcmp(e->attr, "_width"))
+	if (!strcmp(e->attr, CANVAS_WIDTH))
 	{
 		Ekeko_Value height;
 
 		r = EINA_TRUE;
-		ekeko_element_attribute_get((Ekeko_Element *)e->related, "_height", &height);
+		ekeko_element_attribute_get((Ekeko_Element *)e->related, CANVAS_HEIGHT, &height);
 		h = height.v.i;
 		w = e->curr->v.i;
 	}
-	else if (!strcmp(e->attr, "_height"))
+	else if (!strcmp(e->attr, CANVAS_HEIGHT))
 	{
 		Ekeko_Value width;
 
 		r = EINA_TRUE;
-		ekeko_element_attribute_get((Ekeko_Element *)e->related, "_width", &width);
+		ekeko_element_attribute_get((Ekeko_Element *)e->related, CANVAS_WIDTH, &width);
 		w = width.v.i;
 		h = e->curr->v.i;
 	}
@@ -103,7 +103,7 @@ static void _attr_updated_cb(Ekeko_Event *ee)
 		Eina_Rectangle r;
 		Ekeko_Canvas *c;
 
-		c = ekeko_node_user_get(e->related, "canvas");
+		c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
 		eina_rectangle_coords_from(&r, 0, 0, w, h);
 		if (c->tiler)
 			ekeko_tiler_free(c->tiler);
@@ -120,7 +120,7 @@ static void _process_cb(Ekeko_Event *ee)
 	Eina_Iterator *rit;
 	Ekeko_Event_Process *e = (Ekeko_Event_Process *)ee;
 
-	c = ekeko_node_user_get(e->related, "canvas");
+	c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
 	/* add every damage to the tiler */
 	/* FIXME this should be done at damage add, no need to do that here */
 	_damages_add(c);
@@ -132,7 +132,8 @@ static void _process_cb(Ekeko_Event *ee)
 	rit = eina_inlist_iterator_new(EINA_INLIST_GET(redraw));
 	while (eina_iterator_next(rit, (void **)&redraw))
 	{
-		Ekeko_Renderable *r;
+		/* FIXME should we keep the element or the renderable itself */
+		Ekeko_Element *r;
 
 		/* iterate over all renderables from top to bottom and render them */
 		printf("Rectangle %d %d %d %d\n", redraw->r.x, redraw->r.y, redraw->r.w, redraw->r.h);
@@ -231,7 +232,7 @@ EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 	Ekeko_Canvas *c;
 	Ekeko_Value def;
 
-	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (c != NULL)
 		return;
 	/* private data */
@@ -239,11 +240,11 @@ EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 	c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, 0, 0);
 	//c->tiler_type = type;
 	c->cb.flush = flush;
-	ekeko_node_user_set((Ekeko_Node *)e, "canvas", c);
+	ekeko_node_user_set((Ekeko_Node *)e, CANVAS_PRIVATE, c);
 	/* setup the attributes for a renderable element */
 	ekeko_value_int_from(&def, 0);
-	ekeko_element_attribute_set(e, "_width", &def);
-	ekeko_element_attribute_set(e, "_height", &def);
+	ekeko_element_attribute_set(e, CANVAS_WIDTH, &def);
+	ekeko_element_attribute_set(e, CANVAS_HEIGHT, &def);
 	/* setup the events */
 	ekeko_node_event_listener_add(e, "ProcessEvents",  _process_cb, 
 			EINA_FALSE);
@@ -260,7 +261,7 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Element *e, Eina_Rectangle *r)
 {
 	Ekeko_Canvas *c;
 	
-	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (!c)
 		return;
 	_damage_add(c, r);
@@ -292,21 +293,21 @@ EAPI void ekeko_canvas_size_get(Ekeko_Element *e, unsigned int *w, unsigned int 
 {
 	Ekeko_Canvas *c;
 
-	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (!c) return;
 	
 	if (w)
 	{
 		Ekeko_Value v;
 
-		ekeko_node_attribute_get((Ekeko_Node *)e, "_width", &v);
+		ekeko_node_attribute_get((Ekeko_Node *)e, CANVAS_WIDTH, &v);
 		*h = v.v.i;
 	}
 	if (h)
 	{
 		Ekeko_Value v;
 
-		ekeko_node_attribute_get((Ekeko_Node *)e, "_height", &v);
+		ekeko_node_attribute_get((Ekeko_Node *)e, CANVAS_HEIGHT, &v);
 		*h = v.v.i;
 	}
 }
@@ -320,13 +321,13 @@ EAPI void ekeko_canvas_size_set(Ekeko_Element *e, unsigned int w, unsigned int h
 	Ekeko_Canvas *c;
 	Ekeko_Value v;
 		
-	c = ekeko_node_user_get((Ekeko_Node *)e, "canvas");
+	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (!c) return;
 
 	ekeko_value_int_from(&v, w);
-	ekeko_node_attribute_set((Ekeko_Node *)e, "_width", &v);
+	ekeko_node_attribute_set((Ekeko_Node *)e, CANVAS_WIDTH, &v);
 	ekeko_value_int_from(&v, h);
-	ekeko_node_attribute_set((Ekeko_Node *)e, "_height", &v);
+	ekeko_node_attribute_set((Ekeko_Node *)e, CANVAS_HEIGHT, &v);
 }
 /**
  * @brief Process the canvas. Every object that needs to be processed again

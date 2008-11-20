@@ -1,8 +1,10 @@
 #include "Ekeko.h"
 #include "ekeko_test.h"
 
+Ekeko_Document *d;
 Ekeko_Input *input;
 
+#if 0
 Canvas *c;
 Subcanvas *subcanvas;
 Object *background1;
@@ -10,7 +12,6 @@ Object *background2;
 Object *rectangle1;
 Object *rectangle2;
 Object *filter1;
-
 /**
  * TODO
  * clean up the sdl_rectangle[class] code, abstract correctly the ekeko_object (WIP)
@@ -50,9 +51,9 @@ void rectangle_move_cb(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *
 	ekeko_object_move(obj->object, r1.y + 10, r1.x); 
 }
 
-
-void init(void)
+void init_scene(void)
 {
+#if 0
 	c = canvas_new(CANVAS_W, CANVAS_H);
 	/* background */
 	background1 = rectangle_new(c);
@@ -87,15 +88,9 @@ void init(void)
 	ekeko_object_event_callback_add(rectangle1->object, EKEKO_EVENT_MOUSE_IN, rectangle_mouse_in_cb, NULL);
 	ekeko_object_event_callback_add(rectangle1->object, EKEKO_EVENT_MOUSE_OUT, rectangle_mouse_out_cb, NULL);
 	ekeko_object_event_callback_add(filter1->object, EKEKO_EVENT_MOVE, rectangle_move_cb, NULL);
-	
+#endif
 }
 
-void shutdown(void)
-{
-	//subcanvas_delete(s);
-	//object_delete(background);
-	//object_delete(rectangle);
-}
 
 int end = 0;
 
@@ -197,11 +192,76 @@ void loop(void)
 	}
 	SDL_Quit();
 }
+#endif
+static void _mutation_cb(Ekeko_Event *e)
+{
+	printf("Mutation event!!!\n");
+}
 
+void main_loop(void)
+{
+	for(;;)
+	{
+		ekeko_node_process((Ekeko_Node *)d);
+	}
+}
+/*
+ * Scene
+ */
+static void scene_init(void)
+{
+	Ekeko_Element *canvas, *obj;
+	Ekeko_Value val;
 
+	d = ekeko_document_new("test", "1");
+	canvas = ekeko_document_element_new(d, "test", "canvas");
+	ekeko_canvas_size_set(canvas, 500, 500);
+	obj = ekeko_document_element_new(d, "test", "rect");
+	ekeko_node_child_append(d, canvas);
+	ekeko_node_child_append(canvas, obj);
+	ekeko_value_int_from(&val, 150);
+	ekeko_node_event_listener_add(canvas, "DOMAttrModified",  _mutation_cb,
+		EINA_FALSE);
+	ekeko_value_rectangle_coords_from(&val, 10, 10, 150, 150);
+	ekeko_element_attribute_set(obj, "geom", &val);
+}
+
+static void scene_shutdown(void)
+{
+	//subcanvas_delete(s);
+	//object_delete(background);
+	//object_delete(rectangle);
+}
+/*
+ * Document Type
+ */
+static void register_init(void)
+{
+	Ekeko_Document_Type *dt;
+
+	dt = ekeko_document_type_register("test");
+	test_canvas_register(dt);
+	test_rect_register(dt);
+}
+static void register_shutdown(void)
+{
+	
+}
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
 int main(int argc, char **argv)
 {
-	init();
-	loop();
+	ekeko_init();
+	/* register types */
+	register_init();
+	/* scene */
+	scene_init();
+	main_loop();
+	scene_shutdown();
+	register_shutdown();
+	ekeko_shutdown();
 	return 0;
 }
+
+

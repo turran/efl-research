@@ -10,6 +10,25 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+typedef struct _Ekeko_Renderable
+{
+	Ekeko_Element *canvas; /* the nearest parent canvas */
+
+	EINA_INLIST;
+	Ekeko_Renderable_Class *oclass;
+	//Ekeko_Canvas *canvas;
+
+	Eina_Inlist *callbacks[EKEKO_EVENTS];
+	Eina_Bool delete_me;
+	Eina_Bool changed;
+	Eina_Bool valid;
+	/* TODO
+	 * add a way to pass the event to the renderables behind
+	 */
+	void *cdata;
+} Ekeko_Renderable;
+
+
 static inline Eina_Bool _renderable_is_valid(Ekeko_Renderable *o)
 {
 	return o->valid;
@@ -67,10 +86,6 @@ static void _visible_mutation_cb(Ekeko_Event *e)
 	//ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
 	//ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
 }
-typedef struct _Ekeko_Renderable_Private
-{
-	Ekeko_Element *canvas; /* the parent canvas */
-} Ekeko_Renderable_Private;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -88,7 +103,6 @@ void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type 
 		cb->func(o->canvas, o, ev, cb->data);
 	}
 }
-#endif
 /**
  * To be documented
  * FIXME: To be fixed
@@ -182,14 +196,14 @@ void ekeko_renderable_post_process(Ekeko_Renderable *o)
 void ekeko_renderable_validate(Ekeko_Renderable *o)
 {
 	printf("validating\n");
-#if 0
 	if (o->valid)
 		return;
 	o->valid = EINA_TRUE;
 	o->canvas->valid = eina_list_append(o->canvas->valid, o);
 	o->canvas->invalid = eina_list_remove(o->canvas->invalid, o);
-#endif
 }
+#endif
+
 /**
  * Invalidate an renderable, remove the renderable from the list of valid renderables
  * FIXME: To be fixed
@@ -449,7 +463,30 @@ EAPI Ekeko_Renderable * ekeko_renderable_rel_get_up(Ekeko_Renderable *rel, Ekeko
 	Eina_Inlist *l;
 
 	assert(rel);
-	assert(cmp);
+	assert(cmp);typedef struct _Ekeko_Renderable_Cb Ekeko_Renderable_Cb;
+
+	/* every renderable should receive the area or areas to draw based on their
+	 * boundings
+	 */
+
+	/* do we need this state fixed with priv data on each or better make
+	 * callbacks like _state_has_changed and store both states as void *
+	 */
+	typedef struct _Ekeko_Renderable_State
+	{
+		Eina_Rectangle geometry;
+		Eina_Bool visible;
+		void *data;
+	} Ekeko_Renderable_State;
+
+	struct _Ekeko_Renderable_Cb
+	{
+		EINA_INLIST;
+	#if 0
+		Ekeko_Event_Cb func;
+	#endif
+		void *data;
+
 
 	for (l = (Eina_Inlist *)rel; l; l = l->prev)
 	{

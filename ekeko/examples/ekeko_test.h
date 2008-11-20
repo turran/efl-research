@@ -6,7 +6,7 @@
 #define RGBA(r, g, b, a)                                                \
     (((r) << 24) | ((g) << 16) | ((b) << 8) | (a))
 
-
+#if 0
 typedef struct _Subcanvas Subcanvas;
 typedef struct _Canvas Canvas;
 typedef struct _Object Object;
@@ -47,5 +47,5 @@ static inline void rectangle_print(Eina_Rectangle *r)
 {
 	printf("%d %d %d %d\n", r->x, r->y, r->w, r->h);
 }
-
+#endif
 #endif /*EKEKO_TEST_H_*/

@@ -46,7 +46,6 @@
  */
 typedef unsigned int Ekeko_Coord;
 typedef unsigned int Ekeko_Length;
-typedef struct _Ekeko_Renderable Ekeko_Renderable;
 typedef struct _Ekeko_Document Ekeko_Document;
 typedef struct _Ekeko_Element Ekeko_Element;
 typedef struct _Ekeko_Attribute Ekeko_Attribute;

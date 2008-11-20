@@ -11,7 +11,7 @@ struct _Ekeko_Input
 		unsigned int button;
 		unsigned int x;
 		unsigned int y;
-		Ekeko_Renderable *obj; /* only one object below the cursor */
+		//Ekeko_Renderable *obj; /* only one object below the cursor */
 	} pointer;
 	struct {
 		

@@ -38,6 +38,7 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(EINA, [eina-0])
+PKG_CHECK_MODULES(SDL, [sdl >= 1.2.10], [have_sdl="yes"], [have_sdl="no"])
 
 AM_CONDITIONAL(HAVE_SDL, test "x$have_sdl" = "xyes")
 

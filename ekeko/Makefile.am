@@ -1,7 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src
-#examples 
+SUBDIRS = src examples 
 
 MAINTAINERCLEANFILES = \
 Makefile.in \

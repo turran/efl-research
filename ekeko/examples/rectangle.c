@@ -4,17 +4,8 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-static void _free(void *data)
+static void _render(void *data, Eina_Rectangle *r)
 {
-}
-
-static void _pre_process(void *data)
-{
-}
-
-static void _process(void *data, Eina_Rectangle *r)
-{
-	Object *o = data;
 	SDL_Rect rect;
 	
 	//printf("(%d) %d %d %d %d\n", o->color, r->x, r->y, r->w, r->h);
@@ -22,30 +13,30 @@ static void _process(void *data, Eina_Rectangle *r)
 	rect.y = r->y;
 	rect.w = r->w;
 	rect.h = r->h;
-	SDL_FillRect(o->canvas->surface, &rect, o->color);
+	//SDL_FillRect(o->canvas->surface, &rect, o->color);
+}
+static void _new(Ekeko_Element *e)
+{
+	Ekeko_Renderable_Class rclass;
+
+	rclass.process = _render;
+	ekeko_renderable_new(e, &rclass);
 }
 
-static void _post_process(void *data)
+static void _delete(Ekeko_Element *e)
 {
 
 }
-
-static Ekeko_Object_Class _rectangle_class = {
-	.name = "rectangle",
-	.free = _free,
-	.pre_process = _pre_process,
-	.process = _process,
-	.post_process = _post_process,
-};
-
-
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Object * rectangle_new(Canvas *c)
+void test_rect_register(Ekeko_Document_Type *dt)
 {
-	Object *o;
-	o = object_new(c, &_rectangle_class, NULL);
+	Ekeko_Element_Type *et;
+	Ekeko_Value def;
 
-	return o;
+	et = ekeko_document_type_element_register(dt, "test", "rect", _new,
+		_delete);
+	ekeko_value_rectangle_coords_from(&def, 100);
+	ekeko_document_type_element_attribute_register(et, "geom", &def);
 }
