@@ -14,7 +14,6 @@ typedef struct _Test_Canvas
 static Eina_Bool _flush(Ekeko_Element *e, Eina_Rectangle *r)
 {
 	Test_Canvas *tc;
-	printf("canvas flushing!!!\n");
 
 	tc = ekeko_node_user_get((Ekeko_Node *)e, TEST_CANVAS_PRIVATE);
 	//printf("RECT! %d %d %d %d\n", r->r.x, r->r.y, r->r.w, r->r.h);

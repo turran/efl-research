@@ -50,25 +50,19 @@ struct _Ekeko_Canvas
 	Eina_List *invalid; /* objects that dont need to be draw */
 };
 
-static void _damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
-{
-	/* TODO we use an inlist, this should be optimized */
-	Ekeko_Rectangle *er = calloc(1, sizeof(Ekeko_Rectangle));
-	
-	er->r = *r;
-	c->damages = eina_inlist_append(c->damages, EINA_INLIST_GET(er));	
-}
 static void _damages_add(Ekeko_Canvas *c)
 {
-	Ekeko_Rectangle *r;
-
 	/* add the rectangles to the tiler */
-	EINA_INLIST_FOREACH(c->damages, r)
+	while (c->damages)
 	{
+		Ekeko_Rectangle *r = (Ekeko_Rectangle *)c->damages;		
+		
+		c->damages = eina_inlist_remove(c->damages, c->damages);
 		ekeko_tiler_rect_add(c->tiler, &r->r);
-		c->damages = eina_inlist_remove(c->damages, EINA_INLIST_GET(r));
+		free(r);
 	}
 }
+
 static void _obscures_remove(Ekeko_Canvas *c)
 {
 	/* remove the rectangles from the tiler */
@@ -78,20 +72,17 @@ static void _attr_updated_cb(Ekeko_Event *ee)
 {
 	Ekeko_Event_Mutation *e = (Ekeko_Event_Mutation *)ee;
 	int w, h;
-	Eina_Bool r = EINA_FALSE;
 	
 	/* if the size has changed we should damage the whole canvas */
 	if (!strcmp(e->attr, CANVAS_GEOMETRY))
 	{
 		Ekeko_Canvas *c;
-		Ekeko_Value g;
 
 		c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
-		ekeko_element_attribute_get((Ekeko_Element *)e->related, CANVAS_GEOMETRY, &g);
 		if (c->tiler)
 			ekeko_tiler_free(c->tiler);
-		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, g.v.r.w, g.v.r.h);
-		_damage_add(c, &g.v.r);
+		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, e->curr->v.r.w, e->curr->v.r.h);
+		ekeko_canvas_damage_add_internal(c, &e->curr->v.r);
 	}
 }
 
@@ -118,7 +109,7 @@ static void _process_cb(Ekeko_Event *ee)
 		Ekeko_Renderable *r;
 
 		/* iterate over all renderables from top to bottom and render them */
-		printf("Rectangle %d %d %d %d\n", redraw->r.x, redraw->r.y, redraw->r.w, redraw->r.h);
+		//printf("Rectangle %d %d %d %d\n", redraw->r.x, redraw->r.y, redraw->r.w, redraw->r.h);
 		if (!c->renderables)
 			break;
 		ekeko_renderable_render_all(c->container, c->renderables, &redraw->r);
@@ -208,6 +199,14 @@ static Eina_Bool _at_coordinate(Ekeko_Renderable *o, void *data)
 	return EINA_FALSE;
 }
 #endif
+void ekeko_canvas_damage_add_internal(Ekeko_Canvas *c, Eina_Rectangle *r)
+{
+	/* TODO we use an inlist, this should be optimized */
+	Ekeko_Rectangle *er = calloc(1, sizeof(Ekeko_Rectangle));
+	
+	er->r = *r;
+	c->damages = eina_inlist_append(c->damages, EINA_INLIST_GET(er));	
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -251,7 +250,7 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Element *e, Eina_Rectangle *r)
 	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (!c)
 		return;
-	_damage_add(c, r);
+	ekeko_canvas_damage_add_internal(c, r);
 }
 /**
  * @brief Marks a rectangle area on the canvas that will never be processed.

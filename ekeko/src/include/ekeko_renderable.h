@@ -8,6 +8,7 @@
 
 #define RENDERABLE_GEOMETRY "geometry"
 #define RENDERABLE_VISIBILITY "visibility"
+#define RENDERABLE_OPAQUE "opaque"
 #define RENDERABLE_PRIVATE "_renderable"
 
 typedef struct _Ekeko_Renderable_Class

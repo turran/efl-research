@@ -3,11 +3,18 @@
 
 Ekeko_Document *d;
 Ekeko_Input *input;
+Ekeko_Element *obj;
+Ekeko_Element *background;
+
+
+#define CANVAS_W 500
+#define CANVAS_H 500
+
+int end = 0;
 
 #if 0
 Canvas *c;
 Subcanvas *subcanvas;
-Object *background1;
 Object *background2;
 Object *rectangle1;
 Object *rectangle2;
@@ -20,8 +27,6 @@ Object *filter1;
  * 
  */
 
-#define CANVAS_W 640
-#define CANVAS_H 480
 
 void rectangle_mouse_in_cb(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *data)
 {
@@ -92,7 +97,6 @@ void init_scene(void)
 }
 
 
-int end = 0;
 
 void sdl_loop(void)
 {
@@ -134,34 +138,48 @@ void sdl_loop(void)
 
 void loop(void)
 {
-	Eina_Rectangle r;
+
+}
+#endif
+static void _mutation_cb(Ekeko_Event *e)
+{
+	printf("Mutation event!!!\n");
+}
+
+void main_loop(void)
+{
 	int i = 0;
 	int j = 0;
 	int k = 0;
-	
+	Ekeko_Value v;
+
 	while (!end)
 	{
-		sdl_loop();
+		//sdl_loop();
 		/* TODO this should be inside canvas process, do we actually need to call it? */
-		canvas_process(subcanvas_canvas_get(subcanvas));
-		canvas_process(c);
+		ekeko_node_process((Ekeko_Node *)d);
 		i++;
 		j++;
-		k++;
+		//k++;
 		/* move rectangle1 */
 		if (i > 10000)
 		{
+			//if (k == 2)
+		//		exit(1);
 			/* FIXME abstract this */
-			ekeko_object_geometry_get(rectangle1->object, &r);
-			r.x = (r.x + 1) % CANVAS_W;
-			if (r.x == 0)
+			ekeko_element_attribute_get(obj, RENDERABLE_GEOMETRY, &v);
+			
+			v.v.r.x = (v.v.r.x + 1) % CANVAS_W;
+			if (v.v.r.x == 0)
 			{
-				r.y = (r.y + 1) % CANVAS_H;
+				v.v.r.y = (v.v.r.y + 1) % CANVAS_H;
 			}
-			object_move(rectangle1, r.x, r.y);
+			//printf("Moving the rectangle to %d %d %d %d\n", v.v.r.x, v.v.r.y, v.v.r.w, v.v.r.h);
+			ekeko_element_attribute_set(obj, RENDERABLE_GEOMETRY, &v);
 			i = 0;
+			k++;
 		}
-#if 1
+#if 0
 		/* move filter1 */
 		if (k > 4000)
 		{
@@ -192,38 +210,32 @@ void loop(void)
 	}
 	SDL_Quit();
 }
-#endif
-static void _mutation_cb(Ekeko_Event *e)
-{
-	printf("Mutation event!!!\n");
-}
-
-void main_loop(void)
-{
-	for(;;)
-	{
-		ekeko_node_process((Ekeko_Node *)d);
-	}
-}
 /*
  * Scene
  */
 static void scene_init(void)
 {
-	Ekeko_Element *canvas, *obj;
+	Ekeko_Element *canvas;
 	Ekeko_Value val;
 
 	d = ekeko_document_new("test", "1");
 	canvas = ekeko_document_element_new(d, "test", "canvas");
-	ekeko_canvas_size_set(canvas, 500, 500);
-	obj = ekeko_document_element_new(d, "test", "rect");
+	ekeko_canvas_size_set(canvas, CANVAS_W, CANVAS_H);
 	ekeko_node_child_append(d, canvas);
+	
+	background = ekeko_document_element_new(d, "test", "rect");
+	ekeko_node_child_append(canvas, background);
+	ekeko_value_rectangle_coords_from(&val, 0, 0, CANVAS_W, CANVAS_H);
+	ekeko_element_attribute_set(background, RENDERABLE_GEOMETRY, &val);
+	ekeko_value_int_from(&val, 0xffffffff);
+	ekeko_element_attribute_set(background, OBJECT_COLOR, &val);
+	
+	obj = ekeko_document_element_new(d, "test", "rect");
 	ekeko_node_child_append(canvas, obj);
-	ekeko_value_int_from(&val, 150);
-	ekeko_node_event_listener_add(canvas, "DOMAttrModified",  _mutation_cb,
-		EINA_FALSE);
 	ekeko_value_rectangle_coords_from(&val, 10, 10, 150, 150);
 	ekeko_element_attribute_set(obj, RENDERABLE_GEOMETRY, &val);
+	ekeko_value_int_from(&val, 0xff00ff00);
+	ekeko_element_attribute_set(obj, OBJECT_COLOR, &val);		
 }
 
 static void scene_shutdown(void)

@@ -171,7 +171,7 @@ typedef struct _Ekeko_Event_Mutation
 {
 	Ekeko_Event event;
 	Ekeko_Event_Mutation_Change change;
-	Ekeko_Node *related;
+	Ekeko_Node *related; /* node where the mutation has happened */
 	Ekeko_Value *prev;
 	Ekeko_Value *curr;
 	char *attr;

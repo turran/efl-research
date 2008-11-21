@@ -57,7 +57,6 @@ static void _process_del(Ekeko_Event *e)
  */
 void ekeko_event_setup(Ekeko_Document_Type *dt)
 {
-	printf("Setting up common events\n");
 	ekeko_document_type_event_register(dt, "MutationEvents", _mutation_new, _mutation_del);
 	ekeko_document_type_event_register(dt, "ProcessEvents", _process_new, _process_del);
 }

@@ -35,7 +35,7 @@ static void _renderable_change(Ekeko_Renderable *o)
 	o->changed = EINA_TRUE;
 	if (o->valid)
 	{
-		printf("canvas changed!!\n");
+		//printf("canvas changed!!\n");
 		//ekeko_canvas_change(o->canvas);
 	}
 }
@@ -83,7 +83,21 @@ static void _visible_mutation_cb(Ekeko_Event *e)
 }
 static void _attr_updated_cb(Ekeko_Event *ee)
 {
-	printf("ATTTTTTRRRRRRRRRIBUTE\n");
+	Ekeko_Event_Mutation *e = (Ekeko_Event_Mutation *)ee;
+	Ekeko_Renderable *r;
+
+	r = ekeko_node_user_get(ee->current_target, RENDERABLE_PRIVATE);
+	/* if the size has changed we should damage the whole canvas */
+	if (!strcmp(e->attr, RENDERABLE_GEOMETRY))
+	{
+		ekeko_canvas_damage_add_internal(r->canvas, &e->prev->v.r);
+		ekeko_canvas_damage_add_internal(r->canvas, &e->curr->v.r);
+	}
+	else if (!strcmp(e->attr, RENDERABLE_VISIBILITY))
+	{
+		ekeko_canvas_damage_add_internal(r->canvas, &e->prev->v.r);
+		ekeko_canvas_damage_add_internal(r->canvas, &e->curr->v.r);
+	}
 }
 static void _process_cb(Ekeko_Event *ee)
 {
@@ -126,18 +140,31 @@ void ekeko_renderable_render(Ekeko_Renderable *r, Ekeko_Element *parent, Eina_Re
 void ekeko_renderable_render_all(Ekeko_Element *c, Eina_Inlist *renderables, Eina_Rectangle *er)
 {
 	Ekeko_Renderable *r;
-	EINA_INLIST_REVERSE_FOREACH(renderables, r)
+	EINA_INLIST_FOREACH(renderables, r)
 	{
 		Ekeko_Value rr;
 		Eina_Rectangle intersect;
+		Eina_Bool opaque;
 
+		ekeko_node_attribute_get((Ekeko_Node *)r->container, RENDERABLE_OPAQUE, &rr);
+		opaque = rr.v.b;
 		ekeko_node_attribute_get((Ekeko_Node *)r->container, RENDERABLE_GEOMETRY, &rr);
 		intersect = rr.v.r;
 		if (eina_rectangle_intersection(&intersect, er))
 		{
-			printf("INTERSECTING!!!!!!!!!!!!\n");
-			ekeko_renderable_render(r, c, &intersect);
+			//printf("RENDERING %d\n", opaque);
+			if (opaque)
+			{
+				
+				ekeko_renderable_render(r, c, &intersect);
+				//break;
+			}
+			else
+			{
+				/* TODO we need to render the objects below first */
+			}
 		}
+		
 	}
 }
 Eina_Inlist * ekeko_renderable_add(Eina_Inlist *renderables, Ekeko_Renderable *r)
@@ -289,13 +316,13 @@ EAPI void ekeko_renderable_new(Ekeko_Element *e, Ekeko_Renderable_Class *c)
 	r->container = e;
 	r->oclass = *c;
 	/* setup the attributes for a renderable element */
-	eina_rectangle_coords_from(&def.v.r, 0, 0, 0, 0);
+	ekeko_value_rectangle_coords_from(&def, 0, 0, 0, 0);
 	ekeko_element_attribute_set(e, RENDERABLE_GEOMETRY, &def);
-	//ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _rect_pre_cb, EINA_TRUE);
-	//ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _rect_mutation_cb, EINA_TRUE);
-	def.v.b = EINA_FALSE;
+	ekeko_value_bool_from(&def, EINA_FALSE);
 	ekeko_element_attribute_set(e, RENDERABLE_VISIBILITY, &def);
-	/* TODO the parent document should implement the canvas interface? */
+	ekeko_value_bool_from(&def, EINA_FALSE);
+	ekeko_element_attribute_set(e, RENDERABLE_OPAQUE, &def);
+	/* TODO check the element's parent, should it implement the canvas interface? */
 	/* setup the events */
 	ekeko_node_event_listener_add((Ekeko_Node *)e, "ProcessEvents",  _process_cb, 
 			EINA_FALSE);

@@ -17,7 +17,8 @@ ekeko_test.c \
 subcanvas.c \
 canvas.c \
 filter.c \
-rectangle.c
+rectangle.c \
+object.c
 
 ekeko_test_LDADD = \
 $(top_builddir)/src/lib/libekeko.la \

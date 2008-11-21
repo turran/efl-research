@@ -28,10 +28,15 @@ static void _node_change_rec(Ekeko_Node *n, int num)
 void _attribute_value_set(Ekeko_Node *n, Ekeko_Value *v)
 {
 	int changed = EINA_FALSE;
+	Ekeko_Value old;
 
+	old = n->value;
 	switch (v->type)
 	{
 	/* First basic types */
+	case EKEKO_ATTRIBUTE_NONE:
+		printf("attribute %s hasnt been initialized\n", n->name);
+		exit(1);
 	case EKEKO_ATTRIBUTE_INT:
 		if (v->v.i != n->attr.prev.v.i)
 		{
@@ -56,6 +61,13 @@ void _attribute_value_set(Ekeko_Node *n, Ekeko_Value *v)
 			}
 		}
 		break;
+	case EKEKO_ATTRIBUTE_BOOL:
+		if (v->v.b != n->attr.prev.v.b)
+		{
+			changed = EINA_TRUE;
+			n->value.v.b = v->v.b;
+		}
+		break;
 	/* TODO User provided ones */
 	default:
 		printf("no such type yet %d!!!\n", v->type);
@@ -70,7 +82,7 @@ void _attribute_value_set(Ekeko_Node *n, Ekeko_Value *v)
 		e = (Ekeko_Event_Mutation *)ekeko_document_event_new(n->owner, "MutationEvents");
 		owner = ekeko_attribute_element_get((Ekeko_Attribute *)n);
 		ekeko_event_mutation_init(e, "DOMAttrModified", EINA_FALSE,
-				EINA_FALSE, (Ekeko_Node *)owner, NULL, NULL, NULL,
+				EINA_FALSE, (Ekeko_Node *)owner, &old, v, n->name,
 				EKEKO_EVENT_MUTATION_MODIFCATION);
 		ekeko_node_event_dispatch((Ekeko_Node *)owner, (Ekeko_Event *)e);
 		
@@ -102,7 +114,7 @@ void _element_process(Ekeko_Node *n)
 	Eina_Iterator *it;
 	Ekeko_Node *in;
 
-	printf("[1  Element changed %d\n", n->changed);
+	//printf("[1  Element changed %d\n", n->changed);
 	if (!n->changed)
 		return;
 	/* all attributes */
@@ -115,7 +127,9 @@ void _element_process(Ekeko_Node *n)
 			n->changed--;
 		}
 	}
-	printf(" 1] Element changed %d\n", n->changed);
+	/* FIXME maybe on the above loop some DOMAttrUpdated has changed
+	 * another attribute, if that's the case, return there */
+	//printf(" 1] Element changed %d\n", n->changed);
 }
 
 /*============================================================================*
@@ -171,11 +185,11 @@ void ekeko_node_attribute_set(Ekeko_Node *n, const char *name, Ekeko_Value *v)
 	}
 	if (changed_now)
 	{
-		printf("Attribute %s changed now\n", name);
+		//printf("Attribute %s changed now\n", name);
 	}
 	if (changed_bef)
 	{
-		printf("Attribute %s changed before\n", name);
+		//printf("Attribute %s changed before\n", name);
 	}
 }
 
@@ -213,7 +227,7 @@ Eina_Bool ekeko_node_event_dispatch(Ekeko_Node *n, Ekeko_Event *e)
 	/* get the event name and search it on the hash */
 	listeners = eina_hash_find(n->events, e->type);
 	/* iterate over the list and send events */
-	printf("Calling event %s for the listeners %p\n", e->type, listeners);
+	//printf("Calling event %s for the listeners %p\n", e->type, listeners);
 	it = eina_list_iterator_new(listeners);
 	while (eina_iterator_next(it, (void **)&elc))
 	{
@@ -248,7 +262,7 @@ void ekeko_node_event_listener_add(Ekeko_Node *n, const char *type,
 	else
 	{
 		events = eina_list_append(events, elc);
-		printf("events = %p, type = %s\n", events, type);
+		//printf("events = %p, type = %s\n", events, type);
 		eina_hash_add(n->events, type, events);
 	}
 }
@@ -379,7 +393,7 @@ EAPI void ekeko_node_process(Ekeko_Node *n)
 	/* all childs */
 	if (!n->changed)
 		return;
-	printf("[0  Node changed %d %s %d\n", n->type, n->name, n->changed);
+	//printf("[0  Node changed %d %s %d\n", n->type, n->name, n->changed);
 	/* handle the attributes as they dont have any parent, childs or siblings */
 	if (n->type == EKEKO_NODE_ELEMENT)
 	{
@@ -403,7 +417,7 @@ EAPI void ekeko_node_process(Ekeko_Node *n)
 			break;
 		}
 	}
-	printf(" 0] Node changed %d %s %d\n", n->type, n->name, n->changed);
+	//printf(" 0] Node changed %d %s %d\n", n->type, n->name, n->changed);
 	/* post condition */
 	assert(!n->changed);
 	if (n->type == EKEKO_NODE_DOCUMENT)

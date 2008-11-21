@@ -3,8 +3,13 @@
 
 #include <SDL.h>
 
+#define OBJECT_COLOR "color"
+
 #define RGBA(r, g, b, a)                                                \
     (((r) << 24) | ((g) << 16) | ((b) << 8) | (a))
+
+SDL_Surface * test_canvas_surface_get(Ekeko_Element *e);
+void test_object_new(Ekeko_Element *e);
 
 #if 0
 typedef struct _Subcanvas Subcanvas;

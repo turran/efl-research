@@ -14,6 +14,17 @@ static int _value_impls = 0;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eina_Bool ekeko_value_int_cmp(int a, int b)
+{
+	if (a != b)
+		return EINA_TRUE;
+	return EINA_FALSE;
+}
+Eina_Bool ekeko_value_rectangle_cmp(Eina_Rectangle *a, Eina_Rectangle *b)
+{
+	
+}
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -21,7 +32,7 @@ static int _value_impls = 0;
  * Register a new value type
  * the compare function to determine if it has changed
  */
-int ekeko_value_register(const char *name, Ekeko_Value_Compare cmp, size_t size)
+EAPI int ekeko_value_register(const char *name, Ekeko_Value_Compare cmp, size_t size)
 {
 	Ekeko_Value_Impl *impl;
 	
@@ -33,34 +44,30 @@ int ekeko_value_register(const char *name, Ekeko_Value_Compare cmp, size_t size)
 	_value_impls++;
 }
 
-void ekeko_value_int_from(Ekeko_Value *v, int i)
+EAPI void ekeko_value_bool_from(Ekeko_Value *v, Eina_Bool b)
+{
+	v->type = EKEKO_ATTRIBUTE_BOOL;
+	v->v.b = b;
+}
+
+EAPI void ekeko_value_int_from(Ekeko_Value *v, int i)
 {
 	v->type = EKEKO_ATTRIBUTE_INT;
 	v->v.i = i;
 }
 
-Eina_Bool ekeko_value_int_cmp(int a, int b)
-{
-	if (a != b)
-		return EINA_TRUE;
-	return EINA_FALSE;
-}
 
-void ekeko_value_rectangle_from(Ekeko_Value *v, Eina_Rectangle *r)
+
+EAPI void ekeko_value_rectangle_from(Ekeko_Value *v, Eina_Rectangle *r)
 {
 	v->type = EKEKO_ATTRIBUTE_RECTANGLE;
 	v->v.r = *r;
 }
 
-void ekeko_value_rectangle_coords_from(Ekeko_Value *v, int x, int y, int w, int h)
+EAPI void ekeko_value_rectangle_coords_from(Ekeko_Value *v, int x, int y, int w, int h)
 {
 	v->type = EKEKO_ATTRIBUTE_RECTANGLE;
 	eina_rectangle_coords_from(&v->v.r, x, y, w, h);
-}
-
-Eina_Bool ekeko_value_rectangle_cmp(Eina_Rectangle *a, Eina_Rectangle *b)
-{
-	
 }
 
 void ekeko_value_string_from(Ekeko_Value *v, const char *string)
