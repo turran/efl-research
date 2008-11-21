@@ -39,6 +39,23 @@ void _attribute_value_set(Ekeko_Node *n, Ekeko_Value *v)
 			n->value.v.i = v->v.i;
 		}
 		break;
+	case EKEKO_ATTRIBUTE_RECTANGLE:
+		{
+			Eina_Rectangle *r = &(v->v.r);
+			Eina_Rectangle *p = &(n->attr.prev.v.r);
+			Eina_Rectangle *c = &(n->value.v.r);
+			
+			if ((r->x != p->x) || (r->y != p->y) ||
+					(r->w != p->w) || (r->h != p->h))
+			{
+				c->x = r->x;
+				c->y = r->y;
+				c->w = r->w;
+				c->h = r->h;
+				changed = EINA_TRUE;
+			}
+		}
+		break;
 	/* TODO User provided ones */
 	default:
 		printf("no such type yet %d!!!\n", v->type);
@@ -169,6 +186,7 @@ void ekeko_node_attribute_get(Ekeko_Node *n, const char *name, Ekeko_Value *v)
 	a = eina_hash_find(n->attributes, name);
 	if (!a) return;
 
+	/* FIXME change this to _node_ */
 	ekeko_attribute_value_get(a, v);
 }
 void ekeko_node_attribute_remove(Ekeko_Node *n, const char *name)
@@ -391,6 +409,6 @@ EAPI void ekeko_node_process(Ekeko_Node *n)
 		e = (Ekeko_Event_Process *)ekeko_document_event_new(n->owner, "ProcessEvents");
 	else
 		return;
-	ekeko_event_process_init(e, n, EKEKO_EVENT_PROCESS_POST);
+	ekeko_event_process_init(e, n, EKEKO_EVENT_PROCESS_PHASE_POST);
 	ekeko_node_event_dispatch(n, (Ekeko_Event *)e);
 }

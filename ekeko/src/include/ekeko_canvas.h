@@ -1,6 +1,9 @@
 #ifndef EKEKO_CANVAS_H_
 #define EKEKO_CANVAS_H_
 
+#define CANVAS_GEOMETRY "geometry"
+#define CANVAS_PRIVATE "_canvas"
+
 /* what about the idle? */
 /* canvas_changed -> if some object has changed, then the canvas has changed, we could notify upward that so we can call
  * the canvas_process

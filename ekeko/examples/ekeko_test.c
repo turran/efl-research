@@ -253,6 +253,7 @@ static void register_shutdown(void)
 int main(int argc, char **argv)
 {
 	ekeko_init();
+	SDL_Init(SDL_INIT_VIDEO);
 	/* register types */
 	register_init();
 	/* scene */

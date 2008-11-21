@@ -80,36 +80,17 @@ static void _attr_updated_cb(Ekeko_Event *ee)
 	Eina_Bool r = EINA_FALSE;
 	
 	/* if the size has changed we should damage the whole canvas */
-	if (!strcmp(e->attr, CANVAS_WIDTH))
+	if (!strcmp(e->attr, CANVAS_GEOMETRY))
 	{
-		Ekeko_Value height;
-
-		r = EINA_TRUE;
-		ekeko_element_attribute_get((Ekeko_Element *)e->related, CANVAS_HEIGHT, &height);
-		h = height.v.i;
-		w = e->curr->v.i;
-	}
-	else if (!strcmp(e->attr, CANVAS_HEIGHT))
-	{
-		Ekeko_Value width;
-
-		r = EINA_TRUE;
-		ekeko_element_attribute_get((Ekeko_Element *)e->related, CANVAS_WIDTH, &width);
-		w = width.v.i;
-		h = e->curr->v.i;
-	}
-	if (r)
-	{
-		Eina_Rectangle r;
 		Ekeko_Canvas *c;
+		Ekeko_Value g;
 
 		c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
-		eina_rectangle_coords_from(&r, 0, 0, w, h);
+		ekeko_element_attribute_get((Ekeko_Element *)e->related, CANVAS_GEOMETRY, &g);
 		if (c->tiler)
 			ekeko_tiler_free(c->tiler);
-		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, w, h);
-		/* TODO add a way to notify that the canvas' surface should resize */
-		_damage_add(c, &r);
+		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, g.v.r.w, g.v.r.h);
+		_damage_add(c, &g.v.r);
 	}
 }
 
@@ -242,9 +223,8 @@ EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 	c->cb.flush = flush;
 	ekeko_node_user_set((Ekeko_Node *)e, CANVAS_PRIVATE, c);
 	/* setup the attributes for a renderable element */
-	ekeko_value_int_from(&def, 0);
-	ekeko_element_attribute_set(e, CANVAS_WIDTH, &def);
-	ekeko_element_attribute_set(e, CANVAS_HEIGHT, &def);
+	ekeko_value_rectangle_coords_from(&def, 0, 0, 0, 0);
+	ekeko_element_attribute_set(e, CANVAS_GEOMETRY, &def);
 	/* setup the events */
 	ekeko_node_event_listener_add(e, "ProcessEvents",  _process_cb, 
 			EINA_FALSE);
@@ -292,24 +272,14 @@ EAPI void ekeko_canvas_obscure_del(Ekeko_Element *c, Eina_Rectangle *r)
 EAPI void ekeko_canvas_size_get(Ekeko_Element *e, unsigned int *w, unsigned int *h)
 {
 	Ekeko_Canvas *c;
+	Ekeko_Value v;
 
 	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (!c) return;
 	
-	if (w)
-	{
-		Ekeko_Value v;
-
-		ekeko_node_attribute_get((Ekeko_Node *)e, CANVAS_WIDTH, &v);
-		*h = v.v.i;
-	}
-	if (h)
-	{
-		Ekeko_Value v;
-
-		ekeko_node_attribute_get((Ekeko_Node *)e, CANVAS_HEIGHT, &v);
-		*h = v.v.i;
-	}
+	ekeko_node_attribute_get((Ekeko_Node *)e, CANVAS_GEOMETRY, &v);
+	if (w) *w = v.v.r.w;
+	if (h) *h = v.v.r.h;
 }
 /**
  * @brief Gets the width and height of the canvas
@@ -324,10 +294,8 @@ EAPI void ekeko_canvas_size_set(Ekeko_Element *e, unsigned int w, unsigned int h
 	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (!c) return;
 
-	ekeko_value_int_from(&v, w);
-	ekeko_node_attribute_set((Ekeko_Node *)e, CANVAS_WIDTH, &v);
-	ekeko_value_int_from(&v, h);
-	ekeko_node_attribute_set((Ekeko_Node *)e, CANVAS_HEIGHT, &v);
+	ekeko_value_rectangle_coords_from(&v, 0, 0, w, h);
+	ekeko_node_attribute_set((Ekeko_Node *)e, CANVAS_GEOMETRY, &v);
 }
 /**
  * @brief Process the canvas. Every object that needs to be processed again

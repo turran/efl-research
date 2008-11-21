@@ -184,7 +184,7 @@ typedef enum _Ekeko_Event_Process_Phase
 {
 	EKEKO_EVENT_PROCESS_PHASE_PRE,
 	EKEKO_EVENT_PROCESS_PHASE,
-	EKEKO_EVENT_PROCESS_POST,
+	EKEKO_EVENT_PROCESS_PHASE_POST,
 } Ekeko_Event_Process_Phase;
 
 typedef struct _Ekeko_Event_Process
@@ -193,6 +193,7 @@ typedef struct _Ekeko_Event_Process
 	Ekeko_Event_Process_Phase phase;
 	Ekeko_Node *related;
 } Ekeko_Event_Process;
+
 
 /** 
 * @}
