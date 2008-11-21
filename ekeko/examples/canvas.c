@@ -82,3 +82,10 @@ void test_canvas_register(Ekeko_Document_Type *dt)
 	//ekeko_document_type_element_attribute_register(et, "width", &def);
 	//ekeko_document_type_element_attribute_register(et, "height", &def);
 }
+SDL_Surface * test_canvas_surface_get(Ekeko_Element *e)
+{
+	Test_Canvas *tc;
+
+	tc = ekeko_node_user_get((Ekeko_Node *)e, TEST_CANVAS_PRIVATE);
+	return tc->s;
+}

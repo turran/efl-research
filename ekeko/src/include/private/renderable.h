@@ -1,10 +1,9 @@
 #ifndef RENDERABLE_H_
 #define RENDERABLE_H_
 
-#define RENDERABLE_GEOMETRY "_geometry"
-#define RENDERABLE_VISIBILITY "_visibility"
-#define RENDERABLE_PRIVATE "_renderable"
-
+void ekeko_renderable_render(Ekeko_Renderable *r, Ekeko_Element *parent, Eina_Rectangle *er);
+void ekeko_renderable_render_all(Ekeko_Element *c, Eina_Inlist *renderables, Eina_Rectangle *er);
+Eina_Inlist * ekeko_renderable_add(Eina_Inlist *renderables, Ekeko_Renderable *r);
 
 #if 0
 typedef struct _Ekeko_Renderable_Cb Ekeko_Renderable_Cb;

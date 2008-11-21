@@ -30,24 +30,25 @@ static void _renderables_changed(Ekeko_Canvas *c)
 }
 #endif
 
-typedef struct _Ekeko_Canvas
+struct _Ekeko_Canvas
 {
-	/* possible callbacks */
-	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
-	// what about post processing of the canvas??
+	Ekeko_Element *container;
 	Ekeko_Tiler *tiler;
 	int tiler_type; /* FIXME fix this to an enum */
 	Eina_Inlist *renderables;
 	Eina_Inlist *inputs;
 	Eina_Inlist *damages;
-	// obscures
+	// TODO obscures
+	/* possible callbacks */
+	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
+	// what about post processing of the canvas??
 	struct
 	{
 		Ekeko_Canvas_Flush flush;
 	} cb;
 	Eina_List *valid; /* objects that need to be draw */
 	Eina_List *invalid; /* objects that dont need to be draw */
-} Ekeko_Canvas;
+};
 
 static void _damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
@@ -113,12 +114,14 @@ static void _process_cb(Ekeko_Event *ee)
 	rit = eina_inlist_iterator_new(EINA_INLIST_GET(redraw));
 	while (eina_iterator_next(rit, (void **)&redraw))
 	{
-		/* FIXME should we keep the element or the renderable itself */
-		Ekeko_Element *r;
+		/* FIXME should we keep the element or the renderable itself? */
+		Ekeko_Renderable *r;
 
 		/* iterate over all renderables from top to bottom and render them */
 		printf("Rectangle %d %d %d %d\n", redraw->r.x, redraw->r.y, redraw->r.w, redraw->r.h);
-		/* ekeko_renderable_render(element); */
+		if (!c->renderables)
+			break;
+		ekeko_renderable_render_all(c->container, c->renderables, &redraw->r);
 	}
 	eina_iterator_free(rit);
 	/* flush the rectangles on the canvas */
@@ -135,6 +138,10 @@ static void _process_cb(Ekeko_Event *ee)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void ekeko_canvas_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable *r)
+{
+	c->renderables = ekeko_renderable_add(c->renderables, r);
+}
 #if 0
 /**
  * To be documented
@@ -214,15 +221,15 @@ EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 	Ekeko_Value def;
 
 	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
-	if (c != NULL)
-		return;
+	if (c) return;
 	/* private data */
 	c = calloc(1, sizeof(Ekeko_Canvas));
 	c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, 0, 0);
 	//c->tiler_type = type;
 	c->cb.flush = flush;
+	c->container = e;
 	ekeko_node_user_set((Ekeko_Node *)e, CANVAS_PRIVATE, c);
-	/* setup the attributes for a renderable element */
+	/* setup the attributes for a canvas element */
 	ekeko_value_rectangle_coords_from(&def, 0, 0, 0, 0);
 	ekeko_element_attribute_set(e, CANVAS_GEOMETRY, &def);
 	/* setup the events */

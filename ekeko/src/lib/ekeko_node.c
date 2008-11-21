@@ -208,6 +208,8 @@ Eina_Bool ekeko_node_event_dispatch(Ekeko_Node *n, Ekeko_Event *e)
 	Eina_Iterator *it;
 	Eina_List *listeners;
 
+	/* fill the common event values */
+	e->current_target = n;
 	/* get the event name and search it on the hash */
 	listeners = eina_hash_find(n->events, e->type);
 	/* iterate over the list and send events */
@@ -358,9 +360,10 @@ EAPI Ekeko_Node * ekeko_node_child_append(Ekeko_Node *p, Ekeko_Node *n)
 		return NULL;
 	if (!e)
 		return n;
-	ekeko_event_mutation_init(e, "DOMInserted", EINA_FALSE, EINA_FALSE, NULL, NULL, NULL, NULL,
+	ekeko_event_mutation_init(e, "DOMNodeInserted", EINA_FALSE, EINA_FALSE,
+			p, NULL, NULL, NULL,
 			EKEKO_EVENT_MUTATION_ADDITION);
-	ekeko_node_event_dispatch(p, (Ekeko_Event *)e);
+	ekeko_node_event_dispatch(n, (Ekeko_Event *)e);
 
 	return n;
 }

@@ -6,18 +6,13 @@
  * @{ 
  */
 
+#define RENDERABLE_GEOMETRY "geometry"
+#define RENDERABLE_VISIBILITY "visibility"
+#define RENDERABLE_PRIVATE "_renderable"
+
 typedef struct _Ekeko_Renderable_Class
 {
-	/* name of the renderable class */
-	const char name[256];
-	/* renderable is freed */
-	void (*free)(void *data); 
-	/* once the renderable is going to be processed, first this is called */
-	void (*pre_process)(void *data);
-	/* the actual process has to be done here receiving the rectangle, FIXME maybe return a value to stop checking this renderable? */
-	void (*process)(void *data, Eina_Rectangle *r);
-	/* after the process this is called */
-	void (*post_process)(void *data);
+	void (*render)(Ekeko_Element *c, Ekeko_Element *e, Eina_Rectangle *r);
 	/* the inside check is calculated against the bounding box, this function
 	 * determines if the renderable is really inside a giving rectangle
 	 */

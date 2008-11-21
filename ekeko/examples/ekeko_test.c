@@ -223,7 +223,7 @@ static void scene_init(void)
 	ekeko_node_event_listener_add(canvas, "DOMAttrModified",  _mutation_cb,
 		EINA_FALSE);
 	ekeko_value_rectangle_coords_from(&val, 10, 10, 150, 150);
-	ekeko_element_attribute_set(obj, "geom", &val);
+	ekeko_element_attribute_set(obj, RENDERABLE_GEOMETRY, &val);
 }
 
 static void scene_shutdown(void)

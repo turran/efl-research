@@ -55,6 +55,9 @@ typedef struct _Ekeko_Event Ekeko_Event;
 typedef Eina_Hash Ekeko_Node_Named_Map;
 typedef Eina_List Ekeko_Node_List;
 
+typedef struct _Ekeko_Renderable  Ekeko_Renderable;
+typedef struct _Ekeko_Canvas Ekeko_Canvas;
+
 typedef struct _Ekeko_Document_Type Ekeko_Document_Type;
 typedef struct _Ekeko_Element_Type Ekeko_Element_Type;
 

@@ -138,6 +138,8 @@ struct _Ekeko_Event
 {
 	Ekeko_Event_Phase phase;
 	const char *type;
+	Ekeko_Node *target;
+	Ekeko_Node *current_target;
 #if 0	
   readonly attribute DOMString        type;
   readonly attribute EventTarget      target;

@@ -10,24 +10,19 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-typedef struct _Ekeko_Renderable
+struct _Ekeko_Renderable
 {
-	Ekeko_Element *canvas; /* the nearest parent canvas */
-
 	EINA_INLIST;
-	Ekeko_Renderable_Class *oclass;
-	//Ekeko_Canvas *canvas;
-
-	Eina_Inlist *callbacks[EKEKO_EVENTS];
+	Ekeko_Element *container; /* the container element */
+	Ekeko_Canvas *canvas; /* the nearest parent canvas */
+	Ekeko_Renderable_Class oclass;
 	Eina_Bool delete_me;
 	Eina_Bool changed;
 	Eina_Bool valid;
 	/* TODO
 	 * add a way to pass the event to the renderables behind
 	 */
-	void *cdata;
-} Ekeko_Renderable;
-
+};
 
 static inline Eina_Bool _renderable_is_valid(Ekeko_Renderable *o)
 {
@@ -86,9 +81,69 @@ static void _visible_mutation_cb(Ekeko_Event *e)
 	//ekeko_tiler_rect_add(o->canvas->tiler, &o->prev.geometry);
 	//ekeko_tiler_rect_add(o->canvas->tiler, &o->curr.geometry);
 }
+static void _attr_updated_cb(Ekeko_Event *ee)
+{
+	printf("ATTTTTTRRRRRRRRRIBUTE\n");
+}
+static void _process_cb(Ekeko_Event *ee)
+{
+	printf("PROCESSSSSSSSSS\n");
+}
+static void _inserted_cb(Ekeko_Event *ee)
+{
+	Ekeko_Event_Mutation *e = (Ekeko_Event_Mutation *)ee;
+	Ekeko_Node *parent;
+	Ekeko_Renderable *r;
+	Ekeko_Canvas *canvas;
+
+	/* try to get the parent canvas */
+	parent = e->related;
+	while (parent && !(canvas = ekeko_node_user_get(parent, CANVAS_PRIVATE)))
+	{
+		parent = parent->parent;
+	}
+	if (!canvas)
+	{
+		printf("NO PARENT CANVAS\n");
+		return;
+	}
+	r = ekeko_node_user_get(ee->current_target, RENDERABLE_PRIVATE);
+	r->canvas = canvas;
+	ekeko_canvas_renderable_add(canvas, r);
+	/* TODO
+	 * handle the case where another renderable is appended as child node of this
+	 * handle the case where the renderable is removed from the canvas, etc
+	 */
+	printf("PARENT CANVAS\n");
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void ekeko_renderable_render(Ekeko_Renderable *r, Ekeko_Element *parent, Eina_Rectangle *er)
+{
+	r->oclass.render(parent, r->container, er);
+}
+void ekeko_renderable_render_all(Ekeko_Element *c, Eina_Inlist *renderables, Eina_Rectangle *er)
+{
+	Ekeko_Renderable *r;
+	EINA_INLIST_REVERSE_FOREACH(renderables, r)
+	{
+		Ekeko_Value rr;
+		Eina_Rectangle intersect;
+
+		ekeko_node_attribute_get((Ekeko_Node *)r->container, RENDERABLE_GEOMETRY, &rr);
+		intersect = rr.v.r;
+		if (eina_rectangle_intersection(&intersect, er))
+		{
+			printf("INTERSECTING!!!!!!!!!!!!\n");
+			ekeko_renderable_render(r, c, &intersect);
+		}
+	}
+}
+Eina_Inlist * ekeko_renderable_add(Eina_Inlist *renderables, Ekeko_Renderable *r)
+{
+	return eina_inlist_append(renderables, EINA_INLIST_GET(r));
+}
 #if 0
 void ekeko_renderable_event_callback_call(Ekeko_Renderable *o, Ekeko_Event_Type ect, Ekeko_Event *ev)
 {
@@ -202,7 +257,6 @@ void ekeko_renderable_validate(Ekeko_Renderable *o)
 	o->canvas->valid = eina_list_append(o->canvas->valid, o);
 	o->canvas->invalid = eina_list_remove(o->canvas->invalid, o);
 }
-#endif
 
 /**
  * Invalidate an renderable, remove the renderable from the list of valid renderables
@@ -213,12 +267,12 @@ void ekeko_renderable_invalidate(Ekeko_Renderable *o)
 	printf("invalidating\n");
 	if (!o->valid)
 		return;
-#if 0
 	o->valid = EINA_FALSE;
 	o->canvas->invalid = eina_list_append(o->canvas->invalid, o);
 	o->canvas->valid = eina_list_remove(o->canvas->valid, o);
-#endif
 }
+#endif
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -226,19 +280,39 @@ void ekeko_renderable_invalidate(Ekeko_Renderable *o)
 EAPI void ekeko_renderable_new(Ekeko_Element *e, Ekeko_Renderable_Class *c)
 {
 	Ekeko_Value def;
+	Ekeko_Renderable *r;
 
+	r = ekeko_node_user_get((Ekeko_Node *)e, RENDERABLE_PRIVATE);
+	if (r) return;
+	/* private data */
+	r = calloc(1, sizeof(Ekeko_Renderable));
+	r->container = e;
+	r->oclass = *c;
 	/* setup the attributes for a renderable element */
 	eina_rectangle_coords_from(&def.v.r, 0, 0, 0, 0);
-	//ekeko_element_attribute_add(e, "_rect", EKEKO_ATTRIBUTE_RECTANGLE, &def);
-	ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _rect_pre_cb, EINA_TRUE);
-	ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _rect_mutation_cb, EINA_TRUE);
+	ekeko_element_attribute_set(e, RENDERABLE_GEOMETRY, &def);
+	//ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _rect_pre_cb, EINA_TRUE);
+	//ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _rect_mutation_cb, EINA_TRUE);
 	def.v.b = EINA_FALSE;
-	//ekeko_element_attribute_add(e, "_visible", EKEKO_ATTRIBUTE_BOOL, &def);
-	ekeko_event_listener_add((Ekeko_Node *)e, "pre_mutation", _visible_pre_cb, EINA_TRUE);
-	ekeko_event_listener_add((Ekeko_Node *)e, "mutation", _visible_mutation_cb, EINA_TRUE);
-	/* setup the private class */
-	ekeko_node_user_set((Ekeko_Node *)e, "_renderable_class", c);
+	ekeko_element_attribute_set(e, RENDERABLE_VISIBILITY, &def);
 	/* TODO the parent document should implement the canvas interface? */
+	/* setup the events */
+	ekeko_node_event_listener_add((Ekeko_Node *)e, "ProcessEvents",  _process_cb, 
+			EINA_FALSE);
+	ekeko_node_event_listener_add((Ekeko_Node *)e, "DOMAttrUpdated",  _attr_updated_cb,
+			EINA_FALSE);
+	ekeko_node_event_listener_add((Ekeko_Node *)e, "DOMNodeInserted",  _inserted_cb,
+				EINA_FALSE);
+	/* setup the private class */
+	ekeko_node_user_set((Ekeko_Node *)e, RENDERABLE_PRIVATE, r);
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
+EAPI Ekeko_Element * ekeko_renderable_canvas_get(Ekeko_Element *e)
+{
+	
 }
 #if 0
 /**
