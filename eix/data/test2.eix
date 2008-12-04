@@ -1,0 +1,11 @@
+<eix w="512" h="512">
+	<script type="python">
+		def onring_cb():
+	</script>
+	<rect x="100" y="50" w="150" h="110">
+		<animate attributeName="x" from="10" to="100" dur="2s" 
+			repeatCount="indefinite" />
+		<animate attributeName="y" from="1" to="512" dur="4s" 
+			repeatCount="indefinite" />
+	</rect>
+</eix>

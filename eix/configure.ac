@@ -1,7 +1,7 @@
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
-AC_INIT(configure.in)
+AC_INIT(configure.ac)
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
@@ -123,6 +123,14 @@ case "$host_os" in
 esac
 
 
+PKG_CHECK_MODULES(ETCH, [etch >= 0.0.1])
+PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
+PKG_CHECK_MODULES(EXML, [exml >= 0.0.1])
+PKG_CHECK_MODULES(ECORE_EVAS, [ecore-evas >= 0.9.9.043])
+EIX_CFLAGS="$ETCH_CFLAGS $EXML_CFLAGS $ECORE_EVAS_CFLAGS $ENESIM_CFLAGS"
+EIX_LIBS="$ETCH_LIBS $EXML_LIBS $ECORE_EVAS_LIBS $ENESIM_LIBS"
+AC_SUBST(EIX_CFLAGS)
+AC_SUBST(EIX_LIBS)
 ## Make the debug preprocessor configurable
 
 AC_OUTPUT([
@@ -149,8 +157,8 @@ echo
 echo "Configuration Options Summary:"
 echo
 echo "Installation Path.........: $prefix"
-echo "CFLAGS....................: $EQUIS_CFLAGS"
-echo "LIBS......................: $EQUIS_LIBS"
+echo "CFLAGS....................: $EIX_CFLAGS"
+echo "LIBS......................: $EIX_LIBS"
 echo
 echo "Now type 'make' ('gmake' on some systems) to compile $PACKAGE,"
 echo "and then afterwards as root (or the user who will install this), type"

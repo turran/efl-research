@@ -1,0 +1,12 @@
+<eix w="512" h="512">
+	<script type="python">
+		def onring_cb():
+	</script>
+	<img x="100" y="100" w="100" h="100" src="tiger.png" onring="onring_cb()">
+		<animate attributeName="x" from="10" to="100" dur="5s" 
+			repeatCount="indefinite" />
+		<animateTransform attributeName="transform"
+			type="rotate" from="0" to="180" dur="10s"
+			additive="replace"/>
+	</img>
+</eix>

@@ -1,15 +1,17 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 INCLUDES = -Wall -g \
--I$(top_srcdir)/src/include
+-I$(top_srcdir)/src/include \
+@EIX_CFLAGS@
 
-bin_PROGRAMS = eix_test
+bin_PROGRAMS = eix
 
-eix_test_SOURCES = \
+eix_SOURCES = \
 main.c
 
-eix_test_LDADD =
+eix_LDADD = \
+@EIX_LIBS@
 
-eix_test_DEPENDENCIES =
+eix_DEPENDENCIES =
 
 
