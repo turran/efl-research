@@ -216,7 +216,7 @@ EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a)
 	k->animation = a;
 
 	/* add the new keyframe to the list of keyframes */
-	a->keys = eina_inlist_prepend(a->keys, k);
+	a->keys = eina_inlist_prepend(a->keys, EINA_INLIST_GET(k));
 	
 	return k;
 }
@@ -228,7 +228,7 @@ EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe
 	assert(a);
 	assert(k);
 	/* remove the keyframe from the list */
-	a->keys = eina_inlist_remove(a->keys, k);
+	a->keys = eina_inlist_remove(a->keys, EINA_INLIST_GET(k));
 	/* TODO recalculate the start and end if necessary */
 	free(k);
 }
@@ -281,21 +281,21 @@ EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *k, unsigned 
 	 * nothing */
 	if ((Etch_Animation_Keyframe*)l == k)
 		goto update;
-	a->keys = eina_inlist_remove(a->keys, k);
+	a->keys = eina_inlist_remove(a->keys, EINA_INLIST_GET(k));
 	/* k is the greatest */
 	if (!l)
 	{
-		a->keys = eina_inlist_append(a->keys, k);
+		a->keys = eina_inlist_append(a->keys, EINA_INLIST_GET(k));
 	}
 	/* k is between two keyframes */
 	else
 	{	
-		a->keys = eina_inlist_prepend_relative(a->keys, k, l);	
+		a->keys = eina_inlist_prepend_relative(a->keys, EINA_INLIST_GET(k), l);	
 	}
 	/* update the start and end values */
 update:
 	k->time = new_time;
-	a->start = a->keys->time;
+	a->start = ((Etch_Animation_Keyframe *)a->keys)->time;
 	a->end = ((Etch_Animation_Keyframe *)((Eina_Inlist *)(a->keys))->last)->time;
 }
 /**

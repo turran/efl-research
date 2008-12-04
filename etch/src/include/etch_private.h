@@ -31,7 +31,7 @@ typedef struct _Etch_Data
  */
 struct _Etch
 {
-	Etch_Object *objects; /** List of objects */
+	Eina_Inlist *objects; /** List of objects */
 	unsigned long frame; /** Current frame */
 	unsigned int fps; /** Number of frames per second */
 	double curr; /** Current time in seconds */
@@ -44,7 +44,7 @@ struct _Etch
  */
 struct _Etch_Object
 {
-	Eina_Inlist list; /** Internal list */ 
+	EINA_INLIST; /** Internal list */ 
 	Etch *etch; /** Etch container */
 	const char *id; /** A way to identify the object */
 	Etch_Object_Class *oclass; /** Object Class */
@@ -78,7 +78,7 @@ typedef struct _Etch_Animation_Quadratic
  */
 struct _Etch_Animation_Keyframe
 {
-	Eina_Inlist list; /** A keyframe is always a list */
+	EINA_INLIST; /** A keyframe is always a list */
 	Etch_Animation *animation; /** reference to the animation */
 	Etch_Data value; /** the property value for this mark */
 	double time; /** the time where the keyframe is, already transformed to seconds */
@@ -94,7 +94,7 @@ struct _Etch_Animation_Keyframe
  */
 struct _Etch_Animation
 {
-	Etch_Animation_Keyframe *keys;
+	Eina_Inlist *keys; /* list of keyframes */
 	/* TODO if the marks are already ordered do we need to have the start
 	 * and end time duplicated here? */
 	double start; /** initial time already transformed to seconds */
