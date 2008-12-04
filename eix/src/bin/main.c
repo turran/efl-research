@@ -309,6 +309,10 @@ void _traverse_img(Eix *e)
 		{
 			_traverse_animate_transform(e, eo);
 		}
+		else if (!strcmp(tag, "animate"))
+		{
+			_traverse_animate(e, o);
+		}
 		//node = exml_get(xml);
 		//printf("TAG=%s\n", tag);
 	} while ((tag = exml_next_nomove(xml)) != NULL);
