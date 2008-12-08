@@ -9,33 +9,10 @@
 
 int _timer_event = 0;
 
-/* Properties callbacks */
-void _position_x_uint32(void *odata, void *pdata)
+void _animation_cb(const Etch_Data *curr, const Etch_Data *prev, void *data)
 {
-	//printf("_position_x_uint32 callback: value = %d\n", *(unsigned int *)pdata);
-	printf("%d,\n", *(unsigned int *)pdata);
+	printf("curr %d old %d\n", curr->data.u32, prev->data.u32);
 }
-
-void _position_y_uint32(void *odata, void *pdata)
-{
-	printf("_position_y_uint32 callback: value = %d\n", *(unsigned int *)pdata);
-}
-
-/* Simple object class to test all properties */
-Etch_Object_Property oproperties[] = {
-	{
-		.type = ETCH_POSITION_X_UINT32,
-		.set = &_position_x_uint32, 
-	},
-	{
-		.type = ETCH_POSITION_Y_UINT32,
-		.set = &_position_y_uint32,
-	},
-};
-
-Etch_Object_Class oclass = {
-	.props = oproperties,
-};
 
 /* Timer function */
 void timer_signal_cb(int s)
@@ -60,27 +37,16 @@ void timer_setup(void)
 	setitimer(ITIMER_REAL, &value, NULL);	
 }
 
-/* test simple set/get properties */
-void object_property_test(Etch_Object *eo)
-{
-	int vuint32 = 10;
-	
-	etch_object_property_set(eo, ETCH_POSITION_X_UINT32, &vuint32);
-	etch_object_property_get(eo, ETCH_POSITION_X_UINT32, &vuint32);
-	printf("property = %d\n", vuint32);	
-}
-
-void object_animation_setup(Etch_Object *eo)
+void animation_setup(Etch *e)
 {
 	Etch_Animation *ea;
 	Etch_Animation_Keyframe *ek;
 	
-	ea = etch_animation_new(ETCH_UINT32);
+	ea = etch_animation_add(e, ETCH_UINT32, _animation_cb, NULL);
 	/* first keyframe */
 	ek = etch_animation_keyframe_add(ea);
-	/* quadratic example */
-	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
-	etch_animation_keyframe_value_set(ek, 10, 15);
+	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_COSIN);
+	etch_animation_keyframe_value_set(ek, 10);
 	etch_animation_keyframe_time_set(ek, 3, 3015);
 	/* second keyframe */
 	ek = etch_animation_keyframe_add(ea);
@@ -97,23 +63,15 @@ void object_animation_setup(Etch_Object *eo)
 	etch_animation_keyframe_type_set(ek, ETCH_ANIMATION_LINEAR);
 	etch_animation_keyframe_value_set(ek, 25);
 	etch_animation_keyframe_time_set(ek, 1, 2530);
-	/* append the animation to the object */
-	etch_object_animation_set(eo, ETCH_POSITION_X, ea);
 }
 
 int main(void)
 {
 	Etch *e;
-	Etch_Object *eo;
 	
 	e = etch_new();
 	etch_timer_fps_set(e, 30);
-	
-	eo = etch_object_add(e, &oclass, "object1", NULL);
-
-	object_property_test(eo);
-	object_animation_setup(eo);
-	
+	animation_setup(e);
 	timer_setup();
 	/* to exit the main loop we should check that the etch animation has finished */
 	while (!(etch_timer_has_end(e)))
@@ -125,8 +83,7 @@ int main(void)
 			_timer_event = 0;
 		}
 	}
-	etch_object_delete(eo);
-	etch_free(e);
+	etch_delete(e);
 
 	return 0;
 }

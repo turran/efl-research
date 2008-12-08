@@ -1,6 +1,8 @@
 #ifndef ETCH_H_
 #define ETCH_H_
 
+#include "Eina.h"
+
 /**
  * @mainpage Etch
  * @section intro Introduction
@@ -11,13 +13,14 @@
  * @defgroup Etch_Group API
  * @{
  * 
- * @todo normalize the nomenclature for the properties on all the code:
- * property is composed by its type and its data type
  * @todo add the ability to make an object's property relative to other
+ * TODO remove the object's concept, just animations, the data should not be stored
+ * TODO on the object but on the animation itself
+ * TODO etch_animation_add(Etch *e, Etch_Data_Type dt, callback)
+ * TODO etch_animation_clone(Etch_Animation *a, Etch_Animation *clone)
+ * TODO etch_timer_get(Etch *e, unsigned long *secs, unsigned long *msecs);
+ * TODO remove every double and convert it into secs/usecs
  */
-
-/* for now */
-#define EAPI
 
 /**
  * @defgroup Etch_Core_Group Core
@@ -25,7 +28,7 @@
  */
 typedef struct _Etch Etch; /**< Etch Opaque Handler */
 EAPI Etch * etch_new(void);
-EAPI void etch_free(Etch *e);
+EAPI void etch_delete(Etch *e);
 EAPI void etch_timer_fps_set(Etch *e, unsigned int fps);
 EAPI unsigned int etch_timer_fps_get(Etch *e);
 EAPI void etch_timer_tick(Etch *e);
@@ -35,7 +38,7 @@ EAPI void etch_timer_goto(Etch *e, unsigned long frame);
 /**
  * Data types for a property
  */
-typedef enum
+typedef enum _Etch_Data_Type
 {
 	ETCH_UINT32, /**< Unsigned integer of 32 bits */
 	ETCH_INT32, /**< Signed integer of 32 bits */
@@ -44,39 +47,21 @@ typedef enum
 	ETCH_ARGB, /**< Color (Alpha, Red, Green, Blue) of 32 bits */
 	ETCH_DATATYPES,
 } Etch_Data_Type;
+
 /**
- * 
+ * Container of every property data type supported
  */
-typedef enum
+typedef struct _Etch_Data
 {
-	ETCH_POSITION_X,
-	ETCH_POSITION_Y,
-	ETCH_SIZE_H,
-	ETCH_SIZE_W,
-	ETCH_COLOR,
-	/* user defined properties will go from 0x30 to end */
-	ETCH_USER 	= 0x30,
-} Etch_Property_Type;
-/**
- * Useful macro to get the property type
- */
-#define ETCH_PROPERTY_TYPE_GET(x) (x >> 16)
-/**
- * Useful macro to get the property data type
- */
-#define ETCH_PROPERTY_DATATYPE_GET(x) (x & 0xffff)
-/** 
- * property format
- * [ type | data type ]
- *    16        16
- * maybe we should use smaller values? do we need properties in this way?
- */
-typedef enum
-{
-	ETCH_POSITION_X_UINT32 = (ETCH_POSITION_X << 16) | (ETCH_UINT32),
-	ETCH_POSITION_Y_UINT32 = (ETCH_POSITION_Y << 16) | (ETCH_UINT32),
-	ETCH_COLOR_ARGB = (ETCH_COLOR << 16) | (ETCH_ARGB),
-} Etch_Property;
+	Etch_Data_Type type;
+	union {
+		uint32_t u32;
+		int32_t i32;
+		float f;
+		double d;
+		unsigned int argb;
+	} data;
+} Etch_Data;
 
 /** 
  * @}
@@ -86,7 +71,7 @@ typedef enum
 typedef struct _Etch_Animation Etch_Animation; /**< Animation Opaque Handler */
 typedef struct _Etch_Animation_Keyframe Etch_Animation_Keyframe; /**< Animation Keyframe Opaque Handler */
 
-typedef enum
+typedef enum _Etch_Animation_Type
 {
 	ETCH_ANIMATION_LINEAR,
 	ETCH_ANIMATION_COSIN,
@@ -95,8 +80,12 @@ typedef enum
 	ETCH_ANIMATION_TYPES
 } Etch_Animation_Type;
 
-EAPI Etch_Animation * etch_animation_new(Etch_Data_Type dtype);
-EAPI void etch_animation_free(Etch_Animation *a);
+/** Callback function used when a property value changes */
+typedef void (*Etch_Animation_Callback)(const Etch_Data *curr, const Etch_Data *prev, void *data);
+
+EAPI Etch_Animation * etch_animation_add(Etch *e, Etch_Data_Type dtype,
+		Etch_Animation_Callback cb, void *data);
+EAPI void etch_animation_delete(Etch_Animation *a);
 EAPI Etch_Animation_Keyframe * etch_animation_keyframe_add(Etch_Animation *a);
 EAPI void etch_animation_keyframe_del(Etch_Animation *a, Etch_Animation_Keyframe *m);
 EAPI void etch_animation_keyframe_type_set(Etch_Animation_Keyframe *m, Etch_Animation_Type t);
@@ -104,42 +93,6 @@ EAPI Etch_Animation_Type etch_animation_keyframe_type_get(Etch_Animation_Keyfram
 EAPI void etch_animation_keyframe_time_set(Etch_Animation_Keyframe *m, unsigned long secs, unsigned long usecs);
 EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *m, ...);
 EAPI void etch_animation_keyframe_value_get(Etch_Animation_Keyframe *m, ...);
-/** 
- * @}
- * @defgroup Etch_Objects_Group Objects
- * @{
- */
-
-typedef struct _Etch_Object Etch_Object; /**< Etch Object Opaque Handler */
-
-/** Callback function used when a property value changes */
-typedef void (*Etch_Property_Set)(void *odata, void *pdata); 
-/**
- * A tuple composed of property type and it's callback
- */
-typedef struct Etch_Object_Property
-{
-	int type; /**< The type of property */ 
-	Etch_Property_Set set; /**< The callback function when the property has changed */
-} Etch_Object_Property;
-
-/**
- * An object class defines a new object
- */
-typedef struct _Etch_Object_Class
-{
-	Etch_Object_Property *props; /**< Array of properties */
-} Etch_Object_Class;
-
-EAPI Etch_Object * etch_object_add(Etch *e, Etch_Object_Class *oc, const char *id, void *data);
-EAPI void etch_object_delete(Etch_Object *o);
-/**
- * @todo This functions are really needed to be exported? if so, on the get we must pass
- * the void * to not make the user modify the value ? or maybe return a const void *?
- * for internal usage we can make it return the offset directly */
-EAPI void etch_object_property_set(Etch_Object *eo, int prop, void *data);
-EAPI void etch_object_property_get(Etch_Object *eo, int prop, void *data);
-EAPI void etch_object_animation_set(Etch_Object *eo, Etch_Property_Type prop, Etch_Animation *a);
 /** 
  * @}
  * @}

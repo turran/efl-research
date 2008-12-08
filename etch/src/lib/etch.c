@@ -10,6 +10,8 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+#define DEFAULT_FPS 30
+
 static void _fps_to_time(unsigned long frame, unsigned long *time)
 {
 	/* giving a frame transform it to secs|usec representation */ 
@@ -17,41 +19,24 @@ static void _fps_to_time(unsigned long frame, unsigned long *time)
 
 static void _process(Etch *e)
 {
-	Eina_Inlist *l;
-	int i;
-	
-	/* iterate over the list of objects to get the animations */
-	for (l = (Eina_Inlist *)e->objects; l; l = l->next)
-	{
-		Etch_Object *o = (Etch_Object *)l;
-		
-		/* iterate over the list of animations */
-		for (i = 0; i < o->nprops; i++)
-		{
-			Etch_Animation *a;
-			
-			
-			if (!(o->animations[i]))
-				continue;
-			/* check that the animation start and end is between our time */
-			a = o->animations[i];
-			if ((e->curr >= a->start) && (e->curr <= a->end))
-			{
-				void *pdata;
-				Etch_Property_Set setfnc;
+	Etch_Animation *a;
 
-				//printf("curr = %g, start = %g, end = %g\n", e->curr, a->start, a->end);
-				/* get the property offset */
-				pdata = ((char *)o->props
-						+ o->offsets[i]);
-				etch_animation_data_animate(a, pdata, e->curr);
-				/* once the value has been set, call the callback */
-				setfnc = o->oclass->props[i].set;
-				setfnc(o->data, pdata);
-			}
-		}
+	/* TODO use e->start and e->end */
+	/* iterate over the list of animations */
+	EINA_INLIST_FOREACH(e->animations, a)
+	{
+		/* check that the animation start and end is between our time */
+		//printf("[%g] %g %g\n", e->curr, a->start, a->end);
+		if ((e->curr >= a->start) && (e->curr <= a->end))
+		{
+			etch_animation_animate(a, e->curr);
+		}		
 	}
 }
+/*============================================================================*
+ *                                 Global                                     * 
+ *============================================================================*/
+
 /*============================================================================*
  *                                   API                                      * 
  *============================================================================*/
@@ -63,16 +48,17 @@ EAPI Etch * etch_new(void)
 	Etch *e;
 	
 	e = malloc(sizeof(Etch));
-	e->objects = NULL;
+	e->animations = NULL;
 	e->frame = 0;
 	e->curr = 0;
+	e->fps = DEFAULT_FPS;
 	return e;
 }
 
 /**
  * Delete the Etch instance
  */
-EAPI void etch_free(Etch *e)
+EAPI void etch_delete(Etch *e)
 {
 	assert(e);
 	/* remove every object */
@@ -124,9 +110,32 @@ EAPI int etch_timer_has_end(Etch *e)
  * To be documented
  * FIXME: To be fixed
  */
+EAPI void etch_timer_get(Etch *e, unsigned long *secs, unsigned long *msecs)
+{
+	
+}
+/**
+ * To be documented
+ * FIXME: To be fixed
+ */
 EAPI void etch_timer_goto(Etch *e, unsigned long frame)
 {
 	e->frame = frame;
 	e->curr = (double)frame/e->fps;
 	_process(e);
+}
+
+/**
+ * Create a new animation
+ * @param dtype Data type the animation will animate
+ */
+EAPI Etch_Animation * etch_animation_add(Etch *e, Etch_Data_Type dtype,
+		Etch_Animation_Callback cb, void *data)
+{
+	Etch_Animation *a;
+
+	a = etch_animation_new(dtype, cb, data);
+	e->animations = eina_inlist_append(e->animations, EINA_INLIST_GET(a));
+
+	return a;
 }

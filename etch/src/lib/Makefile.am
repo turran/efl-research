@@ -2,16 +2,15 @@ MAINTAINERCLEANFILES = Makefile.in
 
 AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
-@EINA_CFLAGS@
+@ETCH_CFLAGS@
 
 lib_LTLIBRARIES = libetch.la
 
 libetch_la_SOURCES = \
 etch.c \
-etch_animation.c \
-etch_object.c
+etch_animation.c
 
-libetch_la_LIBADD = -lm @EINA_LIBS@
+libetch_la_LIBADD = -lm @ETCH_LIBS@
 
 libetch_la_DEPENDENCIES =
 

@@ -20,14 +20,14 @@
 static void _keyframe_debug(Etch_Animation_Keyframe *k)
 {
 	printf("Keyframe at %g of type %d\n", k->time, k->type);
-	switch (k->animation->dtype)
+	switch (k->value.type)
 	{
 		case ETCH_UINT32:
-		printf("value = %u\n", k->value.u32);
+		printf("value = %u\n", k->value.data.u32);
 		break;
 
 		case ETCH_ARGB:
-		printf("value = 0x%8x\n", k->value.argb);
+		printf("value = 0x%8x\n", k->value.data.argb);
 		break;
 		
 		default:
@@ -50,18 +50,18 @@ static void _animation_debug(Etch_Animation *a)
 	}
 }
 
-static void _linear_argb(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
+static void _linear_argb(Etch_Data *da, Etch_Data *db, double m, Etch_Data *res, void *data)
 {
 	unsigned int range;
 	unsigned int a, b, ag, rb;
 	
-	a = da->argb;
-	b = db->argb;
+	a = da->data.argb;
+	b = db->data.argb;
 	
 	/* handle specific case where a and b are equal (constant) */
 	if (a == b)
 	{
-		*res = a;
+		res->data.u32 = a;
 		return;
 	}
 	/* b - a*m + a */
@@ -69,58 +69,58 @@ static void _linear_argb(void *data, double m, Etch_Data *da, Etch_Data *db, uns
 	ag = ((((((b >> 8) & 0xff00ff) - ((a >> 8) & 0xff00ff)) * range) + (a & 0xff00ff00)) & 0xff00ff00);  
 	rb = ((((((b & 0xff00ff) - (a & 0xff00ff)) * (range)) >> 8) + (a & 0xff00ff)) & 0xff00ff);
 	
-	*res = ag + rb;
+	res->data.u32 = ag + rb;
 }
 
-static void _linear_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
+static void _linear_uint32(Etch_Data *da, Etch_Data *db, double m, Etch_Data *res, void *data)
 {
 	double r;
-	unsigned int a, b;
+	uint32_t a, b;
 	
-	a = da->u32;
-	b = db->u32;
+	a = da->data.u32;
+	b = db->data.u32;
 	
 	/* handle specific case where a and b are equal (constant) */
 	if (a == b)
 	{
-		*res = a;
+		res->data.u32 = a;
 		return;
 	}
 	r = ((1 - m) * a) + (m * b);
-	*res = ceil(r);
+	res->data.u32 = ceil(r);
 }
 
-static void _cosin_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
+static void _cosin_uint32(Etch_Data *da, Etch_Data *db, double m, Etch_Data *res, void *data)
 {
 	double m2;
-	unsigned int a, b;
+	uint32_t a, b;
 		
-	a = da->u32;
-	b = db->u32;
+	a = da->data.u32;
+	b = db->data.u32;
 	
 	m2 = (1 - cos(m * M_PI))/2;
 	
-	*res = ceil((double)(a * (1 - m2) + b * m2));
+	res->data.u32 = ceil((double)(a * (1 - m2) + b * m2));
 }
 
-static void _bquad_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
+static void _bquad_uint32(Etch_Data *da, Etch_Data *db, double m, Etch_Data *res, void *data)
 {
 	Etch_Animation_Quadratic *q = data;
-	unsigned int a, b;
+	uint32_t a, b;
 		
-	a = da->u32;
-	b = db->u32;
+	a = da->data.u32;
+	b = db->data.u32;
 	
-	*res =  (1 - m) * (1 - m) * a + 2 * m * (1 - m) * (q->cp.u32) + m * m * b;
+	res->data.u32 =  (1 - m) * (1 - m) * a + 2 * m * (1 - m) * (q->cp.data.u32) + m * m * b;
 }
 
-static void _bcubic_uint32(void *data, double m, Etch_Data *da, Etch_Data *db, unsigned int *res)
+static void _bcubic_uint32(Etch_Data *da, Etch_Data *db, double m, Etch_Data *res, void *data)
 {
 	/* 
 	 */
 }
 /* prototype of the function table */
-typedef void (*Etch_Interpolator)(void *data, double m, Etch_Data *a, Etch_Data *b, void *res);
+typedef void (*Etch_Interpolator)(Etch_Data *a, Etch_Data *b, double m, Etch_Data *res, void *data);
 
 Etch_Interpolator _interpolators[ETCH_ANIMATION_TYPES][ETCH_DATATYPES] = {
 		[ETCH_ANIMATION_LINEAR][ETCH_UINT32] = (Etch_Interpolator)_linear_uint32,
@@ -135,7 +135,7 @@ Etch_Interpolator _interpolators[ETCH_ANIMATION_TYPES][ETCH_DATATYPES] = {
  * To be documented
  * FIXME: To be fixed
  */
-void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
+void etch_animation_animate(Etch_Animation *a, double curr)
 {
 	Eina_Inlist *l;
 	Etch_Animation_Keyframe *start;
@@ -155,50 +155,56 @@ void etch_animation_data_animate(Etch_Animation *a, void *pdata, double curr)
 		end = (Etch_Animation_Keyframe *)(l->next);
 		if (!end)
 			break;
+		/* get the keyframe affected */
+		//printf("-> [%g] %g %g\n", curr, start->time, end->time);
 		if ((curr >= start->time) && (curr <= end->time))
 		{
 			Etch_Interpolator ifnc;
+			Etch_Data old;
 			double m;
-					
+			
 			/* get the interval between 0 and 1 based on current frame and two keyframes */
 			m = (curr - start->time)/(end->time - start->time);
 			/* accelerate the calculations if we get the same m as the previous call */
 			if (m == a->m)
 			{
-				/* TODO instead of return call the set callback again? */
+				a->cb(&a->curr, &a->curr, a->data);
 				return;
 			}
+			/* store old value */
+			old = a->curr;
 			/* interpolate the new value */
 			ifnc = _interpolators[start->type][a->dtype];
-			ifnc(&start->data, m, &(start->value), &(end->value), pdata);
+			ifnc(&(start->value), &(end->value), m, &a->curr, &start->data);
+			/* once the value has been set, call the callback */
+			a->cb(&a->curr, &old, a->data);
 		}
 		l = l->next;
 	}
 }
-/*============================================================================*
- *                                   API                                      * 
- *============================================================================*/
-/**
- * Create a new animation
- * @param dtype Data type the animation will animate
- */
-EAPI Etch_Animation * etch_animation_new(Etch_Data_Type dtype)
+
+Etch_Animation * etch_animation_new(Etch_Data_Type dtype, Etch_Animation_Callback cb, void *data)
 {
 	Etch_Animation *a;
-	
+		
 	a = calloc(1, sizeof(Etch_Animation));
 	/* common values */
 	a->m = -1; /* impossible, so the first keyframe will overwrite this */
 	a->start = DBL_MAX;
 	a->dtype = dtype;
-	
-	return a;
+	a->keys = NULL;
+	a->cb = cb;
+	a->data = data;
 }
+
+/*============================================================================*
+ *                                   API                                      * 
+ *============================================================================*/
 /**
  * To be documented
  * FIXME: To be fixed
  */
-EAPI void etch_animation_free(Etch_Animation *a)
+EAPI void etch_animation_delete(Etch_Animation *a)
 {
 	assert(a);
 	/* TODO delete the list of keyframes */
@@ -347,10 +353,10 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
 			switch (k->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					k->value.u32 = va_arg(va, unsigned int);
+					k->value.data.u32 = va_arg(va, unsigned int);
 					break;
 				case ETCH_ARGB:
-					k->value.argb = va_arg(va, unsigned int);
+					k->value.data.argb = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
@@ -362,8 +368,8 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
 			switch (k->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					k->value.u32 = va_arg(va, unsigned int);
-					k->data.q.cp.u32 = va_arg(va, unsigned int);
+					k->value.data.u32 = va_arg(va, unsigned int);
+					k->data.q.cp.data.u32 = va_arg(va, unsigned int);
 					break;
 				default:
 					break;
@@ -375,9 +381,9 @@ EAPI void etch_animation_keyframe_value_set(Etch_Animation_Keyframe *k, ...)
 			switch (k->animation->dtype)
 			{	
 				case ETCH_UINT32:
-					k->value.u32 = va_arg(va, unsigned int);
-					k->data.c.cp1.u32 = va_arg(va, unsigned int);
-					k->data.c.cp2.u32 = va_arg(va, unsigned int);
+					k->value.data.u32 = va_arg(va, unsigned int);
+					k->data.c.cp1.data.u32 = va_arg(va, unsigned int);
+					k->data.c.cp2.data.u32 = va_arg(va, unsigned int);
 					break;
 				default:
 					break;

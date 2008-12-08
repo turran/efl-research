@@ -3,7 +3,7 @@ rm -f config.cache
 
 AC_INIT(etch, 0.0.1, me@mail.com)
 AC_PREREQ(2.52)
-AC_CONFIG_SRCDIR(configure.in)
+AC_CONFIG_SRCDIR(configure.ac)
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
@@ -38,6 +38,10 @@ esac
 AC_SUBST(create_shared_lib)
 
 PKG_CHECK_MODULES(EINA, [eina-0 >= 0.0.1])
+ETCH_CFLAGS="$EINA_CFLAGS"
+ETCH_LIBS="$EINA_LIBS"
+AC_SUBST(ETCH_CFLAGS)
+AC_SUBST(ETCH_LIBS)
 
 ## Make the debug preprocessor configurable
 
