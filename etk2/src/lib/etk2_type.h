@@ -52,5 +52,6 @@ void *type_instance_new(Type *type);
 void type_construct(Type *type, void *object);
 void type_destruct(Type *type, void *object);
 size_t type_size_get(Type *type);
+void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type, Type_Property_Value_Type value_type, size_t field_offset, Type_Property_Process *process_cb);
 
 #endif

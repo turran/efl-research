@@ -30,7 +30,7 @@ Type *object_type_get(void)
 	if (!object_type)
 	{
 		object_type = type_new(TYPE_NAME, sizeof(Object_Private), NULL, object_ctor, object_dtor, object_property_value_set, object_property_value_get);
-		type_property_new(object_type, "name", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, NULL);
+		type_property_new(object_type, "name", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, 0, NULL);
 
 	}
 
