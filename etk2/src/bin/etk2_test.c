@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 #include <Etk2.h>
 
@@ -19,6 +22,13 @@ int main(int argc, char **argv)
 	button_label_set(button, "wee!");
 	object_name_set((Object*)button, "name!");
 	printf("button label (should be wee!) = %s, button name (should be name!) = %s\n", button_label_get(button), object_name_get((Object*)button));
+
+	Type_Property_Value *value = malloc(size_of(Type_Property_Value));
+	value->value.string_value = strdup("new name");
+
+	object_property_value_set((Object*) button, "name", value);
+	printf("button name (should be 'new name') = %s\n", object_name_get((Object*)button));
+
 	return 0;
 }
 

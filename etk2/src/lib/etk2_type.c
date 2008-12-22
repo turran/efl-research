@@ -35,6 +35,7 @@ struct _Type_Property
 {
 	char *name;
 	Type_Property_Type type;
+	size_t offset;
 	Type_Property_Value_Type value_type;
 	Type_Property_Value *prev_value, *curr_value;
 	Type_Property_Process *process;
@@ -150,6 +151,6 @@ void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type
 	property->type = prop_type;
 	property->value_type = value_type;
 	property->process = process_cb;
-
+	property->offset = field_offset;
 	eina_hash_add(type->properties, prop_name, property);
 }
