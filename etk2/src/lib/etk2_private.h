@@ -9,6 +9,7 @@
 #define _ETK2_PRIVATE_H
 
 #define RETURN_IF(expr) if ((expr)) return
+#define RETURN_NULL_IF(expr) if ((expr)) return NULL
 
 #define OFFSET(type, mem) ((size_t) ((char *)&((type *) 0)->mem - (char *)((type *) 0)))
 

@@ -34,8 +34,8 @@ Widget *widget_new(void)
 	Widget *widget;
 
 	widget = type_instance_new(widget_type_get());
-	widget->private = PRIVATE_OFFSET(widget);
 	type_construct(widget_type_get(), widget);
+	object_type_set((Object*)widget, widget_type_get());
 
 	return widget;
 }
@@ -65,9 +65,12 @@ void widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h)
 
 /** Implementation **/
 
-static void widget_ctor(void *widget)
+static void widget_ctor(void *instance)
 {
-  printf("widget_ctor(%p)\n", widget);
+	Widget *widget = (Widget*) instance;
+
+	widget->private = PRIVATE_OFFSET(widget);
+	printf("widget_ctor(%p)\n", widget);
 }
 
 static void widget_dtor(void *widget)

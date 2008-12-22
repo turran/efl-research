@@ -8,8 +8,6 @@
 #include "etk2_type.h"
 #include "etk2_object.h"
 
-typedef struct _Type_Property Type_Property;
-
 /**
  * @brief
  */
@@ -57,6 +55,7 @@ Type *type_new(char *name, size_t size, Type *parent, Type_Constructor ctor, Typ
 
 	type = malloc(sizeof(Type));
 
+	type->name = strdup(name);
 	type->size = size;
 	type->parent = parent;
 	type->ctor = ctor;
@@ -153,4 +152,60 @@ void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type
 	property->process = process_cb;
 	property->offset = field_offset;
 	eina_hash_add(type->properties, prop_name, property);
+}
+
+/**
+ *
+ * @param type
+ * @param prop_name
+ * @return
+ */
+Type_Property *type_property_get(Type *type, char *prop_name)
+{
+	Type_Property *property = NULL;
+
+	RETURN_NULL_IF(type == NULL || type->properties == NULL || prop_name == NULL);
+
+	printf("looking for property in type: %s\n", type->name);
+
+	property = eina_hash_find(type->properties, prop_name);
+
+	printf("property is: %p %s\n", property, property->name);
+
+	return property;
+}
+
+/**
+ *
+ * @param type
+ * @param instance
+ * @param prop_name
+ * @param value
+ */
+void type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value)
+{
+	Type_Property *property;
+
+	RETURN_IF(type == NULL || instance == NULL || prop_name == NULL || value == NULL);
+
+	printf("getting property: %s from type: %s (type addr = %p)\n", prop_name, type->name, type);
+
+	property = type_property_get(type, prop_name);
+
+	// TODO: give warning
+	RETURN_IF(property == NULL);
+
+	if (property->value_type == PROPERTY_STRING)
+	{
+		int parent_size = type->parent != NULL ? type_size_get(type->parent) : 0;
+
+		printf("parent size for %s is %d\n", type->name, parent_size);
+
+		char **str = (char**)((char*)instance + parent_size + property->offset);
+		printf("setting property to '%s'\n", value->value.string_value);
+
+		printf("address of property %s is %p\n", property->name, *str);
+		*str = strdup(value->value.string_value);
+		printf("*str = %s\n", *str);
+	}
 }
