@@ -170,8 +170,12 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 	RETURN_NULL_IF(type == NULL || type->properties == NULL || prop_name == NULL);
 
 	printf("looking for property in type: %s\n", type->name);
-
-	property = eina_hash_find(type->properties, prop_name);
+	do
+	{
+		property = eina_hash_find(type->properties, prop_name);
+		type = type->parent;
+	} while (!property || !type);
+	
 
 	printf("property is: %p %s\n", property, property->name);
 
