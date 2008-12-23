@@ -199,12 +199,12 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 	{
 		int parent_size = type->parent != NULL ? type_size_get(type->parent) : 0;
 
-		printf("parent size for %s is %d\n", type->name, parent_size);
+		printf("parent size for %s is %d, property offset is %d\n", type->name, parent_size, property->offset);
 
 		char **str = (char**)((char*)instance + parent_size + property->offset);
 		printf("setting property to '%s'\n", value->value.string_value);
 
-		printf("address of property %s is %p\n", property->name, *str);
+		printf("address of property %s is %p\n", property->name, &str);
 		*str = strdup(value->value.string_value);
 		printf("*str = %s\n", *str);
 	}

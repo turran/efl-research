@@ -1,15 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "etk2_private.h"
+#include "etk2_types.h"
 #include "etk2_widget.h"
 
-#define PRIVATE_OFFSET(w) ((Widget_Private*)((w) + type_size_get(object_type_get())))
+#define PRIVATE_OFFSET(w) ((Widget_Private*)((char*)(w) + type_size_get(object_type_get())))
 #define PRIVATE(w) ((w)->private)
 #define TYPE_NAME "Widget"
 
 struct _Widget_Private
 {
 	int x, y, w, h;
+	char *theme;
 };
 
 static void widget_ctor(void *widget);
@@ -24,6 +27,7 @@ Type *widget_type_get(void)
 	if (!widget_type)
 	{
 		widget_type = type_new(TYPE_NAME, sizeof(Widget_Private), object_type_get(), widget_ctor, widget_dtor, widget_property_value_set, widget_property_value_get);
+		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private,  theme), NULL);
 	}
 
 	return widget_type;
@@ -36,6 +40,8 @@ Widget *widget_new(void)
 	widget = type_instance_new(widget_type_get());
 	type_construct(widget_type_get(), widget);
 	object_type_set((Object*)widget, widget_type_get());
+
+	printf("widget privaste addr = %p and theme addr = %p and offset:%d\n", widget->private->h, widget->private->theme, OFFSET(Widget_Private, theme));
 
 	return widget;
 }
@@ -63,6 +69,16 @@ void widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h)
 	if (h) *h = private->h;
 }
 
+char *widget_theme_get(Widget *widget)
+{
+	Widget_Private *private;
+
+	RETURN_NULL_IF(widget == NULL);
+
+	private = PRIVATE(widget);
+	return private->theme;
+}
+
 /** Implementation **/
 
 static void widget_ctor(void *instance)
@@ -70,6 +86,7 @@ static void widget_ctor(void *instance)
 	Widget *widget = (Widget*) instance;
 
 	widget->private = PRIVATE_OFFSET(widget);
+	widget->private->theme = NULL;
 	printf("widget_ctor(%p)\n", widget);
 }
 

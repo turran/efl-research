@@ -11,8 +11,9 @@ int main(int argc, char **argv)
 	Button *button;
 	int x, y, w, h;
 
-	/*
+
 	widget = widget_new();
+	/*
 	object_name_set((Object*)widget, "foo!");
 	printf("widget name (should be foo) = %s\n", object_name_get((Object*)widget));
 	widget_geom_set(widget, 1, 2, 3, 4);
@@ -20,17 +21,18 @@ int main(int argc, char **argv)
 	printf("widget geom (should be 1 2 3 4) = %d %d %d %d\n", x, y, w, h);
 */
 
-	button = button_new();
+	//button = button_new();
 	//button_label_set(button, "wee!");
 	//object_name_set((Object*)button, "name!");
 	//printf("button label (should be wee!) = %s, button name (should be name!) = %s\n", button_label_get(button), object_name_get((Object*)button));
 
+
 	Type_Property_Value *value = malloc(sizeof(Type_Property_Value));
 	value->value.string_value = strdup("new label");
 
-	printf("button label (should be null) = %s\n", button_label_get(button));
-	object_property_value_set((Object*) button, "label", value);
-	printf("button label (should be 'new label') = %s\n", button_label_get(button));
+	printf("button label (should be null) = %s\n", widget_theme_get(widget));
+	object_property_value_set((Object*) widget, "theme", value);
+	printf("button label (should be 'new label') = %s\n", widget_theme_get(widget));
 
 	return 0;
 }

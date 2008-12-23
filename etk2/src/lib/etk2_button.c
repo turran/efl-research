@@ -41,6 +41,8 @@ Button *button_new(void)
 	type_construct(button_type_get(), button);
 	object_type_set((Object*)button, button_type_get());
 
+	printf("addr of label is: %p\n", &button->private->label);
+
 	return button;
 }
 
