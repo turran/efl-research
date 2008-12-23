@@ -11,29 +11,41 @@ int main(int argc, char **argv)
 	Button *button;
 	int x, y, w, h;
 
+	char *name;
+	char *label;
+	char *theme;
 
+	// Widget tests
 	widget = widget_new();
-	/*
-	object_name_set((Object*)widget, "foo!");
-	printf("widget name (should be foo) = %s\n", object_name_get((Object*)widget));
-	widget_geom_set(widget, 1, 2, 3, 4);
-	widget_geom_get(widget, &x, &y, &w, &h);
-	printf("widget geom (should be 1 2 3 4) = %d %d %d %d\n", x, y, w, h);
-*/
+	name = "NEW WIDGET NAME";
+	object_name_set((Object*)widget, name);
+	printf("widget name (should be %s) = %s\n", name, object_name_get((Object*)widget));
 
-	//button = button_new();
-	//button_label_set(button, "wee!");
-	//object_name_set((Object*)button, "name!");
-	//printf("button label (should be wee!) = %s, button name (should be name!) = %s\n", button_label_get(button), object_name_get((Object*)button));
+		// Button tests
+		button = button_new();
+		label = "NEW BUTTON LABEL";
+		theme = "GOLDEN THEME";
+		button_label_set(button, label);
+		object_name_set((Object*)button, name);
+		widget_theme_set((Widget*)button, theme);
+		printf("button's widget theme should be '%s ' and is '%s'\n", theme, widget_theme_get((Widget*)button));
+		printf("button label should be '%s' = '%s', button name should be '%s' = '%s'\n", label, button_label_get(button), name, object_name_get((Object*)button));
 
+		// Property tests
+		Type_Property_Value *value = malloc(sizeof(Type_Property_Value));
+		value->value.string_value = strdup("new label");
 
-	Type_Property_Value *value = malloc(sizeof(Type_Property_Value));
-	value->value.string_value = strdup("new label");
+		printf("button label (should be %s) = %s\n", label, button_label_get(button));
+		object_property_value_set((Object*) button, "label", value);
+		printf("button label (should be 'new label') = %s\n", button_label_get(button));
 
-	printf("button label (should be null) = %s\n", widget_theme_get(widget));
-	object_property_value_set((Object*) widget, "theme", value);
-	printf("button label (should be 'new label') = %s\n", widget_theme_get(widget));
+		value = malloc(sizeof(Type_Property_Value));
+		value->value.string_value = strdup("SILVER THEME");
 
-	return 0;
+		printf("button theme (should be '%s') = %s\n", theme, widget_theme_get((Widget*)button));
+		object_property_value_set((Object*) button, "theme", value);
+		printf("button theme (should be 'SILVER THEME') = %s\n", widget_theme_get((Widget*)button));
+
+		return 0;
 }
 

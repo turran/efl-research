@@ -69,6 +69,16 @@ void widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h)
 	if (h) *h = private->h;
 }
 
+void widget_theme_set(Widget *widget, char *theme)
+{
+	Widget_Private *private;
+
+		RETURN_NULL_IF(widget == NULL);
+
+		private = PRIVATE(widget);
+		private->theme = strdup(theme);
+}
+
 char *widget_theme_get(Widget *widget)
 {
 	Widget_Private *private;
