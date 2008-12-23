@@ -9,7 +9,8 @@
 #include "etk2_object.h"
 #include "etk2_type.h"
 
-#define PRIVATE(obj) ((Object_Private*)(obj))
+#define PRIVATE_OFFSET(obj) ((Object_Private*)((char*)(obj) + sizeof(Object)))
+#define PRIVATE(obj) ((Object_Private*)(obj->private))
 
 #define TYPE_NAME "Object"
 
@@ -103,7 +104,7 @@ static void object_ctor(void *object)
 	Object *obj;
 
 	obj = (Object*) object;
-	obj->private = obj;
+	obj->private = PRIVATE_OFFSET(obj); // + sizeof(Object);
 
 	printf("object_ctor(%p)\n", obj);
 }

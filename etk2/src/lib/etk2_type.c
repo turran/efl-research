@@ -126,8 +126,11 @@ size_t type_size_get(Type *type)
 	size_t parent_size = 0;
 
 	if (type->parent)
+	{
 		parent_size = type_size_get(type->parent);
-
+		printf("- parent %s size = %d\n",  type->parent->name, parent_size);
+	}
+	printf("- size %s = %d %d\n",  type->name, type->size + parent_size, type->size);
 	return type->size + parent_size;
 }
 
