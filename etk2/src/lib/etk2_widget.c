@@ -26,7 +26,7 @@ Type *widget_type_get(void)
 
 	if (!widget_type)
 	{
-		widget_type = type_new(TYPE_NAME, sizeof(Widget_Private), object_type_get(), widget_ctor, widget_dtor, widget_property_value_set, widget_property_value_get);
+		widget_type = type_new(TYPE_NAME, sizeof(Widget_Private) + sizeof(Widget), object_type_get(), widget_ctor, widget_dtor, widget_property_value_set, widget_property_value_get);
 		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private,  theme), NULL);
 	}
 

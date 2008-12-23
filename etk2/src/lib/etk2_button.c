@@ -26,7 +26,7 @@ Type *button_type_get(void)
 
 	if (!button_type)
 	{
-		button_type = type_new(TYPE_NAME, sizeof(Button_Private), widget_type_get(), button_ctor, button_dtor, button_property_value_set, button_property_value_get);
+		button_type = type_new(TYPE_NAME, sizeof(Button_Private) + sizeof(Button), widget_type_get(), button_ctor, button_dtor, button_property_value_set, button_property_value_get);
 		type_property_new(button_type, "label", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Button_Private, label), NULL);
 	}
 
