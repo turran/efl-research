@@ -5,7 +5,7 @@
 #include "etk2_private.h"
 #include "etk2_button.h"
 
-#define PRIVATE_OFFSET(b) ((Button_Private*)((b) + type_size_get(widget_type_get())))
+#define PRIVATE_OFFSET(b) ((Button_Private*)((b) + sizeof(Button) + type_size_get(widget_type_get())))
 #define PRIVATE(b) ((b)->private)
 #define TYPE_NAME "Button"
 

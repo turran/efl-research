@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 		object_property_value_set((Object*) button, "label", value);
 		printf("button label (should be 'new label') = %s\n", button_label_get(button));
 
+
 		value = malloc(sizeof(Type_Property_Value));
 		value->value.string_value = strdup("SILVER THEME");
 

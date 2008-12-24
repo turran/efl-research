@@ -5,7 +5,7 @@
 #include "etk2_types.h"
 #include "etk2_widget.h"
 
-#define PRIVATE_OFFSET(w) ((Widget_Private*)((char*)(w) + type_size_get(object_type_get())))
+#define PRIVATE_OFFSET(w) ((Widget_Private*)((char*)(w) + sizeof(Widget) + type_size_get(object_type_get())))
 #define PRIVATE(w) ((w)->private)
 #define TYPE_NAME "Widget"
 

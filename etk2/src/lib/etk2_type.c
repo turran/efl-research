@@ -177,7 +177,8 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 	} while (!property || !type);
 	
 
-	printf("property is: %p %s\n", property, property->name);
+	if (property)
+		printf("property is: %p %s\n", property, property->name);
 
 	return property;
 }
