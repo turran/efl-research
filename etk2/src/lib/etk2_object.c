@@ -9,7 +9,7 @@
 #include "etk2_object.h"
 #include "etk2_type.h"
 
-#define PRIVATE_OFFSET(obj) ((Object_Private*)((char*)(obj) + sizeof(Object)))
+#define PRIVATE_OFFSET(obj) ((Object_Private*)((char*)(obj) + sizeof(Object) + sizeof(Object_Private*)))
 #define PRIVATE(obj) ((Object_Private*)(obj->private))
 
 #define TYPE_NAME "Object"
@@ -30,7 +30,7 @@ Type *object_type_get(void)
 	if (!object_type)
 	{
 		object_type = type_new(TYPE_NAME, sizeof(Object_Private) + sizeof(Object), NULL, object_ctor, object_dtor, object_property_value_set, object_property_value_get);
-		type_property_new(object_type, "name", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, name), NULL);
+		type_property_new(object_type, "name", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, name) + sizeof(Object_Private*), NULL);
 	}
 
 	return object_type;
@@ -53,40 +53,40 @@ void object_type_set(Object *object, Type *type)
 
 	RETURN_IF(object == NULL || type == NULL);
 
-	private = PRIVATE(object);
+	//private = PRIVATE(object);
 
-	RETURN_IF(private == NULL);
+	RETURN_IF(object->private == NULL);
 
-	printf("setting %p 's type to %p\n", private, type);
+	//printf("setting %p 's type to %p\n", object->private, type);
 
-	private->type = type;
+	object->private->type = type;
 }
 
 void object_name_set(Object *object, const char *name)
 {
 	Object_Private *private;
 
-	private = PRIVATE(object);
+	//private = PRIVATE(object);
 
 	if (name)
-		private->name = strdup(name);
+		object->private->name = strdup(name);
 }
 
 const char *object_name_get(Object *object)
 {
 	Object_Private *private;
 
-	private = PRIVATE(object);
-	return private->name;
+	//private = PRIVATE(object);
+	return object->private->name;
 }
 
 void object_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
 {
-	printf("setting value for %s\n", prop_name);
+	//printf("setting value for %s\n", prop_name);
 
 	RETURN_IF(object == NULL || prop_name == NULL);
 
-	printf("obj_prop_value_set: %p %p %p\n", object, object->private, object->private->type);
+	//printf("obj_prop_value_set: %p %p %p\n", object, object->private, object->private->type);
 
 	type_instance_property_value_set(object->private->type, object, prop_name, value);
 }
@@ -104,9 +104,12 @@ static void object_ctor(void *object)
 	Object *obj;
 
 	obj = (Object*) object;
-	obj->private = PRIVATE_OFFSET(obj); // + sizeof(Object);
 
-	printf("object_ctor(%p)\n", obj);
+	//printf("obj private offset = %d at addr %p\n", OFFSET(Object, private), (&obj + OFFSET(Object, private)));
+
+	obj->private = PRIVATE_OFFSET(obj);
+
+	//printf("object_ctor(%p)\n", obj);
 }
 
 static void object_dtor(void *object)

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -32,11 +33,12 @@ struct _Type
 struct _Type_Property
 {
 	char *name;
-	Type_Property_Type type;
+	Type_Property_Type prop_type;
 	size_t offset;
 	Type_Property_Value_Type value_type;
 	Type_Property_Value *prev_value, *curr_value;
 	Type_Property_Process *process;
+	Type *type;
 };
 
 /**
@@ -125,12 +127,18 @@ size_t type_size_get(Type *type)
 {
 	size_t parent_size = 0;
 
+	if (!type)
+	{
+		return 0;
+	}
+
 	if (type->parent)
 	{
 		parent_size = type_size_get(type->parent);
-		printf("- parent %s size = %d\n",  type->parent->name, parent_size);
+		//printf("- parent %s size = %d\n",  type->parent->name, parent_size);
 	}
-	printf("- size %s = %d %d\n",  type->name, type->size + parent_size, type->size);
+	//printf("- size %s = %d %d\n",  type->name, type->size + parent_size, type->size);
+
 	return type->size + parent_size;
 }
 
@@ -150,10 +158,11 @@ void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type
 
 	property = malloc(sizeof(Type_Property));
 	property->name = strdup(prop_name);
-	property->type = prop_type;
+	property->prop_type = prop_type;
 	property->value_type = value_type;
 	property->process = process_cb;
 	property->offset = field_offset;
+	property->type = type;
 	eina_hash_add(type->properties, prop_name, property);
 }
 
@@ -169,16 +178,18 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 
 	RETURN_NULL_IF(type == NULL || type->properties == NULL || prop_name == NULL);
 
-	printf("looking for property in type: %s\n", type->name);
+	//printf("looking for property in type: %s\n", type->name);
 	do
 	{
 		property = eina_hash_find(type->properties, prop_name);
-		type = type->parent;
+		if (!property)
+			type = type->parent;
 	} while (!property || !type);
-	
 
 	if (property)
-		printf("property is: %p %s\n", property, property->name);
+	{
+		printf("found property %s on type %s with size %d\n", property->name, type->name, type->size);
+	}
 
 	return property;
 }
@@ -196,24 +207,29 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 
 	RETURN_IF(type == NULL || instance == NULL || prop_name == NULL || value == NULL);
 
-	printf("getting property: %s from type: %s (type addr = %p)\n", prop_name, type->name, type);
+	//printf("getting property: %s from type: %s (type addr = %p)\n", prop_name, type->name, type);
 
 	property = type_property_get(type, prop_name);
+
+	if (property == NULL)
+	{
+		fprintf(stderr, "WARNING: Property %s not found in type %s\n", prop_name, type->name);
+	}
 
 	// TODO: give warning
 	RETURN_IF(property == NULL);
 
 	if (property->value_type == PROPERTY_STRING)
 	{
-		int parent_size = type->parent != NULL ? type_size_get(type->parent) : 0;
+		int offset = type_size_get(property->type->parent);
+		printf("%%%%%%%% property->type->name = %s with size = %d\n", property->type->name, property->type->size);
 
-		printf("parent size for %s is %d, property offset is %d\n", type->name, parent_size, property->offset);
+		char **str = (char**)((char*)instance + offset + property->offset);
+		//printf("total offset for %s = %d + %d = %d at addr=%p\n", property->name, offset, property->offset, offset + property->offset, str);
+		//printf("setting property to '%s'\n", value->value.string_value);
 
-		char **str = (char**)((char*)instance + parent_size + property->offset);
-		printf("setting property to '%s'\n", value->value.string_value);
-
-		printf("address of property %s is %p\n", property->name, &str);
+		//printf("address of property %s is %p\n", property->name, str);
 		*str = strdup(value->value.string_value);
-		printf("*str = %s\n", *str);
+		//printf("*str = %s\n", *str);
 	}
 }

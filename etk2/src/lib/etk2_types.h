@@ -24,5 +24,6 @@ typedef Type_Property_Value *(*Object_Property_Value_Get)(Object *object, char *
 
 typedef struct _Widget Widget;
 typedef struct _Button Button;
+typedef struct _Label Label;
 
 #endif

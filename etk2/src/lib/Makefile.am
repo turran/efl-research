@@ -17,13 +17,15 @@ etk2_private.h \
 etk2_button.h \
 etk2_object.h \
 etk2_type.h \
-etk2_widget.h 
+etk2_widget.h \
+etk2_label.h 
 
 libetk2_la_SOURCES = \
 etk2_button.c \
 etk2_object.c \
 etk2_type.c \
 etk2_widget.c \
+etk2_label.c \
 $(ETK2HEADERS)
 
 installed_headersdir = $(prefix)/include/etk2

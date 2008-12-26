@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "etk2_private.h"
 #include "etk2_types.h"
 #include "etk2_widget.h"
 
-#define PRIVATE_OFFSET(w) ((Widget_Private*)((char*)(w) + sizeof(Widget) + type_size_get(object_type_get())))
+#define PRIVATE_OFFSET(w) ((Widget_Private*)((char*)(w) + sizeof(Widget_Private*) + type_size_get(object_type_get())))
 #define PRIVATE(w) ((w)->private)
 #define TYPE_NAME "Widget"
 
@@ -27,7 +28,7 @@ Type *widget_type_get(void)
 	if (!widget_type)
 	{
 		widget_type = type_new(TYPE_NAME, sizeof(Widget_Private) + sizeof(Widget), object_type_get(), widget_ctor, widget_dtor, widget_property_value_set, widget_property_value_get);
-		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private,  theme), NULL);
+		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private,  theme) + sizeof(Widget_Private*), NULL);
 	}
 
 	return widget_type;
@@ -41,7 +42,7 @@ Widget *widget_new(void)
 	type_construct(widget_type_get(), widget);
 	object_type_set((Object*)widget, widget_type_get());
 
-	printf("widget privaste addr = %p and theme addr = %p and offset:%d\n", widget->private->h, widget->private->theme, OFFSET(Widget_Private, theme));
+	printf("!!! widget's theme is at %p, sizeof(Widget) = %d, sizeof(Widget_Private) = %d\n", &widget->private->theme, sizeof(Widget), sizeof(Widget_Private));
 
 	return widget;
 }
@@ -73,7 +74,7 @@ void widget_theme_set(Widget *widget, char *theme)
 {
 	Widget_Private *private;
 
-		RETURN_NULL_IF(widget == NULL);
+		RETURN_IF(widget == NULL);
 
 		private = PRIVATE(widget);
 		private->theme = strdup(theme);
