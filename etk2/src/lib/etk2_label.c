@@ -48,10 +48,11 @@ void label_text_set(Label *label, char *text)
 {
 	Label_Private *private;
 
-		RETURN_IF(label == NULL);
+	RETURN_IF(label == NULL);
 
-		private = PRIVATE(label);
-		private->text = strdup(text);
+	private = PRIVATE(label);
+	printf("3 label = %p, private = %p\n", label, private);
+	private->text = strdup(text);
 }
 
 char *label_text_get(Label *label)
@@ -71,7 +72,9 @@ static void label_ctor(void *instance)
 	Label *label = (Label*) instance;
 
 	label->private = type_instance_private_get(label_type_get(), instance); //PRIVATE_OFFSET(label);
+	printf("1 label = %p, private = %p\n", label, label->private);
 	label->private->text = NULL;
+	printf("2 label = %p, private = %p\n", label, label->private);
 }
 
 static void label_dtor(void *label)

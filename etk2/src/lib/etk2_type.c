@@ -129,18 +129,9 @@ size_t type_size_get(Type *type)
 {
 	size_t parent_size = 0;
 
-	if (!type)
-	{
-		return 0;
-	}
-
-	if (type->parent)
-	{
-		parent_size = type_size_get(type->parent);
-		//printf("- parent %s size = %d\n",  type->parent->name, parent_size);
-	}
-	//printf("- size %s = %d %d\n",  type->name, type->size + parent_size, type->size);
-
+	if (!type) return 0;
+	if (type->parent) parent_size = type_size_get(type->parent);
+	
 	return type->size + type->priv_size + parent_size;
 }
 
@@ -186,7 +177,7 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 
 	RETURN_NULL_IF(type == NULL || type->properties == NULL || prop_name == NULL);
 
-	//printf("looking for property in type: %s\n", type->name);
+	printf("looking for property in type: %s\n", type->name);
 	do
 	{
 		property = eina_hash_find(type->properties, prop_name);

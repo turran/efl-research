@@ -58,7 +58,7 @@ void object_type_set(Object *object, Type *type)
 	RETURN_IF(object->private == NULL);
 
 	//printf("setting %p 's type to %p\n", object->private, type);
-	printf("%p %p %p\n", object, type, object->private->type);
+	//printf("%p %p %p\n", object, type, object->private->type);
 	object->private->type = type;
 }
 
