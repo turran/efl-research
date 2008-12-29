@@ -144,6 +144,12 @@ size_t type_size_get(Type *type)
 	return type->size + type->priv_size + parent_size;
 }
 
+static void * type_instance_property_offset_get(Type_Property *prop, void *instance)
+{
+	int offset = type_size_get(prop->type->parent);
+	return (char *)instance + offset + prop->offset;
+}
+
 /**
  *
  * @param type
@@ -220,13 +226,12 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 
 	// TODO: give warning
 	RETURN_IF(property == NULL);
-
+#if 0
 	if (property->value_type == PROPERTY_STRING)
 	{
-		int offset = type_size_get(property->type->parent);
 		printf("%%%%%%%% property->type->name = %s with size = %d\n", property->type->name, property->type->size);
 
-		char **str = (char**)((char*)instance + offset + property->offset);
+		char **str = (char**)type_instance_property_offset_get(property, instance);
 		//printf("total offset for %s = %d + %d = %d at addr=%p\n", property->name, offset, property->offset, offset + property->offset, str);
 		//printf("setting property to '%s'\n", value->value.string_value);
 
@@ -234,11 +239,12 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 		*str = strdup(value->value.string_value);
 		//printf("*str = %s\n", *str);
 	}
+#endif
 }
 
 
 void * type_instance_private_get(Type *type, void *instance)
 {
-	printf("private get %p T=%d PV=%d S=%d\n", instance, type_size_get(type), type->priv_size, type->size);
-	return (char *)instance + type_size_get(type->parent) + type->size;
+	printf("private %s get %p T=%d PV=%d S=%d == %p\n", type->name, instance, type_size_get(type), type->priv_size, type->size, (char *)instance + type_size_get(type) - type->priv_size);
+	return (char *)instance + type_size_get(type) - type->priv_size;  
 }

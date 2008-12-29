@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	object_property_value_set(o, "name", value);
 	printf("object_name_get(o)=%s\n", object_name_get(o));
 
-	return 0;
+	//return 0;
 
 	l = label_new();
 	label_text_set(l, "text!");
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 	printf("label_text_get=%s\n", label_text_get(l));
 	printf("widget_theme_get=%s\n", widget_theme_get((Widget*)l));
 
-	return 0;
+	//return 0;
 
 	// Widget tests
 	printf("\n\nWIDGET TESTS\n\n");
