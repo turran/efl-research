@@ -9,7 +9,7 @@
 #include "etk2_object.h"
 #include "etk2_type.h"
 
-#define PRIVATE_OFFSET(obj) ((Object_Private*)((char*)(obj) + sizeof(Object) + sizeof(Object_Private*)))
+//#define PRIVATE_OFFSET(obj) ((Object_Private*)((char*)(obj) + sizeof(Object) + sizeof(Object_Private*)))
 #define PRIVATE(obj) ((Object_Private*)(obj->private))
 
 #define TYPE_NAME "Object"
@@ -29,7 +29,7 @@ Type *object_type_get(void)
 
 	if (!object_type)
 	{
-		object_type = type_new(TYPE_NAME, sizeof(Object_Private) + sizeof(Object), NULL, object_ctor, object_dtor, object_property_value_set, object_property_value_get);
+		object_type = type_new(TYPE_NAME, sizeof(Object), sizeof(Object_Private), NULL, object_ctor, object_dtor, object_property_value_set, object_property_value_get);
 		type_property_new(object_type, "name", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, name) + sizeof(Object_Private*), NULL);
 	}
 
@@ -58,7 +58,7 @@ void object_type_set(Object *object, Type *type)
 	RETURN_IF(object->private == NULL);
 
 	//printf("setting %p 's type to %p\n", object->private, type);
-
+	printf("%p %p %p\n", object, type, object->private->type);
 	object->private->type = type;
 }
 
@@ -107,7 +107,7 @@ static void object_ctor(void *object)
 
 	//printf("obj private offset = %d at addr %p\n", OFFSET(Object, private), (&obj + OFFSET(Object, private)));
 
-	obj->private = PRIVATE_OFFSET(obj);
+	obj->private = type_instance_private_get(object_type_get(), object);
 
 	//printf("object_ctor(%p)\n", obj);
 }

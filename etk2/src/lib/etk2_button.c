@@ -5,7 +5,7 @@
 #include "etk2_private.h"
 #include "etk2_button.h"
 
-#define PRIVATE_OFFSET(b) ((Button_Private*)((char*)(b) + sizeof(Button_Private*) + type_size_get(widget_type_get())))
+//#define PRIVATE_OFFSET(b) ((Button_Private*)((char*)(b) + sizeof(Button_Private*) + type_size_get(widget_type_get())))
 #define PRIVATE(b) ((b)->private)
 #define TYPE_NAME "Button"
 
@@ -26,7 +26,7 @@ Type *button_type_get(void)
 
 	if (!button_type)
 	{
-		button_type = type_new(TYPE_NAME, sizeof(Button_Private) + sizeof(Button), widget_type_get(), button_ctor, button_dtor, button_property_value_set, button_property_value_get);
+		button_type = type_new(TYPE_NAME, sizeof(Button), sizeof(Button_Private), widget_type_get(), button_ctor, button_dtor, button_property_value_set, button_property_value_get);
 		type_property_new(button_type, "label", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Button_Private, label) + sizeof(Button_Private*), NULL);
 	}
 
@@ -73,7 +73,7 @@ static void button_ctor(void *button)
 	 Button *btn;
 
 	 btn = (Button*) button;
-	 btn->private = PRIVATE_OFFSET(btn);
+	 btn->private = type_instance_private_get(button_type_get(), btn); //PRIVATE_OFFSET(btn);
   printf("button_ctor(button=%p, private=%p)\n", btn, btn->private);
 }
 

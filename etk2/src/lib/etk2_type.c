@@ -16,6 +16,7 @@ struct _Type
 {
 	char *name;
 	size_t size;
+	size_t priv_size;
 	Type *parent;
 
 	Type_Constructor ctor;
@@ -51,7 +52,7 @@ struct _Type_Property
  * @param dtor the type's destructor.
  * @return the newly created type.
  */
-Type *type_new(char *name, size_t size, Type *parent, Type_Constructor ctor, Type_Destructor dtor, Object_Property_Value_Set prop_value_set, Object_Property_Value_Get prop_value_get)
+Type *type_new(char *name, size_t size, size_t priv_size, Type *parent, Type_Constructor ctor, Type_Destructor dtor, Object_Property_Value_Set prop_value_set, Object_Property_Value_Get prop_value_get)
 {
 	Type *type;
 
@@ -59,6 +60,7 @@ Type *type_new(char *name, size_t size, Type *parent, Type_Constructor ctor, Typ
 
 	type->name = strdup(name);
 	type->size = size;
+	type->priv_size = priv_size;
 	type->parent = parent;
 	type->ctor = ctor;
 	type->dtor = dtor;
@@ -139,7 +141,7 @@ size_t type_size_get(Type *type)
 	}
 	//printf("- size %s = %d %d\n",  type->name, type->size + parent_size, type->size);
 
-	return type->size + parent_size;
+	return type->size + type->priv_size + parent_size;
 }
 
 /**
@@ -232,4 +234,11 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 		*str = strdup(value->value.string_value);
 		//printf("*str = %s\n", *str);
 	}
+}
+
+
+void * type_instance_private_get(Type *type, void *instance)
+{
+	printf("private get %p T=%d PV=%d S=%d\n", instance, type_size_get(type), type->priv_size, type->size);
+	return (char *)instance + type_size_get(type->parent) + type->size;
 }

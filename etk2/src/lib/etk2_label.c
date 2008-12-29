@@ -6,7 +6,7 @@
 #include "etk2_types.h"
 #include "etk2_label.h"
 
-#define PRIVATE_OFFSET(l) ((Label_Private*)((char*)(l) + sizeof(Label_Private*) + type_size_get(widget_type_get())))
+//#define PRIVATE_OFFSET(l) ((Label_Private*)((char*)(l) + sizeof(Label_Private*) + type_size_get(widget_type_get())))
 #define PRIVATE(l) ((l)->private)
 #define TYPE_NAME "Label"
 
@@ -26,7 +26,7 @@ Type *label_type_get(void)
 
 	if (!label_type)
 	{
-		label_type = type_new(TYPE_NAME, sizeof(Label_Private) + sizeof(Label), widget_type_get(), label_ctor, label_dtor, label_property_value_set, label_property_value_get);
+		label_type = type_new(TYPE_NAME, sizeof(Label), sizeof(Label_Private), widget_type_get(), label_ctor, label_dtor, label_property_value_set, label_property_value_get);
 		type_property_new(label_type, "text", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Label_Private,  text) + sizeof(Label_Private*), NULL);
 	}
 
@@ -70,7 +70,7 @@ static void label_ctor(void *instance)
 {
 	Label *label = (Label*) instance;
 
-	label->private = PRIVATE_OFFSET(label);
+	label->private = type_instance_private_get(label_type_get(), instance); //PRIVATE_OFFSET(label);
 	label->private->text = NULL;
 }
 
