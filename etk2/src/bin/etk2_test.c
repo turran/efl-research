@@ -10,6 +10,7 @@ int main(int argc, char **argv)
 	Widget *widget;
 	Button *button;
 	Label *l;
+	Object *o;
 
 //	int x, y, w, h;
 
@@ -23,6 +24,17 @@ int main(int argc, char **argv)
 	label = "NEW BUTTON LABEL";
 	theme = "GOLDEN THEME";
 
+	o = object_new();
+	object_name_set(o, "name!");
+	printf("object_name_get(o)=%s\n", object_name_get(o));
+
+	//printf("object_name_get(o)=%s\n", object_name_get(o));
+	value = malloc(sizeof(Type_Property_Value));
+	value->value.string_value = strdup("uber name");
+	object_property_value_set(o, "name", value);
+	printf("object_name_get(o)=%s\n", object_name_get(o));
+
+	return 0;
 
 	l = label_new();
 	label_text_set(l, "text!");
