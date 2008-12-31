@@ -4,8 +4,9 @@
 
 #include "etk2_private.h"
 #include "etk2_button.h"
-
-//#define PRIVATE_OFFSET(b) ((Button_Private*)((char*)(b) + sizeof(Button_Private*) + type_size_get(widget_type_get())))
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
 #define PRIVATE(b) ((b)->private)
 #define TYPE_NAME "Button"
 
@@ -14,12 +15,33 @@ struct _Button_Private
 	int foo;
 	char *label;
 };
+static void button_ctor(Type *t, void *button)
+{
+	 Button *btn;
 
-static void button_ctor(void *button);
-static void button_dtor(void *button);
-static void button_property_value_set(Object *object, char *prop_name, Type_Property_Value *value);
-static Type_Property_Value *button_property_value_get(Object *object, char *prop_name);
+	 btn = (Button*) button;
+	 btn->private = type_instance_private_get(t, button_type_get(), btn);
+	 printf("[btn] ctor %p %p\n", btn, btn->private);
+}
 
+static void button_dtor(void *button)
+{
+	printf("[btn] dtor %p\n", button);
+}
+
+static void button_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
+{
+	printf("button_prop_value_set: %s\n", prop_name);
+}
+
+static Type_Property_Value *button_property_value_get(Object *object, char *prop_name)
+{
+	printf("button_prop_value_get: %s\n", prop_name);
+	return NULL;
+}
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
 Type *button_type_get(void)
 {
 	static Type *button_type = NULL;
@@ -27,7 +49,7 @@ Type *button_type_get(void)
 	if (!button_type)
 	{
 		button_type = type_new(TYPE_NAME, sizeof(Button), sizeof(Button_Private), widget_type_get(), button_ctor, button_dtor, button_property_value_set, button_property_value_get);
-		type_property_new(button_type, "label", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Button_Private, label) + sizeof(Button_Private*), NULL);
+		type_property_new(button_type, "label", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Button_Private, label), NULL);
 	}
 
 	return button_type;
@@ -39,7 +61,6 @@ Button *button_new(void)
 
 	button = type_instance_new(button_type_get());
 	type_construct(button_type_get(), button);
-	object_type_set((Object*)button, button_type_get());
 
 	printf("addr of label is: %p\n", &button->private->label);
 
@@ -64,31 +85,4 @@ const char *button_label_get(Button *button)
 
 	printf("button_label_get: addr of label is %p\n", &private->label);
 	return private->label;
-}
-
-/** Implementation **/
-
-static void button_ctor(void *button)
-{
-	 Button *btn;
-
-	 btn = (Button*) button;
-	 btn->private = type_instance_private_get(button_type_get(), btn); //PRIVATE_OFFSET(btn);
-  printf("button_ctor(button=%p, private=%p)\n", btn, btn->private);
-}
-
-static void button_dtor(void *button)
-{
-	printf("button_dtor(%p)\n", button);
-}
-
-static void button_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
-{
-	printf("button_prop_value_set: %s\n", prop_name);
-}
-
-static Type_Property_Value *button_property_value_get(Object *object, char *prop_name)
-{
-	printf("button_prop_value_get: %s\n", prop_name);
-	return NULL;
 }

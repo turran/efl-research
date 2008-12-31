@@ -55,6 +55,6 @@ size_t type_size_get(Type *type);
 void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type, Type_Property_Value_Type value_type, size_t field_offset, Type_Property_Process *process_cb);
 Type_Property *type_property_get(Type *type, char *prop_name);
 void type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value);
-void * type_instance_private_get(Type *type, void *instance);
+void * type_instance_private_get(Type *ftype, Type *type, void *instance);
 
 #endif

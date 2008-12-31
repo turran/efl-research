@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	printf("label_text_get=%s\n", label_text_get(l));
 	printf("widget_theme_get=%s\n", widget_theme_get((Widget*)l));
 
-	return 0;
+	//return 0;
 
 	// Widget tests
 	printf("\n\nWIDGET TESTS\n\n");

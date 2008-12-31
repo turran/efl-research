@@ -8,7 +8,9 @@
 #include "etk2_private.h"
 #include "etk2_type.h"
 #include "etk2_object.h"
-
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
 /**
  * @brief
  */
@@ -41,7 +43,9 @@ struct _Type_Property
 	Type_Property_Process *process;
 	Type *type;
 };
-
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
 /**
  * Creates a new Type.
  *
@@ -84,6 +88,22 @@ void *type_instance_new(Type *type)
 	instance = malloc(type_size_get(type));
 	return instance;
 }
+/**
+ * @param type
+ * @param ctype
+ * @param instance
+ */
+static void type_construct_internal(Type *ftype, Type *type, void *instance)
+{
+	if (!type)
+		return;
+
+	if (type->parent)
+		type_construct_internal(ftype, type->parent, instance);
+
+	if (type->ctor)
+		type->ctor(ftype, instance);
+}
 
 /**
  * Constructs a type on the given object.
@@ -95,12 +115,7 @@ void type_construct(Type *type, void *object)
 {
 	if (!type || !object)
 		return;
-
-	if (type->parent)
-		type_construct(type->parent, object);
-
-	if (type->ctor)
-		type->ctor(object);
+	type_construct_internal(type, type, object);
 }
 
 /**
@@ -131,13 +146,28 @@ size_t type_size_get(Type *type)
 
 	if (!type) return 0;
 	if (type->parent) parent_size = type_size_get(type->parent);
-	
+
 	return type->size + type->priv_size + parent_size;
 }
 
-static void * type_instance_property_offset_get(Type_Property *prop, void *instance)
+size_t type_public_size_get(Type *type)
 {
-	int offset = type_size_get(prop->type->parent);
+	return type->size;
+}
+
+size_t type_private_size_get(Type *type)
+{
+	size_t parent_size = 0;
+
+	if (!type) return 0;
+	if (type->parent) parent_size = type_private_size_get(type->parent);
+
+	return type->priv_size + parent_size;
+}
+
+static void * type_instance_property_offset_get(Type *type, Type_Property *prop, void *instance)
+{
+	int offset = type_public_size_get(type) + type_private_size_get(prop->type->parent);
 	return (char *)instance + offset + prop->offset;
 }
 
@@ -154,7 +184,7 @@ void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type
 	Type_Property *property;
 
 	RETURN_IF(type == NULL || prop_name == NULL);
-
+	printf("[type] new %s property at offset %d\n", prop_name, field_offset);
 	property = malloc(sizeof(Type_Property));
 	property->name = strdup(prop_name);
 	property->prop_type = prop_type;
@@ -177,7 +207,7 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 
 	RETURN_NULL_IF(type == NULL || type->properties == NULL || prop_name == NULL);
 
-	printf("looking for property in type: %s\n", type->name);
+	printf("looking for property %s in type: %s\n", prop_name, type->name);
 	do
 	{
 		property = eina_hash_find(type->properties, prop_name);
@@ -217,12 +247,12 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 
 	// TODO: give warning
 	RETURN_IF(property == NULL);
-#if 0
+
 	if (property->value_type == PROPERTY_STRING)
 	{
 		printf("%%%%%%%% property->type->name = %s with size = %d\n", property->type->name, property->type->size);
 
-		char **str = (char**)type_instance_property_offset_get(property, instance);
+		char **str = (char**)type_instance_property_offset_get(type, property, instance);
 		//printf("total offset for %s = %d + %d = %d at addr=%p\n", property->name, offset, property->offset, offset + property->offset, str);
 		//printf("setting property to '%s'\n", value->value.string_value);
 
@@ -230,12 +260,10 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 		*str = strdup(value->value.string_value);
 		//printf("*str = %s\n", *str);
 	}
-#endif
 }
 
-
-void * type_instance_private_get(Type *type, void *instance)
+void * type_instance_private_get(Type *instance_type, Type *priv_type, void *instance)
 {
-	printf("private %s get %p T=%d PV=%d S=%d == %p\n", type->name, instance, type_size_get(type), type->priv_size, type->size, (char *)instance + type_size_get(type) - type->priv_size);
-	return (char *)instance + type_size_get(type) - type->priv_size;  
+	printf("[type] private get %s (PUB=%d) %s (PRIV_OFF=%d) %p\n", instance_type->name, type_public_size_get(instance_type), priv_type->name, type_private_size_get(priv_type->parent), instance);
+	return (char *)instance + type_public_size_get(instance_type) + type_private_size_get(priv_type->parent);
 }
