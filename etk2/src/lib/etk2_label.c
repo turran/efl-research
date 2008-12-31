@@ -58,9 +58,6 @@ Label *label_new(void)
 	Label *label;
 
 	label = type_instance_new(label_type_get());
-	type_construct(label_type_get(), label);
-	printf("3.1 label = %p, private = %p\n", label, label->private);
-	printf("3.2 label = %p, private = %p\n", label, label->private);
 
 	return label;
 }

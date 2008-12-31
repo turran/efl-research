@@ -61,7 +61,6 @@ Widget *widget_new(void)
 	Widget *widget;
 
 	widget = type_instance_new(widget_type_get());
-	type_construct(widget_type_get(), widget);
 
 	printf("!!! widget's theme is at %p, sizeof(Widget) = %d, sizeof(Widget_Private) = %d\n", &widget->private->theme, sizeof(Widget), sizeof(Widget_Private));
 

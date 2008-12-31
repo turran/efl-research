@@ -1,0 +1,5 @@
++ Do we actaully need to export as an API function the foo_type_get() ?
+  where it can be used? the only place it makes sense (beside of foo.c file itself)
+  is for the cast, like what Etk had. But the cast can be done internal (slower)
+  but we avoid the need to export those function which might be problematic
+ 

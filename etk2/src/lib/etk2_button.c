@@ -31,12 +31,12 @@ static void button_dtor(void *button)
 
 static void button_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
 {
-	printf("button_prop_value_set: %s\n", prop_name);
+	printf("[btn] value_set: %s\n", prop_name);
 }
 
 static Type_Property_Value *button_property_value_get(Object *object, char *prop_name)
 {
-	printf("button_prop_value_get: %s\n", prop_name);
+	printf("[btn] value_get: %s\n", prop_name);
 	return NULL;
 }
 /*============================================================================*
@@ -60,9 +60,6 @@ Button *button_new(void)
 	Button *button;
 
 	button = type_instance_new(button_type_get());
-	type_construct(button_type_get(), button);
-
-	printf("addr of label is: %p\n", &button->private->label);
 
 	return button;
 }
@@ -83,6 +80,6 @@ const char *button_label_get(Button *button)
 
 	private = PRIVATE(button);
 
-	printf("button_label_get: addr of label is %p\n", &private->label);
+	printf("[btn] label_get: addr of label is %p\n", &private->label);
 	return private->label;
 }

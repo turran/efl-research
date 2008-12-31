@@ -56,7 +56,6 @@ Object *object_new(void)
 	Object *object;
 
 	object = type_instance_new(object_type_get());
-	type_construct(object_type_get(), object);
 
 	return object;
 }
@@ -81,8 +80,6 @@ const char *object_name_get(Object *object)
 
 void object_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
 {
-	//printf("setting value for %s\n", prop_name);
-
 	RETURN_IF(object == NULL || prop_name == NULL);
 
 	printf("[obj] value_set: %s %p %p %p\n", prop_name, object, object->private, object->private->type);

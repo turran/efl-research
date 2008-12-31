@@ -43,6 +43,62 @@ struct _Type_Property
 	Type_Property_Process *process;
 	Type *type;
 };
+
+static size_t type_public_size_get(Type *type)
+{
+	return type->size;
+}
+
+static size_t type_private_size_get(Type *type)
+{
+	size_t parent_size = 0;
+
+	if (!type) return 0;
+	if (type->parent) parent_size = type_private_size_get(type->parent);
+
+	return type->priv_size + parent_size;
+}
+
+static size_t type_size_get(Type *type)
+{
+	size_t parent_size = 0;
+
+	if (!type) return 0;
+	if (type->parent) parent_size = type_size_get(type->parent);
+
+	return type->size + type->priv_size + parent_size;
+}
+
+static void * type_instance_property_offset_get(Type *type, Type_Property *prop, void *instance)
+{
+	int offset = type_public_size_get(type) + type_private_size_get(prop->type->parent);
+	return (char *)instance + offset + prop->offset;
+}
+
+static void type_construct_internal(Type *ftype, Type *type, void *instance)
+{
+	if (!type)
+		return;
+
+	if (type->parent)
+		type_construct_internal(ftype, type->parent, instance);
+
+	if (type->ctor)
+		type->ctor(ftype, instance);
+}
+
+static void type_destruct_internal(Type *type, void *object)
+{
+	if (!type)
+		return;
+
+	if (type->dtor)
+		type->dtor(object);
+
+	if (type->parent)
+		type_destruct_internal(type->parent, object);
+}
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -85,90 +141,21 @@ void *type_instance_new(Type *type)
 {
 	void *instance;
 
+	if (!type)
+		return NULL;
 	instance = malloc(type_size_get(type));
+	if (!instance)
+		return NULL;
+	type_construct_internal(type, type, instance);
 	return instance;
 }
-/**
- * @param type
- * @param ctype
- * @param instance
- */
-static void type_construct_internal(Type *ftype, Type *type, void *instance)
+
+void type_instance_delete(void *instance)
 {
-	if (!type)
+	if (!instance)
 		return;
-
-	if (type->parent)
-		type_construct_internal(ftype, type->parent, instance);
-
-	if (type->ctor)
-		type->ctor(ftype, instance);
-}
-
-/**
- * Constructs a type on the given object.
- *
- * @param type
- * @param object
- */
-void type_construct(Type *type, void *object)
-{
-	if (!type || !object)
-		return;
-	type_construct_internal(type, type, object);
-}
-
-/**
- *
- * @param type
- * @param object
- */
-void type_destruct(Type *type, void *object)
-{
-	if (!type || !object)
-		return;
-
-	if (type->dtor)
-		type->dtor(object);
-
-	if (type->parent)
-		type_destruct(type->parent, object);
-}
-
-/**
- *
- * @param type
- * @return
- */
-size_t type_size_get(Type *type)
-{
-	size_t parent_size = 0;
-
-	if (!type) return 0;
-	if (type->parent) parent_size = type_size_get(type->parent);
-
-	return type->size + type->priv_size + parent_size;
-}
-
-size_t type_public_size_get(Type *type)
-{
-	return type->size;
-}
-
-size_t type_private_size_get(Type *type)
-{
-	size_t parent_size = 0;
-
-	if (!type) return 0;
-	if (type->parent) parent_size = type_private_size_get(type->parent);
-
-	return type->priv_size + parent_size;
-}
-
-static void * type_instance_property_offset_get(Type *type, Type_Property *prop, void *instance)
-{
-	int offset = type_public_size_get(type) + type_private_size_get(prop->type->parent);
-	return (char *)instance + offset + prop->offset;
+	/* TODO actually call the destructor
+	type_destruct_internal(object_type_get(instance), instance); */
 }
 
 /**
@@ -207,7 +194,7 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 
 	RETURN_NULL_IF(type == NULL || type->properties == NULL || prop_name == NULL);
 
-	printf("looking for property %s in type: %s\n", prop_name, type->name);
+	printf("[type] looking for property %s in type: %s\n", prop_name, type->name);
 	do
 	{
 		property = eina_hash_find(type->properties, prop_name);
@@ -217,7 +204,7 @@ Type_Property *type_property_get(Type *type, char *prop_name)
 
 	if (property)
 	{
-		printf("found property %s on type %s with size %d\n", property->name, type->name, type->size);
+		printf("[type] found property %s on type %s with size %d\n", property->name, type->name, type->size);
 	}
 
 	return property;
@@ -250,7 +237,7 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 
 	if (property->value_type == PROPERTY_STRING)
 	{
-		printf("%%%%%%%% property->type->name = %s with size = %d\n", property->type->name, property->type->size);
+		printf("[type] property->type->name = %s with size = %d\n", property->type->name, property->type->size);
 
 		char **str = (char**)type_instance_property_offset_get(type, property, instance);
 		//printf("total offset for %s = %d + %d = %d at addr=%p\n", property->name, offset, property->offset, offset + property->offset, str);
