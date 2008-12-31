@@ -62,9 +62,12 @@ Widget *widget_new(void)
 
 	widget = type_instance_new(widget_type_get());
 
-	printf("!!! widget's theme is at %p, sizeof(Widget) = %d, sizeof(Widget_Private) = %d\n", &widget->private->theme, sizeof(Widget), sizeof(Widget_Private));
-
 	return widget;
+}
+
+void widget_delete(Widget *w)
+{
+	type_instance_delete(w);
 }
 
 void widget_geom_set(Widget *widget, int x, int y, int w, int h)

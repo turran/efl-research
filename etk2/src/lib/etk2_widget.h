@@ -14,6 +14,7 @@ struct _Widget
 };
 
 Widget *widget_new(void);
+void widget_delete(Widget *w);
 Type   *widget_type_get(void);
 void    widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h);
 void    widget_geom_set(Widget *widget, int x, int y, int w, int h);

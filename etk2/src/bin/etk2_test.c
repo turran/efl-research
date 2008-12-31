@@ -5,7 +5,33 @@
 
 #include <Etk2.h>
 
-int main(int argc, char **argv)
+/* constructor / destructor test */
+void test1(void)
+{
+	Widget *widget;
+
+	printf("=====\n");
+	printf("TEST1\n");
+	printf("=====\n");
+	printf("widget_new()\n");
+	/* Widget API way */
+	widget = widget_new();
+	widget_delete(widget);
+	printf("type_instance_new()\n");
+	/* Type API */
+	/* FIXME what to do here in case we delete the foo_type_get()? */
+	widget = type_instance_new(widget_type_get());
+	widget_delete(widget);
+}
+
+/* property set/get */
+void test2(void)
+{
+
+
+}
+
+void testold(void)
 {
 	Widget *widget;
 	Button *button;
@@ -19,7 +45,8 @@ int main(int argc, char **argv)
 	char *theme;
 
 	Type_Property_Value *value;
-
+	printf("\n\nOBJECT TESTS\n\n");
+	printf("================\n");
 	name = "NEW WIDGET NAME";
 	label = "NEW BUTTON LABEL";
 	theme = "GOLDEN THEME";
@@ -105,7 +132,15 @@ int main(int argc, char **argv)
 	//printf("button theme (should be '%s') = %s\n", theme, widget_theme_get((Widget*)button));
 	object_property_value_set((Object*) button, "theme", value);
 	printf("button theme (should be 'SILVER THEME') = %s\n", widget_theme_get((Widget*)button));
+}
 
+
+
+int main(int argc, char **argv)
+{
+	test1();
+	test2();
+	testold();
 	return 0;
 }
 

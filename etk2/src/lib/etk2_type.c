@@ -152,10 +152,13 @@ void *type_instance_new(Type *type)
 
 void type_instance_delete(void *instance)
 {
+	Type *type;
 	if (!instance)
 		return;
-	/* TODO actually call the destructor
-	type_destruct_internal(object_type_get(instance), instance); */
+	type = object_private_type_get(instance);
+	if (!type)
+		return;
+	type_destruct_internal(type, instance);
 }
 
 /**

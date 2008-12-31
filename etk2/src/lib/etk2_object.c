@@ -33,7 +33,7 @@ static void object_ctor(Type *ftype, void *instance)
 
 static void object_dtor(void *object)
 {
-	printf("[obj] dtor(%p)\n", object);
+	printf("[obj] dtor %p\n", object);
 }
 /*============================================================================*
  *                                   API                                      *
@@ -90,4 +90,9 @@ Type_Property_Value *object_property_value_get(Object *object, char *prop_name)
 {
 	printf("[obj] value_get: %s\n", prop_name);
 	return NULL;
+}
+
+Type * object_private_type_get(Object *object)
+{
+	return object->private->type;
 }
