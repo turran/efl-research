@@ -36,6 +36,13 @@ static void object_dtor(void *object)
 	printf("[obj] dtor %p\n", object);
 }
 /*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+Type * object_private_type_get(Object *object)
+{
+	return object->private->type;
+}
+/*============================================================================*
  *                                   API                                      *
  *============================================================================*/
 Type *object_type_get(void)
@@ -90,9 +97,4 @@ Type_Property_Value *object_property_value_get(Object *object, char *prop_name)
 {
 	printf("[obj] value_get: %s\n", prop_name);
 	return NULL;
-}
-
-Type * object_private_type_get(Object *object)
-{
-	return object->private->type;
 }

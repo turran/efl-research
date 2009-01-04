@@ -19,8 +19,7 @@ void test1(void)
 	widget_delete(widget);
 	printf("type_instance_new()\n");
 	/* Type API */
-	/* FIXME what to do here in case we delete the foo_type_get()? */
-	widget = type_instance_new(widget_type_get());
+	widget = type_instance_new_name_from("Widget");
 	widget_delete(widget);
 }
 

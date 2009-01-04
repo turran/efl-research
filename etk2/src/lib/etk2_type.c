@@ -98,7 +98,8 @@ static void type_destruct_internal(Type *type, void *object)
 	if (type->parent)
 		type_destruct_internal(type->parent, object);
 }
-
+/* TODO should we register types per document? */
+Eina_Hash *_types = NULL;
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -117,7 +118,9 @@ Type *type_new(char *name, size_t size, size_t priv_size, Type *parent, Type_Con
 	Type *type;
 
 	type = malloc(sizeof(Type));
+	if (!type) return NULL;
 
+	/* initialize the type */
 	type->name = strdup(name);
 	type->size = size;
 	type->priv_size = priv_size;
@@ -127,6 +130,9 @@ Type *type_new(char *name, size_t size, size_t priv_size, Type *parent, Type_Con
 	type->prop_value_get = prop_value_get;
 	type->prop_value_set = prop_value_set;
 	type->properties = eina_hash_string_superfast_new(NULL);
+	/* add the type */
+	if (!_types) _types = eina_hash_string_superfast_new(NULL);
+	eina_hash_add(_types, name, type);
 
 	return type;
 }
@@ -150,6 +156,17 @@ void *type_instance_new(Type *type)
 	return instance;
 }
 
+void * type_instance_new_name_from(const char *name)
+{
+	Type *t;
+
+	t = eina_hash_find(_types, name);
+	return type_instance_new(t);
+}
+/**
+ *
+ * @param instance
+ */
 void type_instance_delete(void *instance)
 {
 	Type *type;
