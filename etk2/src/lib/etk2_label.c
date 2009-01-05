@@ -63,13 +63,15 @@ Label *label_new(void)
 
 void label_text_set(Label *label, char *text)
 {
-	Label_Private *private;
+	Type_Property_Value v;
 
 	RETURN_IF(label == NULL);
-
-	private = PRIVATE(label);
-	printf("4 label = %p, private = %p\n", label, private);
-	private->text = strdup(text);
+	/* FIXME how to inform the property system that this property has changed ?
+	 * for now we do this way but is slow because we need to get the property
+	 * from the hash even knowing what offset we are working with
+	 */
+	value_str_from(&v, text);
+	object_property_value_set((Object *)label, "text", &v);
 }
 
 char *label_text_get(Label *label)

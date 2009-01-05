@@ -35,8 +35,12 @@ void test2(void)
 	widget = widget_new();
 	value_str_from(&val, "GOLDEN THEME");
 	object_property_value_set((Object*)widget, "theme", &val);
+	value_str_from(&val, "WIDGET 1 NAME");
+	object_property_value_set((Object*)widget, "name", &val);
 	object_property_value_get((Object*)widget, "theme", &val);
 	printf("GOLDEN_THEME = %s\n", val.value.string_value);
+	object_property_value_get((Object*)widget, "name", &val);
+	printf("WIDGET 1 NAME = %s\n", val.value.string_value);
 }
 
 void testold(void)
