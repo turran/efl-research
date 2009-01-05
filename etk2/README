@@ -1,0 +1,4 @@
++ The foo_bar_get(Foo *f) functions should be fast, as it access the private
+  struct and the type/object interface is not used at all
++ The foo_bar_set(Foo *f, void *bar) functions are slower as it access the
+  type interface

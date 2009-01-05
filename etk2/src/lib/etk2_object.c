@@ -100,8 +100,8 @@ void object_property_value_set(Object *object, char *prop_name, Type_Property_Va
 	type_instance_property_value_set(object->private->type, object, prop_name, value);
 }
 
-Type_Property_Value *object_property_value_get(Object *object, char *prop_name)
+void object_property_value_get(Object *object, char *prop_name, Type_Property_Value *value)
 {
 	printf("[obj] value_get: %s\n", prop_name);
-	return NULL;
+	type_instance_property_value_get(object->private->type, object, prop_name, value);
 }

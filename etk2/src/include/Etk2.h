@@ -3,6 +3,7 @@
 
 #include "Eina.h"
 
+#include <etk2_value.h>
 #include <etk2_types.h>
 #include <etk2_type.h>
 #include <etk2_object.h>

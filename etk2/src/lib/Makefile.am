@@ -13,6 +13,7 @@ EXTRA_DIST =
 libetk2_la_SOURCES = \
 etk2_button.c \
 etk2_object.c \
+etk2_value.c \
 etk2_type.c \
 etk2_widget.c \
 etk2_label.c

@@ -10,7 +10,6 @@
 
 typedef struct _Type Type;
 typedef struct _Type_Property Type_Property;
-typedef struct _Type_Property_Value Type_Property_Value;
 
 typedef void (*Type_Constructor)(void *);
 typedef void (*Type_Destructor)(void *);
