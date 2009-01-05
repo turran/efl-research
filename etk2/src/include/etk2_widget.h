@@ -1,10 +1,7 @@
 #ifndef _WIDGET_H
 #define _WIDGET_H
 
-#include "etk2_types.h"
-#include "etk2_type.h"
-#include "etk2_object.h"
-
+typedef struct _Widget Widget;
 typedef struct _Widget_Private Widget_Private;
 
 struct _Widget

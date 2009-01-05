@@ -1,10 +1,7 @@
 #ifndef _LABEL_H
 #define _LABEL_H
 
-#include "etk2_types.h"
-#include "etk2_type.h"
-#include "etk2_widget.h"
-
+typedef struct _Label Label;
 typedef struct _Label_Private Label_Private;
 
 struct _Label

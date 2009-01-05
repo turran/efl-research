@@ -22,8 +22,4 @@ typedef struct _Object Object;
 typedef void (*Object_Property_Value_Set)(Object *object, char *prop_name, Type_Property_Value *value);
 typedef Type_Property_Value *(*Object_Property_Value_Get)(Object *object, char *prop_name);
 
-typedef struct _Widget Widget;
-typedef struct _Button Button;
-typedef struct _Label Label;
-
 #endif

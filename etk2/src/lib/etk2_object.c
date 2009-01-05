@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <Eina.h>
-
 #include "Etk2.h"
 #include "etk2_private.h"
 /*============================================================================*

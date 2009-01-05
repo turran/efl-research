@@ -1,8 +1,6 @@
 #ifndef _TYPE_H
 #define _TYPE_H
 
-#include "etk2_types.h"
-
 /**
  * @brief
  */

@@ -1,10 +1,7 @@
 #ifndef _BUTTON_H
 #define _BUTTON_H
 
-#include "etk2_types.h"
-#include "etk2_type.h"
-#include "etk2_widget.h"
-
+typedef struct _Button Button;
 typedef struct _Button_Private Button_Private;
 
 struct _Button

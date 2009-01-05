@@ -2,12 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <Eina.h>
-
-#include "etk2_types.h"
+#include "Etk2.h"
 #include "etk2_private.h"
-#include "etk2_type.h"
-#include "etk2_object.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
