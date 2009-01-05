@@ -2,9 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "Etk2.h"
 #include "etk2_private.h"
-#include "etk2_types.h"
-#include "etk2_widget.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -16,11 +15,11 @@ struct _Widget_Private
 	int x, y, w, h;
 	char *theme;
 };
-static void widget_ctor(Type *t, void *instance)
+static void widget_ctor(void *instance)
 {
 	Widget *widget = (Widget*) instance;
 
-	widget->private = type_instance_private_get(t, widget_type_get(), instance);
+	widget->private = type_instance_private_get(widget_type_get(), instance);
 	widget->private->theme = NULL;
 	printf("[widget] ctor %p %p\n", widget, widget->private);
 }

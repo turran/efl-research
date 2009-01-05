@@ -162,6 +162,7 @@ Makefile
 etk2.pc
 src/Makefile
 src/lib/Makefile
+src/include/Makefile
 src/engines/Makefile
 src/engines/ecore_evas/Makefile
 src/bin/Makefile

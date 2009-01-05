@@ -2,9 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "Etk2.h"
 #include "etk2_private.h"
-#include "etk2_types.h"
-#include "etk2_label.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -16,11 +15,11 @@ struct _Label_Private
 	char *text;
 };
 
-static void label_ctor(Type *t, void *instance)
+static void label_ctor(void *instance)
 {
 	Label *label = (Label*) instance;
 
-	label->private = type_instance_private_get(t, label_type_get(), instance);
+	label->private = type_instance_private_get(label_type_get(), instance);
 	label->private->text = NULL;
 	printf("[label] ctor %p %p\n", label, label->private);
 }

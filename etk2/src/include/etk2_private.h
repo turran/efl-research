@@ -13,4 +13,9 @@
 
 #define OFFSET(type, mem) ((size_t) ((char *)&((type *) 0)->mem - (char *)((type *) 0)))
 
+Type * object_private_type_get(Object *object);
+void object_construct(Type *type, void *instance);
+void type_construct(Type *t, void *instance);
+void * type_instance_private_get_internal(Type *final, Type *t, void *instance);
+
 #endif

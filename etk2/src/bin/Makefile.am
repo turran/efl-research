@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST =
 
 INCLUDES	= \
--I. -I../.. -I$(top_srcdir)/src/lib -Wall -g \
+-I. -I../.. -I$(top_srcdir)/src/include -Wall -g \
 @EINA_CFLAGS@ @EVAS_CFLAGS@ @ECORE_CFLAGS@ @EDJE_CFLAGS@
 
 bin_PROGRAMS = etk2_test

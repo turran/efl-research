@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "Etk2.h"
 #include "etk2_private.h"
-#include "etk2_button.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -15,12 +15,12 @@ struct _Button_Private
 	int foo;
 	char *label;
 };
-static void button_ctor(Type *t, void *button)
+static void button_ctor(void *button)
 {
 	 Button *btn;
 
 	 btn = (Button*) button;
-	 btn->private = type_instance_private_get(t, button_type_get(), btn);
+	 btn->private = type_instance_private_get(button_type_get(), btn);
 	 printf("[btn] ctor %p %p\n", btn, btn->private);
 }
 

@@ -4,10 +4,8 @@
 
 #include <Eina.h>
 
+#include "Etk2.h"
 #include "etk2_private.h"
-#include "etk2_types.h"
-#include "etk2_object.h"
-#include "etk2_type.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -21,13 +19,12 @@ struct _Object_Private
 	Type *type;
 };
 
-static void object_ctor(Type *ftype, void *instance)
+static void object_ctor(void *instance)
 {
 	Object *object;
 
 	object = (Object*) instance;
-	object->private = type_instance_private_get(ftype, object_type_get(), object);
-	object->private->type = ftype;
+	/* TODO create a hash for user provided data */
 	printf("[obj] ctor %p %p %p\n", object, object->private, object->private->type);
 }
 
@@ -41,6 +38,18 @@ static void object_dtor(void *object)
 Type * object_private_type_get(Object *object)
 {
 	return object->private->type;
+}
+
+void object_construct(Type *type, void *instance)
+{
+	Object *object;
+
+	object = (Object*) instance;
+	object->private = type_instance_private_get_internal(type, object_type_get(), object);
+	object->private->type = type;
+	printf("[obj] construct %p %p %p\n", object, object->private, object->private->type);
+	/* call all the constructors on the type */
+	type_construct(type, instance);
 }
 /*============================================================================*
  *                                   API                                      *

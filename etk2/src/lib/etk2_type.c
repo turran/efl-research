@@ -75,18 +75,6 @@ static void * type_instance_property_offset_get(Type *type, Type_Property *prop,
 	return (char *)instance + offset + prop->offset;
 }
 
-static void type_construct_internal(Type *ftype, Type *type, void *instance)
-{
-	if (!type)
-		return;
-
-	if (type->parent)
-		type_construct_internal(ftype, type->parent, instance);
-
-	if (type->ctor)
-		type->ctor(ftype, instance);
-}
-
 static void type_destruct_internal(Type *type, void *object)
 {
 	if (!type)
@@ -99,7 +87,27 @@ static void type_destruct_internal(Type *type, void *object)
 		type_destruct_internal(type->parent, object);
 }
 /* TODO should we register types per document? */
-Eina_Hash *_types = NULL;
+static Eina_Hash *_types = NULL;
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+void type_construct(Type *t, void *instance)
+{
+	if (!t)
+		return;
+
+	if (t->parent)
+		type_construct(t->parent, instance);
+
+	if (t->ctor)
+		t->ctor(instance);
+}
+
+void * type_instance_private_get_internal(Type *final, Type *t, void *instance)
+{
+	printf("[type] private get %s (PUB=%d) %s (PRIV_OFF=%d) %p\n", final->name, type_public_size_get(final), t->name, type_private_size_get(t->parent), instance);
+	return (char *)instance + type_public_size_get(final) + type_private_size_get(t->parent);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -152,7 +160,7 @@ void *type_instance_new(Type *type)
 	instance = malloc(type_size_get(type));
 	if (!instance)
 		return NULL;
-	type_construct_internal(type, type, instance);
+	object_construct(type, instance);
 	return instance;
 }
 
@@ -269,8 +277,10 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 	}
 }
 
-void * type_instance_private_get(Type *instance_type, Type *priv_type, void *instance)
+EAPI void * type_instance_private_get(Type *t, void *instance)
 {
-	printf("[type] private get %s (PUB=%d) %s (PRIV_OFF=%d) %p\n", instance_type->name, type_public_size_get(instance_type), priv_type->name, type_private_size_get(priv_type->parent), instance);
-	return (char *)instance + type_public_size_get(instance_type) + type_private_size_get(priv_type->parent);
+	Type *final;
+
+	final = object_private_type_get(instance);
+	return type_instance_private_get_internal(final, t, instance);
 }
