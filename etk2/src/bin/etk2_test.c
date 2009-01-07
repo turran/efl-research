@@ -43,6 +43,30 @@ void test2(void)
 	printf("WIDGET 1 NAME = %s\n", val.value.string_value);
 }
 
+/* event callbacks */
+void prop_mod_cb(Event_Mutation *e)
+{
+	printf("event type %s called prev = %s  curr = %s\n", e->event.type,
+			e->prev.value.string_value ? e->prev.value.string_value : "NULL",
+			e->curr.value.string_value ? e->curr.value.string_value : "NULL");
+}
+
+void test3(void)
+{
+	Type_Property_Value val;
+	Widget *widget;
+
+	printf("=====\n");
+	printf("TEST3\n");
+	printf("=====\n");
+	widget = widget_new();
+	value_str_from(&val, "GOLDEN THEME");
+	event_listener_add((Object *)widget, "PropModified", prop_mod_cb);
+	object_property_value_set((Object*)widget, "name", &val);
+	value_str_from(&val, "SILVER THEME");
+	object_property_value_set((Object*)widget, "name", &val);
+}
+
 void testold(void)
 {
 	Widget *widget;
@@ -150,9 +174,12 @@ void testold(void)
 
 int main(int argc, char **argv)
 {
+	main_init();
 	test1();
 	test2();
-	testold();
+	test3();
+	main_shutdown();
+	//testold();
 	return 0;
 }
 
