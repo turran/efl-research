@@ -137,7 +137,7 @@ void * type_instance_private_get_internal(Type *final, Type *t, void *instance)
  * @param prop_name
  * @param value
  */
-void type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value)
+void type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value, Type_Property_Value *old)
 {
 	void *curr;
 	Type_Property *property;
@@ -151,6 +151,7 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 	{
 		//printf("[type] property->type->name = %s with size = %d\n", property->type->name, property->type->size);
 		char **str = (char**)curr;
+		if (old) old->value.string_value = *str;
 		*str = strdup(value->value.string_value);
 	}
 }

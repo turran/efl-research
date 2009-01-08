@@ -12,6 +12,12 @@
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+void event_mutation_init(Event_Mutation *em, Object *o, const char *prop)
+{
+	event_init((Event *)em, "PropModified", o);
+	em->related = o;
+	em->prop = prop;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -30,12 +36,14 @@ EAPI void event_listener_remove(Object *o, const char *type,
 	object_event_listener_remove(o, type, el);
 }
 
-EAPI Event * event_new(void)
+EAPI void event_dispatch(Event *e)
 {
-
+	object_event_dispatch(e->target, e);
 }
 
-EAPI Event_Mutation * event_mutation_new(Object *o)
+EAPI void event_init(Event *e, const char *type, Object *o)
 {
-	Event_Mutation *evt;
+	e->target = o;
+	e->type = type;
 }
+

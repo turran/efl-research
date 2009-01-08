@@ -44,11 +44,12 @@ void test2(void)
 }
 
 /* event callbacks */
-void prop_mod_cb(Event_Mutation *e)
+void prop_mod_cb(Event *e)
 {
-	printf("event type %s called prev = %s  curr = %s\n", e->event.type,
-			e->prev.value.string_value ? e->prev.value.string_value : "NULL",
-			e->curr.value.string_value ? e->curr.value.string_value : "NULL");
+	Event_Mutation *em = (Event_Mutation *)e;
+	printf("event type %s called prev = %s  curr = %s\n", e->type,
+			em->prev.value.string_value ? em->prev.value.string_value : "NULL",
+			em->curr.value.string_value ? em->curr.value.string_value : "NULL");
 }
 
 void test3(void)
@@ -63,8 +64,7 @@ void test3(void)
 	value_str_from(&val, "GOLDEN THEME");
 	event_listener_add((Object *)widget, "PropModified", prop_mod_cb);
 	object_property_value_set((Object*)widget, "name", &val);
-	value_str_from(&val, "SILVER THEME");
-	object_property_value_set((Object*)widget, "name", &val);
+	object_name_set((Object*)widget, "SILVER THEME");
 }
 
 void testold(void)

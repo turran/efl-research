@@ -16,6 +16,7 @@ struct _Object_Private
 	char *name;
 	Type *type;
 	Eina_Hash *listeners;
+	Eina_Hash *user;
 };
 
 /* We use a container for the object-event in case we need
@@ -34,8 +35,7 @@ static void object_ctor(void *instance)
 	obj = (Object*) instance;
 	prv = PRIVATE(obj);
 	prv->listeners = eina_hash_string_superfast_new(NULL);
-
-	/* TODO create a hash for user provided data */
+	prv->user = eina_hash_string_superfast_new(NULL);
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
 }
 
@@ -74,6 +74,17 @@ void object_construct(Type *type, void *instance)
 	/* call all the constructors on the type */
 	type_construct(type, instance);
 }
+
+void object_event_dispatch(Object *obj, Event *e)
+{
+	Object_Private *prv;
+	Eina_List *listeners;
+
+	prv = PRIVATE(obj);
+	listeners = eina_hash_find(prv->listeners, e->type);
+	_event_dispatch(listeners, e);
+}
+
 void object_event_listener_add(Object *obj, const char *type,
 		Event_Listener el)
 {
@@ -123,11 +134,10 @@ Object *object_new(void)
 
 void object_name_set(Object *object, const char *name)
 {
-	Object_Private *prv;
+	Type_Property_Value value;
 
-	prv = PRIVATE(object);
-	if (name)
-		prv->name = strdup(name);
+	value_str_from(&value, (char *)name);
+	object_property_value_set(object, "name", &value);
 }
 
 const char *object_name_get(Object *object)
@@ -149,26 +159,40 @@ void object_property_value_set(Object *object, char *prop_name, Type_Property_Va
 	listeners = eina_hash_find(prv->listeners, "PropModified");
 	if (listeners)
 	{
-		Event_Mutation *evt;
+		Event_Mutation evt;
 
-		/* TODO do we actually need to allocate a property? */
-		evt = malloc(sizeof(Event_Mutation));
-		evt->event.type = "PropModified";
-		evt->related = evt->event.target = object;
-		type_instance_property_value_get(prv->type, object, prop_name, &evt->prev);
-		type_instance_property_value_set(prv->type, object, prop_name, value);
-		evt->curr = *value;
-		_event_dispatch(listeners, (Event *)evt);
-		/* TODO free the event */
+		event_mutation_init(&evt, object, prop_name);
+		type_instance_property_value_set(prv->type, object, prop_name, value, &evt.prev);
+		evt.curr = *value;
+		_event_dispatch(listeners, (Event *)&evt);
 	}
 	else
 	{
-		type_instance_property_value_set(prv->type, object, prop_name, value);
+		type_instance_property_value_set(prv->type, object, prop_name, value, NULL);
 	}
 }
 
 void object_property_value_get(Object *object, char *prop_name, Type_Property_Value *value)
 {
+	Object_Private *prv;
+
+	prv = PRIVATE(object);
 	printf("[obj] value_get: %s\n", prop_name);
-	type_instance_property_value_get(object->private->type, object, prop_name, value);
+	type_instance_property_value_get(prv->type, object, prop_name, value);
+}
+
+void object_user_data_set(Object *object, const char *name, void *data)
+{
+	Object_Private *prv;
+
+	prv = PRIVATE(object);
+	eina_hash_add(prv->user, name, data);
+}
+
+void * object_user_data_get(Object *object, const char *name)
+{
+	Object_Private *prv;
+
+	prv = PRIVATE(object);
+	return eina_hash_find(prv->user, name);
 }
