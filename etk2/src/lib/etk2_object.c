@@ -13,7 +13,7 @@
 
 struct _Object_Private
 {
-	char *name;
+	char *id;
 	Type *type;
 	Eina_Hash *listeners;
 	Eina_Hash *user;
@@ -117,7 +117,7 @@ Type *object_type_get(void)
 	if (!object_type)
 	{
 		object_type = type_new(TYPE_NAME, sizeof(Object), sizeof(Object_Private), NULL, object_ctor, object_dtor, object_property_value_set, object_property_value_get);
-		type_property_new(object_type, "name", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, name), NULL);
+		type_property_new(object_type, "id", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, id), NULL);
 	}
 
 	return object_type;
@@ -132,20 +132,20 @@ Object *object_new(void)
 	return object;
 }
 
-void object_name_set(Object *object, const char *name)
+void object_id_set(Object *object, const char *name)
 {
 	Type_Property_Value value;
 
 	value_str_from(&value, (char *)name);
-	object_property_value_set(object, "name", &value);
+	object_property_value_set(object, "id", &value);
 }
 
-const char *object_name_get(Object *object)
+const char *object_id_get(Object *object)
 {
 	Object_Private *prv;
 
 	prv = PRIVATE(object);
-	return prv->name;
+	return prv->id;
 }
 
 void object_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
@@ -161,8 +161,9 @@ void object_property_value_set(Object *object, char *prop_name, Type_Property_Va
 	{
 		Event_Mutation evt;
 
+		if (!type_instance_property_value_set(prv->type, object, prop_name, value, &evt.prev))
+			return;
 		event_mutation_init(&evt, object, prop_name);
-		type_instance_property_value_set(prv->type, object, prop_name, value, &evt.prev);
 		evt.curr = *value;
 		_event_dispatch(listeners, (Event *)&evt);
 	}

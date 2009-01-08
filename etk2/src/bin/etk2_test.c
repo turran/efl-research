@@ -36,10 +36,10 @@ void test2(void)
 	value_str_from(&val, "GOLDEN THEME");
 	object_property_value_set((Object*)widget, "theme", &val);
 	value_str_from(&val, "WIDGET 1 NAME");
-	object_property_value_set((Object*)widget, "name", &val);
+	object_property_value_set((Object*)widget, "id", &val);
 	object_property_value_get((Object*)widget, "theme", &val);
 	printf("GOLDEN_THEME = %s\n", val.value.string_value);
-	object_property_value_get((Object*)widget, "name", &val);
+	object_property_value_get((Object*)widget, "id", &val);
 	printf("WIDGET 1 NAME = %s\n", val.value.string_value);
 }
 
@@ -63,8 +63,8 @@ void test3(void)
 	widget = widget_new();
 	value_str_from(&val, "GOLDEN THEME");
 	event_listener_add((Object *)widget, "PropModified", prop_mod_cb);
-	object_property_value_set((Object*)widget, "name", &val);
-	object_name_set((Object*)widget, "SILVER THEME");
+	object_property_value_set((Object*)widget, "id", &val);
+	object_id_set((Object*)widget, "SILVER THEME");
 }
 
 void testold(void)
@@ -76,26 +76,26 @@ void testold(void)
 
 //	int x, y, w, h;
 
-	char *name;
+	char *id;
 	char *label;
 	char *theme;
 
 	Type_Property_Value *value;
 	printf("\n\nOBJECT TESTS\n\n");
 	printf("================\n");
-	name = "NEW WIDGET NAME";
+	id = "NEW WIDGET NAME";
 	label = "NEW BUTTON LABEL";
 	theme = "GOLDEN THEME";
 
 	o = object_new();
-	object_name_set(o, "name!");
-	printf("object_name_get(o)=%s\n", object_name_get(o));
+	object_id_set(o, "id!");
+	printf("object_id_get(o)=%s\n", object_id_get(o));
 
-	//printf("object_name_get(o)=%s\n", object_name_get(o));
+	//printf("object_id_get(o)=%s\n", object_id_get(o));
 	value = malloc(sizeof(Type_Property_Value));
-	value->value.string_value = strdup("uber name");
-	object_property_value_set(o, "name", value);
-	printf("object_name_get(o)=%s\n", object_name_get(o));
+	value->value.string_value = strdup("uber id");
+	object_property_value_set(o, "id", value);
+	printf("object_id_get(o)=%s\n", object_id_get(o));
 
 	//return 0;
 
@@ -113,7 +113,7 @@ void testold(void)
 		value->value.string_value = strdup("green");
 		object_property_value_set((Object*)l, "theme", value);
 
-	//object_name_set((Object*)l, "leet!");
+	//object_id_set((Object*)l, "leet!");
 	printf("label_text_get=%s\n", label_text_get(l));
 	printf("widget_theme_get=%s\n", widget_theme_get((Widget*)l));
 	printf("label_text_get=%s\n", label_text_get(l));
@@ -128,13 +128,13 @@ void testold(void)
 	printf("================\n");
 
 	widget = widget_new();
-	object_name_set((Object*)widget, name);
+	object_id_set((Object*)widget, id);
 	widget_theme_set(widget, theme);
 	value = malloc(sizeof(Type_Property_Value));
 	value->value.string_value = strdup("FOO THEME");
 	object_property_value_set((Object*)widget, "theme", value);
 	printf("widget theme (should be FOO THEME) = %s\n", widget_theme_get(widget));
-	printf("widget name (should be %s) = %s\n", name, object_name_get((Object*)widget));
+	printf("widget id (should be %s) = %s\n", id, object_id_get((Object*)widget));
 
 		// Button tests
 	printf("\n\nBUTTON TESTS\n\n");
@@ -143,11 +143,11 @@ void testold(void)
 	button = button_new();
 
 	button_label_set(button, label);
-	object_name_set((Object*)button, name);
+	object_id_set((Object*)button, id);
 	widget_theme_set((Widget*)button, theme);
 
 	printf("button's widget theme should be '%s ' and is '%s'\n", theme, widget_theme_get((Widget*)button));
-	//printf("button label should be '%s' = '%s', button name should be '%s' = '%s'\n", label, button_label_get(button), name, object_name_get((Object*)button));
+	//printf("button label should be '%s' = '%s', button id should be '%s' = '%s'\n", label, button_label_get(button), id, object_id_get((Object*)button));
 
 	// Property tests
 	printf("\n\nPROPERTY TESTS\n\n");

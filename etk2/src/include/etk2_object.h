@@ -10,8 +10,8 @@ struct _Object
 
 Object *object_new(void);
 
-void object_name_set(Object *object, const char *name);
-const char *object_name_get(Object *object);
+void object_id_set(Object *object, const char *name);
+const char *object_id_get(Object *object);
 
 Type *object_type_get(void);
 

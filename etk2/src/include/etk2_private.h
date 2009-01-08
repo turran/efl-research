@@ -22,7 +22,7 @@ void object_event_listener_remove(Object *obj, const char *type, Event_Listener 
 /* type global */
 void type_construct(Type *t, void *instance);
 void * type_instance_private_get_internal(Type *final, Type *t, void *instance);
-void type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value, Type_Property_Value *old);
+Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value, Type_Property_Value *old);
 void type_instance_property_value_get(Type *type, void *instance, char *prop_name, Type_Property_Value *value);
 /* value global */
 void value_set(Type_Property_Value *v, Type_Property_Value_Type vtype, void *val);

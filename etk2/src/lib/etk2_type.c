@@ -91,20 +91,14 @@ static void type_destruct_internal(Type *type, void *object)
 static Type_Property *_property_get(Type *type, char *prop_name)
 {
 	Type_Property *property = NULL;
-
-	//printf("[type] looking for property %s in type: %s\n", prop_name, type->name);
+	printf("getting %p\n", property);
 	do
 	{
 		property = eina_hash_find(type->properties, prop_name);
 		if (!property)
 			type = type->parent;
-	} while (!property || !type);
-
-	/*if (property)
-	{
-		printf("[type] found property %s on type %s with size %d\n", property->name, type->name, type->size);
-	}*/
-
+	} while (!property && type);
+	printf("returning %p\n", property);
 	return property;
 }
 
@@ -137,14 +131,16 @@ void * type_instance_private_get_internal(Type *final, Type *t, void *instance)
  * @param prop_name
  * @param value
  */
-void type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value, Type_Property_Value *old)
+Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value, Type_Property_Value *old)
 {
 	void *curr;
 	Type_Property *property;
 
-	RETURN_IF(type == NULL || instance == NULL || prop_name == NULL || value == NULL);
+	if (type == NULL || instance == NULL || prop_name == NULL || value == NULL)
+		return EINA_FALSE;
 	property = _property_get(type, prop_name);
-	RETURN_IF(property == NULL);
+	if (!property)
+		return EINA_FALSE;
 	curr = _instance_property_offset_get(type, property, instance);
 
 	if (property->value_type == PROPERTY_STRING)
@@ -154,6 +150,7 @@ void type_instance_property_value_set(Type *type, void *instance, char *prop_nam
 		if (old) old->value.string_value = *str;
 		*str = strdup(value->value.string_value);
 	}
+	return EINA_TRUE;
 }
 
 void type_instance_property_value_get(Type *type, void *instance, char *prop_name, Type_Property_Value *v)
