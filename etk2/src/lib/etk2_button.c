@@ -29,12 +29,12 @@ static void button_dtor(void *button)
 	printf("[btn] dtor %p\n", button);
 }
 
-static void button_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
+static void button_property_value_set(Object *object, char *prop_name, Value *value)
 {
 	printf("[btn] value_set: %s\n", prop_name);
 }
 
-static Type_Property_Value *button_property_value_get(Object *object, char *prop_name)
+static Value *button_property_value_get(Object *object, char *prop_name)
 {
 	printf("[btn] value_get: %s\n", prop_name);
 	return NULL;

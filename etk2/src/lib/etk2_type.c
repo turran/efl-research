@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "Etk2.h"
 #include "etk2_private.h"
 /*============================================================================*
@@ -24,19 +20,6 @@ struct _Type
 
 	Object_Property_Value_Get prop_value_get;
 	Object_Property_Value_Set prop_value_set;
-};
-
-/**
- * @brief
- */
-struct _Type_Property
-{
-	char *name;
-	Type_Property_Type prop_type;
-	ssize_t offset;
-	Type_Property_Value_Type value_type;
-	Type_Property_Process *process;
-	Type *type;
 };
 
 static size_t type_public_size_get(Type *type)
@@ -64,10 +47,13 @@ static size_t type_size_get(Type *type)
 	return type->size + type->priv_size + parent_size;
 }
 
-static void * _instance_property_offset_get(Type *type, Type_Property *prop, void *instance)
+static void * _instance_property_offset_get(Type *type, Property *prop, void *instance)
 {
-	int offset = type_public_size_get(type) + type_private_size_get(prop->type->parent);
-	return (char *)instance + offset + prop->offset;
+	Type *pt = property_type_get(prop);
+	ssize_t poffset = property_offset_get(prop);
+
+	int offset = type_public_size_get(type) + type_private_size_get(pt->parent);
+	return (char *)instance + offset + poffset;
 }
 
 static void type_destruct_internal(Type *type, void *object)
@@ -88,17 +74,17 @@ static void type_destruct_internal(Type *type, void *object)
  * @param prop_name
  * @return
  */
-static Type_Property *_property_get(Type *type, char *prop_name)
+static Property *_property_get(Type *type, const char *prop_name)
 {
-	Type_Property *property = NULL;
-	printf("getting %p\n", property);
+	Property *property = NULL;
+
 	do
 	{
 		property = eina_hash_find(type->properties, prop_name);
 		if (!property)
 			type = type->parent;
 	} while (!property && type);
-	printf("returning %p\n", property);
+
 	return property;
 }
 
@@ -131,10 +117,10 @@ void * type_instance_private_get_internal(Type *final, Type *t, void *instance)
  * @param prop_name
  * @param value
  */
-Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Type_Property_Value *value, Type_Property_Value *old)
+Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Value *value, Value *old)
 {
 	void *curr;
-	Type_Property *property;
+	Property *property;
 
 	if (type == NULL || instance == NULL || prop_name == NULL || value == NULL)
 		return EINA_FALSE;
@@ -143,7 +129,7 @@ Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *pro
 		return EINA_FALSE;
 	curr = _instance_property_offset_get(type, property, instance);
 
-	if (property->value_type == PROPERTY_STRING)
+	if (property_value_type_get(property) == PROPERTY_STRING)
 	{
 		//printf("[type] property->type->name = %s with size = %d\n", property->type->name, property->type->size);
 		char **str = (char**)curr;
@@ -153,9 +139,14 @@ Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *pro
 	return EINA_TRUE;
 }
 
-void type_instance_property_value_get(Type *type, void *instance, char *prop_name, Type_Property_Value *v)
+Property * type_property_get(Type *t, const char *name)
 {
-	Type_Property *property;
+	return _property_get(t, name);
+}
+
+void type_instance_property_value_get(Type *type, void *instance, char *prop_name, Value *v)
+{
+	Property *property;
 	void *curr;
 
 	if (!type || !instance || !prop_name)
@@ -164,7 +155,7 @@ void type_instance_property_value_get(Type *type, void *instance, char *prop_nam
 	if (!property)
 		return;
 	curr = _instance_property_offset_get(type, property, instance);
-	value_set(v, property->value_type, curr);
+	value_set(v, property_value_type_get(property), curr);
 }
 /*============================================================================*
  *                                   API                                      *
@@ -252,25 +243,24 @@ void type_instance_delete(void *instance)
  * @param value_type
  * @param process_cb
  */
-void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type, Type_Property_Value_Type value_type, size_t field_offset, Type_Property_Process *process_cb)
+Property_Id type_property_new(Type *type, char *prop_name,
+		Type_Property_Type prop_type, Value_Type value_type,
+		size_t field_offset, Type_Property_Process *process_cb)
 {
-	Type_Property *property;
+	Property *property;
 
-	RETURN_IF(type == NULL || prop_name == NULL);
-	printf("[type] new %s property at offset %d\n", prop_name, field_offset);
-	property = malloc(sizeof(Type_Property));
-	property->name = strdup(prop_name);
-	property->prop_type = prop_type;
-	property->value_type = value_type;
-	property->process = process_cb;
-	property->offset = field_offset;
-	property->type = type;
+	if (!type || !prop_name)
+		return 0;
+
+	property = property_new(type, prop_name, prop_type, value_type, field_offset, process_cb);
 	eina_hash_add(type->properties, prop_name, property);
+
+	return property_id_get(property);
 }
 
 #if 0
 void type_property_new(Type *type, char *prop_name,
-		Type_Property_Type prop_type, Type_Property_Value_Type value_type,
+		Type_Property_Type prop_type, Value_Type value_type,
 		ssize_t field_offset, ssize_t prev_offset, ssize_t changed)
 {
 	/* How to handle the changed thing?

@@ -5,6 +5,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 ETK2HEADERS = \
 Etk2.h \
 etk2_types.h \
+etk2_property.h \
+etk2_event.h \
 etk2_private.h \
 etk2_button.h \
 etk2_object.h \

@@ -14,7 +14,7 @@ Type *type_new(char *name, size_t size, size_t priv_size, Type *parent, Type_Con
 void * type_instance_new_name_from(const char *name);
 void *type_instance_new(Type *type);
 void type_instance_delete(void *instance);
-void type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type, Type_Property_Value_Type value_type, size_t field_offset, Type_Property_Process *process_cb);
+Property_Id type_property_new(Type *type, char *prop_name, Type_Property_Type prop_type, Value_Type value_type, size_t field_offset, Type_Property_Process *process_cb);
 void * type_instance_private_get(Type *type, void *instance);
 
 #endif

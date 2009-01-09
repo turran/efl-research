@@ -22,12 +22,12 @@ typedef enum
 	PROPERTY_LONG,           /**< The value of the property is a long */              //!< PROPERTY_LONG
 	PROPERTY_POINTER,        /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
 	PROPERTY_STRING                                                                   //!< PROPERTY_STRING
-} Type_Property_Value_Type;
+} Value_Type;
 
 /**
  * @brief
  */
-typedef struct _Type_Property_Value
+typedef struct _Value
 {
 	union
 	{
@@ -41,14 +41,14 @@ typedef struct _Type_Property_Value
 		void *pointer_value;
 		char *string_value;
 	} value;
-} Type_Property_Value;;
+} Value;
 
-static inline void value_int_from(Type_Property_Value *v, int i)
+static inline void value_int_from(Value *v, int i)
 {
 	v->value.int_value = i;
 }
 
-static inline void value_str_from(Type_Property_Value *v, char *str)
+static inline void value_str_from(Value *v, char *str)
 {
 	v->value.string_value = str;
 }

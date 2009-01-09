@@ -28,11 +28,11 @@ static void label_dtor(void *label)
 {
 }
 
-static void label_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
+static void label_property_value_set(Object *object, char *prop_name, Value *value)
 {
 }
 
-static Type_Property_Value *label_property_value_get(Object *object, char *prop_name)
+static Value *label_property_value_get(Object *object, char *prop_name)
 {
 	return NULL;
 }
@@ -63,7 +63,7 @@ Label *label_new(void)
 
 void label_text_set(Label *label, char *text)
 {
-	Type_Property_Value v;
+	Value v;
 
 	RETURN_IF(label == NULL);
 	/* FIXME how to inform the property system that this property has changed ?

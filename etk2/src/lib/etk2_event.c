@@ -12,11 +12,12 @@
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void event_mutation_init(Event_Mutation *em, Object *o, const char *prop)
+void event_mutation_init(Event_Mutation *em, const Object *o, const Property *prop)
 {
-	event_init((Event *)em, "PropModified", o);
+	event_init((Event *)em, EVENT_MUTATION_PROPMODIFY, o);
 	em->related = o;
-	em->prop = prop;
+	em->prop = property_name_get(prop);
+	em->prop_id = property_id_get(prop);
 }
 /*============================================================================*
  *                                   API                                      *
@@ -41,9 +42,16 @@ EAPI void event_dispatch(Event *e)
 	object_event_dispatch(e->target, e);
 }
 
-EAPI void event_init(Event *e, const char *type, Object *o)
+EAPI void event_init(Event *e, const char *type, const Object *o)
 {
 	e->target = o;
 	e->type = type;
 }
+#if 0
+EAPI void event_property_int_changed(Event *e, const char *type,
+		const Object *o, int prev, int curr)
+{
+
+}
+#endif
 

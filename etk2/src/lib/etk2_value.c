@@ -12,7 +12,7 @@
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void value_set(Type_Property_Value *v, Type_Property_Value_Type vtype, void *val)
+void value_set(Value *v, Value_Type vtype, void *val)
 {
 	switch (vtype)
 	{

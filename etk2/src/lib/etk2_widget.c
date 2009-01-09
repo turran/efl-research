@@ -29,12 +29,12 @@ static void widget_dtor(void *widget)
   printf("[widget] dtor %p\n", widget);
 }
 
-static void widget_property_value_set(Object *object, char *prop_name, Type_Property_Value *value)
+static void widget_property_value_set(Object *object, char *prop_name, Value *value)
 {
 	printf("widget_prop_value_set: %s\n", prop_name);
 }
 
-static Type_Property_Value *widget_property_value_get(Object *object, char *prop_name)
+static Value *widget_property_value_get(Object *object, char *prop_name)
 {
 	printf("widget_prop_value_get: %s\n", prop_name);
 	return NULL;
