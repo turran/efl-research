@@ -13,14 +13,16 @@ typedef struct _Event
 	const Object *target;
 } Event;
 
-#define EVENT_MUTATION_PROPMODIFY "PropModify"
+#define EVENT_PROP_MODIFY "PropModify"
+#define EVENT_OBJECT_APPEND "ObjectAppend"
+#define EVENT_OBJECT_REMOVE "ObjectRemove"
 
 typedef struct _Event_Mutation
 {
 	Event event;
 	const Object *related;
-	Value prev;
-	Value curr;
+	Value *prev;
+	Value *curr;
 	const char *prop;
 	Property_Id prop_id;
 } Event_Mutation;

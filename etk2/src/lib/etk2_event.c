@@ -12,12 +12,18 @@
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void event_mutation_init(Event_Mutation *em, const Object *o, const Property *prop)
+void event_mutation_init(Event_Mutation *em, const char *type, const Object *o,
+		const Object *rel, const Property *prop, Value *prev, Value *curr)
 {
-	event_init((Event *)em, EVENT_MUTATION_PROPMODIFY, o);
-	em->related = o;
-	em->prop = property_name_get(prop);
-	em->prop_id = property_id_get(prop);
+	event_init((Event *)em, type, o);
+	em->related = rel;
+	em->prev = prev;
+	em->curr = curr;
+	if (prop)
+	{
+		em->prop = property_name_get(prop);
+		em->prop_id = property_id_get(prop);
+	}
 }
 /*============================================================================*
  *                                   API                                      *

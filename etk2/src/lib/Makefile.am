@@ -15,6 +15,7 @@ etk2_button.c \
 etk2_value.c \
 etk2_main.c \
 etk2_object.c \
+etk2_container.c \
 etk2_property.c \
 etk2_event.c \
 etk2_type.c \

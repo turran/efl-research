@@ -35,7 +35,6 @@ static void _id_modify(Event *e)
 	//if (!strcmp(em->prop, "id"))
 	if (em->prop_id == OBJECT_ID_ID)
 	{
-		printf("OKKK\n");
 		/* Send the idChanged event */
 	}
 }
@@ -46,11 +45,11 @@ static void _ctor(void *instance)
 	Object_Private *prv;
 
 	obj = (Object*) instance;
-	prv = PRIVATE(obj);
+	obj->private = prv = type_instance_private_get(object_type_get(), instance);
 	prv->listeners = eina_hash_string_superfast_new(NULL);
 	prv->user = eina_hash_string_superfast_new(NULL);
 	/* Set up the mutation event */
-	object_event_listener_add(obj, EVENT_MUTATION_PROPMODIFY, _id_modify);
+	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify);
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
 }
 
@@ -88,16 +87,6 @@ void object_construct(Type *type, void *instance)
 	printf("[obj] construct %p %p %p\n", object, object->private, object->private->type);
 	/* call all the constructors on the type */
 	type_construct(type, instance);
-}
-
-void object_event_dispatch(const Object *obj, Event *e)
-{
-	Object_Private *prv;
-	Eina_List *listeners;
-
-	prv = PRIVATE(obj);
-	listeners = eina_hash_find(prv->listeners, e->type);
-	_event_dispatch(listeners, e);
 }
 
 void object_event_listener_add(Object *obj, const char *type,
@@ -195,15 +184,15 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 	prop = type_property_get(prv->type, prop_name);
 	if (!prop)
 		return;
-	listeners = eina_hash_find(prv->listeners, EVENT_MUTATION_PROPMODIFY);
+	listeners = eina_hash_find(prv->listeners, EVENT_PROP_MODIFY);
 	if (listeners)
 	{
 		Event_Mutation evt;
+		Value prev;
 
-		if (!type_instance_property_value_set(prv->type, object, prop_name, value, &evt.prev))
+		if (!type_instance_property_value_set(prv->type, object, prop_name, value, &prev))
 			return;
-		event_mutation_init(&evt, object, prop);
-		evt.curr = *value;
+		event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop, &prev, value);
 		_event_dispatch(listeners, (Event *)&evt);
 	}
 	else
@@ -249,4 +238,22 @@ EAPI void * object_user_data_get(Object *object, const char *name)
 
 	prv = PRIVATE(object);
 	return eina_hash_find(prv->user, name);
+}
+
+EAPI void object_event_dispatch(const Object *obj, Event *e)
+{
+	Object_Private *prv;
+	Eina_List *listeners;
+
+	prv = PRIVATE(obj);
+	listeners = eina_hash_find(prv->listeners, e->type);
+	if (listeners) _event_dispatch(listeners, e);
+}
+
+EAPI const char * object_type_name_get(const Object *obj)
+{
+	Object_Private *prv;
+
+	prv = PRIVATE(obj);
+	return type_name_get(prv->type);
 }

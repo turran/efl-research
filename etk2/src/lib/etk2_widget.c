@@ -15,16 +15,25 @@ struct _Widget_Private
 	int x, y, w, h;
 	char *theme;
 };
-static void widget_ctor(void *instance)
+
+static Eina_Bool _appendable(const char *type)
+{
+	/* TODO only allow some object's to be appendable */
+	printf("appendable %s?\n", type);
+	return EINA_TRUE;
+}
+
+static void _ctor(void *instance)
 {
 	Widget *widget = (Widget*) instance;
 
 	widget->private = type_instance_private_get(widget_type_get(), instance);
 	widget->private->theme = NULL;
+	((Container *)widget)->appendable = _appendable;
 	printf("[widget] ctor %p %p\n", widget, widget->private);
 }
 
-static void widget_dtor(void *widget)
+static void _dtor(void *widget)
 {
   printf("[widget] dtor %p\n", widget);
 }
@@ -48,7 +57,7 @@ Type *widget_type_get(void)
 
 	if (!widget_type)
 	{
-		widget_type = type_new(TYPE_NAME, sizeof(Widget), sizeof(Widget_Private), object_type_get(), widget_ctor, widget_dtor, widget_property_value_set, widget_property_value_get);
+		widget_type = type_new(TYPE_NAME, sizeof(Widget), sizeof(Widget_Private), container_type_get(), _ctor, _dtor, widget_property_value_set, widget_property_value_get);
 		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private, theme), NULL);
 	}
 
@@ -94,12 +103,10 @@ void widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h)
 
 void widget_theme_set(Widget *widget, char *theme)
 {
-	Widget_Private *private;
+	Value value;
 
-		RETURN_IF(widget == NULL);
-
-		private = PRIVATE(widget);
-		private->theme = strdup(theme);
+	value_str_from(&value, theme);
+	object_property_value_set((Object *)widget, "theme", &value);
 }
 
 char *widget_theme_get(Widget *widget)

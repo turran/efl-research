@@ -7,8 +7,9 @@
 #include <etk2_property.h>
 #include <etk2_types.h>
 #include <etk2_type.h>
-#include <etk2_object.h>
 #include <etk2_event.h>
+#include <etk2_object.h>
+#include <etk2_container.h>
 #include <etk2_widget.h>
 #include <etk2_button.h>
 #include <etk2_label.h>

@@ -157,6 +157,11 @@ void type_instance_property_value_get(Type *type, void *instance, char *prop_nam
 	curr = _instance_property_offset_get(type, property, instance);
 	value_set(v, property_value_type_get(property), curr);
 }
+
+const char * type_name_get(Type *t)
+{
+	return t->name;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
