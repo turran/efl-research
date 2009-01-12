@@ -32,6 +32,7 @@ static void _ctor(void *instance)
 
 static void _dtor(void *container)
 {
+
 }
 
 
@@ -47,7 +48,8 @@ Type *container_type_get(void)
 
 	if (!container_type)
 	{
-		container_type = type_new(TYPE_NAME, sizeof(Container), sizeof(Container_Private), object_type_get(), _ctor, _dtor, NULL, NULL);
+		container_type = type_new(TYPE_NAME, sizeof(Container),
+				sizeof(Container_Private), object_type_get(), _ctor, _dtor);
 	}
 
 	return container_type;

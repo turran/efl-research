@@ -20,7 +20,7 @@
 /* object global */
 Type * object_private_type_get(Object *object);
 void object_construct(Type *type, void *instance);
-void object_event_listener_add(Object *obj, const char *type, Event_Listener el);
+void object_event_listener_add(Object *obj, const char *type, Event_Listener el, Eina_Bool bubble);
 void object_event_listener_remove(Object *obj, const char *type, Event_Listener el);
 /* type global */
 void type_construct(Type *t, void *instance);

@@ -29,24 +29,13 @@ static void _ctor(void *instance)
 
 	widget->private = type_instance_private_get(widget_type_get(), instance);
 	widget->private->theme = NULL;
-	((Container *)widget)->appendable = _appendable;
+	((Object *)widget)->appendable = _appendable;
 	printf("[widget] ctor %p %p\n", widget, widget->private);
 }
 
 static void _dtor(void *widget)
 {
   printf("[widget] dtor %p\n", widget);
-}
-
-static void widget_property_value_set(Object *object, char *prop_name, Value *value)
-{
-	printf("widget_prop_value_set: %s\n", prop_name);
-}
-
-static Value *widget_property_value_get(Object *object, char *prop_name)
-{
-	printf("widget_prop_value_get: %s\n", prop_name);
-	return NULL;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -57,7 +46,8 @@ Type *widget_type_get(void)
 
 	if (!widget_type)
 	{
-		widget_type = type_new(TYPE_NAME, sizeof(Widget), sizeof(Widget_Private), container_type_get(), _ctor, _dtor, widget_property_value_set, widget_property_value_get);
+		widget_type = type_new(TYPE_NAME, sizeof(Widget),
+				sizeof(Widget_Private), object_type_get(), _ctor, _dtor);
 		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private, theme), NULL);
 	}
 

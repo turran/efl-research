@@ -11,6 +11,7 @@ typedef struct _Event
 {
 	const char *type;
 	const Object *target;
+	Eina_Bool bubbles;
 } Event;
 
 #define EVENT_PROP_MODIFY "PropModify"
@@ -41,12 +42,12 @@ typedef struct _Event_Property_String
 	char *curr;
 } Event_Property_String;
 
-typedef void (*Event_Listener)(Event *);
+typedef void (*Event_Listener)(const Object *, Event *);
 
-EAPI void event_listener_add(Object *o, const char *type, Event_Listener el);
+EAPI void event_listener_add(Object *o, const char *type, Event_Listener el, Eina_Bool bubble);
 EAPI void event_listener_remove(Object *o, const char *type, Event_Listener el);
 EAPI void event_dispatch(Event *e);
-EAPI void event_init(Event *e, const char *type, const Object *o);
+EAPI void event_init(Event *e, const char *type, const Object *o, Eina_Bool bubbles);
 
 
 #endif /* ETK2_EVENT_H_ */

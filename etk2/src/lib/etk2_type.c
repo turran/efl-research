@@ -17,9 +17,6 @@ struct _Type
 	Type_Destructor dtor;
 
 	Eina_Hash *properties;
-
-	Object_Property_Value_Get prop_value_get;
-	Object_Property_Value_Set prop_value_set;
 };
 
 static size_t type_public_size_get(Type *type)
@@ -88,7 +85,10 @@ static Property *_property_get(Type *type, const char *prop_name)
 	return property;
 }
 
-/* TODO should we register types per document? */
+/* TODO should we register types per document?
+ * Note that type_new_name_from wont work until the that type has been
+ * added i.e first calling type_new()
+ */
 static Eina_Hash *_types = NULL;
 /*============================================================================*
  *                                 Global                                     *
@@ -175,7 +175,8 @@ const char * type_name_get(Type *t)
  * @param dtor the type's destructor.
  * @return the newly created type.
  */
-Type *type_new(char *name, size_t size, size_t priv_size, Type *parent, Type_Constructor ctor, Type_Destructor dtor, Object_Property_Value_Set prop_value_set, Object_Property_Value_Get prop_value_get)
+Type *type_new(char *name, size_t size, size_t priv_size, Type *parent,
+		Type_Constructor ctor, Type_Destructor dtor)
 {
 	Type *type;
 
@@ -189,8 +190,6 @@ Type *type_new(char *name, size_t size, size_t priv_size, Type *parent, Type_Con
 	type->parent = parent;
 	type->ctor = ctor;
 	type->dtor = dtor;
-	type->prop_value_get = prop_value_get;
-	type->prop_value_set = prop_value_set;
 	type->properties = eina_hash_string_superfast_new(NULL);
 	/* add the type */
 	if (!_types) _types = eina_hash_string_superfast_new(NULL);
@@ -286,4 +285,24 @@ EAPI void * type_instance_private_get(Type *t, void *instance)
 
 	final = object_private_type_get(instance);
 	return type_instance_private_get_internal(final, t, instance);
+}
+
+/**
+ * TODO make a function that instead of receiving the name
+ * should also recieve the type itself to avoid the strcmp()
+ */
+EAPI Eina_Bool type_instance_is_of(void *instance, const char *type)
+{
+	Type *t;
+
+	t = object_private_type_get(instance);
+	do
+	{
+		if (!strcmp(t->name, type))
+			return EINA_TRUE;
+		t = t->parent;
+	}
+	while (t);
+
+	return EINA_FALSE;
 }

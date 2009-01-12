@@ -17,6 +17,9 @@ struct _Object_Private
 	Type *type;
 	Eina_Hash *listeners;
 	Eina_Hash *user;
+	EINA_INLIST;
+	Eina_Inlist *children;
+	Object *parent;
 };
 
 /* We use a container for the object-event in case we need
@@ -25,9 +28,10 @@ struct _Object_Private
 typedef struct _Object_Event
 {
 	Event_Listener el;
+	Eina_Bool bubble;
 } Object_Event;
 
-static void _id_modify(Event *e)
+static void _id_modify(const Object *o, Event *e)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 
@@ -48,8 +52,9 @@ static void _ctor(void *instance)
 	obj->private = prv = type_instance_private_get(object_type_get(), instance);
 	prv->listeners = eina_hash_string_superfast_new(NULL);
 	prv->user = eina_hash_string_superfast_new(NULL);
+	prv->children = NULL;
 	/* Set up the mutation event */
-	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify);
+	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE);
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
 }
 
@@ -58,15 +63,22 @@ static void _dtor(void *object)
 	printf("[obj] dtor %p\n", object);
 }
 
-static void _event_dispatch(Eina_List *listeners, Event *e)
+static void _event_dispatch(Object *obj, Event *e, Eina_Bool bubble)
 {
+	Eina_List *listeners;
 	Eina_Iterator *it;
 	Object_Event *oe;
+	Object_Private *prv;
+
+	prv = PRIVATE(obj);
+	listeners = eina_hash_find(prv->listeners, e->type);
+	if (!listeners) return;
 
 	it = eina_list_iterator_new(listeners);
 	while (eina_iterator_next(it, (void **)&oe))
 	{
-               oe->el(e);
+		if (oe->bubble == bubble)
+			oe->el(obj, e);
 	}
 }
 /*============================================================================*
@@ -90,7 +102,7 @@ void object_construct(Type *type, void *instance)
 }
 
 void object_event_listener_add(Object *obj, const char *type,
-		Event_Listener el)
+		Event_Listener el, Eina_Bool bubble)
 {
 	Object_Private *prv;
 	Object_Event *oe;
@@ -98,6 +110,7 @@ void object_event_listener_add(Object *obj, const char *type,
 
 	oe = malloc(sizeof(Object_Event));
 	oe->el = el;
+	oe->bubble = bubble;
 
 	prv = PRIVATE(obj);
 	events = eina_hash_find(prv->listeners, type);
@@ -122,7 +135,8 @@ Type *object_type_get(void)
 
 	if (!object_type)
 	{
-		object_type = type_new(TYPE_NAME, sizeof(Object), sizeof(Object_Private), NULL, _ctor, _dtor, object_property_value_set, object_property_value_get);
+		object_type = type_new(TYPE_NAME, sizeof(Object),
+				sizeof(Object_Private), NULL, _ctor, _dtor);
 		OBJECT_ID_ID = type_property_new(object_type, "id", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, id), NULL);
 		// TODO register the type's event, with type_event_new
 	}
@@ -193,7 +207,7 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 		if (!type_instance_property_value_set(prv->type, object, prop_name, value, &prev))
 			return;
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop, &prev, value);
-		_event_dispatch(listeners, (Event *)&evt);
+		_event_dispatch(object, (Event *)&evt, EINA_FALSE);
 	}
 	else
 	{
@@ -243,11 +257,21 @@ EAPI void * object_user_data_get(Object *object, const char *name)
 EAPI void object_event_dispatch(const Object *obj, Event *e)
 {
 	Object_Private *prv;
-	Eina_List *listeners;
 
+	/* TODO set the phase on the event */
 	prv = PRIVATE(obj);
-	listeners = eina_hash_find(prv->listeners, e->type);
-	if (listeners) _event_dispatch(listeners, e);
+	_event_dispatch(obj, e, EINA_FALSE);
+	if (e->bubbles == EINA_TRUE)
+	{
+		printf("Event %s going to bubble %p %p\n", e->type, obj, prv->parent);
+		while (prv->parent)
+		{
+			Object *parent = prv->parent;
+			prv = PRIVATE(parent);
+			printf("dispatching event\n");
+			_event_dispatch(parent, e, EINA_TRUE);
+		}
+	}
 }
 
 EAPI const char * object_type_name_get(const Object *obj)
@@ -256,4 +280,41 @@ EAPI const char * object_type_name_get(const Object *obj)
 
 	prv = PRIVATE(obj);
 	return type_name_get(prv->type);
+}
+
+/**
+ *
+ * @param p
+ * @param o
+ */
+EAPI void object_child_append(Object *p, Object *o)
+{
+	if (!p->appendable)
+		return;
+	/* append the child */
+	if (p->appendable(object_type_name_get((Object *)o)))
+	{
+		Object_Private *pprv, *oprv;
+		Event_Mutation evt;
+
+		printf("Setting the parent of %p to %p\n", o, p);
+		pprv = PRIVATE(p);
+		oprv = PRIVATE(o);
+		pprv->children = eina_inlist_append(pprv->children, EINA_INLIST_GET(oprv));
+		/* TODO check that there's a parent already */
+		oprv->parent = p;
+		/* send the event */
+		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Object *)o, (Object *)p, NULL, NULL, NULL);
+		object_event_dispatch((Object *)o, (Event *)&evt);
+	}
+}
+
+/**
+ *
+ * @param p
+ * @param o
+ */
+EAPI void object_child_remove(Object *p, Object *o)
+{
+
 }

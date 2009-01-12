@@ -27,15 +27,6 @@ static void label_ctor(void *instance)
 static void label_dtor(void *label)
 {
 }
-
-static void label_property_value_set(Object *object, char *prop_name, Value *value)
-{
-}
-
-static Value *label_property_value_get(Object *object, char *prop_name)
-{
-	return NULL;
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -45,7 +36,8 @@ Type *label_type_get(void)
 
 	if (!label_type)
 	{
-		label_type = type_new(TYPE_NAME, sizeof(Label), sizeof(Label_Private), widget_type_get(), label_ctor, label_dtor, label_property_value_set, label_property_value_get);
+		label_type = type_new(TYPE_NAME, sizeof(Label), sizeof(Label_Private),
+				widget_type_get(), label_ctor, label_dtor);
 		type_property_new(label_type, "text", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Label_Private, text), NULL);
 	}
 
