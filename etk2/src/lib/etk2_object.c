@@ -20,6 +20,8 @@ struct _Object_Private
 	EINA_INLIST;
 	Eina_Inlist *children;
 	Object *parent;
+	/* we need a changed counter, to keep track of every async prop change */
+	int changed;
 };
 
 /* We use a container for the object-event in case we need
@@ -53,6 +55,7 @@ static void _ctor(void *instance)
 	prv->listeners = eina_hash_string_superfast_new(NULL);
 	prv->user = eina_hash_string_superfast_new(NULL);
 	prv->children = NULL;
+	prv->parent = NULL;
 	/* Set up the mutation event */
 	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE);
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
@@ -80,6 +83,17 @@ static void _event_dispatch(Object *obj, Event *e, Eina_Bool bubble)
 		if (oe->bubble == bubble)
 			oe->el(obj, e);
 	}
+}
+
+/* FIXME where should this be? */
+static Eina_Bool _property_changed(Object *obj)
+{
+    Eina_Bool changed_bef, changed_now;
+	Object_Private *prv;
+	prv = PRIVATE(obj);
+
+	/* get the property */
+	/* get the changed */
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -137,7 +151,7 @@ Type *object_type_get(void)
 	{
 		object_type = type_new(TYPE_NAME, sizeof(Object),
 				sizeof(Object_Private), NULL, _ctor, _dtor);
-		OBJECT_ID_ID = type_property_new(object_type, "id", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Object_Private, id), NULL);
+		OBJECT_ID_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Object_Private, id));
 		// TODO register the type's event, with type_event_new
 	}
 
@@ -208,6 +222,7 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 			return;
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop, &prev, value);
 		_event_dispatch(object, (Event *)&evt, EINA_FALSE);
+		/* TODO a property change might have an allocated string, free it */
 	}
 	else
 	{
@@ -317,4 +332,68 @@ EAPI void object_child_append(Object *p, Object *o)
 EAPI void object_child_remove(Object *p, Object *o)
 {
 
+}
+
+EAPI Object * object_parent_get(Object *o)
+{
+	Object_Private *prv;
+
+	prv = PRIVATE(o);
+	return prv->parent;
+}
+
+EAPI void object_process(Object *o)
+{
+	/* TODO check that the object is actually the top most parent
+	 * on the hierarchy?
+	 */
+	/* iterate over the childs, like the ekeko algo etc */
+#if 0
+    Ekeko_Node_Private *np;
+	Eina_Iterator *it;
+	Ekeko_Node *in;
+	Ekeko_Event_Process *e = NULL;
+
+	np = n->p;
+	/* all childs */
+	if (!np->changed)
+		return;
+	//printf("[0  Node changed %d %s %d\n", n->type, n->name, n->changed);
+	/* handle the attributes as they dont have any parent, childs or siblings */
+	if (np->type == EKEKO_NODE_ELEMENT)
+	{
+		_element_process(np);
+		if (!np->changed)
+			return;
+	}
+	/* handle childs */
+	it = eina_inlist_iterator_new(np->childs);
+	while (eina_iterator_next(it, (void **) &in))
+	{
+		int changed = in->changed;
+
+		if (!changed)
+			continue;
+
+		ekeko_node_process(in);
+		np->changed -= changed;
+		if (!np->changed)
+		{
+			break;
+		}
+	}
+	//printf(" 0] Node changed %d %s %d\n", n->type, n->name, n->changed);
+	/* post condition */
+	assert(!np->changed);
+	if (np->type == EKEKO_NODE_DOCUMENT)
+		e = (Ekeko_Event_Process *) ekeko_document_event_new(
+				(Ekeko_Document *) np, "ProcessEvents");
+	else if (np->type == EKEKO_NODE_ELEMENT)
+		e = (Ekeko_Event_Process *) ekeko_document_event_new(np->owner,
+				"ProcessEvents");
+	else
+		return;
+	ekeko_event_process_init(e, np, EKEKO_EVENT_PROCESS_PHASE_POST);
+	ekeko_node_event_dispatch(np, (Ekeko_Event *) e);
+#endif
 }

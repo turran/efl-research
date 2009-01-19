@@ -11,11 +11,11 @@
 typedef struct _Type Type;
 typedef struct _Object Object;
 typedef struct _Canvas Canvas;
-typedef struct _Container Container;
+typedef struct _Renderable Renderable;
+//typedef struct _Container Container;
 
 typedef void (*Type_Constructor)(void *);
 typedef void (*Type_Destructor)(void *);
-
-typedef void (*Type_Property_Process)(void *);
+/* TODO Add the appendable here? */
 
 #endif

@@ -29,6 +29,7 @@ Eina_Bool _appendable(const char *type)
 void _child_append_cb(const Object *o, Event *e)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
+	Canvas_Private *prv;
 
 	/* TODO check if object is the same as the event.rel or
 	 * check if the event.target is not a canvas and it is different
@@ -50,10 +51,13 @@ void _child_append_cb(const Object *o, Event *e)
 	 * What happens if the child is of type renderable *and* has renderable
 	 * objects?
 	 */
+	prv = PRIVATE(((Canvas *)em->related));
+	prv->renderables = eina_list_append(prv->renderables, o);
+
 	printf("called\n");
 }
 
-static void canvas_ctor(void *instance)
+static void _ctor(void *instance)
 {
 	Canvas *canvas;
 	Canvas_Private *prv;
@@ -62,12 +66,13 @@ static void canvas_ctor(void *instance)
 	canvas->private = prv = type_instance_private_get(canvas_type_get(), instance);
 	/* FIXME just for testing */
 	((Object *)canvas)->appendable = _appendable;
+	prv->renderables = NULL;
 	/* register to an event where some child is appended to this parent */
 	event_listener_add((Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE);
 	printf("[canvas] ctor %p %p\n", canvas, canvas->private);
 }
 
-static void canvas_dtor(void *canvas)
+static void _dtor(void *canvas)
 {
 	printf("[canvas] dtor %p\n", canvas);
 }
@@ -85,7 +90,7 @@ Type *canvas_type_get(void)
 	if (!canvas_type)
 	{
 		canvas_type = type_new(TYPE_NAME, sizeof(Canvas),
-				sizeof(Canvas_Private), object_type_get(), canvas_ctor, canvas_dtor);
+				sizeof(Canvas_Private), renderable_type_get(), _ctor, _dtor);
 	}
 
 	return canvas_type;
@@ -120,3 +125,7 @@ EAPI void canvas_obscure_add(Canvas *c, Eina_Rectangle *r)
 {
 
 }
+
+/* TODO
+ * do every feed_mouse_xxx
+ */

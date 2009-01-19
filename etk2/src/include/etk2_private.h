@@ -37,10 +37,12 @@ void event_mutation_init(Event_Mutation *em, const char *type, const Object *o,
 		const Object *rel, const Property *prop, Value *prev, Value *curr);
 /* property global */
 Property * property_new(Type *type, char *prop_name, Type_Property_Type prop_type,
-		Value_Type value_type, size_t field_offset,
-		Type_Property_Process *process_cb);
+		Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,
+		ssize_t changed_offset);
 Type * property_type_get(Property *p);
-ssize_t property_offset_get(Property *p);
+ssize_t property_curr_offset_get(Property *p);
+ssize_t property_prev_offset_get(Property *p);
 Value_Type property_value_type_get(Property *p);
+Type_Property_Type property_ptype_get(Property *p);
 
 #endif

@@ -48,7 +48,7 @@ Type *widget_type_get(void)
 	{
 		widget_type = type_new(TYPE_NAME, sizeof(Widget),
 				sizeof(Widget_Private), object_type_get(), _ctor, _dtor);
-		type_property_new(widget_type, "theme", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Widget_Private, theme), NULL);
+		TYPE_PROP_SINGLE_ADD(widget_type, "theme", PROPERTY_STRING, OFFSET(Widget_Private, theme));
 	}
 
 	return widget_type;

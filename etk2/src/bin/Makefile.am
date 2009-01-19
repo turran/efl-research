@@ -18,3 +18,5 @@ etk2_test.c
 
 etk2_test_LDADD = $(top_builddir)/src/lib/libetk2.la \
 		 @EINA_LIBS@ @EVAS_LIBS@ @ECORE_LIBS@ @EDJE_LIBS@
+
+etk2_test_DEPENDENCIES = $(top_builddir)/src/lib/libetk2.la

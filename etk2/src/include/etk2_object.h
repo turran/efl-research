@@ -25,5 +25,6 @@ EAPI void object_child_append(Object *p, Object *o);
 EAPI void object_child_remove(Object *p, Object *o);
 EAPI void object_event_dispatch(const Object *object, Event *evt);
 EAPI const char * object_type_name_get(const Object *obj);
+EAPI Object * object_parent_get(Object *o);
 
 #endif

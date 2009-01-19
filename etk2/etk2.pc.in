@@ -5,9 +5,9 @@ includedir=@includedir@
 datarootdir=@datarootdir@
 datadir=@datadir@
 
-Name: etk
+Name: etk2
 Description: Enlightenment Foundations Library based toolkit.
 Requires: @requirements@
 Version: @VERSION@
-Libs: -L${libdir} -letk
-Cflags: -I${includedir} -I${includedir}/etk
+Libs: -L${libdir} -letk2
+Cflags: -I${includedir} -I${includedir}/etk2

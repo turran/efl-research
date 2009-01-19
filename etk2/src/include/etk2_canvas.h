@@ -11,7 +11,11 @@ typedef struct _Canvas_Private Canvas_Private;
 
 struct _Canvas
 {
-	Object parent;
+	Renderable parent;
+	/* TODO add the public functions like
+	 * the flush function
+	 */
+	void (*flush)(Canvas *, Eina_Rectangle *);
 	Canvas_Private *private;
 };
 

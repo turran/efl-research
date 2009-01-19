@@ -44,13 +44,27 @@ static size_t type_size_get(Type *type)
 	return type->size + type->priv_size + parent_size;
 }
 
-static void * _instance_property_offset_get(Type *type, Property *prop, void *instance)
+static inline void * _instance_property_offset_get(Type *type, Property *prop,
+		ssize_t poffset, void *instance)
 {
 	Type *pt = property_type_get(prop);
-	ssize_t poffset = property_offset_get(prop);
 
 	int offset = type_public_size_get(type) + type_private_size_get(pt->parent);
 	return (char *)instance + offset + poffset;
+}
+
+static void * _instance_property_curr_ptr_get(Type *type, Property *prop, void *instance)
+{
+	ssize_t poffset = property_curr_offset_get(prop);
+
+	return _instance_property_offset_get(type, prop, poffset, instance);
+}
+
+static void * _instance_property_prev_ptr_get(Type *type, Property *prop, void *instance)
+{
+	ssize_t poffset = property_prev_offset_get(prop);
+
+	return _instance_property_offset_get(type, prop, poffset, instance);
 }
 
 static void type_destruct_internal(Type *type, void *object)
@@ -85,6 +99,21 @@ static Property *_property_get(Type *type, const char *prop_name)
 	return property;
 }
 
+static inline void _property_string_set(Value *vc, Value *vp, char **c, char **p)
+{
+	char **str = (char**)c;
+	if (vp) vp->value.string_value = *str;
+	*str = strdup(vc->value.string_value);
+	/* TODO cmp curr and prev and update the change flag */
+}
+
+static inline void _property_int_set(Value *vc, Value *vp, int *c, int *p)
+{
+	if (vp) vp->value.int_value = *c;
+	*c = vc->value.int_value;
+	/* TODO cmp curr and prev and update the change flag */
+}
+
 /* TODO should we register types per document?
  * Note that type_new_name_from wont work until the that type has been
  * added i.e first calling type_new()
@@ -116,25 +145,48 @@ void * type_instance_private_get_internal(Type *final, Type *t, void *instance)
  * @param instance
  * @param prop_name
  * @param value
+ *
+ * TODO shouldnt we put this function on object.c?
  */
 Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Value *value, Value *old)
 {
-	void *curr;
 	Property *property;
+	void *curr;
+	void *prev;
 
 	if (type == NULL || instance == NULL || prop_name == NULL || value == NULL)
 		return EINA_FALSE;
 	property = _property_get(type, prop_name);
 	if (!property)
 		return EINA_FALSE;
-	curr = _instance_property_offset_get(type, property, instance);
-
-	if (property_value_type_get(property) == PROPERTY_STRING)
+	curr = _instance_property_curr_ptr_get(type, property, instance);
+	/* get the previous state if needed */
+	if (property_ptype_get(property) == PROPERTY_VALUE_DUAL_STATE)
 	{
-		//printf("[type] property->type->name = %s with size = %d\n", property->type->name, property->type->size);
-		char **str = (char**)curr;
-		if (old) old->value.string_value = *str;
-		*str = strdup(value->value.string_value);
+		prev = _instance_property_prev_ptr_get(type, property, instance);
+		/* TODO also get the changed */
+	}
+	else
+		prev = NULL;
+
+	/* set *curr = value
+	 * set old = old curr in case of single state
+	 * TODO cmp *prev with *curr
+	 * TODO check the change flag and update it if needed
+	 */
+	switch (property_value_type_get(property))
+	{
+		case PROPERTY_STRING:
+		_property_string_set(value, old, (char **)curr, (char **)prev);
+		break;
+
+		case PROPERTY_INT:
+		_property_int_set(value, old, (int *)curr, (int *)prev);
+		break;
+
+		/* compare both, check the changed flag, etc */
+		default:
+		break;
 	}
 	return EINA_TRUE;
 }
@@ -154,7 +206,7 @@ void type_instance_property_value_get(Type *type, void *instance, char *prop_nam
 	property = _property_get(type, prop_name);
 	if (!property)
 		return;
-	curr = _instance_property_offset_get(type, property, instance);
+	curr = _instance_property_curr_ptr_get(type, property, instance);
 	value_set(v, property_value_type_get(property), curr);
 }
 
@@ -249,24 +301,10 @@ void type_instance_delete(void *instance)
  */
 Property_Id type_property_new(Type *type, char *prop_name,
 		Type_Property_Type prop_type, Value_Type value_type,
-		size_t field_offset, Type_Property_Process *process_cb)
+		ssize_t curr_offset, ssize_t prev_offset, ssize_t changed_offset)
 {
 	Property *property;
 
-	if (!type || !prop_name)
-		return 0;
-
-	property = property_new(type, prop_name, prop_type, value_type, field_offset, process_cb);
-	eina_hash_add(type->properties, prop_name, property);
-
-	return property_id_get(property);
-}
-
-#if 0
-void type_property_new(Type *type, char *prop_name,
-		Type_Property_Type prop_type, Value_Type value_type,
-		ssize_t field_offset, ssize_t prev_offset, ssize_t changed)
-{
 	/* How to handle the changed thing?
 	 * usually you do foo_changed:1
 	 * but is impossible to get offset of a bit field (man offsetof)
@@ -276,8 +314,15 @@ void type_property_new(Type *type, char *prop_name,
 	 * for a change after the curr == prev comparision in case it has changed
 	 *
 	 */
+	if (!type || !prop_name)
+		return 0;
+
+	property = property_new(type, prop_name, prop_type, value_type,
+			curr_offset, prev_offset, changed_offset);
+	eina_hash_add(type->properties, prop_name, property);
+
+	return property_id_get(property);
 }
-#endif
 
 EAPI void * type_instance_private_get(Type *t, void *instance)
 {

@@ -39,7 +39,7 @@ Type *button_type_get(void)
 	{
 		button_type = type_new(TYPE_NAME, sizeof(Button), sizeof(Button_Private),
 				widget_type_get(), button_ctor, button_dtor);
-		type_property_new(button_type, "label", PROPERTY_VALUE_SINGLE_STATE, PROPERTY_STRING, OFFSET(Button_Private, label), NULL);
+		TYPE_PROP_SINGLE_ADD(button_type, "label", PROPERTY_STRING, OFFSET(Button_Private, label));
 	}
 
 	return button_type;

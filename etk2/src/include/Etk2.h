@@ -9,9 +9,9 @@
 #include <etk2_type.h>
 #include <etk2_event.h>
 #include <etk2_object.h>
-#include <etk2_canvas.h>
 #include <etk2_renderable.h>
-
+#include <etk2_canvas.h>
+/* TODO remove this */
 #include <etk2_widget.h>
 #include <etk2_button.h>
 #include <etk2_label.h>
