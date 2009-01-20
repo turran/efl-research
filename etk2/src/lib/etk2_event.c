@@ -13,12 +13,14 @@
  *                                 Global                                     *
  *============================================================================*/
 void event_mutation_init(Event_Mutation *em, const char *type, const Object *o,
-		const Object *rel, const Property *prop, Value *prev, Value *curr)
+		const Object *rel, const Property *prop, Value *prev, Value *curr,
+		Event_Mutation_State state)
 {
 	event_init((Event *)em, type, o, EINA_TRUE);
 	em->related = rel;
 	em->prev = prev;
 	em->curr = curr;
+	em->state = state;
 	if (prop)
 	{
 		em->prop = property_name_get(prop);

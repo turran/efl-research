@@ -20,6 +20,10 @@ void value_set(Value *v, Value_Type vtype, void *val)
 		v->value.string_value = *(char **)val;
 		break;
 
+		case PROPERTY_INT:
+		v->value.int_value = *(int *)val;
+		break;
+
 		default:
 		break;
 	}

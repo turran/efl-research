@@ -16,10 +16,21 @@
 struct _Renderable_Private
 {
 	Canvas *canvas;
+	/* the geometry */
 	Eina_Rectangle geom;
 	Eina_Rectangle geom_prev;
 	char geom_changed;
+	/* TODO the visibility */
 };
+
+/* called whenever a double state property has changed */
+static void _properties_updated(const Object *o, Event *e)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	printf("CALLEDDDDDDDDDDDDDDDD %d\n", em->state);
+	/* TODO geometry changed */
+	/* TODO visibility changed */
+}
 
 static void _parent_set_cb(const Object *o, Event *e)
 {
@@ -50,6 +61,7 @@ static void _ctor(void *instance)
 	rend = (Renderable*) instance;
 	rend->private = prv = type_instance_private_get(renderable_type_get(), instance);
 	/* register to an event where this child is appended to a canvas parent */
+	event_listener_add((Object *)rend, EVENT_PROP_MODIFY, _properties_updated, EINA_FALSE);
 	event_listener_add((Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE);
 }
 
@@ -82,10 +94,29 @@ Type *renderable_type_get(void)
 
 EAPI void renderable_move(Renderable *r, int x, int y)
 {
-
+	/* TODO renderable geom get */
+	/* TODO change x and y */
 }
 
 EAPI void renderable_resize(Renderable *r, int w, int h)
 {
+	/* TODO renderable geom get */
+	/* TODO change w and h */
+}
 
+EAPI void renderable_geometry_set(Renderable *r, Eina_Rectangle *rect)
+{
+	Value value;
+
+	printf("[rend] geometry_set\n");
+	value_rectangle_from(&value, rect);
+	object_property_value_set((Object *)r, "geometry", &value);
+}
+
+EAPI void renderable_geometry_get(Renderable *r, Eina_Rectangle *rect)
+{
+	Renderable_Private *prv;
+
+	prv = PRIVATE(r);
+	*rect = prv->geom;
 }

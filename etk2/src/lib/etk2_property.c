@@ -47,6 +47,7 @@ Property * property_new(Type *type, char *prop_name, Type_Property_Type prop_typ
 	return property;
 }
 
+/* TODO make this getters inline on private.h */
 Type * property_type_get(Property *p)
 {
 	return p->type;
@@ -59,6 +60,11 @@ ssize_t property_curr_offset_get(Property *p)
 ssize_t property_prev_offset_get(Property *p)
 {
 	return p->prev_offset;
+}
+
+ssize_t property_changed_offset_get(Property *p)
+{
+	return p->changed_offset;
 }
 
 Value_Type property_value_type_get(Property *p)

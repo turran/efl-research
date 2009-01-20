@@ -13,13 +13,14 @@
 
 struct _Object_Private
 {
+	EINA_INLIST;
 	char *id;
 	Type *type;
 	Eina_Hash *listeners;
 	Eina_Hash *user;
-	EINA_INLIST;
 	Eina_Inlist *children;
 	Object *parent;
+	Object *rel; /* when we store an inlist we only store the private no the public memory area */
 	/* we need a changed counter, to keep track of every async prop change */
 	int changed;
 };
@@ -56,6 +57,8 @@ static void _ctor(void *instance)
 	prv->user = eina_hash_string_superfast_new(NULL);
 	prv->children = NULL;
 	prv->parent = NULL;
+	prv->changed = 0;
+	prv->rel = obj;
 	/* Set up the mutation event */
 	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE);
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
@@ -66,7 +69,7 @@ static void _dtor(void *object)
 	printf("[obj] dtor %p\n", object);
 }
 
-static void _event_dispatch(Object *obj, Event *e, Eina_Bool bubble)
+static void _event_dispatch(const Object *obj, Event *e, Eina_Bool bubble)
 {
 	Eina_List *listeners;
 	Eina_Iterator *it;
@@ -85,16 +88,83 @@ static void _event_dispatch(Object *obj, Event *e, Eina_Bool bubble)
 	}
 }
 
-/* FIXME where should this be? */
-static Eina_Bool _property_changed(Object *obj)
+static void _change_recursive(const Object *obj)
 {
-    Eina_Bool changed_bef, changed_now;
 	Object_Private *prv;
-	prv = PRIVATE(obj);
 
-	/* get the property */
-	/* get the changed */
+	prv = PRIVATE(obj);
+	prv->changed++;
+	if (prv->parent)
+			_change_recursive(prv->parent);
 }
+
+static void _unchange_recursive(const Object *obj)
+{
+	Object_Private *prv;
+
+	prv = PRIVATE(obj);
+	prv->changed--;
+	if (prv->parent)
+		_unchange_recursive(prv->parent);
+
+}
+
+static void _pointer_single_value_set(void *ptr, Value_Type type, Value *value)
+{
+	switch (type)
+	{
+		case PROPERTY_INT:
+		*((int *)ptr) = value->value.int_value;
+		break;
+
+		case PROPERTY_STRING:
+		*((char **)ptr) = strdup(value->value.string_value);
+		break;
+
+		case PROPERTY_RECTANGLE:
+		*((Eina_Rectangle *)ptr) = value->value.rect;
+		break;
+
+		default:
+		break;
+	}
+}
+
+static void _pointer_double_value_set(void *ptr, void *prev, char *changed,
+		Value_Type type, Value *value)
+{
+	switch (type)
+	{
+		case PROPERTY_INT:
+		*((int *)ptr) = value->value.int_value;
+		if (*((int *)ptr) != *((int *)prev))
+			*changed = EINA_TRUE;
+		break;
+
+		case PROPERTY_STRING:
+		*((char **)ptr) = strdup(value->value.string_value);
+		if (!strcmp(*((char **)ptr), *((char **)prev)))
+			*changed = EINA_TRUE;
+		break;
+
+		case PROPERTY_RECTANGLE:
+
+		{
+			Eina_Rectangle *c = (Eina_Rectangle *)ptr;
+			Eina_Rectangle *p;
+
+			*c = value->value.rect;
+			p = (Eina_Rectangle *)prev;
+			if ((c->x != p->x) || (c->y != p->y) || (c->w != p->w) || (c->h != p->h))
+				*changed = EINA_TRUE;
+		}
+		break;
+
+		default:
+		break;
+	}
+}
+
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -203,7 +273,12 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 {
 	Object_Private *prv;
 	Property *prop;
-	Eina_List *listeners;
+	Value prev_value;
+	Event_Mutation evt;
+
+	void *curr, *prev;
+	char *changed;
+
 	RETURN_IF(object == NULL || prop_name == NULL);
 
 	prv = PRIVATE(object);
@@ -212,22 +287,35 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 	prop = type_property_get(prv->type, prop_name);
 	if (!prop)
 		return;
-	listeners = eina_hash_find(prv->listeners, EVENT_PROP_MODIFY);
-	if (listeners)
+	type_instance_property_pointers_get(prv->type, prop, object, &curr, &prev, &changed);
+	printf("TYPE = %d\n", property_ptype_get(prop));
+	if (property_ptype_get(prop) == PROPERTY_VALUE_DUAL_STATE)
 	{
-		Event_Mutation evt;
-		Value prev;
+	    Eina_Bool changed_bef, changed_now;
 
-		if (!type_instance_property_value_set(prv->type, object, prop_name, value, &prev))
-			return;
-		event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop, &prev, value);
-		_event_dispatch(object, (Event *)&evt, EINA_FALSE);
-		/* TODO a property change might have an allocated string, free it */
+	    changed_bef = *changed;
+	    value_set(&prev_value, property_value_type_get(prop), prev);
+	    _pointer_double_value_set(curr, prev, changed, property_value_type_get(prop), value);
+	    changed_now = *changed;
+	    if (changed_bef && !changed_now)
+	    {
+	    	_unchange_recursive(object);
+		}
+		else if (!changed_bef && changed_now)
+		{
+			_change_recursive(object);
+		}
+	    printf("bef = %d now = %d\n", changed_bef, changed_now);
 	}
 	else
 	{
-		type_instance_property_value_set(prv->type, object, prop_name, value, NULL);
+		value_set(&prev_value, property_value_type_get(prop), curr);
+		_pointer_single_value_set(curr, property_value_type_get(prop), value);
 	}
+	/* send the event */
+	event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop,
+			&prev_value, value, EVENT_MUTATION_STATE_CURR);
+	object_event_dispatch((Object *)object, (Event *)&evt);
 }
 /**
  *
@@ -312,14 +400,19 @@ EAPI void object_child_append(Object *p, Object *o)
 		Object_Private *pprv, *oprv;
 		Event_Mutation evt;
 
-		printf("Setting the parent of %p to %p\n", o, p);
+
 		pprv = PRIVATE(p);
 		oprv = PRIVATE(o);
+		printf("Setting the parent of %p (%p) to %p (%p) \n", o, oprv, p, pprv);
 		pprv->children = eina_inlist_append(pprv->children, EINA_INLIST_GET(oprv));
-		/* TODO check that there's a parent already */
+		/* TODO check that there's a parent already
+		 * if so, send an event informing that the child has been removed
+		 * from that parent
+		 */
 		oprv->parent = p;
 		/* send the event */
-		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Object *)o, (Object *)p, NULL, NULL, NULL);
+		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Object *)o, (Object *)p, NULL, NULL, NULL,
+				EVENT_MUTATION_STATE_CURR);
 		object_event_dispatch((Object *)o, (Event *)&evt);
 	}
 }
@@ -342,49 +435,83 @@ EAPI Object * object_parent_get(Object *o)
 	return prv->parent;
 }
 
+/**
+ * @brief This function will update every two state attribute in case it has
+ * changed
+ * @param o
+ */
 EAPI void object_process(Object *o)
 {
+	Object_Private *prv;
+	Object_Private *in;
+	Eina_Iterator *it;
+	Property_Iterator *pit;
+	Property *prop;
+
 	/* TODO check that the object is actually the top most parent
 	 * on the hierarchy?
 	 */
-	/* iterate over the childs, like the ekeko algo etc */
-#if 0
-    Ekeko_Node_Private *np;
-	Eina_Iterator *it;
-	Ekeko_Node *in;
-	Ekeko_Event_Process *e = NULL;
-
-	np = n->p;
+	prv = PRIVATE(o);
 	/* all childs */
-	if (!np->changed)
+	if (!prv->changed)
 		return;
-	//printf("[0  Node changed %d %s %d\n", n->type, n->name, n->changed);
-	/* handle the attributes as they dont have any parent, childs or siblings */
-	if (np->type == EKEKO_NODE_ELEMENT)
+	printf("[0  Object changed %d\n", prv->changed);
+	/* TODO handle the attributes as they dont have any parent, childs or siblings */
+	pit = type_property_iterator_new(prv->type);
+	while (type_property_iterator_next(pit, &prop))
 	{
-		_element_process(np);
-		if (!np->changed)
+		Value prev_value, curr_value;
+		Event_Mutation evt;
+		void *curr, *prev;
+		char *changed;
+
+		if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
+			continue;
+		type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
+		if (!(*changed))
+			continue;
+		printf("[1 updating %s %p\n", property_name_get(prop), changed);
+
+		/* update the property */
+		*changed = EINA_FALSE;
+		prv->changed--;
+		/* send the mutation event */
+	    value_set(&prev_value, property_value_type_get(prop), prev);
+	    value_set(&curr_value, property_value_type_get(prop), curr);
+		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
+				&curr_value, EVENT_MUTATION_STATE_POST);
+		object_event_dispatch(o, (Event *)&evt);
+		/* TODO update prev */
+		if (!prv->changed)
+		{
+			type_property_iterator_free(pit);
+			printf(" 0] Object changed %d (only attributes)\n", prv->changed);
 			return;
+		}
 	}
 	/* handle childs */
-	it = eina_inlist_iterator_new(np->childs);
+	it = eina_inlist_iterator_new(prv->children);
 	while (eina_iterator_next(it, (void **) &in))
 	{
-		int changed = in->changed;
+		int changed;
+
+		changed = in->changed;
 
 		if (!changed)
 			continue;
 
-		ekeko_node_process(in);
-		np->changed -= changed;
-		if (!np->changed)
+		object_process(in->rel);
+		prv->changed -= changed;
+		if (!prv->changed)
 		{
 			break;
 		}
 	}
-	//printf(" 0] Node changed %d %s %d\n", n->type, n->name, n->changed);
-	/* post condition */
-	assert(!np->changed);
+	printf(" 0] Object changed %d\n", prv->changed);
+	/* TODO Event */
+#if 0
+		/* post condition */
+	assert(!prv->changed);
 	if (np->type == EKEKO_NODE_DOCUMENT)
 		e = (Ekeko_Event_Process *) ekeko_document_event_new(
 				(Ekeko_Document *) np, "ProcessEvents");

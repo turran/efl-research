@@ -30,5 +30,7 @@ struct _Renderable
 };
 
 Type *renderable_type_get(void);
+EAPI void renderable_geometry_set(Renderable *r, Eina_Rectangle *rect);
+EAPI void renderable_geometry_get(Renderable *r, Eina_Rectangle *rect);
 
 #endif /* ETK2_RENDERABLE_H_ */

@@ -29,12 +29,20 @@ Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *pro
 void type_instance_property_value_get(Type *type, void *instance, char *prop_name, Value *value);
 Property * type_property_get(Type *t, const char *name);
 const char * type_name_get(Type *t);
+void type_instance_property_pointers_get(Type *t, Property *prop, void *instance,
+		void **curr, void **prev, char **changed);
+
+typedef struct _Property_Iterator Property_Iterator;
+Property_Iterator * type_property_iterator_new(Type *t);
+Eina_Bool type_property_iterator_next(Property_Iterator *pit, Property **prop);
+void type_property_iterator_free(Property_Iterator *pit);
 
 /* value global */
 void value_set(Value *v, Value_Type vtype, void *val);
 /* event global */
 void event_mutation_init(Event_Mutation *em, const char *type, const Object *o,
-		const Object *rel, const Property *prop, Value *prev, Value *curr);
+		const Object *rel, const Property *prop, Value *prev, Value *curr,
+		Event_Mutation_State state);
 /* property global */
 Property * property_new(Type *type, char *prop_name, Type_Property_Type prop_type,
 		Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,
@@ -42,6 +50,7 @@ Property * property_new(Type *type, char *prop_name, Type_Property_Type prop_typ
 Type * property_type_get(Property *p);
 ssize_t property_curr_offset_get(Property *p);
 ssize_t property_prev_offset_get(Property *p);
+ssize_t property_changed_offset_get(Property *p);
 Value_Type property_value_type_get(Property *p);
 Type_Property_Type property_ptype_get(Property *p);
 

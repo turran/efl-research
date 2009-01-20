@@ -18,14 +18,22 @@ typedef struct _Event
 #define EVENT_OBJECT_APPEND "ObjectAppend"
 #define EVENT_OBJECT_REMOVE "ObjectRemove"
 
+typedef enum _Event_Mutation_State
+{
+	EVENT_MUTATION_STATE_PRE,
+	EVENT_MUTATION_STATE_CURR,
+	EVENT_MUTATION_STATE_POST,
+} Event_Mutation_State;
+
 typedef struct _Event_Mutation
 {
 	Event event;
-	const Object *related;
-	Value *prev;
-	Value *curr;
-	const char *prop;
-	Property_Id prop_id;
+	Event_Mutation_State state; /* pre/post (async) curr (async/sync) */
+	const Object *related; /* parent in case of child_append/remove */
+	Value *prev; /* previous value */
+	Value *curr; /* current value */
+	const char *prop; /* property name */
+	Property_Id prop_id; /* property id */
 } Event_Mutation;
 
 typedef struct _Event_Property_Int

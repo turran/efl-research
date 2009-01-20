@@ -57,13 +57,15 @@ static inline void value_str_from(Value *v, char *str)
 
 static inline void value_rectangle_from(Value *v, Eina_Rectangle *rect)
 {
-
+	v->value.rect = *rect;
 }
 
 static inline void value_rectangle_coords_from(Value *v, int x, int y, int w, int h)
 {
-
+	v->value.rect.x = x;
+	v->value.rect.y = y;
+	v->value.rect.w = w;
+	v->value.rect.h = h;
 }
-
 
 #endif /* ETK_VALUE_H_ */

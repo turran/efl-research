@@ -53,16 +53,23 @@ static inline void * _instance_property_offset_get(Type *type, Property *prop,
 	return (char *)instance + offset + poffset;
 }
 
-static void * _instance_property_curr_ptr_get(Type *type, Property *prop, void *instance)
+static inline void * _instance_property_curr_ptr_get(Type *type, Property *prop, void *instance)
 {
 	ssize_t poffset = property_curr_offset_get(prop);
 
 	return _instance_property_offset_get(type, prop, poffset, instance);
 }
 
-static void * _instance_property_prev_ptr_get(Type *type, Property *prop, void *instance)
+static inline void * _instance_property_prev_ptr_get(Type *type, Property *prop, void *instance)
 {
 	ssize_t poffset = property_prev_offset_get(prop);
+
+	return _instance_property_offset_get(type, prop, poffset, instance);
+}
+
+static inline void * _instance_property_changed_ptr_get(Type *type, Property *prop, void *instance)
+{
+	ssize_t poffset = property_changed_offset_get(prop);
 
 	return _instance_property_offset_get(type, prop, poffset, instance);
 }
@@ -99,19 +106,27 @@ static Property *_property_get(Type *type, const char *prop_name)
 	return property;
 }
 
-static inline void _property_string_set(Value *vc, Value *vp, char **c, char **p)
+static inline void _property_string_set(Value *vc, Value *vp, char **c, char **p, char *changed)
 {
 	char **str = (char**)c;
 	if (vp) vp->value.string_value = *str;
 	*str = strdup(vc->value.string_value);
 	/* TODO cmp curr and prev and update the change flag */
+	if (p)
+	{
+
+	}
 }
 
-static inline void _property_int_set(Value *vc, Value *vp, int *c, int *p)
+static inline void _property_int_set(Value *vc, Value *vp, int *c, int *p, char *changed)
 {
 	if (vp) vp->value.int_value = *c;
 	*c = vc->value.int_value;
 	/* TODO cmp curr and prev and update the change flag */
+	if (p)
+	{
+
+	}
 }
 
 /* TODO should we register types per document?
@@ -139,57 +154,6 @@ void * type_instance_private_get_internal(Type *final, Type *t, void *instance)
 	printf("[type] private get %s (PUB=%d) %s (PRIV_OFF=%d) %p\n", final->name, type_public_size_get(final), t->name, type_private_size_get(t->parent), instance);
 	return (char *)instance + type_public_size_get(final) + type_private_size_get(t->parent);
 }
-/**
- *
- * @param type
- * @param instance
- * @param prop_name
- * @param value
- *
- * TODO shouldnt we put this function on object.c?
- */
-Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Value *value, Value *old)
-{
-	Property *property;
-	void *curr;
-	void *prev;
-
-	if (type == NULL || instance == NULL || prop_name == NULL || value == NULL)
-		return EINA_FALSE;
-	property = _property_get(type, prop_name);
-	if (!property)
-		return EINA_FALSE;
-	curr = _instance_property_curr_ptr_get(type, property, instance);
-	/* get the previous state if needed */
-	if (property_ptype_get(property) == PROPERTY_VALUE_DUAL_STATE)
-	{
-		prev = _instance_property_prev_ptr_get(type, property, instance);
-		/* TODO also get the changed */
-	}
-	else
-		prev = NULL;
-
-	/* set *curr = value
-	 * set old = old curr in case of single state
-	 * TODO cmp *prev with *curr
-	 * TODO check the change flag and update it if needed
-	 */
-	switch (property_value_type_get(property))
-	{
-		case PROPERTY_STRING:
-		_property_string_set(value, old, (char **)curr, (char **)prev);
-		break;
-
-		case PROPERTY_INT:
-		_property_int_set(value, old, (int *)curr, (int *)prev);
-		break;
-
-		/* compare both, check the changed flag, etc */
-		default:
-		break;
-	}
-	return EINA_TRUE;
-}
 
 Property * type_property_get(Type *t, const char *name)
 {
@@ -214,6 +178,61 @@ const char * type_name_get(Type *t)
 {
 	return t->name;
 }
+
+void type_instance_property_pointers_get(Type *t, Property *prop, void *instance,
+		void **curr, void **prev, char **changed)
+{
+	Type *pt = property_type_get(prop);
+	ssize_t coffset = property_curr_offset_get(prop);
+	ssize_t poffset = property_prev_offset_get(prop);
+	ssize_t choffset = property_changed_offset_get(prop);
+
+	int offset = type_public_size_get(t) + type_private_size_get(pt->parent);
+	*curr = (char *)instance + offset + coffset;
+	*prev = (char *)instance + offset + poffset;
+	*changed = (char *)instance + offset + choffset;
+}
+
+struct _Property_Iterator
+{
+	Eina_Iterator *it;
+	Type *t;
+};
+
+Property_Iterator * type_property_iterator_new(Type *t)
+{
+	Property_Iterator *pit = malloc(sizeof(Property_Iterator));
+	pit->t = t;
+	pit->it = eina_hash_iterator_data_new(t->properties);
+
+	return pit;
+}
+
+Eina_Bool type_property_iterator_next(Property_Iterator *pit, Property **prop)
+{
+	/* return false on no more properties */
+	if (!eina_iterator_next(pit->it, (void **)prop))
+	{
+		do
+		{
+			pit->t = pit->t->parent;
+			eina_iterator_free(pit->it);
+			if (!pit->t)
+				return EINA_FALSE;
+			pit->it = eina_hash_iterator_data_new(pit->t->properties);
+		} while (!eina_iterator_next(pit->it, (void **)prop));
+
+		return EINA_TRUE;
+	}
+	return EINA_TRUE;
+}
+
+void type_property_iterator_free(Property_Iterator *pit)
+{
+	eina_iterator_free(pit->it);
+	free(pit);
+}
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
