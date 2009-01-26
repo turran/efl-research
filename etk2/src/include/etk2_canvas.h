@@ -20,5 +20,6 @@ struct _Canvas
 };
 
 Type *canvas_type_get(void);
+void canvas_size_set(Canvas *c, int w, int h);
 
 #endif /* ETK2_CANVAS_H_ */

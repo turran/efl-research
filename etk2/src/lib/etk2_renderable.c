@@ -94,21 +94,41 @@ Type *renderable_type_get(void)
 
 EAPI void renderable_move(Renderable *r, int x, int y)
 {
-	/* TODO renderable geom get */
-	/* TODO change x and y */
+	Renderable_Private *prv;
+	Eina_Rectangle move;
+	Value value;
+
+	/* TODO avoid this duplicate */
+	prv = PRIVATE(r);
+	move.x = x;
+	move.y = y;
+	move.w = prv->geom.w;
+	move.h = prv->geom.h;
+	value_rectangle_from(&value, &move);
+	object_property_value_set((Object *)r, "geometry", &value);
 }
 
 EAPI void renderable_resize(Renderable *r, int w, int h)
 {
-	/* TODO renderable geom get */
-	/* TODO change w and h */
+	Renderable_Private *prv;
+	Eina_Rectangle resize;
+	Value value;
+
+	/* TODO avoid this duplicate */
+	prv = PRIVATE(r);
+	resize.w = w;
+	resize.h = h;
+	resize.w = prv->geom.x;
+	resize.h = prv->geom.y;
+	value_rectangle_from(&value, &resize);
+	object_property_value_set((Object *)r, "geometry", &value);
 }
 
 EAPI void renderable_geometry_set(Renderable *r, Eina_Rectangle *rect)
 {
 	Value value;
 
-	printf("[rend] geometry_set\n");
+	printf("[rend] geometry_set %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
 	value_rectangle_from(&value, rect);
 	object_property_value_set((Object *)r, "geometry", &value);
 }

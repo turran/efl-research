@@ -281,7 +281,7 @@ void *type_instance_new(Type *type)
 
 	if (!type)
 		return NULL;
-	instance = malloc(type_size_get(type));
+	instance = calloc(1, type_size_get(type));
 	if (!instance)
 		return NULL;
 	object_construct(type, instance);

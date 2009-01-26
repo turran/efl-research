@@ -40,7 +40,7 @@ static void _id_modify(const Object *o, Event *e)
 
 	/* TODO we should avoid that many strcmp() */
 	//if (!strcmp(em->prop, "id"))
-	if (em->prop_id == OBJECT_ID_ID)
+	if (em->prop_id == OBJECT_PROPERTY_ID)
 	{
 		/* Send the idChanged event */
 	}
@@ -211,7 +211,7 @@ void object_event_listener_remove(Object *obj, const char *type,
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Property_Id OBJECT_ID_ID;
+Property_Id OBJECT_PROPERTY_ID;
 
 Type *object_type_get(void)
 {
@@ -221,7 +221,7 @@ Type *object_type_get(void)
 	{
 		object_type = type_new(TYPE_NAME, sizeof(Object),
 				sizeof(Object_Private), NULL, _ctor, _dtor);
-		OBJECT_ID_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Object_Private, id));
+		OBJECT_PROPERTY_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Object_Private, id));
 		// TODO register the type's event, with type_event_new
 	}
 
@@ -291,21 +291,21 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 	printf("TYPE = %d\n", property_ptype_get(prop));
 	if (property_ptype_get(prop) == PROPERTY_VALUE_DUAL_STATE)
 	{
-	    Eina_Bool changed_bef, changed_now;
+		Eina_Bool changed_bef, changed_now;
 
-	    changed_bef = *changed;
-	    value_set(&prev_value, property_value_type_get(prop), prev);
-	    _pointer_double_value_set(curr, prev, changed, property_value_type_get(prop), value);
-	    changed_now = *changed;
-	    if (changed_bef && !changed_now)
-	    {
-	    	_unchange_recursive(object);
+		changed_bef = *changed;
+		value_set(&prev_value, property_value_type_get(prop), prev);
+		_pointer_double_value_set(curr, prev, changed, property_value_type_get(prop), value);
+		changed_now = *changed;
+		if (changed_bef && !changed_now)
+		{
+			_unchange_recursive(object);
 		}
 		else if (!changed_bef && changed_now)
 		{
 			_change_recursive(object);
 		}
-	    printf("bef = %d now = %d\n", changed_bef, changed_now);
+		printf("bef = %d now = %d\n", changed_bef, changed_now);
 	}
 	else
 	{
@@ -476,8 +476,8 @@ EAPI void object_process(Object *o)
 		*changed = EINA_FALSE;
 		prv->changed--;
 		/* send the mutation event */
-	    value_set(&prev_value, property_value_type_get(prop), prev);
-	    value_set(&curr_value, property_value_type_get(prop), curr);
+		value_set(&prev_value, property_value_type_get(prop), prev);
+		value_set(&curr_value, property_value_type_get(prop), curr);
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
 		object_event_dispatch(o, (Event *)&evt);

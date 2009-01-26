@@ -2,7 +2,7 @@
 #define _OBJECT_H
 
 #define OBJECT_ID_CHANGED "idChanged"
-extern Property_Id OBJECT_ID_ID;
+extern Property_Id OBJECT_PROPERTY_ID;
 
 typedef struct _Object_Private Object_Private;
 

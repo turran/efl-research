@@ -15,7 +15,9 @@
 
 struct _Canvas_Private
 {
+	Eina_Tiler *tiler;
 	Eina_List *renderables;
+	/* TODO obscures */
 	Eina_Inlist *inputs;
 };
 
@@ -26,7 +28,38 @@ Eina_Bool _appendable(const char *type)
 
 }
 
-void _child_append_cb(const Object *o, Event *e)
+static void _prop_modify_cb(const Object *o, Event *e)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	/* check if the change is the rectangle */
+	if ((em->state == EVENT_MUTATION_STATE_POST) && (!strcmp(em->prop, "geometry")))
+	{
+		Canvas_Private *prv;
+		Eina_Tiler *tiler;
+
+		prv = PRIVATE(((Canvas *)o));
+		tiler = prv->tiler;
+		if (tiler)
+		{
+			eina_tiler_del(tiler);
+		}
+		printf("Changing geometry!!!!!!!!!!\n");
+		prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
+		/* TODO In case it already has a tiler, mark everything again */
+		if (tiler)
+		{
+
+		}
+	}
+}
+
+/* Called whenever the process has finished on this element */
+static void _processed_cb(const Object *o, Event *e)
+{
+	/* iterate over the list of renderables */
+}
+
+static void _child_append_cb(const Object *o, Event *e)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Canvas_Private *prv;
@@ -52,6 +85,10 @@ void _child_append_cb(const Object *o, Event *e)
 	 * objects?
 	 */
 	prv = PRIVATE(((Canvas *)em->related));
+	/* TODO add a callback when the renderable changes the geometry */
+	/* TODO move the list_append to the above callback *if* the object is
+	 * inside the canvas geometry
+	 */
 	prv->renderables = eina_list_append(prv->renderables, o);
 
 	printf("called\n");
@@ -69,6 +106,9 @@ static void _ctor(void *instance)
 	prv->renderables = NULL;
 	/* register to an event where some child is appended to this parent */
 	event_listener_add((Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE);
+	/* register the event where the size is changed */
+	event_listener_add((Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
+	/* TODO add the event listener when the object has finished the process() function */
 	printf("[canvas] ctor %p %p\n", canvas, canvas->private);
 }
 
@@ -105,6 +145,16 @@ Canvas * canvas_new(void)
 	return canvas;
 }
 
+void canvas_size_set(Canvas *c, int w, int h)
+{
+	Eina_Rectangle rect;
+
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = w;
+	rect.h = h;
+	renderable_geometry_set((Renderable *)c, &rect);
+}
 /**
  * @brief Marks a rectangle on the canvas as damaged, this area will be
  * processed again. When the canvas process that area it will no longer be
@@ -113,7 +163,13 @@ Canvas * canvas_new(void)
  */
 EAPI void canvas_damage_add(Canvas *c, Eina_Rectangle *r)
 {
-	//_damage_add(c, r);
+	Canvas_Private *prv;
+
+	prv = PRIVATE(c);
+	if (prv->tiler)
+	{
+		//_damage_add(c, r);
+	}
 }
 /**
  * @brief Marks a rectangle area on the canvas that will never be processed.
@@ -123,7 +179,10 @@ EAPI void canvas_damage_add(Canvas *c, Eina_Rectangle *r)
  */
 EAPI void canvas_obscure_add(Canvas *c, Eina_Rectangle *r)
 {
+	Canvas_Private *prv;
 
+	prv = PRIVATE(c);
+	//_obscures_add(c, r);
 }
 
 /* TODO
