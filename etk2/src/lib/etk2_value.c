@@ -24,6 +24,10 @@ void value_set(Value *v, Value_Type vtype, void *val)
 		v->value.int_value = *(int *)val;
 		break;
 
+		case PROPERTY_RECTANGLE:
+		v->value.rect = *(Eina_Rectangle *)val;
+		break;
+
 		default:
 		break;
 	}

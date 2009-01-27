@@ -17,6 +17,7 @@ typedef struct _Event
 #define EVENT_PROP_MODIFY "PropModify"
 #define EVENT_OBJECT_APPEND "ObjectAppend"
 #define EVENT_OBJECT_REMOVE "ObjectRemove"
+#define EVENT_OBJECT_PROCESS "ObjectProcess"
 
 typedef enum _Event_Mutation_State
 {

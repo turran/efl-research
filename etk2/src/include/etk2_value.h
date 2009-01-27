@@ -68,4 +68,9 @@ static inline void value_rectangle_coords_from(Value *v, int x, int y, int w, in
 	v->value.rect.h = h;
 }
 
+static inline void value_bool_from(Value *v, Eina_Bool b)
+{
+	v->value.bool_value = b;
+}
+
 #endif /* ETK_VALUE_H_ */

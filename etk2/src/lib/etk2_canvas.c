@@ -9,7 +9,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define PRIVATE(canvas) ((Canvas_Private*)(canvas->private))
+#define PRIVATE(canvas) ((Canvas_Private *)((Canvas *)(canvas))->private)
 
 #define TYPE_NAME "Canvas"
 
@@ -23,7 +23,7 @@ struct _Canvas_Private
 
 Eina_Bool _appendable(const char *type)
 {
-	printf("appendable %s\n", type);
+	printf("[canvas] appendable %s\n", type);
 	return EINA_TRUE;
 
 }
@@ -31,8 +31,11 @@ Eina_Bool _appendable(const char *type)
 static void _prop_modify_cb(const Object *o, Event *e)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
+
 	/* check if the change is the rectangle */
-	if ((em->state == EVENT_MUTATION_STATE_POST) && (!strcmp(em->prop, "geometry")))
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	if (!strcmp(em->prop, "geometry"))
 	{
 		Canvas_Private *prv;
 		Eina_Tiler *tiler;
@@ -43,20 +46,66 @@ static void _prop_modify_cb(const Object *o, Event *e)
 		{
 			eina_tiler_del(tiler);
 		}
-		printf("Changing geometry!!!!!!!!!!\n");
+		printf("[canvas %s] Changing geometry!!!!!!!!!!\n", object_type_name_get(o));
 		prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
 		/* TODO In case it already has a tiler, mark everything again */
 		if (tiler)
 		{
 
 		}
+		printf("[canvas %s] tiler is %p\n", object_type_name_get(o), prv->tiler);
 	}
 }
 
 /* Called whenever the process has finished on this element */
-static void _processed_cb(const Object *o, Event *e)
+static void _process_cb(const Object *o, Event *e)
 {
-	/* iterate over the list of renderables */
+	Canvas *c;
+	Canvas_Private *prv;
+	Eina_Iterator *it;
+	Eina_Rectangle rect;
+
+	c = (Canvas *)o;
+	prv = PRIVATE(c);
+	if (!prv->tiler)
+		return;
+	/* TODO remove the obscures */
+	/* get the tiler render areas */
+	it = eina_tiler_iterator_new(prv->tiler);
+	while (eina_iterator_next(it, (void **)&rect))
+	{
+		Eina_Iterator *rit;
+		Renderable *r;
+
+		printf("[canvas] Redraw rectangle %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
+		/* iterate over the list of renderables */
+		/* TODO from top to bottom */
+		rit = eina_list_iterator_new(prv->renderables);
+		while (eina_iterator_next(rit, (void **)&r))
+		{
+			Eina_Rectangle geom;
+
+			renderable_geometry_get(r, &geom);
+			printf("[canvas] Rendering renderable %p (%d %d %d %d)\n", r, geom.x, geom.y, geom.w, geom.h);
+			/* intersect the geometry and the damage area */
+			if (!eina_rectangle_intersection(&geom, &rect))
+				continue;
+			/* call the draw function on the renderable */
+			r->render(r, &geom);
+		}
+		eina_iterator_free(rit);
+	}
+	eina_iterator_free(it);
+	/* iterate over the redraw rectangles and flush */
+	it = eina_tiler_iterator_new(prv->tiler);
+	while (eina_iterator_next(it, (void **)&rect))
+	{
+		if (c->flush(c, &rect))
+			break;
+	}
+	eina_iterator_free(it);
+	/* clear the tiler */
+	eina_tiler_clear(prv->tiler);
 }
 
 static void _child_append_cb(const Object *o, Event *e)
@@ -70,7 +119,7 @@ static void _child_append_cb(const Object *o, Event *e)
 	 */
 	if (!type_instance_is_of(em->related, "Renderable"))
 	{
-		printf("Is not of type renderable\n");
+		printf("[canvas %s] child is not of type renderable\n", object_type_name_get(o));
 		return;
 	}
 	/* TODO check that the child is actually an instance of a renderable type
@@ -84,14 +133,16 @@ static void _child_append_cb(const Object *o, Event *e)
 	 * What happens if the child is of type renderable *and* has renderable
 	 * objects?
 	 */
-	prv = PRIVATE(((Canvas *)em->related));
+	printf("[canvas %s] child of type renderable %s\n", object_type_name_get(o), object_type_name_get(e->target));
+	printf("[canvas %s] related %s\n", object_type_name_get(o), object_type_name_get(em->related));
+
+	prv = PRIVATE(em->related);
+	printf("[canvas %s] %p tiler = %p, canvas = %p\n", object_type_name_get(o), em->related, prv->tiler, renderable_canvas_get((Renderable *)o));
 	/* TODO add a callback when the renderable changes the geometry */
 	/* TODO move the list_append to the above callback *if* the object is
 	 * inside the canvas geometry
 	 */
-	prv->renderables = eina_list_append(prv->renderables, o);
-
-	printf("called\n");
+	prv->renderables = eina_list_append(prv->renderables, e->target);
 }
 
 static void _ctor(void *instance)
@@ -109,7 +160,8 @@ static void _ctor(void *instance)
 	/* register the event where the size is changed */
 	event_listener_add((Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
 	/* TODO add the event listener when the object has finished the process() function */
-	printf("[canvas] ctor %p %p\n", canvas, canvas->private);
+	event_listener_add((Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE);
+	printf("[canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, renderable_canvas_get((Renderable *)canvas));
 }
 
 static void _dtor(void *canvas)
@@ -130,13 +182,14 @@ Type *canvas_type_get(void)
 	if (!canvas_type)
 	{
 		canvas_type = type_new(TYPE_NAME, sizeof(Canvas),
-				sizeof(Canvas_Private), renderable_type_get(), _ctor, _dtor);
+				sizeof(Canvas_Private), renderable_type_get(),
+				_ctor, _dtor);
 	}
 
 	return canvas_type;
 }
 
-Canvas * canvas_new(void)
+EAPI Canvas * canvas_new(void)
 {
 	Canvas *canvas;
 
@@ -145,7 +198,7 @@ Canvas * canvas_new(void)
 	return canvas;
 }
 
-void canvas_size_set(Canvas *c, int w, int h)
+EAPI void canvas_size_set(Canvas *c, int w, int h)
 {
 	Eina_Rectangle rect;
 
@@ -168,7 +221,8 @@ EAPI void canvas_damage_add(Canvas *c, Eina_Rectangle *r)
 	prv = PRIVATE(c);
 	if (prv->tiler)
 	{
-		//_damage_add(c, r);
+		printf("[canvas] adding damage rectangle %d %d %d %d\n", r->x, r->y, r->w, r->h);
+		eina_tiler_rect_add(prv->tiler, r);
 	}
 }
 /**
