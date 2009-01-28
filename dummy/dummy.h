@@ -9,6 +9,7 @@
 
 #include "Etk2.h"
 #include "Ecore.h"
+#include "Ecore_Sdl.h"
 #include "SDL.h"
 
 typedef struct _Dummy_Rect_Private Dummy_Rect_Private;

@@ -1,5 +1,5 @@
-CFLAGS = -g `pkg-config --cflags etk2 sdl ecore`
-LIBS = `pkg-config --libs etk2 sdl ecore`
+CFLAGS = -g `pkg-config --cflags etk2 sdl ecore ecore-sdl`
+LIBS = `pkg-config --libs etk2 sdl ecore ecore-sdl`
 
 BINS  = dummy_test
 all: $(BINS)

@@ -26,10 +26,16 @@ static Eina_Bool _flush(Canvas *c, Eina_Rectangle *r)
 	Dummy_Canvas_Private *prv;
 
 	prv = PRIVATE(c);
-	/* in case of root flip
-	 * otherwise blt
-	 */
-	SDL_Flip(prv->s);
+	/* if root flip */
+	if (prv->root)
+	{
+		SDL_Flip(prv->s);
+	}
+	/* otherwise blt */
+	else
+	{
+
+	}
 }
 
 static void _prop_modify_cb(const Object *o, Event *e)
@@ -40,10 +46,22 @@ static void _prop_modify_cb(const Object *o, Event *e)
 	{
 		Dummy_Canvas_Private *prv = PRIVATE(o);
 
-		printf("CANVAS SIZE SET %d %d\n", em->curr->value.rect.w, em->curr->value.rect.h);
-		prv->s = SDL_SetVideoMode(em->curr->value.rect.w,
-			em->curr->value.rect.h, 32,
-			SDL_RESIZABLE | SDL_SRCALPHA | SDL_DOUBLEBUF);
+		if (prv->root)
+		{
+			printf("Setting video mode to %d %d\n", em->curr->value.rect.w, em->curr->value.rect.h);
+			prv->s = SDL_SetVideoMode(em->curr->value.rect.w,
+					em->curr->value.rect.h, 32,
+					SDL_RESIZABLE | SDL_SRCALPHA |
+					SDL_DOUBLEBUF);
+		}
+		else
+		{
+			/* TODO create normal surface
+			prv->s = SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth,
+			                        Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
+
+			*/
+		}
 	}
 
 }
@@ -89,6 +107,14 @@ Type *dummy_canvas_type_get(void)
 Dummy_Canvas * dummy_canvas_new(void)
 {
 	return type_instance_new(dummy_canvas_type_get());
+}
+
+void dummy_canvas_root_set(Dummy_Canvas *c)
+{
+	Dummy_Canvas_Private *prv;
+
+	prv = PRIVATE(c);
+	prv->root = EINA_TRUE;
 }
 
 void dummy_canvas_resize(Dummy_Canvas *c, int w, int h)
