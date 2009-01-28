@@ -33,7 +33,7 @@ typedef struct _Value
 	union
 	{
 		int int_value;
-		int bool_value:1;
+		Eina_Bool bool_value;
 		char char_value;
 		float float_value;
 		double double_value;

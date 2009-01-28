@@ -8,6 +8,7 @@ etk2_types.h \
 etk2_property.h \
 etk2_event.h \
 etk2_object.h \
+etk2_input.h \
 etk2_renderable.h \
 etk2_canvas.h \
 etk2_value.h \

@@ -24,14 +24,15 @@ struct _Renderable_Private
 		Eina_Rectangle prev;
 		char changed;
 	} geometry;
-	/* TODO the visibility */
+	/* the visibility */
 	struct
 	{
 		Eina_Bool curr;
 		Eina_Bool prev;
 		char changed;
 	} visibility;
-
+	/* this renderable is appended to the list of renderables of the canvas */
+	Eina_Bool appended;
 	/* TODO we should have a way to inform the canvas that this
 	 * renderable needs the lower object to draw in that case
 	 * also render the bottom one
@@ -44,13 +45,7 @@ static void _properties_updated(const Object *o, Event *e)
 	Event_Mutation *em = (Event_Mutation *)e;
 	Renderable_Private *prv = PRIVATE(o);
 
-	/* TODO
-	 * if visibility hidden and was show => remove from the list of
-	 * renderables
-	 * if geometry is out of canvas bounds => remove from the list of
-	 * renderables
-	 */
-	printf("[renderable %s] prop updated %s %p\n", object_type_name_get(o), em->prop, prv);
+	printf("[renderable %s] prop updated %s\n", object_type_name_get(o), em->prop);
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
 	if (!prv->canvas)
@@ -58,15 +53,22 @@ static void _properties_updated(const Object *o, Event *e)
 	/* geometry changed */
 	if (!strcmp(em->prop, "geometry"))
 	{
-		printf("[renderable %s] %p canvas is %p\n", object_type_name_get(o), o, prv->canvas);
+		/* TODO check that the renderable is appended? */
 		canvas_damage_add(prv->canvas, &em->curr->value.rect);
 		canvas_damage_add(prv->canvas, &em->prev->value.rect);
 	}
 	/* visibility changed */
 	else if (!strcmp(em->prop, "visibility"))
 	{
-		canvas_damage_add(prv->canvas, &em->curr->value.rect);
-		canvas_damage_add(prv->canvas, &em->prev->value.rect);
+		/* TODO check that the renderable is appended? */
+		{
+			Eina_Rectangle *r;
+
+			r = &prv->geometry.curr;
+			printf("%d %d %d %d\n", r->x, r->y, r->w, r->h);
+		}
+		canvas_damage_add(prv->canvas, &prv->geometry.curr);
+		canvas_damage_add(prv->canvas, &prv->geometry.prev);
 	}
 }
 
@@ -110,6 +112,20 @@ static void _dtor(void *instance)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Eina_Bool renderable_appended_get(Renderable *r)
+{
+	Renderable_Private *prv;
+
+	prv = PRIVATE(r);
+	return prv->appended;
+}
+void renderable_appended_set(Renderable *r, Eina_Bool appended)
+{
+	Renderable_Private *prv;
+
+	prv = PRIVATE(r);
+	prv->appended = appended;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -182,12 +198,22 @@ EAPI void renderable_geometry_get(Renderable *r, Eina_Rectangle *rect)
 	*rect = prv->geometry.curr;
 }
 
+EAPI void renderable_visibility_get(Renderable *r, Eina_Bool *visible)
+{
+	Renderable_Private *prv;
+
+	prv = PRIVATE(r);
+	printf("[renderable %s] visibility get %d (%d %d)\n", object_type_name_get((Object *)r), prv->visibility.curr, EINA_FALSE, EINA_TRUE);
+	*visible = prv->visibility.curr;
+}
+
 EAPI void renderable_show(Renderable *r)
 {
 	Renderable_Private *prv;
 	Value value;
 
 	prv = PRIVATE(r);
+	printf("[renderable] show\n");
 	if (prv->visibility.curr)
 		return;
 	value_bool_from(&value, EINA_TRUE);
@@ -200,6 +226,7 @@ EAPI void renderable_hide(Renderable *r)
 	Value value;
 
 	prv = PRIVATE(r);
+	printf("[renderable] hide\n");
 	if (!prv->visibility.curr)
 		return;
 	value_bool_from(&value, EINA_FALSE);
@@ -215,6 +242,7 @@ EAPI void renderable_visibility_set(Renderable *r, Eina_Bool visible)
 	if (prv->visibility.curr == visible)
 		return;
 	value_bool_from(&value, visible);
+	printf("[renderable %s] visibility set %d\n", object_type_name_get((Object *)r), value.value.bool_value);
 	object_property_value_set((Object *)r, "visibility", &value);
 }
 

@@ -9,6 +9,7 @@
 #include <etk2_type.h>
 #include <etk2_event.h>
 #include <etk2_object.h>
+#include <etk2_input.h>
 #include <etk2_renderable.h>
 #include <etk2_canvas.h>
 /* TODO remove this */

@@ -18,6 +18,10 @@ typedef struct _Event
 #define EVENT_OBJECT_APPEND "ObjectAppend"
 #define EVENT_OBJECT_REMOVE "ObjectRemove"
 #define EVENT_OBJECT_PROCESS "ObjectProcess"
+#define EVENT_UI_MOUSE_MOVE "mousemove"
+#define EVENT_UI_MOUSE_IN "mousein"
+#define EVENT_UI_MOUSE_OUT "mouseout"
+
 
 typedef enum _Event_Mutation_State
 {
@@ -36,6 +40,27 @@ typedef struct _Event_Mutation
 	const char *prop; /* property name */
 	Property_Id prop_id; /* property id */
 } Event_Mutation;
+
+typedef struct _Event_Ui
+{
+	Event event;
+	const Object *related;
+	const Input *i;
+	/* TODO for now this isnt needed but whenever the keyboard event
+	 * is finished we might find duplicate things on the mouse
+	 */
+} Event_Ui;
+
+typedef struct _Event_Mouse
+{
+	Event_Ui ui;
+	/* screen */
+	struct
+	{
+		unsigned int x;
+		unsigned int y;
+	} screen;
+} Event_Mouse;
 
 typedef struct _Event_Property_Int
 {

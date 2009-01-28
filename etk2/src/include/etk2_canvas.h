@@ -23,5 +23,8 @@ struct _Canvas
 Type *canvas_type_get(void);
 EAPI void canvas_size_set(Canvas *c, int w, int h);
 EAPI void canvas_damage_add(Canvas *c, Eina_Rectangle *r);
+EAPI void canvas_obscure_add(Canvas *c, Eina_Rectangle *r);
+EAPI Input * canvas_input_new(Canvas *c);
+EAPI Renderable * canvas_renderable_get_at_coord(Canvas *c, unsigned int x, unsigned int y);
 
 #endif /* ETK2_CANVAS_H_ */

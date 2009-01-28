@@ -17,6 +17,11 @@
 
 #define OFFSET(type, mem) ((size_t) ((char *)&((type *) 0)->mem - (char *)((type *) 0)))
 
+/* renderable global */
+Eina_Bool renderable_appended_get(Renderable *r);
+void renderable_appended_set(Renderable *r, Eina_Bool appended);
+/* input global */
+Input * input_new(Canvas *c);
 /* object global */
 Type * object_private_type_get(Object *object);
 void object_construct(Type *type, void *instance);
@@ -43,6 +48,15 @@ void value_set(Value *v, Value_Type vtype, void *val);
 void event_mutation_init(Event_Mutation *em, const char *type, const Object *o,
 		const Object *rel, const Property *prop, Value *prev, Value *curr,
 		Event_Mutation_State state);
+void event_ui_init(Event_Ui *eui, const char *type, const Object *o,
+		const Object *related, const Input *i);
+void event_mouse_move_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i, unsigned int sx, unsigned int sy);
+void event_mouse_in_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i);
+void event_mouse_out_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i);
+
 /* property global */
 Property * property_new(Type *type, char *prop_name, Type_Property_Type prop_type,
 		Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,

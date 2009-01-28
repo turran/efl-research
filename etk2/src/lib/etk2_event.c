@@ -27,6 +27,33 @@ void event_mutation_init(Event_Mutation *em, const char *type, const Object *o,
 		em->prop_id = property_id_get(prop);
 	}
 }
+void event_ui_init(Event_Ui *eui, const char *type, const Object *o,
+		const Object *related, const Input *i)
+{
+	event_init((Event *)eui, type, o, EINA_FALSE);
+	eui->related = related;
+	eui->i = i;
+}
+
+void event_mouse_move_init(Event_Mouse *em, const Object *o,
+		const Object *related, const Input *i,
+		unsigned int sx, unsigned int sy)
+{
+	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_MOVE, o, related, i);
+	em->screen.x = sx;
+	em->screen.y = sy;
+}
+
+void event_mouse_in_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i)
+{
+	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_IN, o, related, i);
+}
+void event_mouse_out_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i)
+{
+	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_OUT, o, related, i);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

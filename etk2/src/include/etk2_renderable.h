@@ -37,5 +37,6 @@ EAPI Canvas * renderable_canvas_get(Renderable *r);
 EAPI void renderable_show(Renderable *r);
 EAPI void renderable_hide(Renderable *r);
 EAPI void renderable_visibility_set(Renderable *r, Eina_Bool visible);
+EAPI void renderable_visibility_get(Renderable *r, Eina_Bool *visible);
 
 #endif /* ETK2_RENDERABLE_H_ */

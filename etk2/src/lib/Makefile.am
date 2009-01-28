@@ -13,6 +13,7 @@ EXTRA_DIST =
 libetk2_la_SOURCES = \
 etk2_value.c \
 etk2_main.c \
+etk2_input.c \
 etk2_object.c \
 etk2_property.c \
 etk2_event.c \

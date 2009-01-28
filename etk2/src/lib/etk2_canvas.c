@@ -28,6 +28,87 @@ Eina_Bool _appendable(const char *type)
 
 }
 
+/* TODO use this instead of the code below */
+static inline void _renderable_append(Canvas *c, Renderable *r,
+		Eina_Rectangle *cgeom, Eina_Rectangle *rgeom, Eina_Bool rvisible)
+{
+	Eina_Bool intersect;
+	Canvas_Private *prv;
+	prv = PRIVATE(c);
+
+	printf("[canvas] renderable append %d %d %d %d - %d %d %d %d (%d)\n",
+			cgeom->x, cgeom->y, cgeom->w, cgeom->h,
+			rgeom->x, rgeom->y, rgeom->w, rgeom->h,
+			rvisible);
+
+	intersect = eina_rectangles_intersect(rgeom, cgeom);
+	/* not visible */
+	if (!rvisible)
+	{
+		if (renderable_appended_get(r))
+		{
+			prv->renderables = eina_list_remove(prv->renderables, r);
+			renderable_appended_set(r, EINA_FALSE);
+		}
+	}
+	/* visible and not intersect */
+	else if (!intersect)
+	{
+		if (renderable_appended_get(r))
+		{
+			prv->renderables = eina_list_remove(prv->renderables, r);
+			renderable_appended_set(r, EINA_FALSE);
+		}
+	}
+	/* visible and intersect */
+	else
+	{
+		if (!renderable_appended_get(r))
+		{
+			prv->renderables = eina_list_append(prv->renderables, r);
+			renderable_appended_set(r, EINA_TRUE);
+		}
+	}
+}
+
+/* Called whenever one of its possible renderables change properties */
+static void _renderable_prop_modify_cb(const Object *o, Event *e)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Canvas *c;
+	Renderable *r = (Renderable *)o;
+
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	c = renderable_canvas_get((Renderable *)o);
+	if (!c)
+		return;
+
+	/* geometry changed */
+	if (!strcmp(em->prop, "geometry"))
+	{
+		Eina_Rectangle cgeom;
+		Eina_Bool rvisible;
+
+		renderable_geometry_get((Renderable *)c, &cgeom);
+		renderable_visibility_get(r, &rvisible);
+		printf("1 BOOL is = %d\n", rvisible);
+		_renderable_append(c, r, &cgeom, &em->curr->value.rect, rvisible);
+	}
+	/* visibility changed */
+	else if (!strcmp(em->prop, "visibility"))
+	{
+		Eina_Rectangle cgeom, rgeom;
+
+		renderable_geometry_get((Renderable *)c, &cgeom);
+		renderable_geometry_get(r, &rgeom);
+		printf("2 BOOL is = %d\n", em->curr->value.bool_value);
+		_renderable_append(c, r, &cgeom, &rgeom, em->curr->value.bool_value);
+	}
+	printf("[canvas renderable %s]\n", object_type_name_get(o));
+}
+
+
 static void _prop_modify_cb(const Object *o, Event *e)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
@@ -46,12 +127,12 @@ static void _prop_modify_cb(const Object *o, Event *e)
 		{
 			eina_tiler_del(tiler);
 		}
-		printf("[canvas %s] Changing geometry!!!!!!!!!!\n", object_type_name_get(o));
+		printf("[canvas %s] Changing geometry\n", object_type_name_get(o));
 		prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
 		/* TODO In case it already has a tiler, mark everything again */
 		if (tiler)
 		{
-
+			canvas_damage_add((Canvas *)o, &em->curr->value.rect);
 		}
 		printf("[canvas %s] tiler is %p\n", object_type_name_get(o), prv->tiler);
 	}
@@ -138,11 +219,7 @@ static void _child_append_cb(const Object *o, Event *e)
 
 	prv = PRIVATE(em->related);
 	printf("[canvas %s] %p tiler = %p, canvas = %p\n", object_type_name_get(o), em->related, prv->tiler, renderable_canvas_get((Renderable *)o));
-	/* TODO add a callback when the renderable changes the geometry */
-	/* TODO move the list_append to the above callback *if* the object is
-	 * inside the canvas geometry
-	 */
-	prv->renderables = eina_list_append(prv->renderables, e->target);
+	event_listener_add((Object *)e->target, EVENT_PROP_MODIFY, _renderable_prop_modify_cb, EINA_FALSE);
 }
 
 static void _ctor(void *instance)
@@ -239,6 +316,34 @@ EAPI void canvas_obscure_add(Canvas *c, Eina_Rectangle *r)
 	//_obscures_add(c, r);
 }
 
-/* TODO
- * do every feed_mouse_xxx
- */
+EAPI Input * canvas_input_new(Canvas *c)
+{
+	Input *i;
+
+	i = input_new(c);
+	return i;
+}
+
+EAPI Renderable * canvas_renderable_get_at_coord(Canvas *c, unsigned int x, unsigned int y)
+{
+	Canvas_Private *prv;
+	Eina_List *l;
+	Eina_Rectangle igeom;
+
+	prv = PRIVATE(c);
+	if (!prv->renderables)
+		return NULL;
+	eina_rectangle_coords_from(&igeom, x, y, 1, 1);
+	/* iterate from top most and find the renderable that matches the coords */
+	for (l = eina_list_last(prv->renderables); l; l = eina_list_prev(l))
+	{
+		Renderable *r;
+		Eina_Rectangle rgeom;
+
+		r = eina_list_data_get(l);
+		renderable_geometry_get(r, &rgeom);
+		if (eina_rectangles_intersect(&igeom, &rgeom))
+			return r;
+	}
+	return NULL;
+}

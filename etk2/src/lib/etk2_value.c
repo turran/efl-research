@@ -28,7 +28,12 @@ void value_set(Value *v, Value_Type vtype, void *val)
 		v->value.rect = *(Eina_Rectangle *)val;
 		break;
 
+		case PROPERTY_BOOL:
+		v->value.bool_value = *(Eina_Bool *)val;
+		break;
+
 		default:
+		printf("VALUE SET UNDEFINED VALUE\n");
 		break;
 	}
 }

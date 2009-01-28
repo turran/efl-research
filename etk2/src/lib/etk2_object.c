@@ -125,7 +125,12 @@ static void _pointer_single_value_set(void *ptr, Value_Type type, Value *value)
 		*((Eina_Rectangle *)ptr) = value->value.rect;
 		break;
 
+		case PROPERTY_BOOL:
+		*((Eina_Bool *)ptr) = value->value.bool_value;
+		break;
+
 		default:
+		printf("POINTER SINGLE VALUE SET UNDEFINED VALUE\n");
 		break;
 	}
 }
@@ -160,7 +165,15 @@ static void _pointer_double_value_set(void *ptr, void *prev, char *changed,
 		}
 		break;
 
+		case PROPERTY_BOOL:
+		*((Eina_Bool *)ptr) = value->value.bool_value;
+		printf("BOOL VALUE SET %d %d\n", *((Eina_Bool *)ptr), *((Eina_Bool *)prev));
+		if (*((Eina_Bool *)ptr) != *((Eina_Bool *)prev))
+			*changed = EINA_TRUE;
+		break;
+
 		default:
+		printf("POINTER DOUBLE VALUE SET UNDEFINED VALUE\n");
 		break;
 	}
 }
@@ -364,10 +377,11 @@ EAPI void object_event_dispatch(const Object *obj, Event *e)
 
 	/* TODO set the phase on the event */
 	prv = PRIVATE(obj);
+	printf("[obj] Dispatching event %s\n", e->type);
 	_event_dispatch(obj, e, EINA_FALSE);
 	if (e->bubbles == EINA_TRUE)
 	{
-		printf("Event %s going to bubble %p %p\n", e->type, obj, prv->parent);
+		printf("[obj] Event %s going to bubble %p %p\n", e->type, obj, prv->parent);
 		while (prv->parent)
 		{
 			Object *parent = prv->parent;
@@ -464,7 +478,7 @@ EAPI void object_process(Object *o)
 	/* all childs */
 	if (!prv->changed)
 		return;
-	printf("[0  Object changed %d\n", prv->changed);
+	printf("[0  Object %p %s changed %d\n", o, object_type_name_get(o), prv->changed);
 	/* TODO handle the attributes as they dont have any parent, childs or siblings */
 	pit = type_property_iterator_new(prv->type);
 	while (type_property_iterator_next(pit, &prop))
@@ -491,7 +505,8 @@ EAPI void object_process(Object *o)
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
 		object_event_dispatch(o, (Event *)&evt);
-		/* TODO update prev */
+		/* update prev */
+		_pointer_single_value_set(prev, property_value_type_get(prop), &curr_value);
 		if (!prv->changed)
 		{
 			type_property_iterator_free(pit);

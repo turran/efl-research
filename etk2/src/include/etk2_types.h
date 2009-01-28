@@ -12,6 +12,7 @@ typedef struct _Type Type;
 typedef struct _Object Object;
 typedef struct _Canvas Canvas;
 typedef struct _Renderable Renderable;
+typedef struct _Input Input;
 //typedef struct _Container Container;
 
 typedef void (*Type_Constructor)(void *);
