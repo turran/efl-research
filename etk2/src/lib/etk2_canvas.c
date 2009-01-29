@@ -20,7 +20,7 @@ struct _Canvas_Private
 	/* TODO obscures */
 	Eina_Inlist *inputs;
 };
-
+/* TODO remove this */
 Eina_Bool _appendable(const char *type)
 {
 	printf("[canvas] appendable %s\n", type);
@@ -28,7 +28,29 @@ Eina_Bool _appendable(const char *type)
 
 }
 
-/* TODO use this instead of the code below */
+void _subcanvas_in(const Object *o, Event *e)
+{
+	printf("SUBCANVAS in\n");
+	/* TODO feed the mouse in into this canvas */
+}
+
+void _subcanvas_out(const Object *o, Event *e)
+{
+	printf("SUBCANVAS out\n");
+	/* TODO feed the mouse out into this canvas */
+}
+
+void _subcanvas_move(const Object *o, Event *e)
+{
+	printf("SUBCANVAS move\n");
+	/* TODO feed the mouse move into this canvas */
+}
+
+
+/*
+ * TODO use this instead of the code below
+ * this code is as it doesnt maintain the stack hierarchy
+ */
 static inline void _renderable_append(Canvas *c, Renderable *r,
 		Eina_Rectangle *cgeom, Eina_Rectangle *rgeom, Eina_Bool rvisible)
 {
@@ -36,10 +58,12 @@ static inline void _renderable_append(Canvas *c, Renderable *r,
 	Canvas_Private *prv;
 	prv = PRIVATE(c);
 
-	printf("[canvas] renderable append %d %d %d %d - %d %d %d %d (%d)\n",
-			cgeom->x, cgeom->y, cgeom->w, cgeom->h,
+#ifdef ETK2_DEBUG
+	printf("[canvas] %p renderable append %p at %d %d %d %d - %d %d %d %d (%d)\n",
+			c, r, cgeom->x, cgeom->y, cgeom->w, cgeom->h,
 			rgeom->x, rgeom->y, rgeom->w, rgeom->h,
 			rvisible);
+#endif
 
 	intersect = eina_rectangles_intersect(rgeom, cgeom);
 	/* not visible */
@@ -47,6 +71,9 @@ static inline void _renderable_append(Canvas *c, Renderable *r,
 	{
 		if (renderable_appended_get(r))
 		{
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p removing renderable %p\n", c, r);
+#endif
 			prv->renderables = eina_list_remove(prv->renderables, r);
 			renderable_appended_set(r, EINA_FALSE);
 		}
@@ -56,6 +83,9 @@ static inline void _renderable_append(Canvas *c, Renderable *r,
 	{
 		if (renderable_appended_get(r))
 		{
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p removing renderable %p\n", c, r);
+#endif
 			prv->renderables = eina_list_remove(prv->renderables, r);
 			renderable_appended_set(r, EINA_FALSE);
 		}
@@ -65,6 +95,9 @@ static inline void _renderable_append(Canvas *c, Renderable *r,
 	{
 		if (!renderable_appended_get(r))
 		{
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p adding renderable %p\n", c, r);
+#endif
 			prv->renderables = eina_list_append(prv->renderables, r);
 			renderable_appended_set(r, EINA_TRUE);
 		}
@@ -91,8 +124,10 @@ static void _renderable_prop_modify_cb(const Object *o, Event *e)
 		Eina_Bool rvisible;
 
 		renderable_geometry_get((Renderable *)c, &cgeom);
+		/* reset the canvas coordinates to 0,0 WxH */
+		cgeom.x = 0;
+		cgeom.y = 0;
 		renderable_visibility_get(r, &rvisible);
-		printf("1 BOOL is = %d\n", rvisible);
 		_renderable_append(c, r, &cgeom, &em->curr->value.rect, rvisible);
 	}
 	/* visibility changed */
@@ -101,11 +136,15 @@ static void _renderable_prop_modify_cb(const Object *o, Event *e)
 		Eina_Rectangle cgeom, rgeom;
 
 		renderable_geometry_get((Renderable *)c, &cgeom);
+		/* reset the canvas coordinates to 0,0 WxH */
+		cgeom.x = 0;
+		cgeom.y = 0;
 		renderable_geometry_get(r, &rgeom);
-		printf("2 BOOL is = %d\n", em->curr->value.bool_value);
 		_renderable_append(c, r, &cgeom, &rgeom, em->curr->value.bool_value);
 	}
+#ifdef ETK2_DEBUG
 	printf("[canvas renderable %s]\n", object_type_name_get(o));
+#endif
 }
 
 
@@ -125,16 +164,21 @@ static void _prop_modify_cb(const Object *o, Event *e)
 		tiler = prv->tiler;
 		if (tiler)
 		{
+
 			eina_tiler_del(tiler);
 		}
+#ifdef ETK2_DEBUG
 		printf("[canvas %s] Changing geometry\n", object_type_name_get(o));
+#endif
 		prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
 		/* TODO In case it already has a tiler, mark everything again */
 		if (tiler)
 		{
 			canvas_damage_add((Canvas *)o, &em->curr->value.rect);
 		}
+#ifdef ETK2_DEBUG
 		printf("[canvas %s] tiler is %p\n", object_type_name_get(o), prv->tiler);
+#endif
 	}
 }
 
@@ -147,6 +191,9 @@ static void _process_cb(const Object *o, Event *e)
 	Eina_Rectangle rect;
 
 	c = (Canvas *)o;
+#ifdef ETK2_DEBUG
+	printf("[canvas %s] Processing canvas %p\n", object_type_name_get(o), o);
+#endif
 	prv = PRIVATE(c);
 	if (!prv->tiler)
 		return;
@@ -158,16 +205,20 @@ static void _process_cb(const Object *o, Event *e)
 		Eina_Iterator *rit;
 		Renderable *r;
 
-		printf("[canvas] Redraw rectangle %d %d %d %d\n", rect.x, rect.y, rect.w, rect.h);
+#ifdef ETK2_DEBUG
+		printf("[canvas] %p Redraw rectangle %d %d %d %d\n", o, rect.x, rect.y, rect.w, rect.h);
+#endif
 		/* iterate over the list of renderables */
-		/* TODO from top to bottom */
+		/* TODO from top to bottom ?*/
 		rit = eina_list_iterator_new(prv->renderables);
 		while (eina_iterator_next(rit, (void **)&r))
 		{
 			Eina_Rectangle geom;
 
 			renderable_geometry_get(r, &geom);
-			printf("[canvas] Rendering renderable %p (%d %d %d %d)\n", r, geom.x, geom.y, geom.w, geom.h);
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p Rendering renderable %p (%d %d %d %d)\n", o, r, geom.x, geom.y, geom.w, geom.h);
+#endif
 			/* intersect the geometry and the damage area */
 			if (!eina_rectangle_intersection(&geom, &rect))
 				continue;
@@ -200,25 +251,49 @@ static void _child_append_cb(const Object *o, Event *e)
 	 */
 	if (!type_instance_is_of(em->related, "Renderable"))
 	{
+#ifdef ETK2_DEBUG
 		printf("[canvas %s] child is not of type renderable\n", object_type_name_get(o));
+#endif
 		return;
 	}
 	/* TODO check that the child is actually an instance of a renderable type
 	 * if so append it to the renderables
 	 */
 	/*
-	 * if the appended child is a canvas, register every UI event to this
+	 * TODO What happens if the child is of type renderable
+	 * *and* not a canvas and has renderable objects?
+	 */
+
+	/* in case the child's canvas is not this, skip */
+	if (renderable_canvas_get((Renderable *)e->target) != o)
+	{
+#ifdef ETK2_DEBUG
+		printf("[canvas] Skipping this %p renderable as it already has a canvas %p and is not this %p\n", e->target, renderable_canvas_get((Renderable *)e->target), o);
+#endif
+		return;
+	}
+	/*
+	 * TODO if the appended child is a canvas, register every UI event to this
 	 * object, so when they arrive insert those events into the new canvas
 	 */
-	/*
-	 * What happens if the child is of type renderable *and* has renderable
-	 * objects?
-	 */
+	if (type_instance_is_of(e->target, "Canvas"))
+	{
+#ifdef ETK2_DEBUG
+		printf("[canvas] Child is a canvas too, registering UI events\n");
+#endif
+		event_listener_add((Object *)e->target, EVENT_UI_MOUSE_IN, _subcanvas_in, EINA_FALSE);
+		event_listener_add((Object *)e->target, EVENT_UI_MOUSE_OUT, _subcanvas_out, EINA_FALSE);
+		event_listener_add((Object *)e->target, EVENT_UI_MOUSE_MOVE, _subcanvas_move, EINA_FALSE);
+	}
+#ifdef ETK2_DEBUG
 	printf("[canvas %s] child of type renderable %s\n", object_type_name_get(o), object_type_name_get(e->target));
 	printf("[canvas %s] related %s\n", object_type_name_get(o), object_type_name_get(em->related));
+#endif
 
 	prv = PRIVATE(em->related);
+#ifdef ETK2_DEBUG
 	printf("[canvas %s] %p tiler = %p, canvas = %p\n", object_type_name_get(o), em->related, prv->tiler, renderable_canvas_get((Renderable *)o));
+#endif
 	event_listener_add((Object *)e->target, EVENT_PROP_MODIFY, _renderable_prop_modify_cb, EINA_FALSE);
 }
 
@@ -238,12 +313,16 @@ static void _ctor(void *instance)
 	event_listener_add((Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
 	/* TODO add the event listener when the object has finished the process() function */
 	event_listener_add((Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE);
+#ifdef ETK2_DEBUG
 	printf("[canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, renderable_canvas_get((Renderable *)canvas));
+#endif
 }
 
 static void _dtor(void *canvas)
 {
+#ifdef ETK2_DEBUG
 	printf("[canvas] dtor %p\n", canvas);
+#endif
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -298,7 +377,9 @@ EAPI void canvas_damage_add(Canvas *c, Eina_Rectangle *r)
 	prv = PRIVATE(c);
 	if (prv->tiler)
 	{
-		printf("[canvas] adding damage rectangle %d %d %d %d\n", r->x, r->y, r->w, r->h);
+#ifdef ETK2_DEBUG
+		printf("[canvas %s] %p adding damage rectangle %d %d %d %d\n", object_type_name_get(c), c, r->x, r->y, r->w, r->h);
+#endif
 		eina_tiler_rect_add(prv->tiler, r);
 	}
 }

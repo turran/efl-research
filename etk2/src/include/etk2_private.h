@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#define ETK_DEBUG
+
 #define RETURN_IF(expr) if ((expr)) return
 #define RETURN_NULL_IF(expr) if ((expr)) return NULL
 
@@ -56,7 +58,12 @@ void event_mouse_in_init(Event_Mouse *em, const Object *o, const Object *related
 		const Input *i);
 void event_mouse_out_init(Event_Mouse *em, const Object *o, const Object *related,
 		const Input *i);
-
+void event_mouse_down_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i);
+void event_mouse_up_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i);
+void event_mouse_click_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i);
 /* property global */
 Property * property_new(Type *type, char *prop_name, Type_Property_Type prop_type,
 		Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,

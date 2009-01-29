@@ -14,6 +14,8 @@ struct _Input
 	Canvas *c;
 	struct
 	{
+		unsigned int downx;
+		unsigned int downy;
 		unsigned int button;
 		unsigned int x;
 		unsigned int y;
@@ -112,4 +114,45 @@ EAPI void input_feed_mouse_out(Input *i)
 	if (!r)
 		return;
 	/* TODO send the event */
+}
+
+EAPI void input_feed_mouse_down(Input *i)
+{
+	Renderable *r;
+	Event_Mouse em;
+
+	if (!i->pointer.inside)
+		return;
+	r = canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
+	if (!r)
+		return;
+	/* store the coordinates where the mouse buton down was done to
+	 * trigger the click later
+	 */
+	i->pointer.downx = i->pointer.x;
+	i->pointer.downy = i->pointer.y;
+	event_mouse_down_init(&em, (Object *)r, (Object *)i->pointer.r, i);
+	event_dispatch((Event *)&em);
+}
+
+EAPI void input_feed_mouse_up(Input *i)
+{
+	Renderable *r;
+	Event_Mouse em;
+
+	if (!i->pointer.inside)
+		return;
+	r = canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
+	if (!r)
+		return;
+	event_mouse_up_init(&em, (Object *)r, (Object *)i->pointer.r, i);
+	event_dispatch((Event *)&em);
+	/* in case the down coordinates are the same as the current coordinates
+	 * send a click event
+	 */
+	if ((i->pointer.downx == i->pointer.x) && (i->pointer.downy == i->pointer.y))
+	{
+		event_mouse_click_init(&em, (Object *)r, (Object *)i->pointer.r, i);
+		event_dispatch((Event *)&em);
+	}
 }

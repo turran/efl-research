@@ -54,6 +54,26 @@ void event_mouse_out_init(Event_Mouse *em, const Object *o, const Object *relate
 {
 	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_OUT, o, related, i);
 }
+
+void event_mouse_down_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i)
+{
+	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_DOWN, o, related, i);
+}
+
+void event_mouse_up_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i)
+{
+	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_UP, o, related, i);
+}
+
+void event_mouse_click_init(Event_Mouse *em, const Object *o, const Object *related,
+		const Input *i)
+{
+	event_ui_init((Event_Ui*)em, EVENT_UI_MOUSE_CLICK, o, related, i);
+}
+
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

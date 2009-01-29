@@ -31,7 +31,8 @@ struct _Renderable_Private
 		Eina_Bool prev;
 		char changed;
 	} visibility;
-	/* this renderable is appended to the list of renderables of the canvas */
+	/* When the canvas manages the list of renderables it needs to know if
+	 * a renderable is appended */
 	Eina_Bool appended;
 	/* TODO we should have a way to inform the canvas that this
 	 * renderable needs the lower object to draw in that case
@@ -45,7 +46,9 @@ static void _properties_updated(const Object *o, Event *e)
 	Event_Mutation *em = (Event_Mutation *)e;
 	Renderable_Private *prv = PRIVATE(o);
 
+#ifdef ETK2_DEBUG
 	printf("[renderable %s] prop updated %s\n", object_type_name_get(o), em->prop);
+#endif
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
 	if (!prv->canvas)
@@ -61,12 +64,6 @@ static void _properties_updated(const Object *o, Event *e)
 	else if (!strcmp(em->prop, "visibility"))
 	{
 		/* TODO check that the renderable is appended? */
-		{
-			Eina_Rectangle *r;
-
-			r = &prv->geometry.curr;
-			printf("%d %d %d %d\n", r->x, r->y, r->w, r->h);
-		}
 		canvas_damage_add(prv->canvas, &prv->geometry.curr);
 		canvas_damage_add(prv->canvas, &prv->geometry.prev);
 	}
@@ -74,8 +71,9 @@ static void _properties_updated(const Object *o, Event *e)
 
 static void _parent_set_cb(const Object *o, Event *e)
 {
+	Event_Mutation *em = (Event_Mutation *)e;
 	Renderable_Private *prv;
-	Object *p = (Object *)e->target;
+	Object *p = (Object *)em->related;
 
 	/* check that the upper hierarchy is of type canvas */
 	while (!type_instance_is_of(p, "Canvas"))
@@ -84,11 +82,18 @@ static void _parent_set_cb(const Object *o, Event *e)
 	}
 	if (!p)
 	{
+#ifdef ETK2_DEBUG
 		printf("[renderable %s] Is not of type canvas\n", object_type_name_get(o));
+#endif
 		return;
 	}
+#ifdef ETK2_DEBUG
 	printf("[renderable %s] Some parent %p (%s) is a canvas? %p!!!\n", object_type_name_get(o), p, object_type_name_get(p), renderable_canvas_get((Renderable *)p));
+#endif
 	prv = PRIVATE(((Renderable *)o));
+#ifdef ETK2_DEBUG
+	printf("[renderable] %p has a canvas at %p\n", o, p);
+#endif
 	prv->canvas = (Canvas *)p;
 }
 
@@ -102,7 +107,9 @@ static void _ctor(void *instance)
 	/* register to an event where this child is appended to a canvas parent */
 	event_listener_add((Object *)rend, EVENT_PROP_MODIFY, _properties_updated, EINA_FALSE);
 	event_listener_add((Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE);
+#ifdef ETK2_DEBUG
 	printf("[renderable] ctor canvas = %p\n", prv->canvas);
+#endif
 }
 
 static void _dtor(void *instance)
@@ -185,7 +192,9 @@ EAPI void renderable_geometry_set(Renderable *r, Eina_Rectangle *rect)
 {
 	Value value;
 
+#ifdef ETK2_DEBUG
 	printf("[rend] geometry_set %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
+#endif
 	value_rectangle_from(&value, rect);
 	object_property_value_set((Object *)r, "geometry", &value);
 }
@@ -203,7 +212,9 @@ EAPI void renderable_visibility_get(Renderable *r, Eina_Bool *visible)
 	Renderable_Private *prv;
 
 	prv = PRIVATE(r);
+#ifdef ETK2_DEBUG
 	printf("[renderable %s] visibility get %d (%d %d)\n", object_type_name_get((Object *)r), prv->visibility.curr, EINA_FALSE, EINA_TRUE);
+#endif
 	*visible = prv->visibility.curr;
 }
 
@@ -213,7 +224,9 @@ EAPI void renderable_show(Renderable *r)
 	Value value;
 
 	prv = PRIVATE(r);
+#ifdef ETK2_DEBUG
 	printf("[renderable] show\n");
+#endif
 	if (prv->visibility.curr)
 		return;
 	value_bool_from(&value, EINA_TRUE);
@@ -226,7 +239,9 @@ EAPI void renderable_hide(Renderable *r)
 	Value value;
 
 	prv = PRIVATE(r);
+#ifdef ETK2_DEBUG
 	printf("[renderable] hide\n");
+#endif
 	if (!prv->visibility.curr)
 		return;
 	value_bool_from(&value, EINA_FALSE);
@@ -242,7 +257,9 @@ EAPI void renderable_visibility_set(Renderable *r, Eina_Bool visible)
 	if (prv->visibility.curr == visible)
 		return;
 	value_bool_from(&value, visible);
+#ifdef ETK2_DEBUG
 	printf("[renderable %s] visibility set %d\n", object_type_name_get((Object *)r), value.value.bool_value);
+#endif
 	object_property_value_set((Object *)r, "visibility", &value);
 }
 

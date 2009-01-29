@@ -21,7 +21,9 @@ typedef struct _Event
 #define EVENT_UI_MOUSE_MOVE "mousemove"
 #define EVENT_UI_MOUSE_IN "mousein"
 #define EVENT_UI_MOUSE_OUT "mouseout"
-
+#define EVENT_UI_MOUSE_DOWN "mousedown"
+#define EVENT_UI_MOUSE_UP "mouseup"
+#define EVENT_UI_MOUSE_CLICK "click"
 
 typedef enum _Event_Mutation_State
 {

@@ -61,12 +61,16 @@ static void _ctor(void *instance)
 	prv->rel = obj;
 	/* Set up the mutation event */
 	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE);
+#ifdef ETK2_DEBUG
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
+#endif
 }
 
 static void _dtor(void *object)
 {
+#ifdef ETK2_DEBUG
 	printf("[obj] dtor %p\n", object);
+#endif
 }
 
 static void _event_dispatch(const Object *obj, Event *e, Eina_Bool bubble)
@@ -167,7 +171,6 @@ static void _pointer_double_value_set(void *ptr, void *prev, char *changed,
 
 		case PROPERTY_BOOL:
 		*((Eina_Bool *)ptr) = value->value.bool_value;
-		printf("BOOL VALUE SET %d %d\n", *((Eina_Bool *)ptr), *((Eina_Bool *)prev));
 		if (*((Eina_Bool *)ptr) != *((Eina_Bool *)prev))
 			*changed = EINA_TRUE;
 		break;
@@ -193,7 +196,9 @@ void object_construct(Type *type, void *instance)
 	object = (Object*) instance;
 	object->private = type_instance_private_get_internal(type, object_type_get(), object);
 	object->private->type = type;
+#ifdef ETK2_DEBUG
 	printf("[obj] construct %p %p %p\n", object, object->private, object->private->type);
+#endif
 	/* call all the constructors on the type */
 	type_construct(type, instance);
 }
@@ -295,13 +300,17 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 	RETURN_IF(object == NULL || prop_name == NULL);
 
 	prv = PRIVATE(object);
+#ifdef ETK2_DEBUG
 	printf("[obj] value_set: %s %p %p %p %d\n", prop_name, object, prv, prv->type, prv->changed);
+#endif
 	/* FIXME this code isnt good enough */
 	prop = type_property_get(prv->type, prop_name);
 	if (!prop)
 		return;
 	type_instance_property_pointers_get(prv->type, prop, object, &curr, &prev, &changed);
+#ifdef ETK2_DEBUG
 	printf("[obj] pointers %p %p %p\n", curr, prev, changed);
+#endif
 	if (property_ptype_get(prop) == PROPERTY_VALUE_DUAL_STATE)
 	{
 		Eina_Bool changed_bef, changed_now;
@@ -318,14 +327,18 @@ EAPI void object_property_value_set(Object *object, char *prop_name, Value *valu
 		{
 			_change_recursive(object, 1);
 		}
+#ifdef ETK2_DEBUG
 		printf("[obj] changed bef = %d, changed now = %d\n", changed_bef, changed_now);
+#endif
 	}
 	else
 	{
 		value_set(&prev_value, property_value_type_get(prop), curr);
 		_pointer_single_value_set(curr, property_value_type_get(prop), value);
 	}
+#ifdef ETK2_DEBUG
 	printf("[obj] changed = %d\n", prv->changed);
+#endif
 	/* send the event */
 	event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop,
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
@@ -342,7 +355,9 @@ EAPI void object_property_value_get(Object *object, char *prop_name, Value *valu
 	Object_Private *prv;
 
 	prv = PRIVATE(object);
+#ifdef ETK2_DEBUG
 	printf("[obj] value_get: %s\n", prop_name);
+#endif
 	type_instance_property_value_get(prv->type, object, prop_name, value);
 }
 /**
@@ -377,11 +392,15 @@ EAPI void object_event_dispatch(const Object *obj, Event *e)
 
 	/* TODO set the phase on the event */
 	prv = PRIVATE(obj);
+#ifdef ETK2_DEBUG
 	printf("[obj] Dispatching event %s\n", e->type);
+#endif
 	_event_dispatch(obj, e, EINA_FALSE);
 	if (e->bubbles == EINA_TRUE)
 	{
+#ifdef ETK2_DEBUG
 		printf("[obj] Event %s going to bubble %p %p\n", e->type, obj, prv->parent);
+#endif
 		while (prv->parent)
 		{
 			Object *parent = prv->parent;
@@ -414,10 +433,11 @@ EAPI void object_child_append(Object *p, Object *o)
 		Object_Private *pprv, *oprv;
 		Event_Mutation evt;
 
-
 		pprv = PRIVATE(p);
 		oprv = PRIVATE(o);
+#ifdef ETK2_DEBUG
 		printf("[obj] Setting the parent of %p (%p) to %p (%p) \n", o, oprv, p, pprv);
+#endif
 		pprv->children = eina_inlist_append(pprv->children, EINA_INLIST_GET(oprv));
 		/* TODO check that there's a parent already
 		 * if so, send an event informing that the child has been removed
@@ -431,7 +451,9 @@ EAPI void object_child_append(Object *p, Object *o)
 			_change_recursive(p, oprv->changed);
 		}
 		oprv->parent = p;
+#ifdef ETK2_DEBUG
 		printf("[obj] pchanged = %d ochanged = %d\n", pprv->changed, oprv->changed);
+#endif
 		/* send the event */
 		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Object *)o, (Object *)p, NULL, NULL, NULL,
 				EVENT_MUTATION_STATE_CURR);
@@ -478,7 +500,9 @@ EAPI void object_process(Object *o)
 	/* all childs */
 	if (!prv->changed)
 		return;
-	printf("[0  Object %p %s changed %d\n", o, object_type_name_get(o), prv->changed);
+#ifdef ETK2_DEBUG
+	printf("[obj] [0  Object %p %s changed %d\n", o, object_type_name_get(o), prv->changed);
+#endif
 	/* TODO handle the attributes as they dont have any parent, childs or siblings */
 	pit = type_property_iterator_new(prv->type);
 	while (type_property_iterator_next(pit, &prop))
@@ -491,10 +515,14 @@ EAPI void object_process(Object *o)
 		if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
 			continue;
 		type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
+#ifdef ETK2_DEBUG
 		printf("[obj] process pointers %p %p %p\n", curr, prev, changed);
+#endif
 		if (!(*changed))
 			continue;
-		printf("[1 updating %s %d\n", property_name_get(prop), *changed);
+#ifdef ETK2_DEBUG
+		printf("[obj] [1 updating %s %d\n", property_name_get(prop), *changed);
+#endif
 
 		/* update the property */
 		*changed = EINA_FALSE;
@@ -510,7 +538,9 @@ EAPI void object_process(Object *o)
 		if (!prv->changed)
 		{
 			type_property_iterator_free(pit);
-			printf(" 0] Object changed %d (only attributes)\n", prv->changed);
+#ifdef ETK2_DEBUG
+			printf("[obj] 0] Object changed %d (only attributes)\n", prv->changed);
+#endif
 			goto event;
 		}
 	}
@@ -532,7 +562,9 @@ EAPI void object_process(Object *o)
 			break;
 		}
 	}
-	printf(" 0] Object changed %d\n", prv->changed);
+#ifdef ETK2_DEBUG
+	printf("[obj] 0] Object changed %d\n", prv->changed);
+#endif
 	/* post condition */
 	if (prv->changed)
 	{
