@@ -38,5 +38,7 @@ EAPI void renderable_show(Renderable *r);
 EAPI void renderable_hide(Renderable *r);
 EAPI void renderable_visibility_set(Renderable *r, Eina_Bool visible);
 EAPI void renderable_visibility_get(Renderable *r, Eina_Bool *visible);
+EAPI void renderable_move(Renderable *r, int x, int y);
+EAPI void renderable_resize(Renderable *r, int w, int h);
 
 #endif /* ETK2_RENDERABLE_H_ */

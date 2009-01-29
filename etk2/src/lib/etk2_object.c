@@ -238,7 +238,7 @@ Type *object_type_get(void)
 	if (!object_type)
 	{
 		object_type = type_new(TYPE_NAME, sizeof(Object),
-				sizeof(Object_Private), NULL, _ctor, _dtor);
+				sizeof(Object_Private), NULL, _ctor, _dtor, NULL);
 		OBJECT_PROPERTY_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Object_Private, id));
 		// TODO register the type's event, with type_event_new
 	}
@@ -425,10 +425,12 @@ EAPI const char * object_type_name_get(const Object *obj)
  */
 EAPI void object_child_append(Object *p, Object *o)
 {
-	if (!p->appendable)
-		return;
-	/* append the child */
-	if (p->appendable(object_type_name_get((Object *)o)))
+	Object_Private *prv;
+	Type *t;
+
+	prv = PRIVATE(p);
+	t = prv->type;
+	if (type_appendable(t, object_type_name_get((Object *)o)))
 	{
 		Object_Private *pprv, *oprv;
 		Event_Mutation evt;
@@ -576,4 +578,14 @@ event:
 	event_mutation_init(&evt, EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
 			EVENT_MUTATION_STATE_POST);
 	object_event_dispatch(o, (Event *)&evt);
+}
+
+EAPI Property * object_property_get(Object *o, const char *prop_name)
+{
+	Object_Private *prv;
+	Property *prop;
+
+	prv = PRIVATE(o);
+	prop = type_property_get(prv->type, prop_name);
+	return prop;
 }

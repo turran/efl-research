@@ -11,7 +11,7 @@ typedef enum
 } Type_Property_Type;
 
 Type *type_new(char *name, size_t size, size_t priv_size, Type *parent,
-		Type_Constructor ctor, Type_Destructor dtor);
+		Type_Constructor ctor, Type_Destructor dtor, Type_Appendable append);
 void * type_instance_new_name_from(const char *name);
 void *type_instance_new(Type *type);
 void type_instance_delete(void *instance);

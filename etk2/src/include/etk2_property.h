@@ -12,5 +12,6 @@ typedef uint32_t Property_Id;
 
 EAPI Property_Id property_id_get(const Property *p);
 EAPI const char * property_name_get(const Property *p);
+Value_Type property_value_type_get(Property *p);
 
 #endif /* ETK2_PROPERTY_H_ */

@@ -30,6 +30,7 @@ void object_construct(Type *type, void *instance);
 void object_event_listener_add(Object *obj, const char *type, Event_Listener el, Eina_Bool bubble);
 void object_event_listener_remove(Object *obj, const char *type, Event_Listener el);
 /* type global */
+Eina_Bool type_appendable(Type *t, const char *name);
 void type_construct(Type *t, void *instance);
 void * type_instance_private_get_internal(Type *final, Type *t, void *instance);
 Eina_Bool type_instance_property_value_set(Type *type, void *instance, char *prop_name, Value *value, Value *old);
@@ -72,7 +73,6 @@ Type * property_type_get(Property *p);
 ssize_t property_curr_offset_get(Property *p);
 ssize_t property_prev_offset_get(Property *p);
 ssize_t property_changed_offset_get(Property *p);
-Value_Type property_value_type_get(Property *p);
 Type_Property_Type property_ptype_get(Property *p);
 
 #endif

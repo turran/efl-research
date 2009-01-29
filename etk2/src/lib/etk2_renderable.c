@@ -143,7 +143,8 @@ Type *renderable_type_get(void)
 	if (!renderable_type)
 	{
 		renderable_type = type_new(TYPE_NAME, sizeof(Renderable),
-				sizeof(Renderable_Private), object_type_get(), _ctor, _dtor);
+				sizeof(Renderable_Private), object_type_get(),
+				_ctor, _dtor, NULL);
 		/* the properties */
 		TYPE_PROP_DOUBLE_ADD(renderable_type, "geometry", PROPERTY_RECTANGLE,
 				OFFSET(Renderable_Private, geometry.curr), OFFSET(Renderable_Private, geometry.prev),

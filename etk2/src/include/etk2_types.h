@@ -17,6 +17,6 @@ typedef struct _Input Input;
 
 typedef void (*Type_Constructor)(void *);
 typedef void (*Type_Destructor)(void *);
-/* TODO Add the appendable here? */
+typedef Eina_Bool (*Type_Appendable)(const char *name);
 
 #endif

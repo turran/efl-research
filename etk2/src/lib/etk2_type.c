@@ -15,6 +15,7 @@ struct _Type
 
 	Type_Constructor ctor;
 	Type_Destructor dtor;
+	Type_Appendable append;
 
 	Eina_Hash *properties;
 };
@@ -233,6 +234,12 @@ void type_property_iterator_free(Property_Iterator *pit)
 	free(pit);
 }
 
+Eina_Bool type_appendable(Type *t, const char *name)
+{
+	if (!t->append)
+		return EINA_FALSE;
+	return t->append(name);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -247,7 +254,7 @@ void type_property_iterator_free(Property_Iterator *pit)
  * @return the newly created type.
  */
 Type *type_new(char *name, size_t size, size_t priv_size, Type *parent,
-		Type_Constructor ctor, Type_Destructor dtor)
+		Type_Constructor ctor, Type_Destructor dtor, Type_Appendable append)
 {
 	Type *type;
 
@@ -261,6 +268,7 @@ Type *type_new(char *name, size_t size, size_t priv_size, Type *parent,
 	type->parent = parent;
 	type->ctor = ctor;
 	type->dtor = dtor;
+	type->append = append;
 	type->properties = eina_hash_string_superfast_new(NULL);
 	/* add the type */
 	if (!_types) _types = eina_hash_string_superfast_new(NULL);

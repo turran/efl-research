@@ -20,13 +20,6 @@ struct _Canvas_Private
 	/* TODO obscures */
 	Eina_Inlist *inputs;
 };
-/* TODO remove this */
-Eina_Bool _appendable(const char *type)
-{
-	printf("[canvas] appendable %s\n", type);
-	return EINA_TRUE;
-
-}
 
 void _subcanvas_in(const Object *o, Event *e)
 {
@@ -265,7 +258,7 @@ static void _child_append_cb(const Object *o, Event *e)
 	 */
 
 	/* in case the child's canvas is not this, skip */
-	if (renderable_canvas_get((Renderable *)e->target) != o)
+	if (renderable_canvas_get((Renderable *)e->target) != (Canvas *)o)
 	{
 #ifdef ETK2_DEBUG
 		printf("[canvas] Skipping this %p renderable as it already has a canvas %p and is not this %p\n", e->target, renderable_canvas_get((Renderable *)e->target), o);
@@ -304,8 +297,6 @@ static void _ctor(void *instance)
 
 	canvas = (Canvas*) instance;
 	canvas->private = prv = type_instance_private_get(canvas_type_get(), instance);
-	/* FIXME just for testing */
-	((Object *)canvas)->appendable = _appendable;
 	prv->renderables = NULL;
 	/* register to an event where some child is appended to this parent */
 	event_listener_add((Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE);
@@ -339,7 +330,7 @@ Type *canvas_type_get(void)
 	{
 		canvas_type = type_new(TYPE_NAME, sizeof(Canvas),
 				sizeof(Canvas_Private), renderable_type_get(),
-				_ctor, _dtor);
+				_ctor, _dtor, NULL);
 	}
 
 	return canvas_type;

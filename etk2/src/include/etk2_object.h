@@ -8,7 +8,6 @@ typedef struct _Object_Private Object_Private;
 
 struct _Object
 {
-	Eina_Bool (*appendable)(const char *name);
 	Object_Private *private;
 };
 
@@ -26,5 +25,6 @@ EAPI void object_child_remove(Object *p, Object *o);
 EAPI void object_event_dispatch(const Object *object, Event *evt);
 EAPI const char * object_type_name_get(const Object *obj);
 EAPI Object * object_parent_get(Object *o);
+EAPI Property * object_property_get(Object *o, const char *prop_name);
 
 #endif

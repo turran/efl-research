@@ -37,7 +37,7 @@ Type *label_type_get(void)
 	if (!label_type)
 	{
 		label_type = type_new(TYPE_NAME, sizeof(Label), sizeof(Label_Private),
-				widget_type_get(), label_ctor, label_dtor);
+				widget_type_get(), label_ctor, label_dtor, NULL);
 		TYPE_PROP_SINGLE_ADD(label_type, "text", PROPERTY_STRING, OFFSET(Label_Private, text));
 	}
 

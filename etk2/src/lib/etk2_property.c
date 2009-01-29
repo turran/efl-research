@@ -67,10 +67,6 @@ ssize_t property_changed_offset_get(Property *p)
 	return p->changed_offset;
 }
 
-Value_Type property_value_type_get(Property *p)
-{
-	return p->value_type;
-}
 
 Type_Property_Type property_ptype_get(Property *p)
 {
@@ -88,4 +84,9 @@ EAPI Property_Id property_id_get(const Property *p)
 EAPI const char * property_name_get(const Property *p)
 {
 	return p->name;
+}
+
+EAPI Value_Type property_value_type_get(Property *p)
+{
+	return p->value_type;
 }

@@ -16,12 +16,6 @@ struct _Widget_Private
 	char *theme;
 };
 
-static Eina_Bool _appendable(const char *type)
-{
-	/* TODO only allow some object's to be appendable */
-	printf("appendable %s?\n", type);
-	return EINA_TRUE;
-}
 
 static void _ctor(void *instance)
 {
@@ -29,7 +23,6 @@ static void _ctor(void *instance)
 
 	widget->private = type_instance_private_get(widget_type_get(), instance);
 	widget->private->theme = NULL;
-	((Object *)widget)->appendable = _appendable;
 	printf("[widget] ctor %p %p\n", widget, widget->private);
 }
 
@@ -47,7 +40,8 @@ Type *widget_type_get(void)
 	if (!widget_type)
 	{
 		widget_type = type_new(TYPE_NAME, sizeof(Widget),
-				sizeof(Widget_Private), object_type_get(), _ctor, _dtor);
+				sizeof(Widget_Private), object_type_get(),
+				_ctor, _dtor, NULL);
 		TYPE_PROP_SINGLE_ADD(widget_type, "theme", PROPERTY_STRING, OFFSET(Widget_Private, theme));
 	}
 
