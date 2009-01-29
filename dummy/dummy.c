@@ -56,15 +56,18 @@ static int _resize_cb(void *data, int type, void *event)
 
 	prv = PRIVATE(_dummy);
 	dummy_canvas_resize(prv->dc, e->w, e->h);
+	return 1;
 }
 static int _mouse_down_cb(void *data, int type, void *event)
 {
-	printf("mouse down\n");
+	input_feed_mouse_down(_input);
+	return 1;
 }
 
 static int _mouse_up_cb(void *data, int type, void *event)
 {
-	printf("mouse up\n");
+	input_feed_mouse_up(_input);
+	return 1;
 }
 
 static int _mouse_move_cb(void *data, int type, void *event)
@@ -72,15 +75,18 @@ static int _mouse_move_cb(void *data, int type, void *event)
 	Ecore_Sdl_Event_Mouse_Move *e = event;
 
 	input_feed_mouse_move(_input, e->x, e->y);
+	return 1;
 }
 
 static int _in_cb(void *data, int type, void *event)
 {
 	printf("mouse in\n");
+	return 1;
 }
 static int _out_cb(void *data, int type, void *event)
 {
 	printf("mouse out\n");
+	return 1;
 }
 static int
 _sdl_event(void *data)

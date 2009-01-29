@@ -21,21 +21,78 @@ struct _Dummy_Canvas_Private
 	Eina_Bool root;
 };
 
+/* in case the subcanvas has another canva as parent it will blt to the
+ * parent canvas
+ */
+static void _subcanvas_render(Renderable *r, Eina_Rectangle *rect)
+{
+	Eina_Rectangle sgeom, rscaled;
+	SDL_Rect srect, drect;
+	Dummy_Canvas *dc;
+	Dummy_Canvas_Private *sprv, *cprv;
+
+	sprv = PRIVATE(r);
+	dc = renderable_canvas_get(r);
+	cprv = PRIVATE(dc);
+
+	/* blt there */
+	renderable_geometry_get(r, &sgeom);
+	eina_rectangle_rescale_in(&sgeom, rect, &rscaled);
+
+	srect.x = rscaled.x;
+	srect.y = rscaled.y;
+	srect.w = rscaled.w;
+	srect.h = rscaled.h;
+
+	drect.x = rect->x;
+	drect.y = rect->y;
+	drect.w = rect->w;
+	drect.h = rect->h;
+
+	printf("[DummyCanvas] rendering into %p from %d %d %d %d to %d %d %d %d\n",
+			dc, srect.x, srect.y, srect.w, srect.h,
+			drect.x, drect.y, drect.w, drect.h);
+	SDL_BlitSurface(sprv->s, &srect, cprv->s, &drect);
+}
+
 static Eina_Bool _flush(Canvas *c, Eina_Rectangle *r)
 {
 	Dummy_Canvas_Private *prv;
 
 	prv = PRIVATE(c);
+	if (!prv->s)
+	{
+		printf("[DummyCanvas] the canvas doesnt have a surface\n");
+		return EINA_TRUE;
+	}
 	/* if root flip */
 	if (prv->root)
 	{
+		printf("[DummyCanvas] flipping root surface\n");
 		SDL_Flip(prv->s);
+		return EINA_TRUE;
 	}
 	/* otherwise blt */
 	else
 	{
+		Eina_Rectangle rscaled;
+		Eina_Rectangle cgeom;
+		Canvas *dc; /* the canvas this subcanvas has */
 
+		/* this canvas doesnt have a parent canvas? */
+		dc = renderable_canvas_get((Renderable *)c);
+		if (!dc)
+			return EINA_TRUE;
+		renderable_geometry_get((Renderable *)c, &cgeom);
+		/* transform the rectangle relative to the upper canvas */
+		eina_rectangle_rescale_out(&cgeom, r, &rscaled);
+		printf("[DummyCanvas] subcanvas adding a new damage %d %d %d %d (%d %d %d %d)\n",
+				rscaled.x, rscaled.y, rscaled.w, rscaled.h,
+				r->x, r->y, r->w, r->h);
+		printf("[DummyCanvas] subcanvas = %p, canvas = %p\n", c, dc);
+		canvas_damage_add(dc, &rscaled);
 	}
+	return EINA_FALSE;
 }
 
 static void _prop_modify_cb(const Object *o, Event *e)
@@ -56,11 +113,11 @@ static void _prop_modify_cb(const Object *o, Event *e)
 		}
 		else
 		{
-			/* TODO create normal surface
-			prv->s = SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth,
-			                        Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
-
-			*/
+			/* create a normal surface */
+			prv->s = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA,
+					em->curr->value.rect.w,
+					em->curr->value.rect.h, 32,
+					0xff << 24, 0xff << 16, 0xff << 8, 0xff);
 		}
 	}
 
@@ -70,18 +127,13 @@ static void _ctor(void *instance)
 {
 	Dummy_Canvas *dc;
 	Dummy_Canvas_Private *prv;
-	static int created = 0;
 
 	dc = (Dummy_Canvas*) instance;
 	dc->private = prv = type_instance_private_get(dummy_canvas_type_get(), instance);
 	dc->parent.flush = _flush;
-	/* FIXME easy hack for now, we should do this better */
-	if (!created)
-	{
-		created = 1;
-	}
+	dc->parent.parent.render = _subcanvas_render;
 	/* TODO Set up the callbacks */
-	object_event_listener_add((Object *)dc, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
+	event_listener_add((Object *)dc, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
 }
 
 static void _dtor(void *canvas)
@@ -121,7 +173,6 @@ void dummy_canvas_resize(Dummy_Canvas *c, int w, int h)
 {
 	//printf("[DummyCanvas] %p\n", renderable_canvas_get((Renderable *)c));
 	canvas_size_set((Canvas *)c, w, h);
-	//printf("[DummyCanvas] %p\n", renderable_canvas_get((Renderable *)c));
 	/* set the property */
 	/* on set cb, check if w && h != 0, if so
 	 * create the surface

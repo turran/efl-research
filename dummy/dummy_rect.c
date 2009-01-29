@@ -35,7 +35,7 @@ static void _render(Renderable *r, Eina_Rectangle *rect)
 	s = dummy_canvas_surface_get(dc);
 	prv = PRIVATE(r);;
 	SDL_FillRect(s, &srect, prv->color);
-	printf("[DummyRect] rendering %d %d %d %d with color 0x%08x\n", srect.x, srect.y, srect.w, srect.h, prv->color);
+	printf("[DummyRect] rendering into %p %d %d %d %d with color 0x%08x\n", dc, srect.x, srect.y, srect.w, srect.h, prv->color);
 }
 
 
