@@ -105,7 +105,8 @@ Type *dummy_type_get(void)
 	if (!type)
 	{
 		type = type_new(DUMMY_TYPE_NAME, sizeof(Dummy),
-				sizeof(Dummy_Private), object_type_get(), _ctor, _dtor);
+				sizeof(Dummy_Private), object_type_get(), _ctor,
+				_dtor, NULL);
 	}
 
 	return type;

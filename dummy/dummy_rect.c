@@ -9,6 +9,7 @@
  *                                  Local                                     *
  *============================================================================*/
 #define PRIVATE(d) ((Dummy_Rect_Private *)((Dummy_Rect *)(d))->private)
+#define OFFSET(type, mem) ((size_t) ((char *)&((type *) 0)->mem - (char *)((type *) 0)))
 
 #define DUMMY_RECT_TYPE_NAME "DummyRect"
 
@@ -63,7 +64,9 @@ Type * dummy_rect_type_get(void)
 	if (!type)
 	{
 		type = type_new(DUMMY_RECT_TYPE_NAME, sizeof(Dummy_Rect),
-				sizeof(Dummy_Rect_Private), renderable_type_get(), _ctor, _dtor);
+				sizeof(Dummy_Rect_Private), renderable_type_get(),
+				_ctor, _dtor, NULL);
+		TYPE_PROP_SINGLE_ADD(type, "color", PROPERTY_INT, OFFSET(Dummy_Rect_Private, color));
 	}
 
 	return type;
@@ -97,9 +100,8 @@ void dummy_rect_resize(Dummy_Rect *r, int w, int h)
 
 void dummy_rect_color_set(Dummy_Rect *r, int color)
 {
-	Dummy_Rect_Private *prv;
+	Value value;
 
-	prv = PRIVATE(r);
-	prv->color = color;
-	printf("[DummyRect] color set 0x%08x\n", prv->color);
+	value_int_from(&value, color);
+	object_property_value_set((Object *)r, "color", &value);
 }

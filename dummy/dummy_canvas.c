@@ -32,7 +32,7 @@ static void _subcanvas_render(Renderable *r, Eina_Rectangle *rect)
 	Dummy_Canvas_Private *sprv, *cprv;
 
 	sprv = PRIVATE(r);
-	dc = renderable_canvas_get(r);
+	dc = (Dummy_Canvas *)renderable_canvas_get(r);
 	cprv = PRIVATE(dc);
 
 	/* blt there */
@@ -120,7 +120,16 @@ static void _prop_modify_cb(const Object *o, Event *e)
 					0xff << 24, 0xff << 16, 0xff << 8, 0xff);
 		}
 	}
+}
 
+static Eina_Bool _appendable(const char *name)
+{
+	if (!strcmp(name, "DummyRect"))
+		return EINA_TRUE;
+	else if (!strcmp(name, "DummyCanvas"))
+		return EINA_TRUE;
+	else
+		return EINA_FALSE;
 }
 
 static void _ctor(void *instance)
@@ -150,7 +159,8 @@ Type *dummy_canvas_type_get(void)
 	if (!type)
 	{
 		type = type_new(DUMMY_CANVAS_TYPE_NAME, sizeof(Dummy_Canvas),
-				sizeof(Dummy_Canvas_Private), canvas_type_get(), _ctor, _dtor);
+				sizeof(Dummy_Canvas_Private), canvas_type_get(),
+				_ctor, _dtor, _appendable);
 	}
 
 	return type;

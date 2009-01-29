@@ -64,6 +64,7 @@ int main(void)
 	Dummy_Canvas *dc;
 	Dummy_Canvas *sdc;
 	Dummy_Rect *dr;
+	Object *o;
 
 	dummy_init();
 	d = dummy_new();
@@ -117,6 +118,10 @@ int main(void)
 	renderable_show((Renderable *)dr);
 	event_listener_add((Object *)dr, EVENT_UI_MOUSE_IN, _subrect_over, EINA_FALSE);
 #endif
+	/* load an object from a xml file? bwuahaha! */
+	o = dummy_external_load("external.xml");
+	object_child_append((Object *)sdc, (Object *)o);
+	renderable_show((Renderable *)o);
 	/* the looooop :) */
 	dummy_loop();
 	dummy_shutdown();

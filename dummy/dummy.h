@@ -11,6 +11,7 @@
 #include "Ecore.h"
 #include "Ecore_Sdl.h"
 #include "SDL.h"
+#include "EXML.h"
 
 typedef struct _Dummy_Rect_Private Dummy_Rect_Private;
 typedef struct _Dummy_Rect
