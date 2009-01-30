@@ -41,7 +41,7 @@ struct _Ekeko_Renderable_Private
 };
 
 /* called whenever a double state property has changed */
-static void _properties_updated(const Ekeko_Object *o, Event *e)
+static void _properties_updated(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
@@ -69,7 +69,7 @@ static void _properties_updated(const Ekeko_Object *o, Event *e)
 	}
 }
 
-static void _parent_set_cb(const Ekeko_Object *o, Event *e)
+static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv;
@@ -105,8 +105,8 @@ static void _ctor(void *instance)
 	rend = (Ekeko_Renderable*) instance;
 	rend->private = prv = ekeko_type_instance_private_get(ekeko_renderable_type_get(), instance);
 	/* register to an event where this child is appended to a canvas parent */
-	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_PROP_MODIFY, _properties_updated, EINA_FALSE);
-	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE);
+	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_PROP_MODIFY, _properties_updated, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
 #ifdef ETK2_DEBUG
 	printf("[renderable] ctor canvas = %p\n", prv->canvas);
 #endif

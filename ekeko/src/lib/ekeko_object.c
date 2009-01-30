@@ -32,9 +32,10 @@ typedef struct _Object_Event
 {
 	Event_Listener el;
 	Eina_Bool bubble;
+	void *data;
 } Object_Event;
 
-static void _id_modify(const Ekeko_Object *o, Event *e)
+static void _id_modify(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 
@@ -60,7 +61,7 @@ static void _ctor(void *instance)
 	prv->changed = 0;
 	prv->rel = obj;
 	/* Set up the mutation event */
-	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE);
+	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE, NULL);
 #ifdef ETK2_DEBUG
 	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
 #endif
@@ -88,7 +89,7 @@ static void _event_dispatch(const Ekeko_Object *obj, Event *e, Eina_Bool bubble)
 	while (eina_iterator_next(it, (void **)&oe))
 	{
 		if (oe->bubble == bubble)
-			oe->el(obj, e);
+			oe->el(obj, e, oe->data);
 	}
 }
 
@@ -204,7 +205,7 @@ void object_construct(Ekeko_Type *type, void *instance)
 }
 
 void object_event_listener_add(Ekeko_Object *obj, const char *type,
-		Event_Listener el, Eina_Bool bubble)
+		Event_Listener el, Eina_Bool bubble, void *data)
 {
 	Ekeko_Object_Private *prv;
 	Object_Event *oe;
@@ -213,6 +214,7 @@ void object_event_listener_add(Ekeko_Object *obj, const char *type,
 	oe = malloc(sizeof(Object_Event));
 	oe->el = el;
 	oe->bubble = bubble;
+	oe->data = data;
 
 	prv = PRIVATE(obj);
 	events = eina_hash_find(prv->listeners, type);

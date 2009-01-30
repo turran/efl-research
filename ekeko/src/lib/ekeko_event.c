@@ -81,9 +81,9 @@ void event_mouse_click_init(Event_Mouse *em, const Ekeko_Object *o, const Ekeko_
  * Adds a listener for the event type ...
  */
 EAPI void ekeko_event_listener_add(Ekeko_Object *o, const char *type,
-		Event_Listener el, Eina_Bool bubble)
+		Event_Listener el, Eina_Bool bubble, void *data)
 {
-	object_event_listener_add(o, type, el, bubble);
+	object_event_listener_add(o, type, el, bubble, data);
 }
 
 EAPI void ekeko_event_listener_remove(Ekeko_Object *o, const char *type,

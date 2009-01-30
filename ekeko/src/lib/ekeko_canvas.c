@@ -21,19 +21,19 @@ struct _Ekeko_Canvas_Private
 	Eina_Inlist *inputs;
 };
 
-void _subcanvas_in(const Ekeko_Object *o, Event *e)
+void _subcanvas_in(const Ekeko_Object *o, Event *e, void *data)
 {
 	printf("SUBCANVAS in\n");
 	/* TODO feed the mouse in into this canvas */
 }
 
-void _subcanvas_out(const Ekeko_Object *o, Event *e)
+void _subcanvas_out(const Ekeko_Object *o, Event *e, void *data)
 {
 	printf("SUBCANVAS out\n");
 	/* TODO feed the mouse out into this canvas */
 }
 
-void _subcanvas_move(const Ekeko_Object *o, Event *e)
+void _subcanvas_move(const Ekeko_Object *o, Event *e, void *data)
 {
 	printf("SUBCANVAS move\n");
 	/* TODO feed the mouse move into this canvas */
@@ -98,7 +98,7 @@ static inline void _renderable_append(Ekeko_Canvas *c, Ekeko_Renderable *r,
 }
 
 /* Called whenever one of its possible renderables change properties */
-static void _renderable_prop_modify_cb(const Ekeko_Object *o, Event *e)
+static void _renderable_prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Canvas *c;
@@ -141,7 +141,7 @@ static void _renderable_prop_modify_cb(const Ekeko_Object *o, Event *e)
 }
 
 
-static void _prop_modify_cb(const Ekeko_Object *o, Event *e)
+static void _prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 
@@ -176,7 +176,7 @@ static void _prop_modify_cb(const Ekeko_Object *o, Event *e)
 }
 
 /* Called whenever the process has finished on this element */
-static void _process_cb(const Ekeko_Object *o, Event *e)
+static void _process_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Ekeko_Canvas *c;
 	Ekeko_Canvas_Private *prv;
@@ -233,7 +233,7 @@ static void _process_cb(const Ekeko_Object *o, Event *e)
 	eina_tiler_clear(prv->tiler);
 }
 
-static void _child_append_cb(const Ekeko_Object *o, Event *e)
+static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Canvas_Private *prv;
@@ -274,9 +274,9 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e)
 #ifdef ETK2_DEBUG
 		printf("[canvas] Child is a canvas too, registering UI events\n");
 #endif
-		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_IN, _subcanvas_in, EINA_FALSE);
-		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_OUT, _subcanvas_out, EINA_FALSE);
-		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_MOVE, _subcanvas_move, EINA_FALSE);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_IN, _subcanvas_in, EINA_FALSE, NULL);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_OUT, _subcanvas_out, EINA_FALSE, NULL);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_MOVE, _subcanvas_move, EINA_FALSE, NULL);
 	}
 #ifdef ETK2_DEBUG
 	printf("[canvas %s] child of type renderable %s\n", ekeko_object_type_name_get(o), ekeko_object_type_name_get(e->target));
@@ -287,7 +287,7 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e)
 #ifdef ETK2_DEBUG
 	printf("[canvas %s] %p tiler = %p, canvas = %p\n", ekeko_object_type_name_get(o), em->related, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)o));
 #endif
-	ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_PROP_MODIFY, _renderable_prop_modify_cb, EINA_FALSE);
+	ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_PROP_MODIFY, _renderable_prop_modify_cb, EINA_FALSE, o);
 }
 
 static void _ctor(void *instance)
@@ -299,11 +299,11 @@ static void _ctor(void *instance)
 	canvas->private = prv = ekeko_type_instance_private_get(ekeko_canvas_type_get(), instance);
 	prv->renderables = NULL;
 	/* register to an event where some child is appended to this parent */
-	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE);
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	/* register the event where the size is changed */
-	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
 	/* TODO add the event listener when the object has finished the process() function */
-	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE);
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE, NULL);
 #ifdef ETK2_DEBUG
 	printf("[canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)canvas));
 #endif

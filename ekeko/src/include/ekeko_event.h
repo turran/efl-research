@@ -78,9 +78,9 @@ typedef struct _Event_Property_String
 	char *curr;
 } Event_Property_String;
 
-typedef void (*Event_Listener)(const Ekeko_Object *, Event *);
+typedef void (*Event_Listener)(const Ekeko_Object *, Event *, void * data);
 
-EAPI void ekeko_event_listener_add(Ekeko_Object *o, const char *type, Event_Listener el, Eina_Bool bubble);
+EAPI void ekeko_event_listener_add(Ekeko_Object *o, const char *type, Event_Listener el, Eina_Bool bubble, void *data);
 EAPI void ekeko_event_listener_remove(Ekeko_Object *o, const char *type, Event_Listener el);
 EAPI void ekeko_event_dispatch(Event *e);
 EAPI void ekeko_event_init(Event *e, const char *type, const Ekeko_Object *o, Eina_Bool bubbles);
