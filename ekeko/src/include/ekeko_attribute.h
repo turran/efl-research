@@ -9,6 +9,7 @@ typedef enum _Ekeko_Attribute_Flags
 } Ekeko_Attribute_Flag;
 
 EAPI Ekeko_Element * ekeko_attribute_element_get(Ekeko_Attribute *a);
+EAPI const Ekeko_Value * ekeko_attribute_value_get(Ekeko_Attribute *a);
 
 
 #endif /*EKEKO_ATTRIBUTE_H_*/

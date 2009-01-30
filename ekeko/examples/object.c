@@ -11,10 +11,12 @@ static void _attr_modified_cb(Ekeko_Event *ee)
 		
 	if (!strcmp(e->attr, OBJECT_COLOR))
 	{
+#if 0
 		Ekeko_Value v;
 		
 		ekeko_value_bool_from(&v, EINA_TRUE);
 		ekeko_node_attribute_set(e->related, RENDERABLE_OPAQUE, &v);
+#endif
 	}
 }
 /*============================================================================*
@@ -22,10 +24,7 @@ static void _attr_modified_cb(Ekeko_Event *ee)
  *============================================================================*/
 void test_object_new(Ekeko_Element *e)
 {
-	Ekeko_Value def;
-
-	ekeko_value_int_from(&def, 0x0);
-	ekeko_element_attribute_set(e, OBJECT_COLOR, &def);
+	ekeko_element_attribute_int_set(e, OBJECT_COLOR, 0x0);
 	ekeko_node_event_listener_add((Ekeko_Node *)e, "DOMAttrModified",  _attr_modified_cb,
 		EINA_FALSE);
 }

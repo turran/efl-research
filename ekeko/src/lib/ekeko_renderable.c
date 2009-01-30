@@ -90,13 +90,17 @@ static void _attr_updated_cb(Ekeko_Event *ee)
 	/* if the size has changed we should damage the whole canvas */
 	if (!strcmp(e->attr, RENDERABLE_GEOMETRY))
 	{
-		ekeko_canvas_damage_add_internal(r->canvas, &e->prev->v.r);
-		ekeko_canvas_damage_add_internal(r->canvas, &e->curr->v.r);
+		Eina_Rectangle prev, curr;
+		
+		ekeko_value_rectangle_get(e->prev, &prev);
+		ekeko_value_rectangle_get(e->curr, &curr);
+		ekeko_canvas_damage_add_internal(r->canvas, &prev);
+		ekeko_canvas_damage_add_internal(r->canvas, &curr);
 	}
 	else if (!strcmp(e->attr, RENDERABLE_VISIBILITY))
 	{
-		ekeko_canvas_damage_add_internal(r->canvas, &e->prev->v.r);
-		ekeko_canvas_damage_add_internal(r->canvas, &e->curr->v.r);
+		//ekeko_canvas_damage_add_internal(r->canvas, &e->prev->v.r);
+		//ekeko_canvas_damage_add_internal(r->canvas, &e->curr->v.r);
 	}
 }
 static void _process_cb(Ekeko_Event *ee)
@@ -142,16 +146,21 @@ void ekeko_renderable_render_all(Ekeko_Element *c, Eina_Inlist *renderables, Ein
 	Ekeko_Renderable *r;
 	EINA_INLIST_FOREACH(renderables, r)
 	{
-		Ekeko_Value rr;
+		Ekeko_Value *rr;
 		Eina_Rectangle intersect;
 		Eina_Bool opaque;
 
-		ekeko_node_attribute_get((Ekeko_Node *)r->container, RENDERABLE_OPAQUE, &rr);
-		opaque = rr.v.b;
-		ekeko_node_attribute_get((Ekeko_Node *)r->container, RENDERABLE_GEOMETRY, &rr);
-		intersect = rr.v.r;
+		rr = (Ekeko_Value *)ekeko_element_attribute_get(r->container, RENDERABLE_OPAQUE);
+		opaque = ekeko_value_bool_get(rr);
+		rr = (Ekeko_Value *)ekeko_element_attribute_get(r->container, RENDERABLE_GEOMETRY);
+		ekeko_value_rectangle_get(rr, &intersect);
 		if (eina_rectangle_intersection(&intersect, er))
 		{
+			/* Add a debug event here to inform a listener the
+			 * areas that we are going to redraw or maybe
+			 * write the rectangle into a pipe so other process
+			 * can listen and draw the areas
+			 */
 			//printf("RENDERING %d\n", opaque);
 			if (opaque)
 			{
@@ -304,34 +313,37 @@ void ekeko_renderable_invalidate(Ekeko_Renderable *o)
  *                                   API                                      *
  *============================================================================*/
 /* TODO this should also receive the parent document */
-EAPI void ekeko_renderable_new(Ekeko_Element *e, Ekeko_Renderable_Class *c)
+EAPI void ekeko_renderable_new(Ekeko_Element *et, Ekeko_Renderable_Class *c)
 {
-	Ekeko_Value def;
 	Ekeko_Renderable *r;
+	Eina_Rectangle rect;
+	Eina_Bool b;
 
-	r = ekeko_node_user_get((Ekeko_Node *)e, RENDERABLE_PRIVATE);
+	r = ekeko_node_user_get((Ekeko_Node *)et, RENDERABLE_PRIVATE);
 	if (r) return;
 	/* private data */
 	r = calloc(1, sizeof(Ekeko_Renderable));
-	r->container = e;
+	r->container = et;
 	r->oclass = *c;
 	/* setup the attributes for a renderable element */
-	ekeko_value_rectangle_coords_from(&def, 0, 0, 0, 0);
-	ekeko_element_attribute_set(e, RENDERABLE_GEOMETRY, &def);
-	ekeko_value_bool_from(&def, EINA_FALSE);
-	ekeko_element_attribute_set(e, RENDERABLE_VISIBILITY, &def);
-	ekeko_value_bool_from(&def, EINA_FALSE);
-	ekeko_element_attribute_set(e, RENDERABLE_OPAQUE, &def);
+	/* TODO what about geometry? bettr define all coordinates as
+	 * attributes?
+	 */
+	eina_rectangle_coords_from(&rect, 0, 0, 0, 0);
+	ekeko_element_attribute_rectangle_set(et, RENDERABLE_GEOMETRY, &rect);
+	b = EINA_FALSE;
+	ekeko_element_attribute_bool_set(et, RENDERABLE_VISIBILITY, b);
+	ekeko_element_attribute_bool_set(et, RENDERABLE_OPAQUE, b);
 	/* TODO check the element's parent, should it implement the canvas interface? */
 	/* setup the events */
-	ekeko_node_event_listener_add((Ekeko_Node *)e, "ProcessEvents",  _process_cb, 
+	ekeko_node_event_listener_add((Ekeko_Node *)et, "ProcessEvents",  _process_cb, 
 			EINA_FALSE);
-	ekeko_node_event_listener_add((Ekeko_Node *)e, "DOMAttrUpdated",  _attr_updated_cb,
+	ekeko_node_event_listener_add((Ekeko_Node *)et, "DOMAttrUpdated",  _attr_updated_cb,
 			EINA_FALSE);
-	ekeko_node_event_listener_add((Ekeko_Node *)e, "DOMNodeInserted",  _inserted_cb,
+	ekeko_node_event_listener_add((Ekeko_Node *)et, "DOMNodeInserted",  _inserted_cb,
 				EINA_FALSE);
 	/* setup the private class */
-	ekeko_node_user_set((Ekeko_Node *)e, RENDERABLE_PRIVATE, r);
+	ekeko_node_user_set((Ekeko_Node *)et, RENDERABLE_PRIVATE, r);
 }
 /**
  * To be documented

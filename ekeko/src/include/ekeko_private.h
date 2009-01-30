@@ -72,5 +72,6 @@ typedef enum
 #include "private/tiler.h"
 #include "private/renderable.h"
 #include "private/canvas.h"
+#include "private/value.h"
 
 #endif /*EKEKO_PRIVATE_H_*/

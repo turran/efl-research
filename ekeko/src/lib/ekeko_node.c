@@ -3,6 +3,30 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+struct _Ekeko_Node_Private
+{
+	EINA_INLIST;
+	Ekeko_Node_Type type;
+	const char *name;
+	Ekeko_Value *value;
+	/* used on attributes and elements, to know when some child or attribute
+	 * has changed
+	 */
+	int changed;
+	/* only used on attributes */
+	struct
+	{
+		Ekeko_Value *prev; 
+	} attr;
+	Eina_Inlist *childs;
+	Ekeko_Node *parent;
+	Ekeko_Node_Named_Map *attributes;
+	Ekeko_Document *owner;
+	Eina_Hash *user;
+	Eina_Hash *events;	
+};
+
+
 typedef struct _Ekeko_Event_Listener_Container
 {
 	Ekeko_Event_Listener listener;
@@ -25,67 +49,112 @@ static void _node_change_rec(Ekeko_Node *n, int num)
 		_node_change_rec(n->parent, num);
 }
 
+static Eina_Bool _int_value_cmp(Ekeko_Node *n, Ekeko_Value *v)
+{
+	int s;
+	int p;
+
+	s = ekeko_value_int_get(v);
+	p = ekeko_value_int_get(n->attr.prev);
+
+	if (s != p)
+	{
+		return EINA_TRUE;
+	}
+	return EINA_FALSE;
+}
+
+static Eina_Bool _rectangle_value_cmp(Ekeko_Node *n, Ekeko_Value *v)
+{
+	Eina_Rectangle s;
+	Eina_Rectangle p;
+	
+	ekeko_value_rectangle_get(v, &s);
+	ekeko_value_rectangle_get(n->attr.prev, &p);
+	
+	if ((s.x != p.x) || (s.y != p.y) || (s.w != p.w) || (s.h != p.h))
+	{
+		return EINA_TRUE;
+	}
+	return EINA_FALSE;
+}
+
+static Eina_Bool _bool_value_cmp(Ekeko_Node *n, Ekeko_Value *v)
+{
+	Eina_Bool s;
+	Eina_Bool p;
+
+	ekeko_value_bool_get(v, &s);
+	ekeko_value_bool_get(&n->attr.prev, &p);
+	
+	if (s != p)
+	{
+		return EINA_TRUE;
+	}
+	return EINA_FALSE;
+}
+
+static Eina_Bool _external_value_cmp(Ekeko_Node *n, Ekeko_Value *v)
+{
+	Ekeko_Value_Class *vclass;
+	Ekeko_Value_Type type;
+	void *s;
+
+	type = ekeko_value_type_get(v);
+	vclass = ekeko_value_class_get(type);
+	s = ekeko_value_external_get(v);
+	if (vclass->compare(n->attr.prev, v))
+	{
+		return EINA_TRUE;
+	}
+	return EINA_FALSE;
+}
+
 void _attribute_value_set(Ekeko_Node *n, Ekeko_Value *v)
 {
-	int changed = EINA_FALSE;
-	Ekeko_Value old;
+	Eina_Bool changed = EINA_FALSE;
+	Ekeko_Value_Type type;
+	Ekeko_Value *old;
 
+	/* FIXME check that the type is the same */
+	type = ekeko_value_type_get(v);
+	/* backup current value in case it is stored */
 	old = n->value;
-	switch (v->type)
+	switch (type)
 	{
 	/* First basic types */
 	case EKEKO_ATTRIBUTE_NONE:
 		printf("attribute %s hasnt been initialized\n", n->name);
 		exit(1);
 	case EKEKO_ATTRIBUTE_INT:
-		if (v->v.i != n->attr.prev.v.i)
-		{
-			changed = EINA_TRUE;
-			n->value.v.i = v->v.i;
-		}
+		changed = _int_value_cmp(n, v);
 		break;
 	case EKEKO_ATTRIBUTE_RECTANGLE:
-		{
-			Eina_Rectangle *r = &(v->v.r);
-			Eina_Rectangle *p = &(n->attr.prev.v.r);
-			Eina_Rectangle *c = &(n->value.v.r);
-			
-			if ((r->x != p->x) || (r->y != p->y) ||
-					(r->w != p->w) || (r->h != p->h))
-			{
-				c->x = r->x;
-				c->y = r->y;
-				c->w = r->w;
-				c->h = r->h;
-				changed = EINA_TRUE;
-			}
-		}
+		changed = _rectangle_value_cmp(n, v);
 		break;
 	case EKEKO_ATTRIBUTE_BOOL:
-		if (v->v.b != n->attr.prev.v.b)
-		{
-			changed = EINA_TRUE;
-			n->value.v.b = v->v.b;
-		}
+		changed = _bool_value_cmp(n, v);
 		break;
-	/* TODO User provided ones */
 	default:
-		printf("no such type yet %d!!!\n", v->type);
+		changed = _external_value_cmp(n, v);
 		break;
 	}
+end:
 	if (changed == EINA_TRUE)
 	{
 		Ekeko_Event_Mutation *e;
 		Ekeko_Element *owner;
 
+		/* replace the value */
+		n->value = v;
 		/* call the mutation event */
 		e = (Ekeko_Event_Mutation *)ekeko_document_event_new(n->owner, "MutationEvents");
 		owner = ekeko_attribute_element_get((Ekeko_Attribute *)n);
 		ekeko_event_mutation_init(e, "DOMAttrModified", EINA_FALSE,
-				EINA_FALSE, (Ekeko_Node *)owner, &old, v, n->name,
+				EINA_FALSE, (Ekeko_Node *)owner, old, v, n->name,
 				EKEKO_EVENT_MUTATION_MODIFCATION);
 		ekeko_node_event_dispatch((Ekeko_Node *)owner, (Ekeko_Event *)e);
-		
+		ekeko_value_delete(old);
 	}
 	n->changed = changed;
 	return;
@@ -102,7 +171,7 @@ void _attribute_process(Ekeko_Node *n)
 	e = (Ekeko_Event_Mutation *)ekeko_document_event_new(n->owner, "MutationEvents");
 	owner = ekeko_attribute_element_get((Ekeko_Attribute *)n);
 	ekeko_event_mutation_init(e, "DOMAttrUpdated", EINA_FALSE, EINA_FALSE,
-			(Ekeko_Node *)owner, &n->attr.prev, &n->value, n->name,
+			(Ekeko_Node *)owner, n->attr.prev, n->value, n->name,
 			EKEKO_EVENT_MUTATION_MODIFCATION);
 	ekeko_node_event_dispatch((Ekeko_Node *)owner, (Ekeko_Event *)e);
 	/* update prev */
@@ -131,49 +200,26 @@ void _element_process(Ekeko_Node *n)
 	 * another attribute, if that's the case, return there */
 	//printf(" 1] Element changed %d\n", n->changed);
 }
-
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-void ekeko_node_initialize(Ekeko_Node *n)
+static void _node_initialize(Ekeko_Node *n, const char *name, Ekeko_Document *owner)
 {
 	n->user = eina_hash_string_superfast_new(NULL);
 	n->attributes = NULL;
 	n->parent = NULL;
 	n->changed = 0;
+	n->owner = owner;
+	n->name = strdup(name);
 #ifdef EKEKO_EVENT
 	n->events = eina_hash_string_superfast_new(NULL);
 #endif
 }
 
-Eina_Bool ekeko_node_changed(Ekeko_Node *n)
+static void _value_set(Ekeko_Node *n, Ekeko_Value *v)
 {
-	if (n->changed > 0)
-		return EINA_TRUE;
-	else
-		return EINA_FALSE;
-}
-/*
- * The node should be an element as is the only one that has attributes
- */
-void ekeko_node_attribute_set(Ekeko_Node *n, const char *name, Ekeko_Value *v)
-{
-	Ekeko_Attribute *a;
 	Eina_Bool changed_bef, changed_now;
-	
-	a = eina_hash_find(n->attributes, name);
-	if (!a)
-	{
-		a = ekeko_attribute_new((Ekeko_Element *)n, name, v);
-		eina_hash_add(n->attributes, name, a);
-		_node_change_rec(n, 1);
 
-		return;
-	}
-
-	changed_bef = ekeko_node_changed((Ekeko_Node *)a);
-	_attribute_value_set((Ekeko_Node *)a, v);
-	changed_now = ekeko_node_changed((Ekeko_Node *)a);
+	changed_bef = ekeko_node_changed(n);
+	_attribute_value_set(n, v);
+	changed_now = ekeko_node_changed(n);
 
 	if (changed_bef && !changed_now)
 	{
@@ -183,26 +229,35 @@ void ekeko_node_attribute_set(Ekeko_Node *n, const char *name, Ekeko_Value *v)
 	{
 		_node_change_rec(n, 1);
 	}
-	if (changed_now)
-	{
-		//printf("Attribute %s changed now\n", name);
-	}
-	if (changed_bef)
-	{
-		//printf("Attribute %s changed before\n", name);
-	}
 }
 
-void ekeko_node_attribute_get(Ekeko_Node *n, const char *name, Ekeko_Value *v)
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+void ekeko_node_attribute_new(Ekeko_Node *n, const char *name, Ekeko_Document *owner)
 {
-	Ekeko_Attribute *a;
-
-	a = eina_hash_find(n->attributes, name);
-	if (!a) return;
-
-	/* FIXME change this to _node_ */
-	ekeko_attribute_value_get(a, v);
+	_node_initialize(n, name, owner);
+	n->type = EKEKO_NODE_ATTRIBUTE;
+	n->value = ekeko_value_new(EKEKO_ATTRIBUTE_NONE, NULL);
+	n->attr.prev = ekeko_value_new(EKEKO_ATTRIBUTE_NONE, NULL);
 }
+
+void ekeko_node_element_new(Ekeko_Node *n, const char *name, Ekeko_Document *owner)
+{
+	_node_initialize(n, name, owner);
+	n->type = EKEKO_NODE_ELEMENT;
+	n->attributes = eina_hash_string_superfast_new(NULL);
+	
+}
+
+Eina_Bool ekeko_node_changed(Ekeko_Node *n)
+{
+	if (n->changed > 0)
+		return EINA_TRUE;
+	else
+		return EINA_FALSE;
+}
+
 void ekeko_node_attribute_remove(Ekeko_Node *n, const char *name)
 {
 	Ekeko_Attribute *a;
@@ -272,22 +327,70 @@ void ekeko_node_event_listener_add(Ekeko_Node *n, const char *type,
 /**
  * 
  */
-EAPI void ekeko_node_value_get(Ekeko_Node *n, Ekeko_Value *v)
+EAPI Ekeko_Value * ekeko_node_value_get(Ekeko_Node *n)
 {
-	*v = n->value;
+	return n->value;
+}
+/*EAPI void _attribute_value_set(Ekeko_Node *n, Ekeko_Value *v)
+{
+	
+}*/
+/**
+ * 
+ * 
+ */
+EAPI void ekeko_node_value_set(Ekeko_Node *n, const char *v)
+{
+	Ekeko_Value *val;
+
+	if (n->type != EKEKO_NODE_ATTRIBUTE)
+		return;
+
+	val = ekeko_value_new(EKEKO_ATTRIBUTE_STRING, (void *)v);
+	_value_set(n, val);
 }
 /**
  * 
  * 
  */
-EAPI void ekeko_node_value_set(Ekeko_Node *n, Ekeko_Value *v)
+EAPI void ekeko_node_value_int_set(Ekeko_Node *n, int v)
 {
-	switch (n->type)
-	{
-	case EKEKO_NODE_ATTRIBUTE:
-		_attribute_value_set(n, v);
-		break;
-	}
+	Ekeko_Value *val;
+
+	if (n->type != EKEKO_NODE_ATTRIBUTE)
+		return;
+
+	val = ekeko_value_new(EKEKO_ATTRIBUTE_INT, &v);
+	_value_set(n, val);	
+}
+/**
+ * 
+ * 
+ * 
+ */
+EAPI void ekeko_node_value_bool_set(Ekeko_Node *n, Eina_Bool v)
+{
+	Ekeko_Value *val;
+
+	if (n->type != EKEKO_NODE_ATTRIBUTE)
+		return;
+
+	val = ekeko_value_new(EKEKO_ATTRIBUTE_BOOL, &v);
+	_value_set(n, val);
+}
+/**
+ * 
+ * 
+ */
+EAPI void ekeko_node_value_rectangle_set(Ekeko_Node *n, Eina_Rectangle *v)
+{
+	Ekeko_Value *val;
+
+	if (n->type != EKEKO_NODE_ATTRIBUTE)
+		return;
+
+	val = ekeko_value_new(EKEKO_ATTRIBUTE_RECTANGLE, (void *)v);
+	_value_set(n, val);
 }
 /**
  * 
@@ -386,23 +489,25 @@ EAPI Ekeko_Node * ekeko_node_child_append(Ekeko_Node *p, Ekeko_Node *n)
 /* Split this function in two for the n->changed check */
 EAPI void ekeko_node_process(Ekeko_Node *n)
 {
+	Ekeko_Node_Private *np;
 	Eina_Iterator *it;
 	Ekeko_Node *in;
 	Ekeko_Event_Process *e = NULL;
 
+	np = n->p;
 	/* all childs */
-	if (!n->changed)
+	if (!np->changed)
 		return;
 	//printf("[0  Node changed %d %s %d\n", n->type, n->name, n->changed);
 	/* handle the attributes as they dont have any parent, childs or siblings */
-	if (n->type == EKEKO_NODE_ELEMENT)
+	if (np->type == EKEKO_NODE_ELEMENT)
 	{
-		_element_process(n);
-		if (!n->changed)
+		_element_process(np);
+		if (!np->changed)
 			return;
 	}
 	/* handle childs */
-	it = eina_inlist_iterator_new(n->childs);
+	it = eina_inlist_iterator_new(np->childs);
 	while (eina_iterator_next(it, (void **)&in))
 	{
 		int changed = in->changed;
@@ -411,21 +516,21 @@ EAPI void ekeko_node_process(Ekeko_Node *n)
 			continue;
 		
 		ekeko_node_process(in);
-		n->changed -= changed;
-		if (!n->changed)
+		np->changed -= changed;
+		if (!np->changed)
 		{
 			break;
 		}
 	}
 	//printf(" 0] Node changed %d %s %d\n", n->type, n->name, n->changed);
 	/* post condition */
-	assert(!n->changed);
-	if (n->type == EKEKO_NODE_DOCUMENT)
-		e = (Ekeko_Event_Process *)ekeko_document_event_new((Ekeko_Document *)n, "ProcessEvents");
-	else if (n->type == EKEKO_NODE_ELEMENT)
-		e = (Ekeko_Event_Process *)ekeko_document_event_new(n->owner, "ProcessEvents");
+	assert(!np->changed);
+	if (np->type == EKEKO_NODE_DOCUMENT)
+		e = (Ekeko_Event_Process *)ekeko_document_event_new((Ekeko_Document *)np, "ProcessEvents");
+	else if (np->type == EKEKO_NODE_ELEMENT)
+		e = (Ekeko_Event_Process *)ekeko_document_event_new(np->owner, "ProcessEvents");
 	else
 		return;
-	ekeko_event_process_init(e, n, EKEKO_EVENT_PROCESS_PHASE_POST);
-	ekeko_node_event_dispatch(n, (Ekeko_Event *)e);
+	ekeko_event_process_init(e, np, EKEKO_EVENT_PROCESS_PHASE_POST);
+	ekeko_node_event_dispatch(np, (Ekeko_Event *)e);
 }

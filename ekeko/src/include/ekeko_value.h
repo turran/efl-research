@@ -1,7 +1,23 @@
 #ifndef EKEKO_VALUE_H_
 #define EKEKO_VALUE_H_
 
+typedef int Ekeko_Value_Type;
 
+#define EKEKO_ATTRIBUTE_NONE 0
+#define EKEKO_ATTRIBUTE_INT 1
+#define EKEKO_ATTRIBUTE_BOOL 2
+#define EKEKO_ATTRIBUTE_CHAR 3
+#define EKEKO_ATTRIBUTE_FLOAT 4
+#define EKEKO_ATTRIBUTE_DOUBLE 5
+#define EKEKO_ATTRIBUTE_SHORT 6
+#define EKEKO_ATTRIBUTE_LONG 7
+#define EKEKO_ATTRIBUTE_POINTER 8
+#define EKEKO_ATTRIBUTE_STRING 9
+#define EKEKO_ATTRIBUTE_RECTANGLE 10
+#define EKEKO_ATTRIBUTE_LAST 10
+/* TODO add an inherited type */
+
+#if 0
 typedef enum _Ekeko_Value_Type
 {
 	EKEKO_ATTRIBUTE_NONE, /**< Used when the property is uninitialized */
@@ -18,28 +34,29 @@ typedef enum _Ekeko_Value_Type
 	// EKEKO_ATTRIBUTE_ELEMENT, How to handle the compare? per pointer + changed flag?
 	EKEKO_ATTRIBUTES,
 } Ekeko_Value_Type;
+#endif
 
-typedef struct _Ekeko_Value
+typedef struct _Ekeko_Value Ekeko_Value;
+/**
+ * Used to register a new value
+ */
+typedef struct _Ekeko_Value_Class
 {
-	Ekeko_Value_Type type;
-	union {
-		int i;
-		Eina_Bool b;
-		char c;
-		float f;
-		double d;
-		short s;
-		long l;
-		void *p;
-		char *st;
-		Eina_Rectangle r;
-	} v;
-} Ekeko_Value;
+	Eina_Bool (*compare)(Ekeko_Value *v1, Ekeko_Value *v2);
+	void (*string_from)(Ekeko_Value *v, const char *);
+	void (*string_to)(Ekeko_Value *v, const char **);
+} Ekeko_Value_Class;
 
 typedef Eina_Bool (*Ekeko_Value_Compare)(const Ekeko_Value *a, const Ekeko_Value *b);
 
 void ekeko_value_int_from(Ekeko_Value *v, int i);
 void ekeko_value_rectangle_from(Ekeko_Value *v, Eina_Rectangle *r);
 void ekeko_value_string_from(Ekeko_Value *v, const char *string);
+void ekeko_value_external_from(Ekeko_Value *v, Ekeko_Value_Type t, void *ext);
+
+EAPI int ekeko_value_int_get(Ekeko_Value *v);
+EAPI void * ekeko_value_external_get(Ekeko_Value *v);
+EAPI void ekeko_value_rectangle_get(Ekeko_Value *v, Eina_Rectangle *r);
+
 
 #endif /*EKEKO_VALUE_H_*/

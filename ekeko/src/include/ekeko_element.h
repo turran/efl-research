@@ -1,6 +1,9 @@
 #ifndef EKEKO_ELEMENT_H_
 #define EKEKO_ELEMENT_H_
 
+EAPI Ekeko_Attribute * ekeko_element_attribute_node_get(Ekeko_Element *e, const char *name);
+EAPI const Ekeko_Value * ekeko_element_attribute_get(Ekeko_Element *e, const char *name);
+
 typedef void (*Ekeko_Element_Update)(Ekeko_Element *, const Ekeko_Value *, const Ekeko_Value *, void *);
 
 typedef void (*Ekeko_Attribute_Callback)(Ekeko_Element *e, Ekeko_Value *v, void *data);
@@ -13,8 +16,8 @@ void ekeko_element_process(Ekeko_Element *e);
 void ekeko_element_attribute_remove(Ekeko_Element *e, const char *name);
 void ekeko_element_attribute_add(Ekeko_Element *e, const char *name, Ekeko_Value_Type type,
 		Ekeko_Value *def);
-void ekeko_element_attribute_set(Ekeko_Element *e, const char *name, Ekeko_Value *v);
-void ekeko_element_attribute_get(Ekeko_Element *e, const char *name, Ekeko_Value *v);
+void ekeko_element_attribute_set(Ekeko_Element *e, const char *name, const char *s);
+void ekeko_element_attribute_int_set(Ekeko_Element *e, const char *name, int v);
 
 
 #endif /*EKEKO_ELEMENT_H_*/

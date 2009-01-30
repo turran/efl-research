@@ -77,12 +77,14 @@ static void _attr_updated_cb(Ekeko_Event *ee)
 	if (!strcmp(e->attr, CANVAS_GEOMETRY))
 	{
 		Ekeko_Canvas *c;
+		Eina_Rectangle r;
 
 		c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
 		if (c->tiler)
 			ekeko_tiler_free(c->tiler);
-		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, e->curr->v.r.w, e->curr->v.r.h);
-		ekeko_canvas_damage_add_internal(c, &e->curr->v.r);
+		ekeko_value_rectangle_get(e->curr, &r);
+		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, r.w, r.h);
+		ekeko_canvas_damage_add_internal(c, &r);
 	}
 }
 
@@ -217,7 +219,7 @@ void ekeko_canvas_damage_add_internal(Ekeko_Canvas *c, Eina_Rectangle *r)
 EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 {
 	Ekeko_Canvas *c;
-	Ekeko_Value def;
+	Eina_Rectangle r;
 
 	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
 	if (c) return;
@@ -229,8 +231,8 @@ EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
 	c->container = e;
 	ekeko_node_user_set((Ekeko_Node *)e, CANVAS_PRIVATE, c);
 	/* setup the attributes for a canvas element */
-	ekeko_value_rectangle_coords_from(&def, 0, 0, 0, 0);
-	ekeko_element_attribute_set(e, CANVAS_GEOMETRY, &def);
+	eina_rectangle_coords_from(&r, 0, 0, 0, 0);
+	ekeko_element_attribute_rectangle_set(e, CANVAS_GEOMETRY, &r);
 	/* setup the events */
 	ekeko_node_event_listener_add(e, "ProcessEvents",  _process_cb, 
 			EINA_FALSE);
@@ -270,6 +272,7 @@ EAPI void ekeko_canvas_obscure_del(Ekeko_Element *c, Eina_Rectangle *r)
 {
 	
 }
+#if 0
 /**
  * @brief Gets the width and height of the canvas
  * To be documented
@@ -308,7 +311,6 @@ EAPI void ekeko_canvas_size_set(Ekeko_Element *e, unsigned int w, unsigned int h
  * will get it's class called. Every damaged area is cleared after this call
  * @param c Canvas to process
  */
-#if 0
 EAPI void ekeko_canvas_process(Ekeko_Element *c)
 {
 	Ekeko_Rectangle *redraws;

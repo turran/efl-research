@@ -8,15 +8,15 @@ static void _render(Ekeko_Element *c, Ekeko_Element *e, Eina_Rectangle *r)
 {
 	SDL_Rect rect;
 	SDL_Surface *s;
-	Ekeko_Value v;
+	Ekeko_Value *v;
 	
 	s = test_canvas_surface_get(c);
-	ekeko_element_attribute_get(e, OBJECT_COLOR, &v);
+	v = ekeko_element_attribute_get(e, OBJECT_COLOR);
 	rect.x = r->x;
 	rect.y = r->y;
 	rect.w = r->w;
 	rect.h = r->h;
-	SDL_FillRect(s, &rect, v.v.i);
+	SDL_FillRect(s, &rect, ekeko_value_int_get(v));
 }
 static void _new(Ekeko_Element *e)
 {
@@ -37,7 +37,6 @@ static void _delete(Ekeko_Element *e)
 void test_rect_register(Ekeko_Document_Type *dt)
 {
 	Ekeko_Element_Type *et;
-	Ekeko_Value def;
 
 	et = ekeko_document_type_element_register(dt, "test", "rect", _new,
 		_delete);

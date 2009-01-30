@@ -128,6 +128,7 @@ EAPI Ekeko_Document_Type * ekeko_document_type_register(const char *ns)
 
 /**
  * FIXME what to do with the namespace?
+ * TODO add a callback for adding a child
  */
 EAPI Ekeko_Element_Type * ekeko_document_type_element_register(Ekeko_Document_Type *t, const char *ns,
 		const char *name, Ekeko_Element_New_Cb new_cb,
@@ -151,12 +152,11 @@ EAPI Ekeko_Element_Type * ekeko_document_type_element_register(Ekeko_Document_Ty
  * an attribute has been deleted
  */
 EAPI void ekeko_document_type_element_attribute_register(Ekeko_Element_Type *et,
-		const char *name, Ekeko_Value *def)
+		const char *name, Ekeko_Value_Type type, void *data)
 {
 	Ekeko_Value *n;
 	
-	n = malloc(sizeof(Ekeko_Value));
-	*n = *def;
+	n = ekeko_value_new(type, data);
 	eina_hash_add(et->attributes, name, n);
 }
 

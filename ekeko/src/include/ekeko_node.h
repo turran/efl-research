@@ -1,6 +1,13 @@
 #ifndef EKEKO_NODE_H_
 #define EKEKO_NODE_H_
 
+typedef struct _Ekeko_Node_Private Ekeko_Node_Private;
+
+struct _Ekeko_Node
+{
+	Ekeko_Node_Private *p;
+};
+
 typedef enum _Ekeko_Node_Type
 {
 	EKEKO_NODE_ELEMENT = 1,
@@ -10,8 +17,9 @@ typedef enum _Ekeko_Node_Type
 	EKEKO_NODE_DOCUMENT = 9
 } Ekeko_Node_Type;
 
-EAPI void ekeko_node_value_get(Ekeko_Node *n, Ekeko_Value *v);
-EAPI void ekeko_node_value_set(Ekeko_Node *n, Ekeko_Value *v);
+EAPI Ekeko_Value * ekeko_node_value_get(Ekeko_Node *n);
+EAPI void ekeko_node_value_set(Ekeko_Node *n, const char *v);
+EAPI void ekeko_node_value_int_set(Ekeko_Node *n, int v);
 EAPI Ekeko_Node_Type ekeko_node_type(Ekeko_Node *);
 EAPI Ekeko_Node * ekeko_node_parent(Ekeko_Node *);
 /* LEVEL 2 */
