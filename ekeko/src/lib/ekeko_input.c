@@ -1,171 +1,158 @@
+/*
+ * etk2_input.c
+ *
+ *  Created on: 28-ene-2009
+ *      Author: jl
+ */
 #include "Ekeko.h"
 #include "ekeko_private.h"
-/**
- * TODO
- * code the events support, to receive events from it
- * 
- */
 /*============================================================================*
- *                                  Local                                     * 
+ *                                  Local                                     *
  *============================================================================*/
+struct _Ekeko_Input
+{
+	Ekeko_Canvas *c;
+	struct
+	{
+		unsigned int downx;
+		unsigned int downy;
+		unsigned int button;
+		unsigned int x;
+		unsigned int y;
+		Eina_Bool inside;
+		Ekeko_Renderable *r;
+	} pointer;
+	struct
+	{
+
+	} keyboard;
+};
 /*============================================================================*
- *                                 Global                                     * 
+ *                                 Global                                     *
  *============================================================================*/
-/*============================================================================*
- *                                   API                                      * 
- *============================================================================*/
-#if 0
-/**
- * @brief Creates a new input source
- * @param c The canvas the new input source will belong
- */
-Ekeko_Input * ekeko_input_new(Ekeko_Canvas *c)
+Ekeko_Input * input_new(Ekeko_Canvas *c)
 {
 	Ekeko_Input *i;
-	
+
 	i = calloc(1, sizeof(Ekeko_Input));
-	i->canvas = c;
-	/* attach the input to the list of canvas' inputs */
-	//ekeko_canvas_input_add(c, i);
-	
+	i->c = c;
 	return i;
 }
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI ekeko_input_feed_mouse_down(Ekeko_Input *i, int b, Ekeko_Button_Flags flags, unsigned int timestamp)
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i)
 {
-	i->last_timestamp = timestamp;
+	Ekeko_Renderable *r;
+
+	if (i->pointer.inside)
+		return;
+	i->pointer.inside = EINA_TRUE;
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
+	if (!r)
+		return;
+	/* TODO send the event */
 }
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i, int b, Ekeko_Button_Flags flags, unsigned int timestamp)
+
+EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, unsigned int x, unsigned int y)
 {
-	i->last_timestamp = timestamp;
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, int x, int y, unsigned int timestamp)
-{
-	Ekeko_Event ev;
-	int px, py;
-	
-	i->last_timestamp = timestamp;
-	if (!i->pointer.inside) return;
-	
+	Ekeko_Renderable *r;
+	unsigned int px, py;
+
+	if (!i->pointer.inside)
+		return;
+
 	px = i->pointer.x;
 	py = i->pointer.y;
-	
-	i->pointer.x = x; 
+	i->pointer.x = x;
 	i->pointer.y = y;
-	/* if the pointer is grabbed, the logic is different */
-	if (i->pointer.grabbed)
+	/* TODO grabbed */
+	r = ekeko_canvas_renderable_get_at_coord(i->c, x, y);
+	if (r == i->pointer.r)
 	{
-		/* move */
-		/* out */
+		/* send move */
+		if (r)
+		{
+			Event_Mouse em;
+
+			event_mouse_move_init(&em, (Ekeko_Object *)r, NULL, i, x, y);
+			ekeko_event_dispatch((Event *)&em);
+		}
 	}
 	else
 	{
-#if 0
-		Ekeko_Renderable *inside;
-		
-		inside = ekeko_canvas_object_get_at_coordinate(i->canvas, x, y);
-		/* TODO check the visibility */
-		if (inside == i->pointer.obj)
+		/* send out event on i->r */
+		if (i->pointer.r)
 		{
-			/* move */
-			if (inside)
-			{
-				ekeko_object_event_callback_call(inside, EKEKO_EVENT_MOUSE_MOVE, &ev);
-			}
+			Event_Mouse em;
+
+			event_mouse_out_init(&em, (Ekeko_Object *)i->pointer.r, (Ekeko_Object *)r, i);
+			ekeko_event_dispatch((Event *)&em);
 		}
-		else
+		/* send in event on r */
+		if (r)
 		{
-			printf("%p %p\n", inside, i->pointer.obj);
-			/* old out */
-			if (i->pointer.obj)
-			{
-				ekeko_object_event_callback_call(i->pointer.obj, EKEKO_EVENT_MOUSE_OUT, &ev);
-				i->pointer.obj = NULL;
-			}
-			/* new in */
-			if (inside)
-			{
-				ekeko_object_event_callback_call(inside, EKEKO_EVENT_MOUSE_IN, &ev);
-				i->pointer.obj = inside;
-			}
+			Event_Mouse em;
+
+			event_mouse_in_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
+			ekeko_event_dispatch((Event *)&em);
+
 		}
-#endif
 	}
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i, unsigned int timestamp)
-{
-	Ekeko_Renderable *inside = NULL;
-	Ekeko_Event ev;
-	
-	if (i->pointer.inside) return;
-	
-	//inside = ekeko_canvas_object_get_at_coordinate(i->canvas, i->pointer.x, i->pointer.y);
-	if (!inside) return;
-	/* call the _in_ callback */
-	i->pointer.obj = inside;
-	i->pointer.inside = EINA_TRUE;
-	i->last_timestamp = timestamp;
-	
-	//ekeko_object_event_callback_call(inside, EKEKO_EVENT_MOUSE_IN, &ev);
-	ekeko_input_feed_mouse_move(i, i->pointer.x, i->pointer.y, timestamp);
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_mouse_out(Ekeko_Input *i, unsigned int timestamp)
-{
-	i->last_timestamp = timestamp;
-	i->pointer.inside = EINA_FALSE;
-	if (!i->pointer.grabbed) return;
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_mouse_wheel(Ekeko_Input *i, int direction, int z, unsigned int timestamp)
-{
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_key_down(Ekeko_Input *i, const char *keyname, const char *key, const char *string, const char *compose, unsigned int timestamp)
-{
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_key_up(Ekeko_Input *i, const char *keyname, const char *key, const char *string, const char *compose, unsigned int timestamp)
-{
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_input_feed_hold(Ekeko_Input *i, int hold, unsigned int timestamp)
-{
-	
+	/* update the current inside */
+	i->pointer.r = r;
 }
 
-#endif
+EAPI void ekeko_input_feed_mouse_out(Ekeko_Input *i)
+{
+	Ekeko_Renderable *r;
+
+	if (!i->pointer.inside)
+		return;
+	i->pointer.inside = EINA_FALSE;
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
+	if (!r)
+		return;
+	/* TODO send the event */
+}
+
+EAPI void ekeko_input_feed_mouse_down(Ekeko_Input *i)
+{
+	Ekeko_Renderable *r;
+	Event_Mouse em;
+
+	if (!i->pointer.inside)
+		return;
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
+	if (!r)
+		return;
+	/* store the coordinates where the mouse buton down was done to
+	 * trigger the click later
+	 */
+	i->pointer.downx = i->pointer.x;
+	i->pointer.downy = i->pointer.y;
+	event_mouse_down_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
+	ekeko_event_dispatch((Event *)&em);
+}
+
+EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i)
+{
+	Ekeko_Renderable *r;
+	Event_Mouse em;
+
+	if (!i->pointer.inside)
+		return;
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
+	if (!r)
+		return;
+	event_mouse_up_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
+	ekeko_event_dispatch((Event *)&em);
+	/* in case the down coordinates are the same as the current coordinates
+	 * send a click event
+	 */
+	if ((i->pointer.downx == i->pointer.x) && (i->pointer.downy == i->pointer.y))
+	{
+		event_mouse_click_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
+		ekeko_event_dispatch((Event *)&em);
+	}
+}

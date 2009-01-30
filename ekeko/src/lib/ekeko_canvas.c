@@ -1,412 +1,421 @@
+/*
+ * etk2_canvas.c
+ *
+ *  Created on: 08-ene-2009
+ *      Author: jl
+ */
 #include "Ekeko.h"
 #include "ekeko_private.h"
-/* 
- * TODO
- * + Remove every reference to renderables because we should use the list of
- * valid renderables only
- * + Make the canvas be an object approach, similar to what has to be done
- * with the renderables / locatable
- * + Make the canvas class actually abstract functions
- */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#if 0
-/* TODO move this to object.c? */
-static void _object_changed(Ekeko_Canvas *c, Ekeko_Renderable *o)
-{
-	ekeko_renderable_pre_process(o);
-}
-/* refactor this to use the iterator */
-static void _renderables_changed(Ekeko_Canvas *c)
-{
-	Ekeko_Renderable *o;
+#define PRIVATE(canvas) ((Ekeko_Canvas_Private *)((Ekeko_Canvas *)(canvas))->private)
 
-	EINA_INLIST_FOREACH(c->renderables, o)
-	{
-		if (o->changed == EINA_TRUE)
-			_object_changed(c, o);
-	}
-}
-#endif
+#define TYPE_NAME "Canvas"
 
-struct _Ekeko_Canvas
+struct _Ekeko_Canvas_Private
 {
-	Ekeko_Element *container;
-	Ekeko_Tiler *tiler;
-	int tiler_type; /* FIXME fix this to an enum */
-	Eina_Inlist *renderables;
+	Eina_Tiler *tiler;
+	Eina_List *renderables;
+	/* TODO obscures */
 	Eina_Inlist *inputs;
-	Eina_Inlist *damages;
-	// TODO obscures
-	/* possible callbacks */
-	// rectangle_push: in case of double buffer, this will inform what has changed (the last rendered rectangle)
-	// what about post processing of the canvas??
-	struct
-	{
-		Ekeko_Canvas_Flush flush;
-	} cb;
-	Eina_List *valid; /* objects that need to be draw */
-	Eina_List *invalid; /* objects that dont need to be draw */
 };
 
-static void _damages_add(Ekeko_Canvas *c)
+void _subcanvas_in(const Ekeko_Object *o, Event *e)
 {
-	/* add the rectangles to the tiler */
-	while (c->damages)
+	printf("SUBCANVAS in\n");
+	/* TODO feed the mouse in into this canvas */
+}
+
+void _subcanvas_out(const Ekeko_Object *o, Event *e)
+{
+	printf("SUBCANVAS out\n");
+	/* TODO feed the mouse out into this canvas */
+}
+
+void _subcanvas_move(const Ekeko_Object *o, Event *e)
+{
+	printf("SUBCANVAS move\n");
+	/* TODO feed the mouse move into this canvas */
+}
+
+
+/*
+ * TODO use this instead of the code below
+ * this code is as it doesnt maintain the stack hierarchy
+ */
+static inline void _renderable_append(Ekeko_Canvas *c, Ekeko_Renderable *r,
+		Eina_Rectangle *cgeom, Eina_Rectangle *rgeom, Eina_Bool rvisible)
+{
+	Eina_Bool intersect;
+	Ekeko_Canvas_Private *prv;
+	prv = PRIVATE(c);
+
+#ifdef ETK2_DEBUG
+	printf("[canvas] %p renderable append %p at %d %d %d %d - %d %d %d %d (%d)\n",
+			c, r, cgeom->x, cgeom->y, cgeom->w, cgeom->h,
+			rgeom->x, rgeom->y, rgeom->w, rgeom->h,
+			rvisible);
+#endif
+
+	intersect = eina_rectangles_intersect(rgeom, cgeom);
+	/* not visible */
+	if (!rvisible)
 	{
-		Ekeko_Rectangle *r = (Ekeko_Rectangle *)c->damages;		
-		
-		c->damages = eina_inlist_remove(c->damages, c->damages);
-		ekeko_tiler_rect_add(c->tiler, &r->r);
-		free(r);
+		if (renderable_appended_get(r))
+		{
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p removing renderable %p\n", c, r);
+#endif
+			prv->renderables = eina_list_remove(prv->renderables, r);
+			renderable_appended_set(r, EINA_FALSE);
+		}
+	}
+	/* visible and not intersect */
+	else if (!intersect)
+	{
+		if (renderable_appended_get(r))
+		{
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p removing renderable %p\n", c, r);
+#endif
+			prv->renderables = eina_list_remove(prv->renderables, r);
+			renderable_appended_set(r, EINA_FALSE);
+		}
+	}
+	/* visible and intersect */
+	else
+	{
+		if (!renderable_appended_get(r))
+		{
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p adding renderable %p\n", c, r);
+#endif
+			prv->renderables = eina_list_append(prv->renderables, r);
+			renderable_appended_set(r, EINA_TRUE);
+		}
 	}
 }
 
-static void _obscures_remove(Ekeko_Canvas *c)
+/* Called whenever one of its possible renderables change properties */
+static void _renderable_prop_modify_cb(const Ekeko_Object *o, Event *e)
 {
-	/* remove the rectangles from the tiler */
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Canvas *c;
+	Ekeko_Renderable *r = (Ekeko_Renderable *)o;
+
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	c = ekeko_renderable_canvas_get((Ekeko_Renderable *)o);
+	if (!c)
+		return;
+
+	/* geometry changed */
+	if (!strcmp(em->prop, "geometry"))
+	{
+		Eina_Rectangle cgeom;
+		Eina_Bool rvisible;
+
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)c, &cgeom);
+		/* reset the canvas coordinates to 0,0 WxH */
+		cgeom.x = 0;
+		cgeom.y = 0;
+		ekeko_renderable_visibility_get(r, &rvisible);
+		_renderable_append(c, r, &cgeom, &em->curr->value.rect, rvisible);
+	}
+	/* visibility changed */
+	else if (!strcmp(em->prop, "visibility"))
+	{
+		Eina_Rectangle cgeom, rgeom;
+
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)c, &cgeom);
+		/* reset the canvas coordinates to 0,0 WxH */
+		cgeom.x = 0;
+		cgeom.y = 0;
+		ekeko_renderable_geometry_get(r, &rgeom);
+		_renderable_append(c, r, &cgeom, &rgeom, em->curr->value.bool_value);
+	}
+#ifdef ETK2_DEBUG
+	printf("[canvas renderable %s]\n", ekeko_object_type_name_get(o));
+#endif
 }
 
-static void _attr_updated_cb(Ekeko_Event *ee)
-{
-	Ekeko_Event_Mutation *e = (Ekeko_Event_Mutation *)ee;
-	int w, h;
-	
-	/* if the size has changed we should damage the whole canvas */
-	if (!strcmp(e->attr, CANVAS_GEOMETRY))
-	{
-		Ekeko_Canvas *c;
-		Eina_Rectangle r;
 
-		c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
-		if (c->tiler)
-			ekeko_tiler_free(c->tiler);
-		ekeko_value_rectangle_get(e->curr, &r);
-		c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, r.w, r.h);
-		ekeko_canvas_damage_add_internal(c, &r);
+static void _prop_modify_cb(const Ekeko_Object *o, Event *e)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+
+	/* check if the change is the rectangle */
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	if (!strcmp(em->prop, "geometry"))
+	{
+		Ekeko_Canvas_Private *prv;
+		Eina_Tiler *tiler;
+
+		prv = PRIVATE(((Ekeko_Canvas *)o));
+		tiler = prv->tiler;
+		if (tiler)
+		{
+
+			eina_tiler_del(tiler);
+		}
+#ifdef ETK2_DEBUG
+		printf("[canvas %s] Changing geometry\n", ekeko_object_type_name_get(o));
+#endif
+		prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
+		/* TODO In case it already has a tiler, mark everything again */
+		if (tiler)
+		{
+			ekeko_canvas_damage_add((Ekeko_Canvas *)o, &em->curr->value.rect);
+		}
+#ifdef ETK2_DEBUG
+		printf("[canvas %s] tiler is %p\n", ekeko_object_type_name_get(o), prv->tiler);
+#endif
 	}
 }
 
-static void _process_cb(Ekeko_Event *ee)
+/* Called whenever the process has finished on this element */
+static void _process_cb(const Ekeko_Object *o, Event *e)
 {
 	Ekeko_Canvas *c;
-	Ekeko_Rectangle *redraw;
-	Eina_Iterator *rit;
-	Ekeko_Event_Process *e = (Ekeko_Event_Process *)ee;
+	Ekeko_Canvas_Private *prv;
+	Eina_Iterator *it;
+	Eina_Rectangle rect;
 
-	c = ekeko_node_user_get(e->related, CANVAS_PRIVATE);
-	/* add every damage to the tiler */
-	/* FIXME this should be done at damage add, no need to do that here */
-	_damages_add(c);
-	/* delete all obscures */
-	_obscures_remove(c);
-	/* get all rectangles to redraw */
-	redraw = ekeko_tiler_rects_get(c->tiler);
-	/* iterate over all rectangles to redraw */
-	rit = eina_inlist_iterator_new(EINA_INLIST_GET(redraw));
-	while (eina_iterator_next(rit, (void **)&redraw))
+	c = (Ekeko_Canvas *)o;
+#ifdef ETK2_DEBUG
+	printf("[canvas %s] Processing canvas %p\n", ekeko_object_type_name_get(o), o);
+#endif
+	prv = PRIVATE(c);
+	if (!prv->tiler)
+		return;
+	/* TODO remove the obscures */
+	/* get the tiler render areas */
+	it = eina_tiler_iterator_new(prv->tiler);
+	while (eina_iterator_next(it, (void **)&rect))
 	{
-		/* FIXME should we keep the element or the renderable itself? */
+		Eina_Iterator *rit;
 		Ekeko_Renderable *r;
 
-		/* iterate over all renderables from top to bottom and render them */
-		//printf("Rectangle %d %d %d %d\n", redraw->r.x, redraw->r.y, redraw->r.w, redraw->r.h);
-		if (!c->renderables)
-			break;
-		ekeko_renderable_render_all(c->container, c->renderables, &redraw->r);
+#ifdef ETK2_DEBUG
+		printf("[canvas] %p Redraw rectangle %d %d %d %d\n", o, rect.x, rect.y, rect.w, rect.h);
+#endif
+		/* iterate over the list of renderables */
+		/* TODO from top to bottom ?*/
+		rit = eina_list_iterator_new(prv->renderables);
+		while (eina_iterator_next(rit, (void **)&r))
+		{
+			Eina_Rectangle geom;
+
+			ekeko_renderable_geometry_get(r, &geom);
+#ifdef ETK2_DEBUG
+			printf("[canvas] %p Rendering renderable %p (%d %d %d %d)\n", o, r, geom.x, geom.y, geom.w, geom.h);
+#endif
+			/* intersect the geometry and the damage area */
+			if (!eina_rectangle_intersection(&geom, &rect))
+				continue;
+			/* call the draw function on the renderable */
+			r->render(r, &geom);
+		}
+		eina_iterator_free(rit);
 	}
-	eina_iterator_free(rit);
-	/* flush the rectangles on the canvas */
-	rit = eina_inlist_iterator_new(EINA_INLIST_GET(redraw));
-	while (eina_iterator_next(rit, (void **)&redraw))
+	eina_iterator_free(it);
+	/* iterate over the redraw rectangles and flush */
+	it = eina_tiler_iterator_new(prv->tiler);
+	while (eina_iterator_next(it, (void **)&rect))
 	{
-		if (!c->cb.flush((Ekeko_Element *)e->related, &redraw->r))
+		if (c->flush(c, &rect))
 			break;
 	}
-	eina_iterator_free(rit);
-	/* clear the rectangles */
-	ekeko_tiler_clear(c->tiler);
+	eina_iterator_free(it);
+	/* clear the tiler */
+	eina_tiler_clear(prv->tiler);
+}
+
+static void _child_append_cb(const Ekeko_Object *o, Event *e)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Canvas_Private *prv;
+
+	/* TODO check if object is the same as the event.rel or
+	 * check if the event.target is not a canvas and it is different
+	 * than this
+	 */
+	if (!ekeko_type_instance_is_of(em->related, "Renderable"))
+	{
+#ifdef ETK2_DEBUG
+		printf("[canvas %s] child is not of type renderable\n", ekeko_object_type_name_get(o));
+#endif
+		return;
+	}
+	/* TODO check that the child is actually an instance of a renderable type
+	 * if so append it to the renderables
+	 */
+	/*
+	 * TODO What happens if the child is of type renderable
+	 * *and* not a canvas and has renderable objects?
+	 */
+
+	/* in case the child's canvas is not this, skip */
+	if (ekeko_renderable_canvas_get((Ekeko_Renderable *)e->target) != (Ekeko_Canvas *)o)
+	{
+#ifdef ETK2_DEBUG
+		printf("[canvas] Skipping this %p renderable as it already has a canvas %p and is not this %p\n", e->target, ekeko_renderable_canvas_get((Ekeko_Renderable *)e->target), o);
+#endif
+		return;
+	}
+	/*
+	 * TODO if the appended child is a canvas, register every UI event to this
+	 * object, so when they arrive insert those events into the new canvas
+	 */
+	if (ekeko_type_instance_is_of(e->target, "Canvas"))
+	{
+#ifdef ETK2_DEBUG
+		printf("[canvas] Child is a canvas too, registering UI events\n");
+#endif
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_IN, _subcanvas_in, EINA_FALSE);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_OUT, _subcanvas_out, EINA_FALSE);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_MOVE, _subcanvas_move, EINA_FALSE);
+	}
+#ifdef ETK2_DEBUG
+	printf("[canvas %s] child of type renderable %s\n", ekeko_object_type_name_get(o), ekeko_object_type_name_get(e->target));
+	printf("[canvas %s] related %s\n", ekeko_object_type_name_get(o), ekeko_object_type_name_get(em->related));
+#endif
+
+	prv = PRIVATE(em->related);
+#ifdef ETK2_DEBUG
+	printf("[canvas %s] %p tiler = %p, canvas = %p\n", ekeko_object_type_name_get(o), em->related, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)o));
+#endif
+	ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_PROP_MODIFY, _renderable_prop_modify_cb, EINA_FALSE);
+}
+
+static void _ctor(void *instance)
+{
+	Ekeko_Canvas *canvas;
+	Ekeko_Canvas_Private *prv;
+
+	canvas = (Ekeko_Canvas*) instance;
+	canvas->private = prv = ekeko_type_instance_private_get(ekeko_canvas_type_get(), instance);
+	prv->renderables = NULL;
+	/* register to an event where some child is appended to this parent */
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE);
+	/* register the event where the size is changed */
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE);
+	/* TODO add the event listener when the object has finished the process() function */
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE);
+#ifdef ETK2_DEBUG
+	printf("[canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)canvas));
+#endif
+}
+
+static void _dtor(void *canvas)
+{
+#ifdef ETK2_DEBUG
+	printf("[canvas] dtor %p\n", canvas);
+#endif
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void ekeko_canvas_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable *r)
-{
-	c->renderables = ekeko_renderable_add(c->renderables, r);
-}
-#if 0
-/**
- * To be documented
- * FIXME: To be fixed
- */
-void ekeko_canvas_change(Ekeko_Canvas *c)
-{
-	c->changed = EINA_TRUE;
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-void ekeko_canvas_input_add(Ekeko_Canvas *c, Ekeko_Input *i)
-{
-	c->inputs = eina_inlist_append(c->inputs, EINA_INLIST_GET(i));
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-Ekeko_Renderable * ekeko_canvas_object_get_at_coordinate(Ekeko_Canvas *c, unsigned int x, unsigned int y)
-{
-	Eina_Inlist *l;
-	Eina_Rectangle r;
 
-	r.x = x;
-	r.y = y;
-	r.w = 1;
-	r.h = 1;
-	/* TODO
-	 * refactor this to call the iterator of renderables
-	 */
-	/* iterate from the last to find the topmost object */
-	for (l = ((Eina_Inlist *)c->renderables)->last; l; l = l->prev)
-	{
-		Ekeko_Renderable *o;
-		
-		o = (Ekeko_Renderable *)l;
-		/* TODO, the visibility check should be defined
-		 * (receive or not events when hidden)
-		 */
-		/* check visibility */
-		if (!ekeko_renderable_is_visible(o))
-			continue;
-		/* check geometry */
-		if (ekeko_renderable_is_inside(o, &r))
-			return o;
-	}
-	return NULL;
-}
-/* FIXME use this function
- */
-static Eina_Bool _at_coordinate(Ekeko_Renderable *o, void *data)
-{
-	Eina_Rectangle *r = data;
-	
-	if (!ekeko_renderable_is_visible(o))
-		return EINA_FALSE;
-	/* check geometry */
-	if (ekeko_renderable_is_inside(o, r))
-		return EINA_TRUE;
-	
-	return EINA_FALSE;
-}
-#endif
-void ekeko_canvas_damage_add_internal(Ekeko_Canvas *c, Eina_Rectangle *r)
-{
-	/* TODO we use an inlist, this should be optimized */
-	Ekeko_Rectangle *er = calloc(1, sizeof(Ekeko_Rectangle));
-	
-	er->r = *r;
-	c->damages = eina_inlist_append(c->damages, EINA_INLIST_GET(er));	
-}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush)
+Ekeko_Type *ekeko_canvas_type_get(void)
 {
-	Ekeko_Canvas *c;
-	Eina_Rectangle r;
+	static Ekeko_Type *canvas_type = NULL;
 
-	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
-	if (c) return;
-	/* private data */
-	c = calloc(1, sizeof(Ekeko_Canvas));
-	c->tiler = ekeko_tiler_new(EKEKO_TILER_SPLITTER, 0, 0);
-	//c->tiler_type = type;
-	c->cb.flush = flush;
-	c->container = e;
-	ekeko_node_user_set((Ekeko_Node *)e, CANVAS_PRIVATE, c);
-	/* setup the attributes for a canvas element */
-	eina_rectangle_coords_from(&r, 0, 0, 0, 0);
-	ekeko_element_attribute_rectangle_set(e, CANVAS_GEOMETRY, &r);
-	/* setup the events */
-	ekeko_node_event_listener_add(e, "ProcessEvents",  _process_cb, 
-			EINA_FALSE);
-	ekeko_node_event_listener_add(e, "DOMAttrUpdated",  _attr_updated_cb,
-			EINA_FALSE);
+	if (!canvas_type)
+	{
+		canvas_type = ekeko_type_new(TYPE_NAME, sizeof(Ekeko_Canvas),
+				sizeof(Ekeko_Canvas_Private), ekeko_renderable_type_get(),
+				_ctor, _dtor, NULL);
+	}
+
+	return canvas_type;
+}
+
+EAPI Ekeko_Canvas * ekeko_canvas_new(void)
+{
+	Ekeko_Canvas *canvas;
+
+	canvas = ekeko_type_instance_new(ekeko_canvas_type_get());
+
+	return canvas;
+}
+
+EAPI void ekeko_canvas_size_set(Ekeko_Canvas *c, int w, int h)
+{
+	Eina_Rectangle rect;
+
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = w;
+	rect.h = h;
+	ekeko_renderable_geometry_set((Ekeko_Renderable *)c, &rect);
 }
 /**
  * @brief Marks a rectangle on the canvas as damaged, this area will be
  * processed again. When the canvas process that area it will no longer be
  * a damaged area
- * @param r Rectangle that defines the area damaged 
+ * @param r Rectangle that defines the area damaged
  */
-EAPI void ekeko_canvas_damage_add(Ekeko_Element *e, Eina_Rectangle *r)
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
-	Ekeko_Canvas *c;
-	
-	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
-	if (!c)
-		return;
-	ekeko_canvas_damage_add_internal(c, r);
+	Ekeko_Canvas_Private *prv;
+
+	prv = PRIVATE(c);
+	if (prv->tiler)
+	{
+#ifdef ETK2_DEBUG
+		printf("[canvas %s] %p adding damage rectangle %d %d %d %d\n", ekeko_object_type_name_get(c), c, r->x, r->y, r->w, r->h);
+#endif
+		eina_tiler_rect_add(prv->tiler, r);
+	}
 }
 /**
  * @brief Marks a rectangle area on the canvas that will never be processed.
  * The area is kept on the canvas until it is cleared with
- * ekeko_canvas_obscure_del()
- * @param r Rectangle that defines the obscure area 
+ * canvas_obscure_del()
+ * @param r Rectangle that defines the obscure area
  */
-EAPI void ekeko_canvas_obscure_add(Ekeko_Element *c, Eina_Rectangle *r)
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 {
-	
-}
-/**
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_canvas_obscure_del(Ekeko_Element *c, Eina_Rectangle *r)
-{
-	
-}
-#if 0
-/**
- * @brief Gets the width and height of the canvas
- * To be documented
- * FIXME: To be fixed
- */
-EAPI void ekeko_canvas_size_get(Ekeko_Element *e, unsigned int *w, unsigned int *h)
-{
-	Ekeko_Canvas *c;
-	Ekeko_Value v;
+	Ekeko_Canvas_Private *prv;
 
-	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
-	if (!c) return;
-	
-	ekeko_node_attribute_get((Ekeko_Node *)e, CANVAS_GEOMETRY, &v);
-	if (w) *w = v.v.r.w;
-	if (h) *h = v.v.r.h;
+	prv = PRIVATE(c);
+	//_obscures_add(c, r);
 }
-/**
- * @brief Gets the width and height of the canvas
- * @param w Width of the canvas
- * @param h Height of the canvas
- */
-EAPI void ekeko_canvas_size_set(Ekeko_Element *e, unsigned int w, unsigned int h)
-{
-	Ekeko_Canvas *c;
-	Ekeko_Value v;
-		
-	c = ekeko_node_user_get((Ekeko_Node *)e, CANVAS_PRIVATE);
-	if (!c) return;
 
-	ekeko_value_rectangle_coords_from(&v, 0, 0, w, h);
-	ekeko_node_attribute_set((Ekeko_Node *)e, CANVAS_GEOMETRY, &v);
+EAPI Ekeko_Input * ekeko_canvas_input_new(Ekeko_Canvas *c)
+{
+	Ekeko_Input *i;
+
+	i = input_new(c);
+	return i;
 }
-/**
- * @brief Process the canvas. Every object that needs to be processed again
- * will get it's class called. Every damaged area is cleared after this call
- * @param c Canvas to process
- */
-EAPI void ekeko_canvas_process(Ekeko_Element *c)
-{
-	Ekeko_Rectangle *redraws;
-	Eina_Inlist *lr, *lo;
-	int i = 0;
 
-	assert(c);
-	/* if the canvas hasnt changed, do nothing */
-	if (!c->changed)
-		return;
-	
-	/* 1. check changed renderables */
-	_renderables_changed(c);
-	/* 2. add damages */
-	_damages_add(c);
-	/* 3. if the size has changed add the whole canvas and skip the damages */
-	if (c->size_changed)
+EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c, unsigned int x, unsigned int y)
+{
+	Ekeko_Canvas_Private *prv;
+	Eina_List *l;
+	Eina_Rectangle igeom;
+
+	prv = PRIVATE(c);
+	if (!prv->renderables)
+		return NULL;
+	eina_rectangle_coords_from(&igeom, x, y, 1, 1);
+	/* iterate from top most and find the renderable that matches the coords */
+	for (l = eina_list_last(prv->renderables); l; l = eina_list_prev(l))
 	{
-		Eina_Rectangle r;
-		
-		ekeko_tiler_free(c->tiler);
-		c->tiler = ekeko_tiler_new(c->tiler_type, c->size.w, c->size.h);
-		eina_rectangle_coords_from(&r, 0, 0, c->size.w, c->size.h);
-		ekeko_tiler_rect_add(c->tiler, &r);
-		c->size_changed = EINA_FALSE;
-		/* TODO regenerate the list of valid and invalid renderables */
-	}
-	/* 4. remove obscures */
-	_obscures_remove(c);
-	/* 5. get all rectangles to redraw */
-	redraws = ekeko_tiler_rects_get(c->tiler);
-	/* 6. process al renderables that intersect with the rects */
-	for (lr = (Eina_Inlist *)redraws; lr; lr = lr->next)
-	{
-		Ekeko_Rectangle *r = (Ekeko_Rectangle *)lr;
-		
-		//printf("[%d] %d %d %d %d\n", i, r->r.x, r->r.y, r->r.w, r->r.h);
-		for (lo = (Eina_Inlist *)c->renderables; lo; lo = lo->next)
-		{
-			Ekeko_Renderable *o;
-			Eina_Rectangle orect;
+		Ekeko_Renderable *r;
+		Eina_Rectangle rgeom;
 
-			o = (Ekeko_Renderable *)lo;
-			if (ekeko_renderable_intersection_get(o, r, &orect) &&
-				ekeko_renderable_is_visible(o))
-			{
-				/* clip the rect to the bounding box of the object */
-				ekeko_renderable_process(o, &orect);
-				/* move this to other place */
-				ekeko_renderable_post_process(o);
-			}
-		}
-		i++;
+		r = eina_list_data_get(l);
+		ekeko_renderable_geometry_get(r, &rgeom);
+		if (eina_rectangles_intersect(&igeom, &rgeom))
+			return r;
 	}
-	/* 6. flush the rectangles on the canvas */
-	for (lr = (Eina_Inlist *)redraws; lr; lr = lr->next)
-	{
-		Ekeko_Rectangle *r = (Ekeko_Rectangle *)lr;
-	
-		if (!c->cclass->flush(c->cdata, &r->r))
-			break;
-	}
-	/* 7. clear the rectangles */
-	ekeko_tiler_clear(c->tiler);
-	/* 8. delete all renderables that should be deleted */
-	c->changed = EINA_FALSE;
+	return NULL;
 }
-#endif
-
-#if 0
-/**
- * To be documented
- * FIXME: To be fixed
- */
-/* FIXME This function can be integrated into eina */
-EAPI Ekeko_Renderable * ekeko_canvas_object_from_last_get(Ekeko_Canvas *c, Ekeko_Renderable_Cmp_Func cmp, void *data)
-{
-	Ekeko_Renderable *o;
-	
-	o = ekeko_renderable_rel_get_up((Ekeko_Renderable *)(((Eina_Inlist *)c->renderables)->last), cmp, data);
-	return o;
-}
-
-/**
- * To be documented
- * FIXME: To be fixed
- */
-/* FIXME This function can be integrated into eina */
-EAPI Ekeko_Renderable * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekeko_Renderable_Cmp_Func cmp, void *data)
-{
-	Ekeko_Renderable *o;
-	
-	o = ekeko_renderable_rel_get_up(c->renderables, cmp, data);
-	return o;
-}
-#endif
-/* TODO
- * get renderables that are in a rect
- */

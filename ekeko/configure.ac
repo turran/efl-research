@@ -54,7 +54,6 @@ Makefile
 ekeko.pc
 src/Makefile
 src/lib/Makefile
-src/lib/tiler/Makefile
 src/include/Makefile
 examples/Makefile
 ],[

@@ -1,57 +1,44 @@
+/*
+ * etk2_renderable.h
+ *
+ *  Created on: 12-ene-2009
+ *      Author: jl
+ */
+
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+
 #ifndef EKEKO_RENDERABLE_H_
 #define EKEKO_RENDERABLE_H_
 
-/*
- * @defgroup Ekeko_Renderable_Group Renderable
- * @{ 
- */
+typedef struct _Ekeko_Renderable_Private Ekeko_Renderable_Private;
 
-#define RENDERABLE_GEOMETRY "geometry"
-#define RENDERABLE_VISIBILITY "visibility"
-#define RENDERABLE_OPAQUE "opaque"
-#define RENDERABLE_PRIVATE "_renderable"
-
-typedef struct _Ekeko_Renderable_Class
+struct _Ekeko_Renderable
 {
-	void (*render)(Ekeko_Element *c, Ekeko_Element *e, Eina_Rectangle *r);
-	/* the inside check is calculated against the bounding box, this function
-	 * determines if the renderable is really inside a giving rectangle
+	Ekeko_Object parent;
+	/* Function called whenever the canvas needs this renderable
+	 * to be rendered
 	 */
-	Eina_Bool (*is_inside)(void *data, Eina_Rectangle *r);
-	/* return a list of rectangles in case something inside the renderable has
-	 * changed */
-	//Ekeko_Rectangle * (*state_changed)(void *data);
-} Ekeko_Renderable_Class;
+	void (*render)(Ekeko_Renderable *r, Eina_Rectangle *rect);
+	Ekeko_Renderable_Private *private;
+};
 
+Ekeko_Type *ekeko_renderable_type_get(void);
+EAPI void ekeko_renderable_geometry_set(Ekeko_Renderable *r, Eina_Rectangle *rect);
+EAPI void ekeko_renderable_geometry_get(Ekeko_Renderable *r, Eina_Rectangle *rect);
+EAPI Ekeko_Canvas * ekeko_renderable_canvas_get(Ekeko_Renderable *r);
+EAPI void ekeko_renderable_show(Ekeko_Renderable *r);
+EAPI void ekeko_renderable_hide(Ekeko_Renderable *r);
+EAPI void ekeko_renderable_visibility_set(Ekeko_Renderable *r, Eina_Bool visible);
+EAPI void ekeko_renderable_visibility_get(Ekeko_Renderable *r, Eina_Bool *visible);
+EAPI void ekeko_renderable_move(Ekeko_Renderable *r, int x, int y);
+EAPI void ekeko_renderable_resize(Ekeko_Renderable *r, int w, int h);
 
-#if 0
-/**
- * TODO
- * should we make this renderable flags?
- */
-typedef enum _Ekeko_Renderable_Flag
-{
-	EKEKO_OBJECT_FLAG_HIDDEN_RECEIVE = (1 << 0),
-} Ekeko_Renderable_Flag;
-
-typedef Eina_Bool (*Ekeko_Renderable_Cmp_Func)(Ekeko_Renderable *o, void *data);
-EAPI Ekeko_Renderable * ekeko_renderable_add(Ekeko_Canvas *c, Ekeko_Renderable_Class *oclass, void *cdata);
-EAPI void ekeko_renderable_move(Ekeko_Renderable *o, int x, int y);
-EAPI void ekeko_renderable_show(Ekeko_Renderable *o);
-EAPI void ekeko_renderable_hide(Ekeko_Renderable *o);
-EAPI Eina_Bool ekeko_renderable_is_visible(Ekeko_Renderable *o);
-EAPI void ekeko_renderable_resize(Ekeko_Renderable *o, int w, int h);
-EAPI void ekeko_renderable_stack_above(Ekeko_Renderable *o, Ekeko_Renderable *renderable_rel);
-EAPI void ekeko_renderable_stack_below(Ekeko_Renderable *o, Ekeko_Renderable *renderable_rel);
-EAPI void * ekeko_renderable_class_data_get(Ekeko_Renderable *o);
-EAPI Ekeko_Canvas * ekeko_renderable_canvas_get(Ekeko_Renderable *o);
-EAPI void ekeko_renderable_geometry_get(Ekeko_Renderable *o, Eina_Rectangle *r);
-EAPI Ekeko_Renderable * ekeko_renderable_rel_get_down(Ekeko_Renderable *rel, Ekeko_Renderable_Cmp_Func cmp, void *data);
-EAPI Ekeko_Renderable * ekeko_renderable_rel_get_up(Ekeko_Renderable *rel, Ekeko_Renderable_Cmp_Func cmp, void *data);
-EAPI Eina_Bool ekeko_renderable_is_inside(Ekeko_Renderable *o, Eina_Rectangle *r);
-EAPI Eina_Bool ekeko_renderable_geometry_is_inside(Ekeko_Renderable *o, Eina_Rectangle *r);
-#endif
-/** @} */
-
-
-#endif /*EKEKO_RENDERABLE_H_*/
+#endif /* EKEKO_RENDERABLE_H_ */

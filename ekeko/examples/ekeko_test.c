@@ -13,12 +13,12 @@ Ekeko_Element *background;
 int end = 0;
 
 #if 0
-Canvas *c;
+Ekeko_Canvas *c;
 Subcanvas *subcanvas;
-Object *background2;
-Object *rectangle1;
-Object *rectangle2;
-Object *filter1;
+Ekeko_Object *background2;
+Ekeko_Object *rectangle1;
+Ekeko_Object *rectangle2;
+Ekeko_Object *filter1;
 /**
  * TODO
  * clean up the sdl_rectangle[class] code, abstract correctly the ekeko_object (WIP)
@@ -48,7 +48,7 @@ void rectangle_move_cb(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *
 {
 	Eina_Rectangle r1;
 	Eina_Rectangle r2;
-	Object *obj;
+	Ekeko_Object *obj;
 	
 	obj = subcanvas_object_get(subcanvas);
 	ekeko_object_geometry_get(o, &r1);
@@ -59,7 +59,7 @@ void rectangle_move_cb(Ekeko_Canvas *c, Ekeko_Object *o, Ekeko_Event *ev, void *
 void init_scene(void)
 {
 #if 0
-	c = canvas_new(CANVAS_W, CANVAS_H);
+	c = ekeko_canvas_new(CANVAS_W, CANVAS_H);
 	/* background */
 	background1 = rectangle_new(c);
 	object_move(background1, 0, 0);
@@ -245,7 +245,7 @@ static void scene_shutdown(void)
 	//object_delete(rectangle);
 }
 /*
- * Document Type
+ * Document Ekeko_Type
  */
 static void register_init(void)
 {

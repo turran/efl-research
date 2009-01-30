@@ -15,7 +15,7 @@ static void _pre_process(void *data)
 
 static void _process(void *data, Eina_Rectangle *r)
 {
-	Object *o = data;
+	Ekeko_Object *o = data;
 	unsigned int *p1, *eh, *ew;
 	
 	/* simple filter, invert the colors
@@ -58,10 +58,10 @@ static Ekeko_Object_Class _filter_class = {
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Object * filter_new(Canvas *c)
+Ekeko_Object * filter_new(Ekeko_Canvas *c)
 {
-	Object *o;
-	o = object_new(c, &_filter_class, NULL);
+	Ekeko_Object *o;
+	o = ekeko_object_new(c, &_filter_class, NULL);
 
 	return o;
 }

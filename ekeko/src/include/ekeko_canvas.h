@@ -1,28 +1,30 @@
+/*
+ * etk2_canvas.h
+ *
+ *  Created on: 12-ene-2009
+ *      Author: jl
+ */
 #ifndef EKEKO_CANVAS_H_
 #define EKEKO_CANVAS_H_
 
-#define CANVAS_GEOMETRY "geometry"
-#define CANVAS_PRIVATE "_canvas"
+typedef struct _Ekeko_Canvas_Private Ekeko_Canvas_Private;
 
-/* what about the idle? */
-/* canvas_changed -> if some object has changed, then the canvas has changed, we could notify upward that so we can call
- * the canvas_process
- */
-typedef Eina_Bool (*Ekeko_Canvas_Flush)(Ekeko_Element *e, Eina_Rectangle *r);
+struct _Ekeko_Canvas
+{
+	Ekeko_Renderable parent;
+	/* inform the canvas that an area must be flushed
+	 * returns EINA_TRUE if the whole canvas has been flushed
+	 * or EINA_FALSE if only the needed rectangle
+	 */
+	Eina_Bool (*flush)(Ekeko_Canvas *, Eina_Rectangle *);
+	Ekeko_Canvas_Private *private;
+};
 
-EAPI void ekeko_canvas_new(Ekeko_Element *e, Ekeko_Canvas_Flush flush);
+Ekeko_Type *ekeko_canvas_type_get(void);
+EAPI void ekeko_canvas_size_set(Ekeko_Canvas *c, int w, int h);
+EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r);
+EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
+EAPI Ekeko_Input * ekeko_canvas_input_new(Ekeko_Canvas *c);
+EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c, unsigned int x, unsigned int y);
 
-EAPI void ekeko_canvas_damage_add(Ekeko_Element *e, Eina_Rectangle *r);
-EAPI void ekeko_canvas_obscure_add(Ekeko_Element *e, Eina_Rectangle *r);
-EAPI void ekeko_canvas_obscure_del(Ekeko_Element *e, Eina_Rectangle *r);
-EAPI void ekeko_canvas_geometry_get(Ekeko_Element *c, unsigned int *w, unsigned int *h);
-EAPI void ekeko_canvas_geometry_set(Ekeko_Element *c, unsigned int w, unsigned int h);
-//EAPI Ekeko_Renderable * ekeko_canvas_object_from_last_get(Ekeko_Canvas *c, Ekeko_Renderable_Cmp_Func cmp, void *data);
-//EAPI Ekeko_Renderable * ekeko_canvas_object_from_first_get(Ekeko_Canvas *c, Ekeko_Renderable_Cmp_Func cmp, void *data);
-
-/**
- * @}
- */
-
-
-#endif /*EKEKO_CANVAS_H_*/
+#endif /* ETK2_CANVAS_H_ */

@@ -13,13 +13,13 @@ void test_object_new(Ekeko_Element *e);
 
 #if 0
 typedef struct _Subcanvas Subcanvas;
-typedef struct _Canvas Canvas;
-typedef struct _Object Object;
+typedef struct _Canvas Ekeko_Canvas;
+typedef struct _Ekeko_Object Ekeko_Object;
 
-struct _Object
+struct _Ekeko_Object
 {
 	Ekeko_Object *object;
-	Canvas *canvas;
+	Ekeko_Canvas *canvas;
 	int color;
 	void *data;
 };
@@ -31,21 +31,21 @@ struct _Canvas
 	/* TODO list of subcanvas */
 };
 
-Canvas * canvas_new(int w, int h);
-void canvas_process(Canvas *c);
+Ekeko_Canvas * ekeko_canvas_new(int w, int h);
+void canvas_process(Ekeko_Canvas *c);
 
-Subcanvas * subcanvas_new(Canvas *c, int x, int y, int w, int h);
-Canvas * subcanvas_canvas_get(Subcanvas *s);
-Object * subcanvas_object_get(Subcanvas *s);
+Subcanvas * subcanvas_new(Ekeko_Canvas *c, int x, int y, int w, int h);
+Ekeko_Canvas * subcanvas_canvas_get(Subcanvas *s);
+Ekeko_Object * subcanvas_object_get(Subcanvas *s);
 
 
-Object * rectangle_new(Canvas *c);
-Object * filter_new(Canvas *c);
-Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *cdata);
-void object_move(Object *o, int x, int y);
-void object_resize(Object *o, int w, int h);
-void object_color_set(Object *o, int color);
-Canvas * object_canvas_get(Object *o);
+Ekeko_Object * rectangle_new(Ekeko_Canvas *c);
+Ekeko_Object * filter_new(Ekeko_Canvas *c);
+Ekeko_Object * ekeko_object_new(Ekeko_Canvas *c, Ekeko_Object_Class *class, void *cdata);
+void object_move(Ekeko_Object *o, int x, int y);
+void object_resize(Ekeko_Object *o, int w, int h);
+void object_color_set(Ekeko_Object *o, int color);
+Ekeko_Canvas * object_canvas_get(Ekeko_Object *o);
 
 
 static inline void rectangle_print(Eina_Rectangle *r)

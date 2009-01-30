@@ -1,21 +1,28 @@
+/*
+ * etk2_main.c
+ *
+ *  Created on: 07-ene-2009
+ *      Author: jl
+ */
 #include "Ekeko.h"
 #include "ekeko_private.h"
-
-EAPI void ekeko_init(void)
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+/*============================================================================*
+ *                                   API                                      *
+ *============================================================================*/
+EAPI int ekeko_main_init(void)
 {
+	/* TODO return the correct value */
 	eina_init();
-	ekeko_document_init();
-	ekeko_value_init();
+	return 0;
 }
 
-EAPI void ekeko_shutdown(void)
+EAPI void ekeko_main_shutdown(void)
 {
-	eina_shutdown();
-	ekeko_document_shutdown();
-	ekeko_value_shutdown();
-}
-
-EAPI Eina_Bool ekeko_feature_has(const char *feature, const char *string)
-{
-	
+	/* TODO */
 }

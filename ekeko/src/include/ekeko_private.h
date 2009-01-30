@@ -1,77 +1,30 @@
-#ifndef EKEKO_PRIVATE_H_
-#define EKEKO_PRIVATE_H_
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-
-#include "config.h"
-
-#define DEBUG
-/* Magic values for each system */
-typedef enum
-{
-	EKEKO_CANVAS_MAGIC  = 0x20000000,
-	EKEKO_OBJECT_MAGIC = 0x21000000,
-} Ekeko_Magic;
-
-/* Debugging routines
- * ASSERT will abort the program execution
- * ERROR will set the error and return false
+/*
+ * etk_private.h
+ *
+ *  Created on: 14-Dec-2008
+ *      Author: Hisham Mardam-Bey <hisham.mardambey@gmail.com>
  */
-#ifndef DEBUG
-#define EKEKO_MAGIC_CHECK(p, m)
-#define EKEKO_MAGIC_SET(p, m)
-#define EKEKO_ASSERT(cond, err)
-#define EKEKO_ERROR(err) \
-	ekeko_error_set(err); \
-	return EINA_FALSE; \
-#define EKEKO_ERROR_COND(err, cond) \
-	if (!(cond)) \
-	{ \
-		EKEKO_ERROR(err);
-	}
-#else
 
-#define EKEKO_MAGIC_SET(p, m) \
-	p->magic = m;
-#define EKEKO_MAGIC_CHECK(p, m) \
-	if (p->magic != m) \
-	{ \
-		fprintf(stderr, "[Ekeko] Magic Failed. %s at %s:%d - %s():\n", ekeko_error_to_str(EKEKO_ERROR_HANDLE_INVALID), __FILE__, __LINE__, __FUNCTION__); \
-		abort(); \
-	}
+#ifndef EKEKO_PRIVATE_H
+#define EKEKO_PRIVATE_H
 
-#define EKEKO_ERROR(err) \
-	fprintf(stderr, "[Ekeko] %s at %s:%d - %s():\n", ekeko_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); \
-	ekeko_error_set(err); \
-	return EINA_FALSE; \
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define EKEKO_ERROR_COND(err, cond) \
-	if (!(cond)) \
-	{ \
-		EKEKO_ERROR(err) \
-	}
-#define EKEKO_ASSERT(cond, err) \
-	if (!(cond)) \
-	{ \
-		fprintf(stderr, "[Ekeko] %s at %s:%d - %s():\n", ekeko_error_to_str(err), __FILE__, __LINE__, __FUNCTION__); \
-		abort(); \
-	}
+//#define ETK_DEBUG
+
+#define RETURN_IF(expr) if ((expr)) return
+#define RETURN_NULL_IF(expr) if ((expr)) return NULL
+
+#define OFFSET(type, mem) ((size_t) ((char *)&((type *) 0)->mem - (char *)((type *) 0)))
+
+#include <private/object.h>
+#include <private/renderable.h>
+#include <private/input.h>
+#include <private/type.h>
+#include <private/value.h>
+#include <private/event.h>
+#include <private/property.h>
+
 #endif
-
-
-#define EKEKO_EVENT
-
-#include "private/attribute.h"
-#include "private/document.h"
-#include "private/element.h"
-#include "private/input.h"
-#include "private/node.h"
-#include "private/tiler.h"
-#include "private/renderable.h"
-#include "private/canvas.h"
-#include "private/value.h"
-
-#endif /*EKEKO_PRIVATE_H_*/

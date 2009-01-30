@@ -1,18 +1,17 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 EKEKOHEADERS = \
+Ekeko.h \
 ekeko_main.h \
-ekeko_document.h \
-ekeko_input.h \
+ekeko_property.h \
 ekeko_event.h \
-ekeko_value.h \
-ekeko_element.h \
-ekeko_attribute.h \
-ekeko_class.h \
-ekeko_canvas.h \
+ekeko_object.h \
+ekeko_input.h \
 ekeko_renderable.h \
-ekeko_node.h \
-ekeko_node_list.h
+ekeko_canvas.h \
+ekeko_value.h \
+ekeko_private.h \
+ekeko_type.h
 
 include_HEADERS = \
 Ekeko.h

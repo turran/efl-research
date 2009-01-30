@@ -4,15 +4,15 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
-/* A subcanvas implements both interfaces: Object and Canvas,
+/* A subcanvas implements both interfaces: Ekeko_Object and Ekeko_Canvas,
  * so the object_ canvas_ functions are still available.
  * TODO We should do it in the inverse way, the flush should notify damage rectangles
  * and the process_whatever should blit 
  */
 struct _Subcanvas
 {
-	Object *object;
-	Canvas *canvas;
+	Ekeko_Object *object;
+	Ekeko_Canvas *canvas;
 };
 
 static int _flush(void *data, Eina_Rectangle *r)
@@ -87,34 +87,34 @@ static Ekeko_Object_Class _object_class = {
 /*============================================================================*
  *                                 Global                                     * 
  *============================================================================*/
-Subcanvas * subcanvas_new(Canvas *c, int x, int y, int w, int h)
+Subcanvas * subcanvas_new(Ekeko_Canvas *c, int x, int y, int w, int h)
 {
 	Ekeko_Object *eo;
-	Object *o;
+	Ekeko_Object *o;
 	
 	Subcanvas *s;
 	SDL_Surface *surface;
 	
 	s = calloc(1, sizeof(Subcanvas));
 	/* canvas interface */
-	s->canvas = calloc(1, sizeof(Canvas));
+	s->canvas = calloc(1, sizeof(Ekeko_Canvas));
 	s->canvas->surface = SDL_CreateRGBSurface(SDL_SRCALPHA, w, h, 32,
                                 0xff << 24, 0xff << 16, 0xff << 8, 0xff);
 	s->canvas->canvas = ekeko_canvas_new(&_canvas_class, s, EKEKO_TILER_SPLITTER, w, h);
 	/* object interface */
-	s->object = object_new(c, &_object_class, s);
+	s->object = ekeko_object_new(c, &_object_class, s);
 	ekeko_object_move(s->object->object, x, y);
 	ekeko_object_resize(s->object->object, w, h);
 
 	return s;
 }
 
-Canvas * subcanvas_canvas_get(Subcanvas *s)
+Ekeko_Canvas * subcanvas_canvas_get(Subcanvas *s)
 {
 	return s->canvas;
 }
 
-Object * subcanvas_object_get(Subcanvas *s)
+Ekeko_Object * subcanvas_object_get(Subcanvas *s)
 {
 	return s->object;
 }

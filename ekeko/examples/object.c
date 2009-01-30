@@ -29,11 +29,11 @@ void test_object_new(Ekeko_Element *e)
 		EINA_FALSE);
 }
 #if 0
-Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *cdata)
+Ekeko_Object * ekeko_object_new(Ekeko_Canvas *c, Ekeko_Object_Class *class, void *cdata)
 {
-	Object *o;
+	Ekeko_Object *o;
 	
-	o = calloc(1, sizeof(Object));
+	o = calloc(1, sizeof(Ekeko_Object));
 	o->canvas = c;
 	/* if cdata then pass it, else use the default */
 	if (cdata)
@@ -44,23 +44,23 @@ Object * object_new(Canvas *c, Ekeko_Object_Class *class, void *cdata)
 	return o;
 }
 
-void object_move(Object *o, int x, int y)
+void object_move(Ekeko_Object *o, int x, int y)
 {
 	ekeko_object_move(o->object, x, y);
 }
 
-void object_resize(Object *o, int w, int h)
+void object_resize(Ekeko_Object *o, int w, int h)
 {
 	
 	ekeko_object_resize(o->object, w, h);
 }
 
-void object_color_set(Object *o, int color)
+void object_color_set(Ekeko_Object *o, int color)
 {
 	o->color = color;
 }
 
-Canvas * object_canvas_get(Object *o)
+Ekeko_Canvas * object_canvas_get(Ekeko_Object *o)
 {
 	return o->canvas;
 }
