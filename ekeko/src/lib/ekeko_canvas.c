@@ -101,15 +101,11 @@ static inline void _renderable_append(Ekeko_Canvas *c, Ekeko_Renderable *r,
 static void _renderable_prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
-	Ekeko_Canvas *c;
+	Ekeko_Canvas *c = (Ekeko_Canvas *)data;
 	Ekeko_Renderable *r = (Ekeko_Renderable *)o;
 
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
-	c = ekeko_renderable_canvas_get((Ekeko_Renderable *)o);
-	if (!c)
-		return;
-
 	/* geometry changed */
 	if (!strcmp(em->prop, "geometry"))
 	{
@@ -242,7 +238,7 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 	 * check if the event.target is not a canvas and it is different
 	 * than this
 	 */
-	if (!ekeko_type_instance_is_of(em->related, "Renderable"))
+	if (!ekeko_type_instance_is_of(e->target, "Renderable"))
 	{
 #ifdef ETK2_DEBUG
 		printf("[canvas %s] child is not of type renderable\n", ekeko_object_type_name_get(o));
@@ -396,7 +392,8 @@ EAPI Ekeko_Input * ekeko_canvas_input_new(Ekeko_Canvas *c)
 	return i;
 }
 
-EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c, unsigned int x, unsigned int y)
+EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c,
+		unsigned int x, unsigned int y, Eina_Bool recursive)
 {
 	Ekeko_Canvas_Private *prv;
 	Eina_List *l;
@@ -414,7 +411,26 @@ EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c, un
 
 		r = eina_list_data_get(l);
 		ekeko_renderable_geometry_get(r, &rgeom);
-		if (eina_rectangles_intersect(&igeom, &rgeom))
+		if (!eina_rectangles_intersect(&igeom, &rgeom))
+			continue;
+		if (recursive)
+		{
+			if (ekeko_type_instance_is_of(r, "Canvas"))
+			{
+				Ekeko_Renderable *subr;
+				Eina_Rectangle rscaled;
+
+				/* transform the coordinates */
+				eina_rectangle_rescale_in(&rgeom, &igeom, &rscaled);
+				subr = ekeko_canvas_renderable_get_at_coord((Ekeko_Canvas *)r,
+						rscaled.x, rscaled.y, recursive);
+				if (subr) return subr;
+				else return r;
+			}
+			else
+				return r;
+		}
+		else
 			return r;
 	}
 	return NULL;

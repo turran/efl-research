@@ -172,7 +172,7 @@ void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *pr
 	if (!property)
 		return;
 	curr = _instance_property_curr_ptr_get(type, property, instance);
-	value_set(v, ekeko_property_value_type_get(property), curr);
+	ekeko_value_set(v, ekeko_property_value_type_get(property), curr);
 }
 
 const char * type_name_get(Ekeko_Type *t)

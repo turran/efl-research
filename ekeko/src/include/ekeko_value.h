@@ -11,20 +11,18 @@
 /**
  * @brief Possible types of a property.
  */
-typedef enum
-{
-	PROPERTY_INT,            /**< The value of the property is an integer */          //!< PROPERTY_INT
-	PROPERTY_BOOL,           /**< The value of the property is a boolean (Bool) */    //!< PROPERTY_BOOL
-	PROPERTY_CHAR,           /**< The value of the property is a char */              //!< PROPERTY_CHAR
-	PROPERTY_FLOAT,          /**< The value of the property is a float */             //!< PROPERTY_FLOAT
-	PROPERTY_DOUBLE,         /**< The value of the property is a double */            //!< PROPERTY_DOUBLE
-	PROPERTY_SHORT,          /**< The value of the property is a short */             //!< PROPERTY_SHORT
-	PROPERTY_LONG,           /**< The value of the property is a long */              //!< PROPERTY_LONG
-	PROPERTY_RECTANGLE,      /**< The value of the property is a rectangle */         //!< PROPERTY_RECTANGLE
-	PROPERTY_POINTER,        /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
-	PROPERTY_STRING                                                                   //!< PROPERTY_STRING
-} Value_Type;
+#define PROPERTY_INT 1 /**< The value of the property is an integer */          //!< PROPERTY_INT
+#define PROPERTY_BOOL 2 /**< The value of the property is a boolean (Bool) */    //!< PROPERTY_BOOL
+#define PROPERTY_CHAR 3 /**< The value of the property is a char */              //!< PROPERTY_CHAR
+#define PROPERTY_FLOAT 4 /**< The value of the property is a float */             //!< PROPERTY_FLOAT
+#define PROPERTY_DOUBLE 5 /**< The value of the property is a double */            //!< PROPERTY_DOUBLE
+#define PROPERTY_SHORT 6 /**< The value of the property is a short */             //!< PROPERTY_SHORT
+#define PROPERTY_LONG 7 /**< The value of the property is a long */              //!< PROPERTY_LONG
+#define PROPERTY_RECTANGLE 8 /**< The value of the property is a rectangle */         //!< PROPERTY_RECTANGLE
+#define PROPERTY_POINTER 9 /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
+#define PROPERTY_STRING 10 /**< The value of the property is a string (char *) */ //!< PROPERTY_STRING
 
+typedef int Value_Type;
 /**
  * @brief
  */
@@ -44,6 +42,14 @@ typedef struct _Value
 		Eina_Rectangle rect;
 	} value;
 } Value;
+
+typedef void (*Ekeko_Value_Set)(Value *v, void *val);
+typedef void (*Ekeko_Value_Pointer_Set)(Value *v, void *ptr);
+typedef Eina_Bool (*Ekeko_Value_Compare)(void *a, void *b);
+
+void ekeko_value_set(Value *v, Value_Type vtype, void *val);
+int ekeko_value_register(const char *name, Ekeko_Value_Set set,
+		Ekeko_Value_Pointer_Set pset, Ekeko_Value_Compare cmp);
 
 static inline void value_int_from(Value *v, int i)
 {

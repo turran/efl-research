@@ -19,6 +19,6 @@
 #define EKEKO_MAIN_H_
 
 EAPI int ekeko_main_init(void);
-EAPI void ekeko_main_shutdown(void);
+EAPI int ekeko_main_shutdown(void);
 
 #endif /* EKEKO_MAIN_H_ */

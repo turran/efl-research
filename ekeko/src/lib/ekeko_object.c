@@ -113,75 +113,6 @@ static void _unchange_recursive(const Ekeko_Object *obj, int count)
 		_unchange_recursive(prv->parent, count);
 
 }
-
-static void _pointer_single_value_set(void *ptr, Value_Type type, Value *value)
-{
-	switch (type)
-	{
-		case PROPERTY_INT:
-		*((int *)ptr) = value->value.int_value;
-		break;
-
-		case PROPERTY_STRING:
-		*((char **)ptr) = strdup(value->value.string_value);
-		break;
-
-		case PROPERTY_RECTANGLE:
-		*((Eina_Rectangle *)ptr) = value->value.rect;
-		break;
-
-		case PROPERTY_BOOL:
-		*((Eina_Bool *)ptr) = value->value.bool_value;
-		break;
-
-		default:
-		printf("POINTER SINGLE VALUE SET UNDEFINED VALUE\n");
-		break;
-	}
-}
-
-static void _pointer_double_value_set(void *ptr, void *prev, char *changed,
-		Value_Type type, Value *value)
-{
-	switch (type)
-	{
-		case PROPERTY_INT:
-		*((int *)ptr) = value->value.int_value;
-		if (*((int *)ptr) != *((int *)prev))
-			*changed = EINA_TRUE;
-		break;
-
-		case PROPERTY_STRING:
-		*((char **)ptr) = strdup(value->value.string_value);
-		if (!strcmp(*((char **)ptr), *((char **)prev)))
-			*changed = EINA_TRUE;
-		break;
-
-		case PROPERTY_RECTANGLE:
-
-		{
-			Eina_Rectangle *c = (Eina_Rectangle *)ptr;
-			Eina_Rectangle *p;
-
-			*c = value->value.rect;
-			p = (Eina_Rectangle *)prev;
-			if ((c->x != p->x) || (c->y != p->y) || (c->w != p->w) || (c->h != p->h))
-				*changed = EINA_TRUE;
-		}
-		break;
-
-		case PROPERTY_BOOL:
-		*((Eina_Bool *)ptr) = value->value.bool_value;
-		if (*((Eina_Bool *)ptr) != *((Eina_Bool *)prev))
-			*changed = EINA_TRUE;
-		break;
-
-		default:
-		printf("POINTER DOUBLE VALUE SET UNDEFINED VALUE\n");
-		break;
-	}
-}
-
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -318,8 +249,8 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name,
 		Eina_Bool changed_bef, changed_now;
 
 		changed_bef = *changed;
-		value_set(&prev_value, ekeko_property_value_type_get(prop), prev);
-		_pointer_double_value_set(curr, prev, changed, ekeko_property_value_type_get(prop), value);
+		ekeko_value_set(&prev_value, ekeko_property_value_type_get(prop), prev);
+		ekeko_value_pointer_double_set(value, ekeko_property_value_type_get(prop), curr, prev, changed);
 		changed_now = *changed;
 		if (changed_bef && !changed_now)
 		{
@@ -335,8 +266,8 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name,
 	}
 	else
 	{
-		value_set(&prev_value, ekeko_property_value_type_get(prop), curr);
-		_pointer_single_value_set(curr, ekeko_property_value_type_get(prop), value);
+		ekeko_value_set(&prev_value, ekeko_property_value_type_get(prop), curr);
+		ekeko_value_pointer_set(value, ekeko_property_value_type_get(prop), curr);
 	}
 #ifdef ETK2_DEBUG
 	printf("[obj] changed = %d\n", prv->changed);
@@ -458,7 +389,8 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 #ifdef ETK2_DEBUG
 		printf("[obj] pchanged = %d ochanged = %d\n", pprv->changed, oprv->changed);
 #endif
-		/* send the event */
+		/* TODO send the EVENT_PARENT_SET event */
+		/* send the EVENT_OBJECT_APPEND event */
 		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Ekeko_Object *)o, (Ekeko_Object *)p, NULL, NULL, NULL,
 				EVENT_MUTATION_STATE_CURR);
 		ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
@@ -532,13 +464,13 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		*changed = EINA_FALSE;
 		prv->changed--;
 		/* send the mutation event */
-		value_set(&prev_value, ekeko_property_value_type_get(prop), prev);
-		value_set(&curr_value, ekeko_property_value_type_get(prop), curr);
+		ekeko_value_set(&prev_value, ekeko_property_value_type_get(prop), prev);
+		ekeko_value_set(&curr_value, ekeko_property_value_type_get(prop), curr);
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
 		ekeko_object_event_dispatch(o, (Event *)&evt);
 		/* update prev */
-		_pointer_single_value_set(prev, ekeko_property_value_type_get(prop), &curr_value);
+		ekeko_value_pointer_set(&curr_value, ekeko_property_value_type_get(prop), prev);
 		if (!prv->changed)
 		{
 			type_property_iterator_free(pit);

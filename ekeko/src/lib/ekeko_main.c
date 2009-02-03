@@ -9,6 +9,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static int _count;
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -17,12 +18,19 @@
  *============================================================================*/
 EAPI int ekeko_main_init(void)
 {
-	/* TODO return the correct value */
+	if (_count) goto done;
 	eina_init();
-	return 0;
+	ekeko_value_init();
+done:
+	return ++_count;
 }
 
-EAPI void ekeko_main_shutdown(void)
+EAPI int ekeko_main_shutdown(void)
 {
+	if (_count != 1) goto done;
+	ekeko_value_shutdown();
+	eina_shutdown();
+done:
+	return --_count;
 	/* TODO */
 }

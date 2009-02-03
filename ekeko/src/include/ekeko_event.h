@@ -15,7 +15,19 @@ typedef struct _Event
 } Event;
 
 #define EVENT_PROP_MODIFY "PropModify"
+#define EVENT_PARENT_SET "ParentSet"
+/* The EVENT_PARENT_SET event gets triggered whenever an object's parent
+ * has been set (Event_Mutation).
+ * target: Child
+ * related: Parent
+ */
 #define EVENT_OBJECT_APPEND "ObjectAppend"
+/* The EVENT_OBJECT_APPEND event gets triggered whenever an object has been
+ * appended to another object (Event_Mutation).
+ * FIXME right now is the inverse
+ * target: Parent
+ * related: Child
+ */
 #define EVENT_OBJECT_REMOVE "ObjectRemove"
 #define EVENT_OBJECT_PROCESS "ObjectProcess"
 #define EVENT_UI_MOUSE_MOVE "mousemove"
