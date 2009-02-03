@@ -6,13 +6,13 @@ typedef struct _Widget_Private Widget_Private;
 
 struct _Widget
 {
-	Object object;
+	Ekeko_Object object;
 	Widget_Private *private;
 };
 
 Widget *widget_new(void);
 void widget_delete(Widget *w);
-Type   *widget_type_get(void);
+Ekeko_Type   *widget_type_get(void);
 void    widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h);
 void    widget_geom_set(Widget *widget, int x, int y, int w, int h);
 char *widget_theme_get(Widget *widget);

@@ -11,7 +11,7 @@ struct _Label
 };
 
 Label *label_new(void);
-Type   *label_type_get(void);
+Ekeko_Type   *label_type_get(void);
 void label_text_set(Label *label, char *text);
 char *label_text_get(Label *label);
 

@@ -13,5 +13,5 @@ struct _Button
 Button     *button_new(void);
 void        button_label_set(Button *button, const char *label);
 const char *button_label_get(Button *button);
-Type       *button_type_get(void);
+Ekeko_Type       *button_type_get(void);
 #endif

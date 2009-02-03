@@ -98,10 +98,13 @@ esac
 requirements="eina-0 evas ecore ecore-file ecore-evas ecore-imf ecore-imf-evas edje"
 
 PKG_CHECK_MODULES(EINA, [eina-0 >= 0.0.1])
-PKG_CHECK_MODULES(EVAS, [evas >= 0.9.9])
-PKG_CHECK_MODULES(ECORE, [ecore >= 0.9.9 ecore-file >= 0.9.9 ecore-evas >= 0.9.9 ecore-imf >= 0.9.9 ecore-imf-evas >= 0.9.9])
-PKG_CHECK_MODULES(EDJE, [edje >= 0.5.0])
-
+PKG_CHECK_MODULES(EKEKO, [ekeko])
+PKG_CHECK_MODULES(ECORE, [ecore >= 0.9.9])
+PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
+# No needed for now
+#PKG_CHECK_MODULES(EDJE, [edje >= 0.5.0])
+#PKG_CHECK_MODULES(EVAS, [evas >= 0.9.9])
+#PKG_CHECK_MODULES(ECORE, [ecore >= 0.9.9 ecore-file >= 0.9.9 ecore-evas >= 0.9.9 ecore-imf >= 0.9.9 ecore-imf-evas >= 0.9.9])
 #####################################################################
 ## Ecore_X
 PKG_CHECK_MODULES(ECORE_X, [ecore-x >= 0.9.9], [
@@ -151,8 +154,12 @@ AM_CONDITIONAL(BUILD_ENGINE_E_FB, test "x$have_ecore_fb" = "xyes")
 #####################################################################
 ## Fill in flags
 AC_SUBST(requirements)
-
 AC_SUBST(packagesrcdir)
+
+ETK_CFLAGS="$EINA_CFLAGS $EKEKO_CFLAGS $ECORE_CFLAGS $ENESIM_CFLAGS"
+ETK_LIBS="$EINA_LIBS $EKEKO_LIBS $ECORE_LIBS $ENESIM_LIBS"
+AC_SUBST(ETK_CFLAGS)
+AC_SUBST(ETK_LIBS)
 
 #####################################################################
 ## Output
