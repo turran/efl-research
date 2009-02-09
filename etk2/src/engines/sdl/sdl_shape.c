@@ -1,46 +1,33 @@
 /*
- * etk2_main.c
+ * sdl_shape.c
  *
- *  Created on: 07-ene-2009
+ *  Created on: 05-feb-2009
  *      Author: jl
  */
 #include "Etk2.h"
 #include "etk2_private.h"
+#include "SDL.h"
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-static int _count = 0;
+static void _rect(void *surface, void *context, int x, int y, int w, int h)
+{
+	SDL_Rect rect;
+
+	printf("RENDERING A RECTANGLE at %d %d %d %d\n", x, y, w, h);
+	rect.x = x;
+	rect.y = y;
+	rect.w = w;
+	rect.h = h;
+	SDL_FillRect(surface, &rect, 0xff * rect.x);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+Etk_Shape_Engine etk_shape_engine_sdl = {
+	.rect = _rect,
+};
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI int etk_init(void)
-{
-	if (_count) goto done;
-		eina_init();
-		ecore_init();
-		ekeko_init();
-		etk_value_init();
-		etk_engine_init();
-done:
-	return ++_count;
-}
 
-EAPI int etk_shutdown(void)
-{
-	if (_count != 1) goto done;
-		etk_engine_shutdown();
-		etk_value_shutdown();
-		ekeko_shutdown();
-		ecore_shutdown();
-		eina_shutdown();
-done:
-	return --_count;
-}
-
-EAPI void etk_loop(void)
-{
-	ecore_main_loop_begin();
-}

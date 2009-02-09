@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST =
 
-INCLUDES	= \
+INCLUDES = \
 -I. -I../.. -I$(top_srcdir)/src/include -Wall -g \
 @ETK_CFLAGS@
 
@@ -17,4 +17,8 @@ etk2_test.h \
 etk2_test.c 
 
 etk2_test_LDADD = $(top_builddir)/src/lib/libetk2.la \
-		 @ETK_LIBS@
+@ETK_LIBS@
+
+if BUILD_ENGINE_SDL
+etk2_test_LDADD += @ECORE_SDL_LIBS@ @SDL_LIBS@ 
+endif

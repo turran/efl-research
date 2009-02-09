@@ -1,3 +1,3 @@
 MAINTAINERCLEANFILES = Makefile Makefile.in
 
-SUBDIRS = ecore_evas 
+SUBDIRS = enesim sdl

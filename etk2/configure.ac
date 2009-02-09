@@ -152,6 +152,18 @@ fi
 AM_CONDITIONAL(BUILD_ENGINE_E_FB, test "x$have_ecore_fb" = "xyes")
 
 #####################################################################
+## SDL engine
+
+PKG_CHECK_MODULES(ECORE_SDL, [ecore-sdl >= 0.9.9], [have_ecore_sdl=yes], [have_ecore_sdl=no])
+PKG_CHECK_MODULES(SDL, [sdl], [have_sdl=yes], [have_sdl=no])
+if test "x$have_ecore_sdl" = "xyes" && test "x$have_sdl" = "xyes"; then
+	have_engine_sdl=yes
+	AC_DEFINE(BUILD_ENGINE_SDL, [1], [Build support for SDL engine])
+else
+	have_engine_sdl=no
+fi
+AM_CONDITIONAL(BUILD_ENGINE_SDL, test "x$have_engine_sdl" = "xyes")
+#####################################################################
 ## Fill in flags
 AC_SUBST(requirements)
 AC_SUBST(packagesrcdir)
@@ -171,7 +183,8 @@ src/Makefile
 src/lib/Makefile
 src/include/Makefile
 src/engines/Makefile
-src/engines/ecore_evas/Makefile
+src/engines/sdl/Makefile
+src/engines/enesim/Makefile
 src/bin/Makefile
 ])
 
@@ -188,6 +201,7 @@ echo
 echo
 echo "Configuration Options Summary:"
 echo
+echo "  SDL Engine..................................: $have_engine_sdl"
 echo "  Ecore Evas Software X11 Engine..............: $have_ecore_x"
 echo "  Ecore FB Engine.............................: $have_ecore_fb"
 echo "  Ecore FB Engine X11 Support.................: $have_ecore_fb_x11_support"
