@@ -26,5 +26,6 @@ EAPI void ekeko_object_event_dispatch(const Ekeko_Object *object, Event *evt);
 EAPI const char * ekeko_object_type_name_get(const Ekeko_Object *obj);
 EAPI Ekeko_Object * ekeko_object_parent_get(Ekeko_Object *o);
 EAPI Property * ekeko_object_property_get(Ekeko_Object *o, const char *prop_name);
+EAPI void ekeko_object_process(Ekeko_Object *o);
 
 #endif

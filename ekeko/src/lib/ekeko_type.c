@@ -234,11 +234,11 @@ void type_property_iterator_free(Property_Iterator *pit)
 	free(pit);
 }
 
-Eina_Bool type_appendable(Ekeko_Type *t, const char *name)
+Eina_Bool type_appendable(Ekeko_Type *t, void *instance, void *child)
 {
 	if (!t->append)
 		return EINA_FALSE;
-	return t->append(name);
+	return t->append(instance, child);
 }
 /*============================================================================*
  *                                   API                                      *

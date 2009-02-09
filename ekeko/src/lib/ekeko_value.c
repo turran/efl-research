@@ -67,7 +67,7 @@ void ekeko_value_pointer_double_set(Value *value, Value_Type type, void *ptr,
 		break;
 
 		default:
-		printf("POINTER DOUBLE VALUE SET UNDEFINED VALUE\n");
+		printf("POINTER DOUBLE VALUE SET UNDEFINED VALUE %d\n", type);
 		{
 			Ekeko_Value_Impl *impl;
 
@@ -75,11 +75,15 @@ void ekeko_value_pointer_double_set(Value *value, Value_Type type, void *ptr,
 			impl->pset(value, ptr);
 			if (impl->cmp(ptr, prev))
 				*changed = EINA_TRUE;
+			printf("Changed = %d\n", *changed);
 			break;
 		}
 	}
 }
 
+/* ptr points to the memory area where the values are stored
+ *
+ */
 void ekeko_value_pointer_set(Value *value, Value_Type vtype, void *ptr)
 {
 	switch (vtype)
@@ -101,7 +105,7 @@ void ekeko_value_pointer_set(Value *value, Value_Type vtype, void *ptr)
 		break;
 
 		default:
-		printf("POINTER DOUBLE VALUE SET UNDEFINED VALUE\n");
+		printf("POINTER VALUE SET VALUE %d\n", vtype);
 		{
 			Ekeko_Value_Impl *impl;
 
@@ -162,7 +166,7 @@ void ekeko_value_set(Value *v, Value_Type vtype, void *val)
 		break;
 
 		default:
-		printf("VALUE SET UNDEFINED VALUE\n");
+		printf("VALUE SET UNDEFINED VALUE %p %p\n", v, val);
 		{
 			Ekeko_Value_Impl *impl;
 

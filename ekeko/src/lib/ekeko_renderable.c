@@ -76,7 +76,7 @@ static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 	Ekeko_Object *p = (Ekeko_Object *)em->related;
 
 	/* check that the upper hierarchy is of type canvas */
-	while (!ekeko_type_instance_is_of(p, "Canvas"))
+	while (p && !ekeko_type_instance_is_of(p, "Canvas"))
 	{
 		p = ekeko_object_parent_get(p);
 	}

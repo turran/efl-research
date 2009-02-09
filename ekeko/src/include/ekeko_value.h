@@ -5,8 +5,8 @@
  *      Author: jl
  */
 
-#ifndef ETK_VALUE_H_
-#define ETK_VALUE_H_
+#ifndef EKEKO_VALUE_H_
+#define EKEKO_VALUE_H_
 
 /**
  * @brief Possible types of a property.
@@ -79,4 +79,4 @@ static inline void value_bool_from(Value *v, Eina_Bool b)
 	v->value.bool_value = b;
 }
 
-#endif /* ETK_VALUE_H_ */
+#endif /* EKEKO_VALUE_H_ */

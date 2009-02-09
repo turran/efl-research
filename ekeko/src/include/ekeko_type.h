@@ -12,7 +12,7 @@ typedef enum
 
 typedef void (*Ekeko_Type_Constructor)(void *);
 typedef void (*Ekeko_Type_Destructor)(void *);
-typedef Eina_Bool (*Ekeko_Type_Appendable)(const char *name);
+typedef Eina_Bool (*Ekeko_Type_Appendable)(void *parent, void *child);
 
 Ekeko_Type *ekeko_type_new(char *name, size_t size, size_t priv_size, Ekeko_Type *parent,
 		Ekeko_Type_Constructor ctor, Ekeko_Type_Destructor dtor, Ekeko_Type_Appendable append);

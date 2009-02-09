@@ -363,7 +363,7 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 
 	prv = PRIVATE(p);
 	t = prv->type;
-	if (type_appendable(t, ekeko_object_type_name_get((Ekeko_Object *)o)))
+	if (type_appendable(t, p, o))
 	{
 		Ekeko_Object_Private *pprv, *oprv;
 		Event_Mutation evt;
