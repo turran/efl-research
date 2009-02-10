@@ -46,7 +46,7 @@ static void _properties_updated(const Ekeko_Object *o, Event *e, void *data)
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
 
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable %s] prop updated %s\n", ekeko_object_type_name_get(o), em->prop);
 #endif
 	if (em->state != EVENT_MUTATION_STATE_POST)
@@ -82,16 +82,16 @@ static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 	}
 	if (!p)
 	{
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 		printf("[renderable %s] Is not of type canvas\n", ekeko_object_type_name_get(o));
 #endif
 		return;
 	}
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable %s] Some parent %p (%s) is a canvas? %p!!!\n", ekeko_object_type_name_get(o), p, ekeko_object_type_name_get(p), ekeko_renderable_canvas_get((Ekeko_Renderable *)p));
 #endif
 	prv = PRIVATE(((Ekeko_Renderable *)o));
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable] %p has a canvas at %p\n", o, p);
 #endif
 	prv->canvas = (Ekeko_Canvas *)p;
@@ -107,7 +107,7 @@ static void _ctor(void *instance)
 	/* register to an event where this child is appended to a canvas parent */
 	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_PROP_MODIFY, _properties_updated, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable] ctor canvas = %p\n", prv->canvas);
 #endif
 }
@@ -193,7 +193,7 @@ EAPI void ekeko_renderable_geometry_set(Ekeko_Renderable *r, Eina_Rectangle *rec
 {
 	Value value;
 
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[rend] geometry_set %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
 #endif
 	value_rectangle_from(&value, rect);
@@ -213,7 +213,7 @@ EAPI void ekeko_renderable_visibility_get(Ekeko_Renderable *r, Eina_Bool *visibl
 	Ekeko_Renderable_Private *prv;
 
 	prv = PRIVATE(r);
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable %s] visibility get %d (%d %d)\n", ekeko_object_type_name_get((Ekeko_Object *)r), prv->visibility.curr, EINA_FALSE, EINA_TRUE);
 #endif
 	*visible = prv->visibility.curr;
@@ -225,7 +225,7 @@ EAPI void ekeko_renderable_show(Ekeko_Renderable *r)
 	Value value;
 
 	prv = PRIVATE(r);
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable] show\n");
 #endif
 	if (prv->visibility.curr)
@@ -240,7 +240,7 @@ EAPI void ekeko_renderable_hide(Ekeko_Renderable *r)
 	Value value;
 
 	prv = PRIVATE(r);
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable] hide\n");
 #endif
 	if (!prv->visibility.curr)
@@ -258,7 +258,7 @@ EAPI void ekeko_renderable_visibility_set(Ekeko_Renderable *r, Eina_Bool visible
 	if (prv->visibility.curr == visible)
 		return;
 	value_bool_from(&value, visible);
-#ifdef ETK2_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[renderable %s] visibility set %d\n", ekeko_object_type_name_get((Ekeko_Object *)r), value.value.bool_value);
 #endif
 	ekeko_object_property_value_set((Ekeko_Object *)r, "visibility", &value);

@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#define ETK_DEBUG
+//#define EKEKO_DEBUG
 
 #define RETURN_IF(expr) if ((expr)) return
 #define RETURN_NULL_IF(expr) if ((expr)) return NULL
