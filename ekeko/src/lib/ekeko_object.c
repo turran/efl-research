@@ -276,6 +276,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name,
 	event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop,
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
 	ekeko_object_event_dispatch((Ekeko_Object *)object, (Event *)&evt);
+	ekeko_value_free(&prev_value, ekeko_property_value_type_get(prop));
 }
 /**
  *

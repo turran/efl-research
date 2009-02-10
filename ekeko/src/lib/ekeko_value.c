@@ -16,8 +16,9 @@ typedef struct _Ekeko_Value_Impl
 {
 	const char *name;
 	Ekeko_Value_Set set;
-	Ekeko_Value_Pointer_Set pset;
+	Ekeko_Value_Get get;
 	Ekeko_Value_Compare cmp;
+	Ekeko_Value_Free free;
 } Ekeko_Value_Impl;
 
 static inline Ekeko_Value_Impl * _implementation_get(int id)
@@ -74,7 +75,7 @@ void ekeko_value_pointer_double_set(Value *value, Value_Type type, void *ptr,
 			Ekeko_Value_Impl *impl;
 
 			impl = _implementation_get(type);
-			impl->pset(value, ptr);
+			impl->get(value, ptr);
 			if (impl->cmp(ptr, prev))
 				*changed = EINA_TRUE;
 			printf("Changed = %d\n", *changed);
@@ -114,7 +115,7 @@ void ekeko_value_pointer_set(Value *value, Value_Type vtype, void *ptr)
 			Ekeko_Value_Impl *impl;
 
 			impl = _implementation_get(vtype);
-			impl->pset(value, ptr);
+			impl->get(value, ptr);
 		}
 		break;
 	}
@@ -133,7 +134,7 @@ void ekeko_value_shutdown(void)
  *                                   API                                      *
  *============================================================================*/
 int ekeko_value_register(const char *name, Ekeko_Value_Set set,
-		Ekeko_Value_Pointer_Set pset, Ekeko_Value_Compare cmp)
+		Ekeko_Value_Get pset, Ekeko_Value_Compare cmp, Ekeko_Value_Free free)
 {
 	static int _curr = PROPERTY_STRING; // the last internal property
 	Ekeko_Value_Impl *impl;
@@ -141,8 +142,9 @@ int ekeko_value_register(const char *name, Ekeko_Value_Set set,
 	impl = malloc(sizeof(Ekeko_Value_Impl));
 	impl->name = strdup(name);
 	impl->cmp = cmp;
-	impl->pset = pset;
+	impl->get = pset;
 	impl->set = set;
+	impl->free = free;
 
 	++_curr;
 	eina_hash_add(_values, &_curr, impl);
@@ -180,5 +182,16 @@ void ekeko_value_set(Value *v, Value_Type vtype, void *val)
 			impl->set(v, val);
 		}
 		break;
+	}
+}
+
+void ekeko_value_free(Value *v, Value_Type vtype)
+{
+	if (vtype > PROPERTY_STRING)
+	{
+		Ekeko_Value_Impl *impl;
+
+		impl = _implementation_get(vtype);
+		impl->free(v);
 	}
 }

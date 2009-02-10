@@ -44,12 +44,14 @@ typedef struct _Value
 } Value;
 
 typedef void (*Ekeko_Value_Set)(Value *v, void *val);
-typedef void (*Ekeko_Value_Pointer_Set)(Value *v, void *ptr);
+typedef void (*Ekeko_Value_Get)(Value *v, void *ptr);
+typedef void (*Ekeko_Value_Free)(Value *v);
 typedef Eina_Bool (*Ekeko_Value_Compare)(void *a, void *b);
 
 void ekeko_value_set(Value *v, Value_Type vtype, void *val);
 int ekeko_value_register(const char *name, Ekeko_Value_Set set,
-		Ekeko_Value_Pointer_Set pset, Ekeko_Value_Compare cmp);
+		Ekeko_Value_Get pset, Ekeko_Value_Compare cmp,
+		Ekeko_Value_Free free);
 
 static inline void value_int_from(Value *v, int i)
 {
