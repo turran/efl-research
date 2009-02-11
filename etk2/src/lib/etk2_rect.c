@@ -311,6 +311,15 @@ static void _dtor(void *rect)
 {
 
 }
+
+static Eina_Bool _appendable(void *instance, void *child)
+{
+	if (!ekeko_type_instance_is_of(child, ETK_TYPE_ANIMATION))
+	{
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -326,12 +335,11 @@ EAPI Ekeko_Type *etk_rect_type_get(void)
 	{
 		type = ekeko_type_new(ETK_TYPE_RECT, sizeof(Etk_Rect),
 				sizeof(Etk_Rect_Private), etk_shape_type_get(),
-				_ctor, _dtor, NULL);
+				_ctor, _dtor, _appendable);
 		TYPE_PROP_SINGLE_ADD(type, "x", ETK_PROPERTY_COORD, OFFSET(Etk_Rect_Private, x));
 		TYPE_PROP_SINGLE_ADD(type, "y", ETK_PROPERTY_COORD, OFFSET(Etk_Rect_Private, y));
 		TYPE_PROP_SINGLE_ADD(type, "w", ETK_PROPERTY_COORD, OFFSET(Etk_Rect_Private, w));
 		TYPE_PROP_SINGLE_ADD(type, "h", ETK_PROPERTY_COORD, OFFSET(Etk_Rect_Private, h));
-		//TYPE_PROP_SINGLE_ADD(type, "color", PROPERTY_INT, OFFSET(Etk_Shape_Private, color));
 	}
 
 	return type;
@@ -350,7 +358,7 @@ EAPI Etk_Rect * etk_rect_new(Etk_Canvas *c)
 EAPI void etk_rect_x_rel_set(Etk_Rect *r, int x)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, x, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "x", &v);
@@ -359,7 +367,7 @@ EAPI void etk_rect_x_rel_set(Etk_Rect *r, int x)
 EAPI void etk_rect_x_set(Etk_Rect *r, int x)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, x, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "x", &v);
@@ -368,7 +376,7 @@ EAPI void etk_rect_x_set(Etk_Rect *r, int x)
 EAPI void etk_rect_y_set(Etk_Rect *r, int y)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, y, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "y", &v);
@@ -377,7 +385,7 @@ EAPI void etk_rect_y_set(Etk_Rect *r, int y)
 EAPI void etk_rect_y_rel_set(Etk_Rect *r, int y)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, y, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "y", &v);
@@ -386,7 +394,7 @@ EAPI void etk_rect_y_rel_set(Etk_Rect *r, int y)
 EAPI void etk_rect_w_set(Etk_Rect *r, int w)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, w, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "w", &v);
@@ -395,7 +403,7 @@ EAPI void etk_rect_w_set(Etk_Rect *r, int w)
 EAPI void etk_rect_w_rel_set(Etk_Rect *r, int w)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, w, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "w", &v);
@@ -404,7 +412,7 @@ EAPI void etk_rect_w_rel_set(Etk_Rect *r, int w)
 EAPI void etk_rect_h_set(Etk_Rect *r, int h)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, h, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "h", &v);
@@ -413,7 +421,7 @@ EAPI void etk_rect_h_set(Etk_Rect *r, int h)
 EAPI void etk_rect_h_rel_set(Etk_Rect *r, int h)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, h, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "h", &v);

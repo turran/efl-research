@@ -83,8 +83,8 @@ EAPI Ekeko_Type *etk_shape_type_get(void)
 
 EAPI void etk_shape_color_set(Etk_Shape *s, int color)
 {
-	Value v;
+	Ekeko_Value v;
 
-	value_int_from(&v, color);
+	ekeko_value_int_from(&v, color);
 	ekeko_object_property_value_set((Ekeko_Object *)s, "color", &v);
 }

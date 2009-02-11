@@ -22,6 +22,7 @@ struct _Etk_Document_Private
 	} engine;
 	Eina_Rectangle size;
 	Etk_Canvas *canvas;
+	Etch *etch;
 };
 
 static int _idler_cb(void *data)
@@ -36,7 +37,14 @@ static int _idler_cb(void *data)
 	}
 	return 1;
 }
+static int _animation_cb(void *data)
+{
+	Etk_Document *doc = data;
+	Etk_Document_Private *prv = PRIVATE(doc);
 
+	etch_timer_tick(prv->etch);
+	return 1;
+}
 /* Called whenever a child is appended to the document */
 static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 {
@@ -80,13 +88,18 @@ static void _ctor(void *instance)
 	Etk_Document *dc;
 	Etk_Document_Private *prv;
 
+	/* FIXME do we need a single idler or better one idler per document? */
 	if (!_idler)
 	{
-		/* add the idler */
+		/* this idler will process every child */
 		_idler = ecore_idle_enterer_add(_idler_cb, NULL);
 	}
 	dc = (Etk_Document*) instance;
 	dc->private = prv = ekeko_type_instance_private_get(etk_document_type_get(), instance);
+	/* setup the animation system */
+	prv->etch = etch_new();
+	ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
+	etch_timer_fps_set(prv->etch, 30);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
 
@@ -117,7 +130,13 @@ Etk_Engine * etk_document_engine_get(Etk_Document *d)
 	prv = PRIVATE(d);
 	return prv->engine.func;
 }
+Etch * etk_document_etch_get(Etk_Document *d)
+{
+	Etk_Document_Private *prv;
 
+	prv = PRIVATE(d);
+	return prv->etch;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -140,10 +159,10 @@ EAPI Etk_Document * etk_document_new(const char *engine, int w, int h)
 {
 	Etk_Document *d;
 	Etk_Canvas *c;
-	Value v;
+	Ekeko_Value v;
 
 	d = ekeko_type_instance_new(etk_document_type_get());
-	value_str_from(&v, engine);
+	ekeko_value_str_from(&v, engine);
 	ekeko_object_property_value_set((Ekeko_Object *)d, "engine", &v);
 	c = ekeko_type_instance_new(etk_canvas_type_get());
 	ekeko_object_child_append((Ekeko_Object *)d, (Ekeko_Object *)c);
@@ -172,8 +191,8 @@ EAPI void etk_document_size_get(Etk_Document *d, int *w, int *h)
 
 EAPI void etk_document_resize(Etk_Document *d, int w, int h)
 {
-	Value v;
+	Ekeko_Value v;
 
-	value_rectangle_coords_from(&v, 0, 0, w, h);
+	ekeko_value_rectangle_coords_from(&v, 0, 0, w, h);
 	ekeko_object_property_value_set((Ekeko_Object *)d, "size", &v);
 }

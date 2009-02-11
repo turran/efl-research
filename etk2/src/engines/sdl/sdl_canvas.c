@@ -74,15 +74,19 @@ void _blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rect
 	sdrect.w = drect->w;
 	sdrect.h = drect->h;
 
+#ifdef ETK2_DEBUG
 	printf("[SDL] rendering into %p from %d %d %d %d to %d %d %d %d\n",
 			dst, srect->x, srect->y, srect->w, srect->h,
 			drect->x, drect->y, drect->w, drect->h);
+#endif
 	SDL_BlitSurface(src, &ssrect, dst, &sdrect);
 }
 
 Eina_Bool _flush(void *src, Eina_Rectangle *srect)
 {
+#ifdef ETK2_DEBUG
 	printf("[SDL] Flushing surface\n");
+#endif
 	SDL_Flip(src);
 	return EINA_TRUE;
 }

@@ -24,6 +24,7 @@
 #define ETK_TYPE_DOCUMENT "Etk_Document"
 #define ETK_TYPE_CANVAS "Etk_Canvas"
 #define ETK_TYPE_RECT "Etk_Rect"
+#define ETK_TYPE_ANIMATION "Etk_Animation"
 
 /* Engine! */
 typedef void * Etk_Engine_Surface;
@@ -74,11 +75,12 @@ extern Etk_Canvas_Engine etk_canvas_engine_sdl;
 extern Etk_Shape_Engine etk_shape_engine_sdl;
 void engine_sdl_init(void);
 
-/* Value */
+/* Ekeko_Value */
 void etk_value_init(void);
 
 /* Document */
 Etk_Engine * etk_document_engine_get(Etk_Document *d);
+Etch * etk_document_etch_get(Etk_Document *d);
 
 /* Canvas */
 Etk_Document * etk_canvas_document_get(Etk_Canvas *c);

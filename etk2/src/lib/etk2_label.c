@@ -55,14 +55,14 @@ Label *label_new(void)
 
 void label_text_set(Label *label, char *text)
 {
-	Value v;
+	Ekeko_Value v;
 
 	RETURN_IF(label == NULL);
 	/* FIXME how to inform the property system that this property has changed ?
 	 * for now we do this way but is slow because we need to get the property
 	 * from the hash even knowing what offset we are working with
 	 */
-	value_str_from(&v, text);
+	ekeko_value_str_from(&v, text);
 	object_property_value_set((Object *)label, "text", &v);
 }
 

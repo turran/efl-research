@@ -17,7 +17,8 @@ etk2_engine.c \
 etk2_document.c \
 etk2_canvas.c \
 etk2_shape.c \
-etk2_rect.c
+etk2_rect.c \
+etk2_animation.c
 #
 #etk2_button.c
 #etk2_widget.c

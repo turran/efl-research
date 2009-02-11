@@ -51,7 +51,9 @@ static Eina_Bool _flush(Ekeko_Canvas *c, Eina_Rectangle *r)
 	prv = PRIVATE(c);
 	if (!prv->s)
 	{
-		printf("[EtkCanvas] the canvas doesnt have a surface\n");
+#ifdef ETK2_DEBUG
+		printf("[Etk_Canvas] the canvas doesnt have a surface\n");
+#endif
 		return EINA_TRUE;
 	}
 	/* if root flip */
@@ -59,7 +61,9 @@ static Eina_Bool _flush(Ekeko_Canvas *c, Eina_Rectangle *r)
 	{
 		Etk_Engine *func;
 
-		printf("[EtkCanvas] flipping root surface\n");
+#ifdef ETK2_DEBUG
+		printf("[Etk_Canvas] flipping root surface\n");
+#endif
 		/* TODO flip */
 		func = etk_document_engine_get(prv->doc);
 		return func->canvas->flush(prv->s, r);
@@ -111,7 +115,9 @@ static void _document_w_change(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 
+#ifdef ETK2_DEBUG
 	printf("Document W changed\n");
+#endif
 	/* w change then change x or w as needed */
 	if (!strcmp(em->prop, "size"))
 	{
@@ -255,7 +261,6 @@ static void _prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
 			}
 			if (prv->root)
 			{
-				printf("geometry root\n");
 				return;
 			}
 			/* the canvas surface size should be:
@@ -459,7 +464,7 @@ EAPI void etk_canvas_root_set(Etk_Canvas *c)
 EAPI void etk_canvas_x_rel_set(Etk_Canvas *c, int x)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, x, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "x", &v);
@@ -468,7 +473,7 @@ EAPI void etk_canvas_x_rel_set(Etk_Canvas *c, int x)
 EAPI void etk_canvas_x_set(Etk_Canvas *c, int x)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, x, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "x", &v);
@@ -477,7 +482,7 @@ EAPI void etk_canvas_x_set(Etk_Canvas *c, int x)
 EAPI void etk_canvas_y_set(Etk_Canvas *c, int y)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, y, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "y", &v);
@@ -486,7 +491,7 @@ EAPI void etk_canvas_y_set(Etk_Canvas *c, int y)
 EAPI void etk_canvas_y_rel_set(Etk_Canvas *c, int y)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, y, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "y", &v);
@@ -495,7 +500,7 @@ EAPI void etk_canvas_y_rel_set(Etk_Canvas *c, int y)
 EAPI void etk_canvas_w_set(Etk_Canvas *c, int w)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, w, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "w", &v);
@@ -504,7 +509,7 @@ EAPI void etk_canvas_w_set(Etk_Canvas *c, int w)
 EAPI void etk_canvas_w_rel_set(Etk_Canvas *c, int w)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, w, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "w", &v);
@@ -513,7 +518,7 @@ EAPI void etk_canvas_w_rel_set(Etk_Canvas *c, int w)
 EAPI void etk_canvas_h_set(Etk_Canvas *c, int h)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, h, ETK_COORD_ABSOLUTE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "h", &v);
@@ -522,7 +527,7 @@ EAPI void etk_canvas_h_set(Etk_Canvas *c, int h)
 EAPI void etk_canvas_h_rel_set(Etk_Canvas *c, int h)
 {
 	Etk_Coord coord;
-	Value v;
+	Ekeko_Value v;
 
 	etk_value_coord_from(&v, &coord, h, ETK_COORD_RELATIVE);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "h", &v);

@@ -16,6 +16,7 @@ struct _Etk_Rect
 };
 
 EAPI Ekeko_Type *etk_rect_type_get(void);
+EAPI Etk_Rect * etk_rect_new(Etk_Canvas *c);
 EAPI void etk_rect_x_rel_set(Etk_Rect *r, int x);
 EAPI void etk_rect_x_set(Etk_Rect *r, int x);
 EAPI void etk_rect_y_set(Etk_Rect *r, int y);

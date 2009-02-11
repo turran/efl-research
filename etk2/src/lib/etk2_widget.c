@@ -87,9 +87,9 @@ void widget_geom_get(Widget *widget, int *x, int *y, int *w, int *h)
 
 void widget_theme_set(Widget *widget, char *theme)
 {
-	Value value;
+	Ekeko_Value value;
 
-	value_str_from(&value, theme);
+	ekeko_value_str_from(&value, theme);
 	object_property_value_set((Object *)widget, "theme", &value);
 }
 
