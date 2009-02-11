@@ -20,7 +20,7 @@ void * ekeko_type_instance_new_name_from(const char *name);
 void *ekeko_type_instance_new(Ekeko_Type *type);
 void ekeko_type_instance_delete(void *instance);
 Property_Id ekeko_type_property_new(Ekeko_Type *type, char *prop_name,
-		Type_Property_Type prop_type, Value_Type value_type,
+		Type_Property_Type prop_type, Ekeko_Value_Type value_type,
 		ssize_t curr_offset, ssize_t prev_offset, ssize_t changed_offset);
 void * ekeko_type_instance_private_get(Ekeko_Type *type, void *instance);
 EAPI Eina_Bool ekeko_type_instance_is_of(void *instance, const char *type);

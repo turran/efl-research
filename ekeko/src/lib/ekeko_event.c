@@ -13,7 +13,7 @@
  *                                 Global                                     *
  *============================================================================*/
 void event_mutation_init(Event_Mutation *em, const char *type, const Ekeko_Object *o,
-		const Ekeko_Object *rel, const Property *prop, Value *prev, Value *curr,
+		const Ekeko_Object *rel, const Property *prop, Ekeko_Value *prev, Ekeko_Value *curr,
 		Event_Mutation_State state)
 {
 	ekeko_event_init((Event *)em, type, o, EINA_TRUE);

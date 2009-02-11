@@ -49,8 +49,8 @@ typedef struct _Event_Mutation
 	Event event;
 	Event_Mutation_State state; /* pre/post (async) curr (async/sync) */
 	const Ekeko_Object *related; /* parent in case of child_append/remove */
-	Value *prev; /* previous value */
-	Value *curr; /* current value */
+	Ekeko_Value *prev; /* previous value */
+	Ekeko_Value *curr; /* current value */
 	const char *prop; /* property name */
 	Property_Id prop_id; /* property id */
 } Event_Mutation;

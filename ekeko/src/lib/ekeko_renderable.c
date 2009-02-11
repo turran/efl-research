@@ -161,7 +161,7 @@ EAPI void ekeko_renderable_move(Ekeko_Renderable *r, int x, int y)
 {
 	Ekeko_Renderable_Private *prv;
 	Eina_Rectangle move;
-	Value value;
+	Ekeko_Value value;
 
 	/* TODO avoid this duplicate */
 	prv = PRIVATE(r);
@@ -169,7 +169,7 @@ EAPI void ekeko_renderable_move(Ekeko_Renderable *r, int x, int y)
 	move.y = y;
 	move.w = prv->geometry.curr.w;
 	move.h = prv->geometry.curr.h;
-	value_rectangle_from(&value, &move);
+	ekeko_value_rectangle_from(&value, &move);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "geometry", &value);
 }
 
@@ -177,7 +177,7 @@ EAPI void ekeko_renderable_resize(Ekeko_Renderable *r, int w, int h)
 {
 	Ekeko_Renderable_Private *prv;
 	Eina_Rectangle resize;
-	Value value;
+	Ekeko_Value value;
 
 	/* TODO avoid this duplicate */
 	prv = PRIVATE(r);
@@ -185,18 +185,18 @@ EAPI void ekeko_renderable_resize(Ekeko_Renderable *r, int w, int h)
 	resize.y = prv->geometry.curr.y;
 	resize.w = w;
 	resize.h = h;
-	value_rectangle_from(&value, &resize);
+	ekeko_value_rectangle_from(&value, &resize);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "geometry", &value);
 }
 
 EAPI void ekeko_renderable_geometry_set(Ekeko_Renderable *r, Eina_Rectangle *rect)
 {
-	Value value;
+	Ekeko_Value value;
 
 #ifdef EKEKO_DEBUG
 	printf("[rend] geometry_set %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
 #endif
-	value_rectangle_from(&value, rect);
+	ekeko_value_rectangle_from(&value, rect);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "geometry", &value);
 }
 
@@ -222,7 +222,7 @@ EAPI void ekeko_renderable_visibility_get(Ekeko_Renderable *r, Eina_Bool *visibl
 EAPI void ekeko_renderable_show(Ekeko_Renderable *r)
 {
 	Ekeko_Renderable_Private *prv;
-	Value value;
+	Ekeko_Value value;
 
 	prv = PRIVATE(r);
 #ifdef EKEKO_DEBUG
@@ -230,14 +230,14 @@ EAPI void ekeko_renderable_show(Ekeko_Renderable *r)
 #endif
 	if (prv->visibility.curr)
 		return;
-	value_bool_from(&value, EINA_TRUE);
+	ekeko_value_bool_from(&value, EINA_TRUE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "visibility", &value);
 }
 
 EAPI void ekeko_renderable_hide(Ekeko_Renderable *r)
 {
 	Ekeko_Renderable_Private *prv;
-	Value value;
+	Ekeko_Value value;
 
 	prv = PRIVATE(r);
 #ifdef EKEKO_DEBUG
@@ -245,19 +245,19 @@ EAPI void ekeko_renderable_hide(Ekeko_Renderable *r)
 #endif
 	if (!prv->visibility.curr)
 		return;
-	value_bool_from(&value, EINA_FALSE);
+	ekeko_value_bool_from(&value, EINA_FALSE);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "visibility", &value);
 }
 
 EAPI void ekeko_renderable_visibility_set(Ekeko_Renderable *r, Eina_Bool visible)
 {
 	Ekeko_Renderable_Private *prv;
-	Value value;
+	Ekeko_Value value;
 
 	prv = PRIVATE(r);
 	if (prv->visibility.curr == visible)
 		return;
-	value_bool_from(&value, visible);
+	ekeko_value_bool_from(&value, visible);
 #ifdef EKEKO_DEBUG
 	printf("[renderable %s] visibility set %d\n", ekeko_object_type_name_get((Ekeko_Object *)r), value.value.bool_value);
 #endif

@@ -197,9 +197,9 @@ EAPI Ekeko_Object *ekeko_object_new(void)
  */
 EAPI void ekeko_object_id_set(Ekeko_Object *object, const char *name)
 {
-	Value value;
+	Ekeko_Value value;
 
-	value_str_from(&value, (char *)name);
+	ekeko_value_str_from(&value, (char *)name);
 	ekeko_object_property_value_set(object, "id", &value);
 }
 /**
@@ -220,27 +220,37 @@ EAPI const char *ekeko_object_id_get(Ekeko_Object *object)
  * @param prop_name
  * @param value
  */
-EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name, Value *value)
+EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekeko_Value *value)
 {
 	Ekeko_Object_Private *prv;
 	Property *prop;
-	Value prev_value;
+	Ekeko_Value prev_value;
 	Event_Mutation evt;
+	Ekeko_Value_Type vtype;
 
 	void *curr, *prev;
 	char *changed;
 
-	RETURN_IF(object == NULL || prop_name == NULL);
+	RETURN_IF(o == NULL || prop_name == NULL);
 
-	prv = PRIVATE(object);
+	prv = PRIVATE(o);
 #ifdef EKEKO_DEBUG
-	printf("[obj] value_set: %s %p %p %p %d\n", prop_name, object, prv, prv->type, prv->changed);
+	printf("[obj] value_set: %s %p %p %p %d\n", prop_name, o, prv, prv->type, prv->changed);
 #endif
 	/* FIXME this code isnt good enough */
 	prop = type_property_get(prv->type, prop_name);
 	if (!prop)
 		return;
-	type_instance_property_pointers_get(prv->type, prop, object, &curr, &prev, &changed);
+
+	vtype = ekeko_property_value_type_get(prop);
+	if (vtype != PROPERTY_VALUE && vtype != value->type)
+	{
+		printf("ERROR values dont match %s %d %d!!\n", ekeko_object_type_name_get(o), vtype, value->type);
+		exit(1);
+	}
+	/* Initialize the type in case the property value type is PROPERTY_VALUE */
+	prev_value.type = value->type;
+	type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
 #ifdef EKEKO_DEBUG
 	printf("[obj] pointers %p %p %p\n", curr, prev, changed);
 #endif
@@ -249,16 +259,19 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name,
 		Eina_Bool changed_bef, changed_now;
 
 		changed_bef = *changed;
-		ekeko_value_set(&prev_value, ekeko_property_value_type_get(prop), prev);
-		ekeko_value_pointer_double_set(value, ekeko_property_value_type_get(prop), curr, prev, changed);
+		/* here we dont need to malloc the value as it is already stored
+		 * on the prev, just copy the data
+		 */
+		ekeko_value_pointer_from(&prev_value, vtype, prev);
+		ekeko_value_pointer_double_to(value, vtype, curr, prev, changed);
 		changed_now = *changed;
 		if (changed_bef && !changed_now)
 		{
-			_unchange_recursive(object, 1);
+			_unchange_recursive(o, 1);
 		}
 		else if (!changed_bef && changed_now)
 		{
-			_change_recursive(object, 1);
+			_change_recursive(o, 1);
 		}
 #ifdef EKEKO_DEBUG
 		printf("[obj] changed bef = %d, changed now = %d\n", changed_bef, changed_now);
@@ -266,17 +279,22 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name,
 	}
 	else
 	{
-		ekeko_value_set(&prev_value, ekeko_property_value_type_get(prop), curr);
-		ekeko_value_pointer_set(value, ekeko_property_value_type_get(prop), curr);
+		/* here we do need to malloc the prev and copy it because curr
+		 * will overwrite it
+		 */
+		ekeko_value_create(&prev_value, vtype);
+		ekeko_value_pointer_from(&prev_value, vtype, curr);
+		ekeko_value_pointer_to(value, vtype, curr);
 	}
 #ifdef EKEKO_DEBUG
 	printf("[obj] changed = %d\n", prv->changed);
 #endif
 	/* send the event */
-	event_mutation_init(&evt, EVENT_PROP_MODIFY, object, object, prop,
+	event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop,
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
-	ekeko_object_event_dispatch((Ekeko_Object *)object, (Event *)&evt);
-	ekeko_value_free(&prev_value, ekeko_property_value_type_get(prop));
+	ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+	if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
+		ekeko_value_free(&prev_value, vtype);
 }
 /**
  *
@@ -284,15 +302,33 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name,
  * @param prop_name
  * @param value
  */
-EAPI void ekeko_object_property_value_get(Ekeko_Object *object, char *prop_name, Value *value)
+EAPI void ekeko_object_property_value_get(Ekeko_Object *o, char *prop_name, Ekeko_Value *value)
 {
 	Ekeko_Object_Private *prv;
+	Property *prop;
+	void *curr, *prev;
+	char *changed;
+	Ekeko_Value_Type vtype;
 
-	prv = PRIVATE(object);
+	prv = PRIVATE(o);
 #ifdef EKEKO_DEBUG
 	printf("[obj] value_get: %s\n", prop_name);
 #endif
-	type_instance_property_value_get(prv->type, object, prop_name, value);
+	prop = type_property_get(prv->type, prop_name);
+	if (!prop)
+		return;
+	type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
+	vtype = ekeko_property_value_type_get(prop);
+	/* THis is a leak, we just want to get the value and set the pointer
+	 * dont copy it right?
+	 * also we dont want the user to call ekeko_value_free every time
+	 */
+	ekeko_value_create(value, vtype);
+	ekeko_value_pointer_from(value, vtype, curr);
+	//ekeko_value_free(value, vtype);
+
+	// FIXME remove the function below
+	//type_instance_property_value_get(prv->type, object, prop_name, value);
 }
 /**
  *
@@ -444,7 +480,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	pit = type_property_iterator_new(prv->type);
 	while (type_property_iterator_next(pit, &prop))
 	{
-		Value prev_value, curr_value;
+		Ekeko_Value prev_value, curr_value;
 		Event_Mutation evt;
 		void *curr, *prev;
 		char *changed;
@@ -465,13 +501,13 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		*changed = EINA_FALSE;
 		prv->changed--;
 		/* send the mutation event */
-		ekeko_value_set(&prev_value, ekeko_property_value_type_get(prop), prev);
-		ekeko_value_set(&curr_value, ekeko_property_value_type_get(prop), curr);
+		ekeko_value_pointer_from(&prev_value, ekeko_property_value_type_get(prop), prev);
+		ekeko_value_pointer_from(&curr_value, ekeko_property_value_type_get(prop), curr);
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
 		ekeko_object_event_dispatch(o, (Event *)&evt);
 		/* update prev */
-		ekeko_value_pointer_set(&curr_value, ekeko_property_value_type_get(prop), prev);
+		ekeko_value_pointer_to(&curr_value, ekeko_property_value_type_get(prop), prev);
 		if (!prv->changed)
 		{
 			type_property_iterator_free(pit);

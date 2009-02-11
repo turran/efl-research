@@ -21,8 +21,8 @@
 Eina_Bool type_appendable(Ekeko_Type *t, void *instance, void *child);
 void type_construct(Ekeko_Type *t, void *instance);
 void * type_instance_private_get_internal(Ekeko_Type *final, Ekeko_Type *t, void *instance);
-Eina_Bool type_instance_property_value_set(Ekeko_Type *type, void *instance, char *prop_name, Value *value, Value *old);
-void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *prop_name, Value *value);
+Eina_Bool type_instance_property_value_set(Ekeko_Type *type, void *instance, char *prop_name, Ekeko_Value *value, Ekeko_Value *old);
+void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *prop_name, Ekeko_Value *value);
 Property * type_property_get(Ekeko_Type *t, const char *name);
 const char * type_name_get(Ekeko_Type *t);
 void type_instance_property_pointers_get(Ekeko_Type *t, Property *prop, void *instance,

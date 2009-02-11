@@ -11,6 +11,7 @@
 /**
  * @brief Possible types of a property.
  */
+#define PROPERTY_UNDEFINED 0
 #define PROPERTY_INT 1 /**< The value of the property is an integer */          //!< PROPERTY_INT
 #define PROPERTY_BOOL 2 /**< The value of the property is a boolean (Bool) */    //!< PROPERTY_BOOL
 #define PROPERTY_CHAR 3 /**< The value of the property is a char */              //!< PROPERTY_CHAR
@@ -20,14 +21,16 @@
 #define PROPERTY_LONG 7 /**< The value of the property is a long */              //!< PROPERTY_LONG
 #define PROPERTY_RECTANGLE 8 /**< The value of the property is a rectangle */         //!< PROPERTY_RECTANGLE
 #define PROPERTY_POINTER 9 /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
-#define PROPERTY_STRING 10 /**< The value of the property is a string (char *) */ //!< PROPERTY_STRING
+#define PROPERTY_VALUE 10 /**< The value of the property is value */  //!< PROPERTY_VALUE
+#define PROPERTY_STRING 11 /**< The value of the property is a string (char *) */ //!< PROPERTY_STRING
 
-typedef int Value_Type;
+typedef int Ekeko_Value_Type;
 /**
  * @brief
  */
-typedef struct _Value
+typedef struct _Ekeko_Value
 {
+	Ekeko_Value_Type type;
 	union
 	{
 		int int_value;
@@ -41,43 +44,56 @@ typedef struct _Value
 		char *string_value;
 		Eina_Rectangle rect;
 	} value;
-} Value;
+} Ekeko_Value;
 
-typedef void (*Ekeko_Value_Set)(Value *v, void *val);
-typedef void (*Ekeko_Value_Get)(Value *v, void *ptr);
-typedef void (*Ekeko_Value_Free)(Value *v);
+typedef void * (*Ekeko_Value_Create)(void);
+typedef void (*Ekeko_Value_Free)(void *v);
 typedef Eina_Bool (*Ekeko_Value_Compare)(void *a, void *b);
+typedef void (*Ekeko_Value_Pointer_From)(Ekeko_Value *v, void *val);
+typedef void (*Ekeko_Value_Pointer_To)(Ekeko_Value *v, void *ptr);
 
-void ekeko_value_set(Value *v, Value_Type vtype, void *val);
-int ekeko_value_register(const char *name, Ekeko_Value_Set set,
-		Ekeko_Value_Get pset, Ekeko_Value_Compare cmp,
-		Ekeko_Value_Free free);
+#define EKEKO_VALUE_CREATE(f) ((Ekeko_Value_Create)(f))
+#define EKEKO_VALUE_FREE(f) ((Ekeko_Value_Free)(f))
+#define EKEKO_VALUE_CMP(f) ((Ekeko_Value_Compare)(f))
+#define EKEKO_VALUE_POINTER_FROM(f) ((Ekeko_Value_Pointer_From)(f))
+#define EKEKO_VALUE_POINTER_TO(f) ((Ekeko_Value_Pointer_To)(f))
 
-static inline void value_int_from(Value *v, int i)
+void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *val);
+int ekeko_value_register(const char *name, Ekeko_Value_Create create,
+		Ekeko_Value_Free free, Ekeko_Value_Compare cmp,
+		Ekeko_Value_Pointer_From pointer_from,
+		Ekeko_Value_Pointer_To pointer_to);
+
+static inline void ekeko_value_int_from(Ekeko_Value *v, int i)
 {
+	v->type = PROPERTY_INT;
 	v->value.int_value = i;
 }
 
-static inline void value_str_from(Value *v, char *str)
+static inline void ekeko_value_str_from(Ekeko_Value *v, char *str)
 {
+	v->type = PROPERTY_STRING;
 	v->value.string_value = str;
 }
 
-static inline void value_rectangle_from(Value *v, Eina_Rectangle *rect)
+static inline void ekeko_value_rectangle_from(Ekeko_Value *v, Eina_Rectangle *rect)
 {
+	v->type = PROPERTY_RECTANGLE;
 	v->value.rect = *rect;
 }
 
-static inline void value_rectangle_coords_from(Value *v, int x, int y, int w, int h)
+static inline void ekeko_value_rectangle_coords_from(Ekeko_Value *v, int x, int y, int w, int h)
 {
+	v->type = PROPERTY_RECTANGLE;
 	v->value.rect.x = x;
 	v->value.rect.y = y;
 	v->value.rect.w = w;
 	v->value.rect.h = h;
 }
 
-static inline void value_bool_from(Value *v, Eina_Bool b)
+static inline void ekeko_value_bool_from(Ekeko_Value *v, Eina_Bool b)
 {
+	v->type = PROPERTY_BOOL;
 	v->value.bool_value = b;
 }
 

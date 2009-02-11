@@ -18,8 +18,8 @@ const char *ekeko_object_id_get(Ekeko_Object *object);
 
 Ekeko_Type *ekeko_object_type_get(void);
 
-void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name, Value *value);
-void ekeko_object_property_value_get(Ekeko_Object *object, char *prop_name, Value *value);
+void ekeko_object_property_value_set(Ekeko_Object *object, char *prop_name, Ekeko_Value *value);
+void ekeko_object_property_value_get(Ekeko_Object *object, char *prop_name, Ekeko_Value *value);
 EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o);
 EAPI void ekeko_object_child_remove(Ekeko_Object *p, Ekeko_Object *o);
 EAPI void ekeko_object_event_dispatch(const Ekeko_Object *object, Event *evt);

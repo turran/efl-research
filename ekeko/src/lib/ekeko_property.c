@@ -19,7 +19,7 @@ struct _Property
 	ssize_t curr_offset;
 	ssize_t prev_offset;
 	ssize_t changed_offset;
-	Value_Type value_type;
+	Ekeko_Value_Type value_type;
 	Ekeko_Type *type;
 	Property_Id id;
 };
@@ -27,7 +27,7 @@ struct _Property
  *                                 Global                                     *
  *============================================================================*/
 Property * property_new(Ekeko_Type *type, char *prop_name, Type_Property_Type prop_type,
-		Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,
+		Ekeko_Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,
 		ssize_t changed_offset)
 {
 	Property *property;
@@ -86,7 +86,7 @@ EAPI const char * ekeko_property_name_get(const Property *p)
 	return p->name;
 }
 
-EAPI Value_Type ekeko_property_value_type_get(Property *p)
+EAPI Ekeko_Value_Type ekeko_property_value_type_get(Property *p)
 {
 	return p->value_type;
 }

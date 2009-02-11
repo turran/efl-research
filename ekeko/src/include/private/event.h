@@ -19,7 +19,7 @@
 #define EVENT_H_
 
 void event_mutation_init(Event_Mutation *em, const char *type, const Ekeko_Object *o,
-		const Ekeko_Object *rel, const Property *prop, Value *prev, Value *curr,
+		const Ekeko_Object *rel, const Property *prop, Ekeko_Value *prev, Ekeko_Value *curr,
 		Event_Mutation_State state);
 void event_ui_init(Event_Ui *eui, const char *type, const Ekeko_Object *o,
 		const Ekeko_Object *related, const Ekeko_Input *i);

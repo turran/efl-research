@@ -424,14 +424,39 @@ EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c,
 				eina_rectangle_rescale_in(&rgeom, &igeom, &rscaled);
 				subr = ekeko_canvas_renderable_get_at_coord((Ekeko_Canvas *)r,
 						rscaled.x, rscaled.y, recursive);
-				if (subr) return subr;
-				else return r;
+				if (subr)
+				{
+#ifdef EKEKO_DEBUG
+					printf("[Ekeko_Canvas] Recursive, renderable found %p\n", subr);
+#endif
+					return subr;
+				}
+				else
+				{
+#ifdef EKEKO_DEBUG
+					printf("[Ekeko_Canvas] Recursive, no subcanvas renderable found, so return %p\n", r);
+#endif
+					return r;
+				}
 			}
 			else
+			{
+#ifdef EKEKO_DEBUG
+				printf("[Ekeko_Canvas] No recursive renderable found %p\n", r);
+#endif
 				return r;
+			}
 		}
 		else
+		{
+#ifdef EKEKO_DEBUG
+			printf("[Ekeko_Canvas] renderable found %p\n", r);
+#endif
 			return r;
+		}
 	}
+#ifdef EKEKO_DEBUG
+	printf("[Ekeko_Canvas] no renderable found\n");
+#endif
 	return NULL;
 }

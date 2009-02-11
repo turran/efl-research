@@ -12,6 +12,6 @@ typedef uint32_t Property_Id;
 
 EAPI Property_Id ekeko_property_id_get(const Property *p);
 EAPI const char * ekeko_property_name_get(const Property *p);
-Value_Type ekeko_property_value_type_get(Property *p);
+Ekeko_Value_Type ekeko_property_value_type_get(Property *p);
 
 #endif /* EKEKO_PROPERTY_H_ */

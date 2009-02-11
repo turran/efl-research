@@ -107,7 +107,7 @@ static Property *_property_get(Ekeko_Type *type, const char *prop_name)
 	return property;
 }
 
-static inline void _property_string_set(Value *vc, Value *vp, char **c, char **p, char *changed)
+static inline void _property_string_set(Ekeko_Value *vc, Ekeko_Value *vp, char **c, char **p, char *changed)
 {
 	char **str = (char**)c;
 	if (vp) vp->value.string_value = *str;
@@ -119,7 +119,7 @@ static inline void _property_string_set(Value *vc, Value *vp, char **c, char **p
 	}
 }
 
-static inline void _property_int_set(Value *vc, Value *vp, int *c, int *p, char *changed)
+static inline void _property_int_set(Ekeko_Value *vc, Ekeko_Value *vp, int *c, int *p, char *changed)
 {
 	if (vp) vp->value.int_value = *c;
 	*c = vc->value.int_value;
@@ -161,7 +161,7 @@ Property * type_property_get(Ekeko_Type *t, const char *name)
 	return _property_get(t, name);
 }
 
-void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *prop_name, Value *v)
+void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *prop_name, Ekeko_Value *v)
 {
 	Property *property;
 	void *curr;
@@ -172,7 +172,7 @@ void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *pr
 	if (!property)
 		return;
 	curr = _instance_property_curr_ptr_get(type, property, instance);
-	ekeko_value_set(v, ekeko_property_value_type_get(property), curr);
+	ekeko_value_pointer_from(v, ekeko_property_value_type_get(property), curr);
 }
 
 const char * type_name_get(Ekeko_Type *t)
@@ -327,7 +327,7 @@ void ekeko_type_instance_delete(void *instance)
  * @param process_cb
  */
 Property_Id ekeko_type_property_new(Ekeko_Type *type, char *prop_name,
-		Type_Property_Type prop_type, Value_Type value_type,
+		Type_Property_Type prop_type, Ekeko_Value_Type value_type,
 		ssize_t curr_offset, ssize_t prev_offset, ssize_t changed_offset)
 {
 	Property *property;
