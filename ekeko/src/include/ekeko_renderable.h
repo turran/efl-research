@@ -5,19 +5,22 @@
  *      Author: jl
  */
 
-/*============================================================================*
- *                                  Local                                     *
- *============================================================================*/
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/*============================================================================*
- *                                   API                                      *
- *============================================================================*/
-
 #ifndef EKEKO_RENDERABLE_H_
 #define EKEKO_RENDERABLE_H_
 
+/*============================================================================*
+ *                                 Events                                     *
+ *============================================================================*/
+#define EKEKO_RENDERABLE_GEOMETRY_CHANGED "geometryChanged"
+#define EKEKO_RENDERABLE_VISIBILITY_CHANGED "visibilityChanged"
+/*============================================================================*
+ *                               Properties                                   *
+ *============================================================================*/
+extern Property_Id EKEKO_RENDERABLE_GEOMETRY;
+extern Property_Id EKEKO_RENDERABLE_VISIBILITY;
+/*============================================================================*
+ *                                 Class                                      *
+ *============================================================================*/
 typedef struct _Ekeko_Renderable_Private Ekeko_Renderable_Private;
 
 struct _Ekeko_Renderable
@@ -29,8 +32,10 @@ struct _Ekeko_Renderable
 	void (*render)(Ekeko_Renderable *r, Eina_Rectangle *rect);
 	Ekeko_Renderable_Private *private;
 };
-
-Ekeko_Type *ekeko_renderable_type_get(void);
+/*============================================================================*
+ *                                Functions                                   *
+ *============================================================================*/
+EAPI Ekeko_Type *ekeko_renderable_type_get(void);
 EAPI void ekeko_renderable_geometry_set(Ekeko_Renderable *r, Eina_Rectangle *rect);
 EAPI void ekeko_renderable_geometry_get(Ekeko_Renderable *r, Eina_Rectangle *rect);
 EAPI Ekeko_Canvas * ekeko_renderable_canvas_get(Ekeko_Renderable *r);

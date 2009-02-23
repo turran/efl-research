@@ -6,7 +6,9 @@
  */
 #ifndef EKEKO_CANVAS_H_
 #define EKEKO_CANVAS_H_
-
+/*============================================================================*
+ *                                 Class                                      *
+ *============================================================================*/
 typedef struct _Ekeko_Canvas_Private Ekeko_Canvas_Private;
 
 struct _Ekeko_Canvas
@@ -19,7 +21,9 @@ struct _Ekeko_Canvas
 	Eina_Bool (*flush)(Ekeko_Canvas *, Eina_Rectangle *);
 	Ekeko_Canvas_Private *private;
 };
-
+/*============================================================================*
+ *                                Functions                                   *
+ *============================================================================*/
 Ekeko_Type *ekeko_canvas_type_get(void);
 EAPI void ekeko_canvas_size_set(Ekeko_Canvas *c, int w, int h);
 EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r);

@@ -97,78 +97,76 @@ static inline void _renderable_append(Ekeko_Canvas *c, Ekeko_Renderable *r,
 	}
 }
 
-/* Called whenever one of its possible renderables change properties */
-static void _renderable_prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
+static void _child_geometry_change(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Canvas *c = (Ekeko_Canvas *)data;
 	Ekeko_Renderable *r = (Ekeko_Renderable *)o;
+	Eina_Rectangle cgeom;
+	Eina_Bool rvisible;
 
-	if (em->state != EVENT_MUTATION_STATE_POST)
-		return;
-	/* geometry changed */
-	if (!strcmp(em->prop, "geometry"))
-	{
-		Eina_Rectangle cgeom;
-		Eina_Bool rvisible;
-
-		ekeko_renderable_geometry_get((Ekeko_Renderable *)c, &cgeom);
-		/* reset the canvas coordinates to 0,0 WxH */
-		cgeom.x = 0;
-		cgeom.y = 0;
-		ekeko_renderable_visibility_get(r, &rvisible);
-		_renderable_append(c, r, &cgeom, &em->curr->value.rect, rvisible);
-	}
-	/* visibility changed */
-	else if (!strcmp(em->prop, "visibility"))
-	{
-		Eina_Rectangle cgeom, rgeom;
-
-		ekeko_renderable_geometry_get((Ekeko_Renderable *)c, &cgeom);
-		/* reset the canvas coordinates to 0,0 WxH */
-		cgeom.x = 0;
-		cgeom.y = 0;
-		ekeko_renderable_geometry_get(r, &rgeom);
-		_renderable_append(c, r, &cgeom, &rgeom, em->curr->value.bool_value);
-	}
 #ifdef EKEKO_DEBUG
 	printf("[canvas renderable %s]\n", ekeko_object_type_name_get(o));
 #endif
-}
-
-
-static void _prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
-{
-	Event_Mutation *em = (Event_Mutation *)e;
-
-	/* check if the change is the rectangle */
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
-	if (!strcmp(em->prop, "geometry"))
+	ekeko_renderable_geometry_get((Ekeko_Renderable *)c, &cgeom);
+	/* reset the canvas coordinates to 0,0 WxH */
+	cgeom.x = 0;
+	cgeom.y = 0;
+	ekeko_renderable_visibility_get(r, &rvisible);
+	_renderable_append(c, r, &cgeom, &em->curr->value.rect, rvisible);
+
+}
+
+static void _child_visibility_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Canvas *c = (Ekeko_Canvas *)data;
+	Ekeko_Renderable *r = (Ekeko_Renderable *)o;
+	Eina_Rectangle rgeom, cgeom;
+
+#ifdef EKEKO_DEBUG
+	printf("[canvas renderable %s]\n", ekeko_object_type_name_get(o));
+#endif
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	ekeko_renderable_geometry_get((Ekeko_Renderable *)c, &cgeom);
+	/* reset the canvas coordinates to 0,0 WxH */
+	cgeom.x = 0;
+	cgeom.y = 0;
+	ekeko_renderable_geometry_get(r, &rgeom);
+	_renderable_append(c, r, &cgeom, &rgeom, em->curr->value.bool_value);
+}
+
+static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Canvas_Private *prv;
+	Eina_Tiler *tiler;
+
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+
+
+	prv = PRIVATE(((Ekeko_Canvas *)o));
+	tiler = prv->tiler;
+	if (tiler)
 	{
-		Ekeko_Canvas_Private *prv;
-		Eina_Tiler *tiler;
-
-		prv = PRIVATE(((Ekeko_Canvas *)o));
-		tiler = prv->tiler;
-		if (tiler)
-		{
-
-			eina_tiler_del(tiler);
-		}
-#ifdef EKEKO_DEBUG
-		printf("[canvas %s] Changing geometry\n", ekeko_object_type_name_get(o));
-#endif
-		prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
-		/* TODO In case it already has a tiler, mark everything again */
-		if (tiler)
-		{
-			ekeko_canvas_damage_add((Ekeko_Canvas *)o, &em->curr->value.rect);
-		}
-#ifdef EKEKO_DEBUG
-		printf("[canvas %s] tiler is %p\n", ekeko_object_type_name_get(o), prv->tiler);
-#endif
+		eina_tiler_del(tiler);
 	}
+#ifdef EKEKO_DEBUG
+	printf("[canvas %s] Changing geometry\n", ekeko_object_type_name_get(o));
+#endif
+	prv->tiler = eina_tiler_new(em->curr->value.rect.w, em->curr->value.rect.h);
+	/* TODO In case it already has a tiler, mark everything again */
+	if (tiler)
+	{
+		ekeko_canvas_damage_add((Ekeko_Canvas *)o, &em->curr->value.rect);
+	}
+#ifdef EKEKO_DEBUG
+	printf("[canvas %s] tiler is %p\n", ekeko_object_type_name_get(o), prv->tiler);
+#endif
 }
 
 /* Called whenever the process has finished on this element */
@@ -283,7 +281,8 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 #ifdef EKEKO_DEBUG
 	printf("[canvas %s] %p tiler = %p, canvas = %p\n", ekeko_object_type_name_get(o), em->related, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)o));
 #endif
-	ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_PROP_MODIFY, _renderable_prop_modify_cb, EINA_FALSE, o);
+	ekeko_event_listener_add((Ekeko_Object *)e->target, EKEKO_RENDERABLE_VISIBILITY_CHANGED, _child_visibility_change, EINA_FALSE, o);
+	ekeko_event_listener_add((Ekeko_Object *)e->target, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _child_geometry_change, EINA_FALSE, o);
 }
 
 static void _ctor(void *instance)
@@ -297,7 +296,7 @@ static void _ctor(void *instance)
 	/* register to an event where some child is appended to this parent */
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	/* register the event where the size is changed */
-	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
 	/* TODO add the event listener when the object has finished the process() function */
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
@@ -455,7 +454,7 @@ EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c,
 			return r;
 		}
 	}
-#ifdef EKEKO_DEBUG
+#ifndef EKEKO_DEBUG
 	printf("[Ekeko_Canvas] no renderable found\n");
 #endif
 	return NULL;

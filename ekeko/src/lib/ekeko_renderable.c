@@ -6,6 +6,7 @@
  */
 #include "Ekeko.h"
 #include "ekeko_private.h"
+/* TODO add a is_inside function, useful for transformed objects */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -41,7 +42,7 @@ struct _Ekeko_Renderable_Private
 };
 
 /* called whenever a double state property has changed */
-static void _properties_updated(const Ekeko_Object *o, Event *e, void *data)
+static void _visibility_change(const Ekeko_Object *o, Event *e, void *data)
 {
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
@@ -53,20 +54,28 @@ static void _properties_updated(const Ekeko_Object *o, Event *e, void *data)
 		return;
 	if (!prv->canvas)
 		return;
-	/* geometry changed */
-	if (!strcmp(em->prop, "geometry"))
-	{
-		/* TODO check that the renderable is appended? */
-		ekeko_canvas_damage_add(prv->canvas, &em->curr->value.rect);
-		ekeko_canvas_damage_add(prv->canvas, &em->prev->value.rect);
-	}
 	/* visibility changed */
-	else if (!strcmp(em->prop, "visibility"))
-	{
-		/* TODO check that the renderable is appended? */
-		ekeko_canvas_damage_add(prv->canvas, &prv->geometry.curr);
-		ekeko_canvas_damage_add(prv->canvas, &prv->geometry.prev);
-	}
+	/* TODO check that the renderable is appended? */
+	ekeko_canvas_damage_add(prv->canvas, &prv->geometry.curr);
+	ekeko_canvas_damage_add(prv->canvas, &prv->geometry.prev);
+}
+
+static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Renderable_Private *prv = PRIVATE(o);
+
+#ifdef EKEKO_DEBUG
+	printf("[renderable %s] geometry updated\n", ekeko_object_type_name_get(o));
+#endif
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	if (!prv->canvas)
+		return;
+	/* geometry changed */
+	/* TODO check that the renderable is appended? */
+	ekeko_canvas_damage_add(prv->canvas, &em->curr->value.rect);
+	ekeko_canvas_damage_add(prv->canvas, &em->prev->value.rect);
 }
 
 static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
@@ -105,7 +114,8 @@ static void _ctor(void *instance)
 	rend = (Ekeko_Renderable*) instance;
 	rend->private = prv = ekeko_type_instance_private_get(ekeko_renderable_type_get(), instance);
 	/* register to an event where this child is appended to a canvas parent */
-	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_PROP_MODIFY, _properties_updated, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)rend, EKEKO_RENDERABLE_VISIBILITY_CHANGED, _visibility_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)rend, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
 	printf("[renderable] ctor canvas = %p\n", prv->canvas);
@@ -136,6 +146,9 @@ void renderable_appended_set(Ekeko_Renderable *r, Eina_Bool appended)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Property_Id EKEKO_RENDERABLE_GEOMETRY;
+Property_Id EKEKO_RENDERABLE_VISIBILITY;
+
 Ekeko_Type *ekeko_renderable_type_get(void)
 {
 	static Ekeko_Type *renderable_type = NULL;
@@ -146,10 +159,10 @@ Ekeko_Type *ekeko_renderable_type_get(void)
 				sizeof(Ekeko_Renderable_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
 		/* the properties */
-		TYPE_PROP_DOUBLE_ADD(renderable_type, "geometry", PROPERTY_RECTANGLE,
+		EKEKO_RENDERABLE_GEOMETRY = TYPE_PROP_DOUBLE_ADD(renderable_type, "geometry", PROPERTY_RECTANGLE,
 				OFFSET(Ekeko_Renderable_Private, geometry.curr), OFFSET(Ekeko_Renderable_Private, geometry.prev),
 				OFFSET(Ekeko_Renderable_Private, geometry.changed));
-		TYPE_PROP_DOUBLE_ADD(renderable_type, "visibility", PROPERTY_BOOL,
+		EKEKO_RENDERABLE_VISIBILITY = TYPE_PROP_DOUBLE_ADD(renderable_type, "visibility", PROPERTY_BOOL,
 				OFFSET(Ekeko_Renderable_Private, visibility.curr), OFFSET(Ekeko_Renderable_Private, visibility.prev),
 				OFFSET(Ekeko_Renderable_Private, visibility.changed));
 	}

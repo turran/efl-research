@@ -4,6 +4,11 @@
 
 #include "Ekeko.h"
 #include "ekeko_private.h"
+/*
+ * TODO avoid allocating a value when a property is set
+ * TODO create dynamic callbacks for each property
+ * TODO create ids for each property
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -41,7 +46,7 @@ static void _id_modify(const Ekeko_Object *o, Event *e, void *data)
 
 	/* TODO we should avoid that many strcmp() */
 	//if (!strcmp(em->prop, "id"))
-	if (em->prop_id == EKEKO_OBJECT_PROPERTY_ID)
+	if (em->prop_id == EKEKO_OBJECT_ID)
 	{
 		/* Send the idChanged event */
 	}
@@ -162,7 +167,7 @@ void object_event_listener_remove(Ekeko_Object *obj, const char *type,
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Property_Id EKEKO_OBJECT_PROPERTY_ID;
+Property_Id EKEKO_OBJECT_ID;
 
 Ekeko_Type *ekeko_object_type_get(void)
 {
@@ -172,7 +177,7 @@ Ekeko_Type *ekeko_object_type_get(void)
 	{
 		object_type = ekeko_type_new(TYPE_NAME, sizeof(Ekeko_Object),
 				sizeof(Ekeko_Object_Private), NULL, _ctor, _dtor, NULL);
-		EKEKO_OBJECT_PROPERTY_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Ekeko_Object_Private, id));
+		EKEKO_OBJECT_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Ekeko_Object_Private, id));
 		// TODO register the type's event, with type_event_new
 	}
 
@@ -289,12 +294,23 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 #ifdef EKEKO_DEBUG
 	printf("[obj] changed = %d\n", prv->changed);
 #endif
-	/* send the event */
+	/* send the generic event */
 	event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop,
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
 	ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+	/* send the specific event */
+	{
+		char evt_name[256];
+
+		strcpy(evt_name, prop_name);
+		strcat(evt_name, "Changed");
+		event_mutation_init(&evt, evt_name, o, o, prop,
+			&prev_value, value, EVENT_MUTATION_STATE_CURR);
+		ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+	}
 	if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
 		ekeko_value_free(&prev_value, vtype);
+
 }
 /**
  *
@@ -319,7 +335,7 @@ EAPI void ekeko_object_property_value_get(Ekeko_Object *o, char *prop_name, Ekek
 		return;
 	type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
 	vtype = ekeko_property_value_type_get(prop);
-	/* THis is a leak, we just want to get the value and set the pointer
+	/* This is a leak, we just want to get the value and set the pointer
 	 * dont copy it right?
 	 * also we dont want the user to call ekeko_value_free every time
 	 */
@@ -500,12 +516,22 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		/* update the property */
 		*changed = EINA_FALSE;
 		prv->changed--;
-		/* send the mutation event */
+		/* send the generic mutation event */
 		ekeko_value_pointer_from(&prev_value, ekeko_property_value_type_get(prop), prev);
 		ekeko_value_pointer_from(&curr_value, ekeko_property_value_type_get(prop), curr);
 		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
 		ekeko_object_event_dispatch(o, (Event *)&evt);
+		/* send the specific event */
+		{
+			char evt_name[256];
+
+			strcpy(evt_name, ekeko_property_name_get(prop));
+			strcat(evt_name, "Changed");
+			event_mutation_init(&evt, evt_name, o, o, prop,
+				&prev_value, &curr_value, EVENT_MUTATION_STATE_POST);
+			ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+		}
 		/* update prev */
 		ekeko_value_pointer_to(&curr_value, ekeko_property_value_type_get(prop), prev);
 		if (!prv->changed)

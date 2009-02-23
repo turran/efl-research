@@ -25,7 +25,7 @@ Property_Id ekeko_type_property_new(Ekeko_Type *type, char *prop_name,
 void * ekeko_type_instance_private_get(Ekeko_Type *type, void *instance);
 EAPI Eina_Bool ekeko_type_instance_is_of(void *instance, const char *type);
 
-/* TODO add some macros to make easier the addition of single and double properties */
+/* Some macros to make easier the addition of single and double properties */
 #define TYPE_PROP_SINGLE_ADD(t, name, vt, fo)  \
 	ekeko_type_property_new(t, name, PROPERTY_VALUE_SINGLE_STATE, vt, fo, 0, 0)
 #define TYPE_PROP_DOUBLE_ADD(t, name, vt, co, po, cho) \
