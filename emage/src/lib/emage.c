@@ -1,14 +1,12 @@
 #include "Emage.h"
 #include "emage_private.h"
 /*============================================================================*
- *                                  Local                                     * 
+ *                                  Local                                     *
  *============================================================================*/
 static int _init_count = 0;
-Eina_List *_modules = NULL;
-Eina_List *_providers = NULL;
-typedef Eina_Bool (*Module_Init)(void);
-
-int _fifo[2]; /* the communication between the main thread and the async ones */ 
+static Eina_Array *_modules = NULL;
+static Eina_List *_providers = NULL;
+static int _fifo[2]; /* the communication between the main thread and the async ones */
 
 Eina_Error EMAGE_ERROR_EXIST;
 Eina_Error EMAGE_ERROR_PROVIDER;
@@ -26,24 +24,11 @@ typedef struct _Emage_Job
 	Eina_Error err;
 } Emage_Job;
 
-
-int _module_cb(Eina_Module *m, void *data)
-{
-	Module_Init mi;
-	
-	/* load the module and call module_init */
-	eina_module_load(m);
-	mi = eina_module_symbol_get(m, "module_init");
-	if (!mi)
-		return 0;
-	return mi();
-}
-
 void _provider_info_load(Emage_Provider *p, const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
 {
 	int pw, ph;
 	Enesim_Surface_Format pfmt;
-	
+
 	/* get the info from the image */
 	p->info_get(file, &pw, &ph, &pfmt);
 	if (w) *w = pw;
@@ -57,13 +42,13 @@ void _provider_data_load(Emage_Provider *p, const char *file, Enesim_Surface **s
 	Enesim_Surface *stmp;
 	int w, h;
 	Enesim_Surface_Format sfmt;
-	
+
 	_provider_info_load(p, file, &w, &h, &sfmt);
 	if (*s)
 	{
 		int sw, sh;
 		Enesim_Surface_Format ssfmt;
-		
+
 		ssfmt = enesim_surface_format_get(*s);
 		enesim_surface_size_get(*s, &sw, &sh);
 		/* create a temporary surface */
@@ -102,7 +87,7 @@ Emage_Provider * _provider_get(const char *file)
 	/* iterate over the list of providers and check for a compatible loader */
 	for (tmp = _providers; tmp; tmp = eina_list_next(tmp))
 	{
-		p = eina_list_data(tmp);
+		p = eina_list_data_get(tmp);
 		/* TODO priority loaders */
 		/* check if the provider can load the image */
 		if (!p->loadable)
@@ -136,14 +121,14 @@ void * _thread_load(void *data)
 	return NULL;
 }
 /*============================================================================*
- *                                   API                                      * 
+ *                                   API                                      *
  *============================================================================*/
 /**
  * @brief To be documented.
  *
  * @param
  * @return
- * 
+ *
  * FIXME
  */
 EAPI int emage_init(void)
@@ -152,13 +137,14 @@ EAPI int emage_init(void)
 	{
 		eina_init();
 		/* the errors */
-		EMAGE_ERROR_EXIST = eina_error_register("Files does not exist");
-		EMAGE_ERROR_PROVIDER = eina_error_register("No provider for such file");
-		EMAGE_ERROR_FORMAT = eina_error_register("Wrong surface format");
-		EMAGE_ERROR_SIZE = eina_error_register("Size missmatch");
+		EMAGE_ERROR_EXIST = eina_error_msg_register("Files does not exist");
+		EMAGE_ERROR_PROVIDER = eina_error_msg_register("No provider for such file");
+		EMAGE_ERROR_FORMAT = eina_error_msg_register("Wrong surface format");
+		EMAGE_ERROR_SIZE = eina_error_msg_register("Size mismatch");
 		/* the modules */
-#if 0
-		_modules = eina_module_list_get(PACKAGE_LIB_DIR"/emage/", 1, _module_cb, NULL);
+#if 1
+		_modules = eina_module_list_get(_modules, PACKAGE_LIB_DIR"/emage/", 1, NULL, NULL);
+		eina_module_list_load(_modules);
 #else
 		png_provider_init();
 #endif
@@ -170,7 +156,7 @@ EAPI int emage_init(void)
 	return ++_init_count;
 }
 /**
- * 
+ *
  */
 EAPI void emage_shutdown(void)
 {
@@ -179,8 +165,8 @@ EAPI void emage_shutdown(void)
 	{
 		eina_shutdown();
 		/* unload every module */
-#if 0
-		eina_module_list_free(_modules);
+#if 1
+		eina_module_list_delete(_modules);
 #else
 		png_provider_exit();
 #endif
@@ -192,12 +178,12 @@ EAPI void emage_shutdown(void)
 	}
 }
 /**
- * 
+ *
  */
 EAPI Eina_Bool emage_info_load(const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
 {
 	Emage_Provider *prov;
-	
+
 	prov = _provider_get(file);
 	if (!prov)
 	{
@@ -208,12 +194,12 @@ EAPI Eina_Bool emage_info_load(const char *file, int *w, int *h, Enesim_Surface_
 	return EINA_TRUE;
 }
 /**
- * 
+ *
  */
-EAPI Eina_Bool emage_load(const char *file, Enesim_Surface **s)
+EAPI Eina_Bool emage_load(const char *file, Enesim_Surface **s, const char *options)
 {
 	Emage_Provider *prov;
-	
+
 	prov = _provider_get(file);
 	if (!prov)
 	{
@@ -224,13 +210,13 @@ EAPI Eina_Bool emage_load(const char *file, Enesim_Surface **s)
 	return EINA_TRUE;
 }
 /**
- * 
+ *
  */
-EAPI void emage_load_async(const char *file, Enesim_Surface **s, 
-		Emage_Load_Callback cb, void *data)
+EAPI void emage_load_async(const char *file, Enesim_Surface **s,
+		Emage_Load_Callback cb, void *data, const char *options)
 {
 	Emage_Job *j;
-	
+
 	j = malloc(sizeof(Emage_Job));
 	j->file = file;
 	j->cb = cb;
@@ -243,8 +229,8 @@ EAPI void emage_load_async(const char *file, Enesim_Surface **s,
 }
 /**
  * @brief Call every asynchronous callback set
- * 
- * 
+ *
+ *
  */
 EAPI void emage_dispatch(void)
 {
@@ -268,16 +254,16 @@ EAPI void emage_dispatch(void)
 	}
 }
 /**
- * 
+ *
  */
 EAPI Enesim_Surface * emage_save(const char *file)
 {
-	
+
 }
 /**
- * 
+ *
  */
-EAPI int emage_provider_register(Emage_Provider *p)
+EAPI Eina_Bool emage_provider_register(Emage_Provider *p)
 {
 	if (!p)
 		return EINA_FALSE;
@@ -303,7 +289,7 @@ err:
 	return EINA_FALSE;
 }
 /**
- * 
+ *
  */
 EAPI void emage_provider_unregister(Emage_Provider *p)
 {
@@ -313,22 +299,22 @@ EAPI void emage_provider_unregister(Emage_Provider *p)
 /**
  * @brief Sets the size of the thread's pool
  * @param num The number of threads
- * 
+ *
  * Sets the maximum number of threads Emage will create to dispatch asynchronous
- * calls. 
+ * calls.
  */
 EAPI void emage_pool_size_set(int num)
 {
-	
+
 }
 /**
  * @brief Gets the size of the thread's pool
- * 
+ *
  * @return The number of threads
  * Returns the maximum number threads of number Emage will create the dispatch
- * asynchronous calls. 
+ * asynchronous calls.
  */
 EAPI int emage_pool_size_get(void)
 {
-	
+
 }

@@ -1,6 +1,12 @@
+#include <stdio.h>
 #include <jpeglib.h>
 #include <setjmp.h>
 
+#include "Emage.h"
+
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
 typedef struct _JPEG_error_mgr *emptr;
 struct _JPEG_error_mgr
 {
@@ -11,22 +17,6 @@ struct _JPEG_error_mgr
 static void _JPEGFatalErrorHandler(j_common_ptr cinfo);
 static void _JPEGErrorHandler(j_common_ptr cinfo);
 static void _JPEGErrorHandler2(j_common_ptr cinfo, int msg_level);
-
-static int evas_image_load_file_head_jpeg_internal(Image_Entry *ie, FILE *f);
-static int evas_image_load_file_data_jpeg_internal(Image_Entry *ie, FILE *f);
-#if 0 /* not used at the moment */
-static int evas_image_load_file_data_jpeg_alpha_internal(Image_Entry *ie, FILE *f);
-#endif
-
-int evas_image_load_file_head_jpeg(Image_Entry *ie, const char *file, const char *key);
-int evas_image_load_file_data_jpeg(Image_Entry *ie, const char *file, const char *key);
-
-Evas_Image_Load_Func evas_image_load_jpeg_func =
-{
-  evas_image_load_file_head_jpeg,
-  evas_image_load_file_data_jpeg
-};
-
 
 static void
 _JPEGFatalErrorHandler(j_common_ptr cinfo)
@@ -378,55 +368,65 @@ evas_image_load_file_data_jpeg_alpha_internal(Image_Entry *ie, FILE *f)
    return 1;
 }
 #endif
-
-int
-evas_image_load_file_head_jpeg(Image_Entry *ie, const char *file, const char *key)
+/*============================================================================*
+ *                          Emage Provider API                                *
+ *============================================================================*/
+Eina_Bool _jpg_loadable(const char *file)
 {
-   int val;
-   FILE *f;
 
-   if ((!file)) return 0;
-   f = fopen(file, "rb");
-   if (!f) return 0;
-   val = evas_image_load_file_head_jpeg_internal(ie, f);
-   fclose(f);
-   return val;
-   key = 0;
 }
 
-int
-evas_image_load_file_data_jpeg(Image_Entry *ie, const char *file, const char *key)
+Eina_Bool _jpg_info_load(const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
 {
-   int val;
-   FILE *f;
+	int val;
+	FILE *f;
 
-   if ((!file)) return 0;
-   f = fopen(file, "rb");
-   if (!f) return 0;
-   val = evas_image_load_file_data_jpeg_internal(ie, f);
-   fclose(f);
-   return val;
-   key = 0;
+	if ((!file))
+		return 0;
+	f = fopen(file, "rb");
+	if (!f)
+		return 0;
+	val = evas_image_load_file_head_jpeg_internal(ie, f);
+	fclose(f);
+	return val;
+	key = 0;
 }
 
-EAPI int
-module_open(Evas_Module *em)
+Eina_Bool _jpg_load(const char *file, Enesim_Surface *s)
 {
-   if (!em) return 0;
-   em->functions = (void *)(&evas_image_load_jpeg_func);
-   return 1;
+	int val;
+	FILE *f;
+
+	if ((!file))
+		return 0;
+	f = fopen(file, "rb");
+	if (!f)
+		return 0;
+	val = evas_image_load_file_data_jpeg_internal(ie, f);
+	fclose(f);
+	return val;
+	key = 0;
 }
 
-EAPI void
-module_close(void)
-{
-   
-}
-
-EAPI Evas_Module_Api evas_modapi =
-{
-   EVAS_MODULE_API_VERSION,
-     EVAS_MODULE_TYPE_IMAGE_LOADER,
-     "jpeg",
-     "none"
+static Emage_Provider _provider = {
+	.name = "jpg",
+	.type = EMAGE_PROVIDER_SW,
+	.load = _jpg_load,
+	.info_get = _jpg_info_load,
+	.loadable = _jpg_loadable,
 };
+/*============================================================================*
+ *                             Module API                                     *
+ *============================================================================*/
+Eina_Bool jpg_provider_init(void)
+{
+	return emage_provider_register(&_provider);
+}
+
+void jpg_provider_shutdown(void)
+{
+	emage_provider_unregister(&_provider);
+}
+
+EINA_MODULE_INIT(jpg_provider_init);
+EINA_MODULE_SHUTDOWN(jpg_provider_shutdown);

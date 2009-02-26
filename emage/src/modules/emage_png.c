@@ -2,12 +2,17 @@
 
 #include "Emage.h"
 #include "png.h"
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
 /*
  * FIX ALL OF THIS
  */
 /* number to checks for magic png info */
 #define PNG_BYTES_TO_CHECK 4
-
+/*============================================================================*
+ *                          Emage Provider API                                *
+ *============================================================================*/
 Eina_Bool _png_loadable(const char *file)
 {
 	FILE *f;
@@ -173,7 +178,7 @@ Eina_Bool _png_load(const char *file, Enesim_Surface *s)
 	/* setup the pointers */
 	enesim_surface_data_get(s, &sdata);
 	for (i = 0; i < h32; i++)
-		lines[i] = ((unsigned char *)(sdata.argb8888_unpre.plane0)) + (i * w32
+		lines[i] = ((unsigned char *)(sdata.data.argb8888_unpre.plane0)) + (i * w32
 				* sizeof(uint32_t));
 	png_read_image(png_ptr, lines);
 	png_read_end(png_ptr, info_ptr);
@@ -311,13 +316,20 @@ static Emage_Provider _provider = {
 	.info_get = _png_info_load,
 	.loadable = _png_loadable,
 };
-
-int png_provider_init(void)
+/*============================================================================*
+ *                             Module API                                     *
+ *============================================================================*/
+Eina_Bool png_provider_init(void)
 {
 	return emage_provider_register(&_provider);
 }
 
-void png_provider_exit(void)
+void png_provider_shutdown(void)
 {
+	printf("shutdown\n");
 	emage_provider_unregister(&_provider);
 }
+
+EINA_MODULE_INIT(png_provider_init);
+EINA_MODULE_SHUTDOWN(png_provider_shutdown);
+
