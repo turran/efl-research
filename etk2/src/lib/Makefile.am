@@ -12,12 +12,15 @@ EXTRA_DIST =
 
 libetk2_la_SOURCES = \
 etk2_value.c \
+etk2_coord.c \
 etk2_main.c \
 etk2_engine.c \
 etk2_document.c \
 etk2_canvas.c \
 etk2_shape.c \
+etk2_square.c \
 etk2_rect.c \
+etk2_image.c \
 etk2_animation.c
 #
 #etk2_button.c

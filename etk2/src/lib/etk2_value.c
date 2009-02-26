@@ -26,7 +26,7 @@ void _coord_pointer_from(Ekeko_Value *v, Etk_Coord *val)
 	*cv = *val;
 }
 /* ptr = memory address to private->coord
- * v = value with pointre set
+ * v = value with pointer set
  */
 void _coord_pointer_to(Ekeko_Value *v, Etk_Coord *val)
 {
@@ -119,7 +119,42 @@ void _trigger_free(Etk_Trigger *t)
 	free(t);
 }
 
+/*                                 Matrix                                     *
+ *============================================================================*/
+void * _matrix_create(void)
+{
+	return malloc(sizeof(Enesim_Matrix));
+}
 
+void _matrix_pointer_from(Ekeko_Value *v, Enesim_Matrix *m)
+{
+	Enesim_Matrix *cv = v->value.pointer_value;
+
+	*cv = *m;
+}
+
+void _matrix_pointer_to(Ekeko_Value *v, Enesim_Matrix *m)
+{
+	Enesim_Matrix *cv = v->value.pointer_value;
+	*m = *cv;
+}
+
+
+Eina_Bool _matrix_cmp(Enesim_Matrix *a, Enesim_Matrix *b)
+{
+	if ((a->xx == b->xx) && (a->xy == b->xy) && (a->xz == b->xz) &&
+			(a->yx == b->yx) && (a->yy == b->yy) && (a->yz == b->yz) &&
+			(a->zx == b->zx) && (a->zy == b->zy) && (a->zz == b->zz))
+	{
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
+}
+
+void _matrix_free(Enesim_Matrix *m)
+{
+	free(m);
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -144,6 +179,12 @@ void etk_value_init(void)
 			EKEKO_VALUE_CMP(_trigger_cmp),
 			EKEKO_VALUE_POINTER_FROM(_trigger_pointer_from),
 			EKEKO_VALUE_POINTER_TO(_trigger_pointer_to));
+	ETK_PROPERTY_MATRIX = ekeko_value_register("Etk_Matrix",
+			EKEKO_VALUE_CREATE(_matrix_create),
+			EKEKO_VALUE_FREE(_matrix_free),
+			EKEKO_VALUE_CMP(_matrix_cmp),
+			EKEKO_VALUE_POINTER_FROM(_matrix_pointer_from),
+			EKEKO_VALUE_POINTER_TO(_matrix_pointer_to));
 }
 void etk_value_shutdown(void)
 {
@@ -155,3 +196,4 @@ void etk_value_shutdown(void)
 Ekeko_Value_Type ETK_PROPERTY_COORD;
 Ekeko_Value_Type ETK_PROPERTY_CLOCK;
 Ekeko_Value_Type ETK_PROPERTY_TRIGGER;
+Ekeko_Value_Type ETK_PROPERTY_MATRIX;

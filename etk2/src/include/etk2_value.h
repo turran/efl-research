@@ -11,6 +11,7 @@
 extern Ekeko_Value_Type ETK_PROPERTY_COORD;
 extern Ekeko_Value_Type ETK_PROPERTY_CLOCK;
 extern Ekeko_Value_Type ETK_PROPERTY_TRIGGER;
+extern Ekeko_Value_Type ETK_PROPERTY_MATRIX;
 
 typedef enum
 {
@@ -24,7 +25,6 @@ typedef struct _Etk_Coord
 	Etk_Coord_Type type;
 	int value;
 } Etk_Coord;
-
 
 typedef struct _Etk_Trigger
 {
@@ -44,13 +44,17 @@ typedef enum _Etk_Calc
 	ETK_CALC_DISCRETE,
 } Etk_Calc;
 
-/* TODO Normalize the below functions */
-static inline void etk_value_coord_from(Ekeko_Value *v, Etk_Coord *coord, int value, Etk_Coord_Type type)
+
+static inline void etk_value_coord_from(Ekeko_Value *v, Etk_Coord *coord)
 {
-	coord->value = value;
-	coord->type = type;
 	v->value.pointer_value = coord;
 	v->type = ETK_PROPERTY_COORD;
+}
+
+static inline void etk_value_matrix_from(Ekeko_Value *v, Enesim_Matrix *m)
+{
+	v->value.pointer_value = m;
+	v->type = ETK_PROPERTY_MATRIX;
 }
 
 static inline void etk_value_clock_from(Ekeko_Value *v, Etk_Clock *clock)

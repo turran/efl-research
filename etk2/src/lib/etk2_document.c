@@ -140,6 +140,8 @@ Etch * etk_document_etch_get(Etk_Document *d)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Property_Id ETK_DOCUMENT_SIZE;
+
 Ekeko_Type *etk_document_type_get(void)
 {
 	static Ekeko_Type *type = NULL;
@@ -150,7 +152,7 @@ Ekeko_Type *etk_document_type_get(void)
 				sizeof(Etk_Document_Private), ekeko_object_type_get(), _ctor,
 				_dtor, _appendable);
 		TYPE_PROP_SINGLE_ADD(type, "engine", PROPERTY_STRING, OFFSET(Etk_Document_Private, engine.func));
-		TYPE_PROP_SINGLE_ADD(type, "size", PROPERTY_RECTANGLE, OFFSET(Etk_Document_Private, size));
+		ETK_DOCUMENT_SIZE = TYPE_PROP_SINGLE_ADD(type, "size", PROPERTY_RECTANGLE, OFFSET(Etk_Document_Private, size));
 	}
 
 	return type;

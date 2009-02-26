@@ -13,6 +13,7 @@
 static void _rect(void *surface, void *context, int x, int y, int w, int h)
 {
 	SDL_Rect rect;
+	Enesim_Context *ctx = context;
 
 #ifdef ETK2_DEBUG
 	printf("RENDERING A RECTANGLE at %d %d %d %d\n", x, y, w, h);
@@ -21,7 +22,7 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	rect.y = y;
 	rect.w = w;
 	rect.h = h;
-	SDL_FillRect(surface, &rect, 0xff * rect.x + 0xffff);
+	SDL_FillRect(surface, &rect, enesim_context_color_get(ctx));
 }
 /*============================================================================*
  *                                 Global                                     *

@@ -16,7 +16,62 @@ struct _Etk_Shape_Private
 {
 	void *context;
 	int color;
+	int rop;
 };
+
+/* Render wrapper */
+static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
+{
+	Etk_Shape *s;
+	Etk_Shape_Private *prv;
+	Etk_Document *d;
+	Etk_Canvas *c;
+	Etk_Engine *func;
+	Etk_Surface *surface;
+
+	s = (Etk_Shape *)r;
+	prv = PRIVATE(s);
+	c = (Etk_Canvas *)ekeko_renderable_canvas_get(r);
+	d = etk_canvas_document_get(c);
+	func = etk_document_engine_get(d);
+	surface = etk_canvas_surface_get(c);
+	/* TODO context clip set */
+	func->canvas->lock(surface);
+	/* Call the shape's render function */
+	s->render(s, func, surface, prv->context);
+	func->canvas->unlock(surface);
+	/* TODO context clear */
+}
+
+static void _prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
+{
+	Ekeko_Object *parent;
+	Event_Mutation *em = (Event_Mutation *)e;
+	Etk_Shape *s = (Etk_Shape *)o;
+	Etk_Document *d;
+	Etk_Shape_Private *prv;
+
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
+	if (!strcmp(em->prop, "color"))
+	{
+		Etk_Engine *func;
+
+		d = etk_canvas_document_get((Etk_Canvas *)parent);
+		func = etk_document_engine_get(d);
+		prv = PRIVATE(s);
+		func->context->color_set(prv->context, em->curr->value.int_value);
+	}
+	else if (!strcmp(em->prop, "rop"))
+	{
+		Etk_Engine *func;
+
+		d = etk_canvas_document_get((Etk_Canvas *)parent);
+		func = etk_document_engine_get(d);
+		prv = PRIVATE(s);
+		func->context->rop_set(prv->context, em->curr->value.int_value);
+	}
+}
 
 static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 {
@@ -33,6 +88,7 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 	s = (Etk_Shape *)o;
 	prv = PRIVATE(s);
 	prv->context = func->context->create();
+	/* TODO set the color, the rop, etc */
 }
 
 static void _ctor(void *instance)
@@ -42,7 +98,9 @@ static void _ctor(void *instance)
 
 	s = (Etk_Shape*) instance;
 	s->private = prv = ekeko_type_instance_private_get(etk_shape_type_get(), instance);
+	s->parent.render = _render;
 	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *shape)
@@ -76,6 +134,7 @@ EAPI Ekeko_Type *etk_shape_type_get(void)
 				sizeof(Etk_Shape_Private), ekeko_renderable_type_get(),
 				_ctor, _dtor, NULL);
 		TYPE_PROP_SINGLE_ADD(type, "color", PROPERTY_INT, OFFSET(Etk_Shape_Private, color));
+		TYPE_PROP_SINGLE_ADD(type, "rop", PROPERTY_INT, OFFSET(Etk_Shape_Private, rop));
 	}
 
 	return type;
@@ -87,4 +146,12 @@ EAPI void etk_shape_color_set(Etk_Shape *s, int color)
 
 	ekeko_value_int_from(&v, color);
 	ekeko_object_property_value_set((Ekeko_Object *)s, "color", &v);
+}
+
+EAPI void etk_shape_rop_set(Etk_Shape *s, int rop)
+{
+	Ekeko_Value v;
+
+	ekeko_value_int_from(&v, rop);
+	ekeko_object_property_value_set((Ekeko_Object *)s, "rop", &v);
 }

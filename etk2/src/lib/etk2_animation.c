@@ -50,7 +50,8 @@ static void _animation_coord_callback(const Etch_Data *curr, const Etch_Data *pr
 #ifdef ETK_DEBUG
 	printf("[Etk_Animation] Animation %p %p called %d -> %d\n", a, v.value.pointer_value, prev->data.i32, curr->data.i32);
 #endif
-	etk_value_coord_from(&v, &coord, curr->data.i32, ((Etk_Coord *)v.value.pointer_value)->type);
+	etk_coord_set(&coord, curr->data.i32, ((Etk_Coord *)v.value.pointer_value)->type);
+	etk_value_coord_from(&v, &coord);
 	ekeko_object_property_value_set(rel, prv->name, &v);
 }
 

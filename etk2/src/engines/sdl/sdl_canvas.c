@@ -10,46 +10,19 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#if 0
-/
+#define SINGLE_BUFFER
 
-/* render */
-Eina_Rectangle sgeom, rscaled;
-SDL_Rect srect, drect;
-Etk_Canvas *dc;
-Etk_Canvas_Private *sprv, *cprv;
-
-sprv = PRIVATE(r);
-dc = (Etk_Canvas *)ekeko_renderable_canvas_get(r);
-cprv = PRIVATE(dc);
-
-/* blt there */
-ekeko_renderable_geometry_get(r, &sgeom);
-eina_rectangle_rescale_in(&sgeom, rect, &rscaled);
-
-srect.x = rscaled.x;
-srect.y = rscaled.y;
-srect.w = rscaled.w;
-srect.h = rscaled.h;
-
-drect.x = rect->x;
-drect.y = rect->y;
-drect.w = rect->w;
-drect.h = rect->h;
-
-
-/* canvas flip */
-
-
-#endif
-
-void * _create(Eina_Bool root, int w, int h)
+static void * _create(Eina_Bool root, int w, int h)
 {
 	if (root)
 	{
 		printf("[SDL] Setting video mode to %d %d\n", w, h);
+#ifdef SINGLE_BUFFER
+		return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA);
+#else
 		return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA |
 				SDL_DOUBLEBUF);
+#endif
 	}
 	else
 	{
@@ -60,7 +33,21 @@ void * _create(Eina_Bool root, int w, int h)
 	}
 }
 
-void _blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rectangle *drect)
+static void _lock(void *s)
+{
+	SDL_Surface *src = s;
+
+	SDL_LockSurface(src);
+}
+
+static void _unlock(void *s)
+{
+	SDL_Surface *src = s;
+
+	SDL_UnlockSurface(src);
+}
+
+static void _blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rectangle *drect)
 {
 	SDL_Rect ssrect, sdrect;
 
@@ -74,21 +61,104 @@ void _blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rect
 	sdrect.w = drect->w;
 	sdrect.h = drect->h;
 
-#ifdef ETK2_DEBUG
-	printf("[SDL] rendering into %p from %d %d %d %d to %d %d %d %d\n",
-			dst, srect->x, srect->y, srect->w, srect->h,
+#ifndef ETK2_DEBUG
+	printf("[SDL] rendering into %p from %p (%d %d %d %d to %d %d %d %d)\n",
+			dst, src, srect->x, srect->y, srect->w, srect->h,
 			drect->x, drect->y, drect->w, drect->h);
 #endif
 	SDL_BlitSurface(src, &ssrect, dst, &sdrect);
 }
 
-Eina_Bool _flush(void *src, Eina_Rectangle *srect)
+static Eina_Bool _flush(void *src, Eina_Rectangle *srect)
 {
+	SDL_Surface *s = src;
+
 #ifdef ETK2_DEBUG
-	printf("[SDL] Flushing surface\n");
+	printf("[SDL] Flushing surface %p\n", s);
 #endif
-	SDL_Flip(src);
+#ifdef SINGLE_BUFFER
+	SDL_UpdateRect(s, srect->x, srect->y, srect->w, srect->h);
+	return EINA_FALSE;
+#else
+	SDL_Flip(s);
 	return EINA_TRUE;
+#endif
+
+}
+
+static void * _enesim_create(Eina_Bool root, int w, int h)
+{
+	SDL_Surface *s;
+	Enesim_Surface *es;
+	Enesim_Surface_Data sdata;
+
+	s = _create(root, w, h);
+	if (!root)
+	{
+		/* FIXME SDL is UNPRE */
+		sdata.format= ENESIM_SURFACE_ARGB8888;
+		sdata.data.argb8888.plane0 = s->pixels;
+		es = enesim_surface_new_data_from(w, h, &sdata);
+		enesim_surface_private_set(es, s);
+	}
+	else
+	{
+		Enesim_Surface *root;
+
+		/* the backbuffer */
+		es = enesim_surface_new(ENESIM_SURFACE_ARGB8888, w, h);
+		/* FIXME SDL is UNPRE */
+		sdata.format= ENESIM_SURFACE_ARGB8888_UNPRE;
+		sdata.data.argb8888.plane0 = s->pixels;
+		root = enesim_surface_new_data_from(w, h, &sdata);
+		enesim_surface_private_set(root, s);
+		enesim_surface_private_set(es, root);
+	}
+
+
+	return es;
+}
+
+
+static void _enesim_blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rectangle *drect)
+{
+	Enesim_Surface *s = src;
+	Enesim_Surface *d = dst;
+	Enesim_Matrix m;
+
+	/* TODO use enesim to blit the surface, we can do any fancy thing here!!!! */
+	//enesim_context_color_set(context, 0xffffffff);
+	//enesim_matrix_rotate(&m, 1.45);
+	//enesim_context_matrix_set(context, &m);
+	enesim_image_draw(d, context, drect, s, srect);
+}
+
+static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
+{
+	Enesim_Surface *es = src;
+	Enesim_Surface *root;
+	SDL_Surface *s;
+
+	root = enesim_surface_private_get(es);
+	s = enesim_surface_private_get(root);
+	enesim_surface_convert(es, root);
+	return _flush(s, srect);
+}
+
+static void _enesim_lock(void *src)
+{
+	Enesim_Surface *es = src;
+
+	/* FIXME here we can have a SDL_Surface or an Enesim_Surface */
+	_lock(enesim_surface_private_get(es));
+}
+
+static void _enesim_unlock(void *src)
+{
+	Enesim_Surface *es = src;
+
+	/* FIXME here we can have a SDL_Surface or an Enesim_Surface */
+	_unlock(enesim_surface_private_get(es));
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -97,6 +167,16 @@ Etk_Canvas_Engine etk_canvas_engine_sdl = {
 	.create = _create,
 	.blit = _blit,
 	.flush = _flush,
+	.lock = _lock,
+	.unlock = _unlock,
+};
+
+Etk_Canvas_Engine etk_canvas_engine_sdl_enesim = {
+	.create = _enesim_create,
+	.blit = _enesim_blit,
+	.flush = _enesim_flush,
+	.lock = _enesim_lock,
+	.unlock = _enesim_unlock,
 };
 /*============================================================================*
  *                                   API                                      *

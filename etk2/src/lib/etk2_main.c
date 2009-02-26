@@ -9,7 +9,14 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+static Ecore_Idle_Enterer *_idler = NULL;
 static int _count = 0;
+
+static int _emage_idler_cb(void *data)
+{
+	emage_dispatch();
+	return 1;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -22,8 +29,11 @@ EAPI int etk_init(void)
 		eina_init();
 		ecore_init();
 		ekeko_init();
+		emage_init();
 		etk_value_init();
 		etk_engine_init();
+		/* create the Emage idler */
+		_idler = ecore_idle_enterer_add(_emage_idler_cb, NULL);
 done:
 	return ++_count;
 }
@@ -31,8 +41,10 @@ done:
 EAPI int etk_shutdown(void)
 {
 	if (_count != 1) goto done;
+		ecore_idle_enterer_del(_idler);
 		etk_engine_shutdown();
 		etk_value_shutdown();
+		emage_shutdown();
 		ekeko_shutdown();
 		ecore_shutdown();
 		eina_shutdown();
