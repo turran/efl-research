@@ -18,7 +18,7 @@ struct _Etk_Canvas_Private
 	 * looks that child objects with relative coordinates use the geometry
 	 */
 	Enesim_Matrix matrix; /* user matrix S -> D */
-	Enesim_Matrix inverse; /* inverse matrix D -> S*/
+	Enesim_Matrix inverse; /* inverse matrix D -> S*/ /* FIXME do we actually need this? */
 
 	/* track parent canvas, if parent canvas == NULL then this is the
 	 * main canvas and we should treat it differently
@@ -45,11 +45,6 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	c = (Etk_Canvas *)ekeko_renderable_canvas_get(r);
 	cprv = PRIVATE(c);
 
-	ekeko_renderable_geometry_get(r, &sgeom);
-	eina_rectangle_rescale_in(&sgeom, rect, &srect);
-#ifndef ETK_DEBUG
-	printf("[Etk_Canvas] Subcanvas render %d %d %d %d (%d %d %d %d)\n", srect.x, srect.y, srect.w, srect.h, rect->x, rect->y, rect->w, rect->h);
-#endif
 	func = etk_document_engine_get(sprv->doc);
 #ifdef BOUNDING_DEBUG
 	{
@@ -64,31 +59,19 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 		func->context->delete(ctx);
 	}
 #endif
-	/* blt there */
 	{
 		Enesim_Quad q;
 
-		/* FIXME what to do in case the canvas has some transformation applied? */
-		/* transform the rectangle too? */
 		/* get the largest rectangle that fits on the matrix */
 		enesim_matrix_rect_transform(&sprv->inverse, &sgeom, &q);
 		enesim_quad_rectangle_to(&q, &srect);
-		//ekeko_renderable_geometry_get(r, &sgeom);
-		//eina_rectangle_rescale_in(&sgeom, &srect, &srect);
-		//enesim_matrix_rect_transform(&sprv->matrix, rect, &q);
-		//enesim_quad_rectangle_to(&q, rect);
 	}
-
-#ifndef ETK_DEBUG
-	/* easy check to see if the transformation is working */
-	rect->x = 0;
-	rect->y = 72; // 0, 72
-	rect->w = 105;
-	rect->h = 72; // 143, 72
-	printf("[ETK_Canvas] Blitting subcanvas %d,%d %dx%d %d,%d %dx%d\n",
-			srect.x, srect.y, srect.w, srect.h,
-			//0, 0, sprv->w.final, sprv->h.final,
-			rect->x, rect->y, rect->w, rect->h);
+	srect.x = srect.y = -1;
+	srect.w = 1 + sprv->w.final;
+	srect.h = 1 + sprv->h.final;
+	/* blt there */
+#ifdef ETK_DEBUG
+	printf("[Etk_Canvas] Subcanvas render %d %d %d %d (%d %d %d %d)\n", srect.x, srect.y, srect.w, srect.h, rect->x, rect->y, rect->w, rect->h);
 #endif
 	func->canvas->blit(sprv->s, &srect, sprv->context, cprv->s, rect);
 }

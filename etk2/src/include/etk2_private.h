@@ -52,12 +52,13 @@ typedef struct _Etk_Context_Engine
 	void (*color_set)(void *context, int color); /* FIXME change this int */
 	void (*rop_set)(void *context, int rop); /* FIXME change this int */
 	void (*matrix_set)(void *c, Enesim_Matrix *m);
-
+	void (*clip_set)(void *c, Eina_Rectangle *r);
 } Etk_Context_Engine;
 
 typedef struct _Etk_Shape_Engine
 {
 	void (*rect)(void *surface, void *context, int x, int y, int w, int h);
+	void (*image)(void *surface, void *context, Enesim_Surface *s, Eina_Rectangle *srect);
 } Etk_Shape_Engine;
 
 struct _Etk_Engine

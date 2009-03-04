@@ -61,7 +61,7 @@ static void _blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Ei
 	sdrect.w = drect->w;
 	sdrect.h = drect->h;
 
-#ifndef ETK2_DEBUG
+#ifdef ETK2_DEBUG
 	printf("[SDL] rendering into %p from %p (%d %d %d %d to %d %d %d %d)\n",
 			dst, src, srect->x, srect->y, srect->w, srect->h,
 			drect->x, drect->y, drect->w, drect->h);
@@ -126,11 +126,9 @@ static void _enesim_blit(void *src, Eina_Rectangle *srect, void *context, void *
 	Enesim_Surface *d = dst;
 	Enesim_Matrix m;
 
-	/* TODO use enesim to blit the surface, we can do any fancy thing here!!!! */
-	//enesim_context_color_set(context, 0xffffffff);
-	//enesim_matrix_rotate(&m, 1.45);
-	//enesim_context_matrix_set(context, &m);
-	enesim_image_draw(d, context, drect, s, srect);
+	/* FIXME fix this */
+	enesim_context_clip_set(context, drect);
+	enesim_image_draw(d, context, s, srect);
 }
 
 static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
@@ -141,7 +139,7 @@ static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
 
 	root = enesim_surface_private_get(es);
 	s = enesim_surface_private_get(root);
-	enesim_surface_convert(es, root);
+	enesim_surface_convert(es, root, srect);
 	return _flush(s, srect);
 }
 

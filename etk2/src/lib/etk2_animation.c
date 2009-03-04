@@ -6,6 +6,8 @@
  */
 #include "Etk2.h"
 #include "etk2_private.h"
+
+#define ETK_ANIMATION_DEBUG 0
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -42,16 +44,28 @@ static void _animation_coord_callback(const Etch_Data *curr, const Etch_Data *pr
 	Etk_Coord coord;
 	Ekeko_Value v;
 
-#ifdef ETK_DEBUG
+#if ETK_ANIMATION_DEBUG
 	printf("[Etk_Animation] Entering animation callback\n");
 #endif
 	rel = ekeko_object_parent_get((Ekeko_Object *)a);
 	ekeko_object_property_value_get(rel, prv->name, &v);
-#ifdef ETK_DEBUG
+#if ETK_ANIMATION_DEBUG
 	printf("[Etk_Animation] Animation %p %p called %d -> %d\n", a, v.value.pointer_value, prev->data.i32, curr->data.i32);
 #endif
 	etk_coord_set(&coord, curr->data.i32, ((Etk_Coord *)v.value.pointer_value)->type);
 	etk_value_coord_from(&v, &coord);
+	ekeko_object_property_value_set(rel, prv->name, &v);
+}
+
+static void _animation_color_callback(const Etch_Data *curr, const Etch_Data *prev, void *data)
+{
+	Etk_Animation *a = data;
+	Ekeko_Object *rel;
+	Etk_Animation_Private *prv = PRIVATE(a);
+	Ekeko_Value v;
+
+	rel = ekeko_object_parent_get((Ekeko_Object *)a);
+	etk_value_color_from(&v, curr->data.argb);
 	ekeko_object_property_value_set(rel, prv->name, &v);
 }
 
@@ -68,7 +82,9 @@ static inline Etch_Animation_Type _calc_to_etch(Etk_Calc c)
 		break;
 
 		default:
+#if ETK_ANIMATION_DEBUG
 		printf("ERRRRRRRRRRRRRRORRRRRRR\n");
+#endif
 		break;
 	}
 	return ETCH_ANIMATION_LINEAR;
@@ -103,11 +119,22 @@ static inline void _value_set(Etk_Animation *a, Ekeko_Value *v, Etch_Animation_K
 		Etk_Coord *c = v->value.pointer_value;
 
 		etch_animation_keyframe_value_set(k, c->value);
-		printf("[Etk_Animation] Setting value to %d\n", c->value);
+#if !ETK_ANIMATION_DEBUG
+		printf("[Etk_Animation] Setting coord to %d\n", c->value);
+#endif
+	}
+	else if (v->type == ETK_PROPERTY_COLOR)
+	{
+		Etk_Color c = v->value.int_value;
+
+		etch_animation_keyframe_value_set(k, c);
+		printf("[Etk_Animation] Setting color to %08x\n", c);
 	}
 	else
 	{
+#if ETK_ANIMATION_DEBUG
 		printf("ERRRRRRRRRRRRRROOOOOOOOORRRRRR setting wrong animation value %d\n", v->type);
+#endif
 	}
 }
 
@@ -142,7 +169,9 @@ static inline void _duration_set(Etk_Animation *a)
 	if (!count)
 		return;
 	clock = &prv->dur;
+#if ETK_ANIMATION_DEBUG
 	printf("[Etk_Animation] Setting new clock to %d %d\n", clock->seconds, clock->micro);
+#endif
 	/* for each keyframe set the new time */
 	it = etch_animation_iterator_get(prv->anim);
 	while (eina_iterator_next(it, (void **)&k))
@@ -174,9 +203,12 @@ static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
 	doc = _document_get(parent);
 	etch = etk_document_etch_get(doc);
 	vtype = ekeko_property_value_type_get(p);
+#if ETK_ANIMATION_DEBUG
 	printf("[Etk_Animation] Trying to animate property %s of type %d\n", prv->name, vtype);
+#endif
 	switch (vtype)
 	{
+		/* basic types */
 		case PROPERTY_INT:
 		dtype = ETCH_INT32;
 		break;
@@ -186,6 +218,12 @@ static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
 		{
 			dtype = ETCH_UINT32;
 			cb = _animation_coord_callback;
+		}
+		else if (vtype == ETK_PROPERTY_COLOR)
+		{
+
+			dtype = ETCH_ARGB;
+			cb = _animation_color_callback;
 		}
 		break;
 	}
@@ -225,103 +263,154 @@ static void _trigger_cb(const Ekeko_Object *o, Event *e, void *data)
 	}
 }
 
-static void _prop_modify_cb(const Ekeko_Object *o, Event *e, void *data)
+static void _prop_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Etk_Animation *a = (Etk_Animation *)o;
+	Ekeko_Object *parent;
+
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
+	_property_animate(a, parent);
+}
+
+static void _dur_change(const Ekeko_Object *o, Event *e, void *data)
 {
 	Ekeko_Object *parent;
-	Event_Mutation *em = (Event_Mutation *)e;
-	Etk_Animation *a = (Etk_Animation *)o;
+	Etk_Animation_Private *prv = PRIVATE(o);
 
 	if (!(parent = ekeko_object_parent_get(o)))
 		return;
 
-	if (!strcmp(em->prop, "name"))
-	{
-		_property_animate(a, parent);
-	}
-	else if (!strcmp(em->prop, "dur"))
-	{
-		Etk_Animation_Private *prv = PRIVATE(o);
+	if (!prv->anim)
+		return;
+	_duration_set((Etk_Animation *)o);
+}
 
-		if (!prv->anim)
-			return;
-		_duration_set((Etk_Animation *)o);
-	}
-	else if (!strcmp(em->prop, "repeat"))
-	{
-		Etk_Animation_Private *prv = PRIVATE(o);
+static void _from_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Etk_Animation *a = (Etk_Animation *)o;
+	Etk_Animation_Private *prv = PRIVATE(o);
+	Ekeko_Object *parent;
 
-		if (prv->anim)
-			etch_animation_repeat_set(prv->anim, em->curr->value.int_value);
-	}
-	else if (!strcmp(em->prop, "calc"))
-	{
-		Eina_Iterator *it;
-		Etk_Animation_Private *prv = PRIVATE(o);
-		Etch_Animation_Type atype;
-		Etch_Animation_Keyframe *k;
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
 
-		if (!prv->anim)
-			return;
-		atype = _calc_to_etch(em->curr->value.int_value);
-		/* for each keyframe set the calc mode to calc */
-		it = etch_animation_iterator_get(prv->anim);
-		while (eina_iterator_next(it, (void **)&k))
-		{
-			etch_animation_keyframe_type_set(k, atype);
-		}
-		eina_iterator_free(it);
-	}
-	else if (!strcmp(em->prop, "begin"))
-	{
-		Etk_Animation_Private *prv = PRIVATE(o);
-		Etk_Trigger *t;
+	if (!prv->anim)
+		return;
+	/* FIXME it is using the curent value! */
+	_from_set(a);
+}
 
-		/* TODO  we should have a default event that will trigger
-		 * the animation start
-		 */
+static void _to_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Etk_Animation *a = (Etk_Animation *)o;
+	Etk_Animation_Private *prv = PRIVATE(o);
+	Ekeko_Object *parent;
 
-		/* register an event listener to this event */
-		t = em->curr->value.pointer_value;
-		if (!prv->end.obj)
-		{
-			/* FIXME change that is not the same! */
-			ekeko_event_listener_add(t->obj, t->event, _trigger_cb, EINA_FALSE, o);
-		}
-		if (!prv->anim)
-			return;
-		/* disable the animation */
-		etch_animation_disable(prv->anim);
-	}
-	else if (!strcmp(em->prop, "end"))
-	{
-		Etk_Animation_Private *prv = PRIVATE(o);
-		Etk_Trigger *t;
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
 
-		/* register an event listener to this event */
-		t = em->curr->value.pointer_value;
-		if (!prv->begin.obj)
-		{
-			/* FIXME change that is not the same! */
-			ekeko_event_listener_add(t->obj, t->event, _trigger_cb, EINA_FALSE, o);
-		}
-	}
-	else if (!strcmp(em->prop, "from"))
+	if (!prv->anim)
+		return;
+	/* FIXME it is using the curent value! */
+#if 0
 	{
-		Etk_Animation_Private *prv = PRIVATE(o);
-		printf("%d\n", ((Etk_Coord *)em->curr->value.pointer_value)->value);
-		if (!prv->anim)
-			return;
-		_from_set(a);
+		Event_Mutation *em = (Event_Mutation *)e;
+		Etk_Coord *c = em->curr->value.pointer_value;
+		printf("TYPE = %d %d\n", em->curr->type, c->value);
+		c = em->prev->value.pointer_value;
+		printf("PREV = %d\n", c->value);
+		c = prv->to.value.value.pointer_value;
+		printf("IN = %d\n", c->value);
 	}
-	else if (!strcmp(em->prop, "to"))
-	{
-		Etk_Animation_Private *prv = PRIVATE(o);
+#endif
+	_to_set(a);
+}
 
-		printf("%d\n", ((Etk_Coord *)em->curr->value.pointer_value)->value);
-		if (!prv->anim)
-			return;
-		_to_set(a);
+static void _begin_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Etk_Animation_Private *prv = PRIVATE(o);
+	Etk_Trigger *t;
+	Ekeko_Object *parent;
+
+	/* TODO  we should have a default event that will trigger
+	 * the animation start
+	 */
+
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
+
+	/* register an event listener to this event */
+	t = em->curr->value.pointer_value;
+	if (!prv->end.obj)
+	{
+		/* FIXME change that is not the same! */
+		ekeko_event_listener_add(t->obj, t->event, _trigger_cb, EINA_FALSE, o);
 	}
+	if (!prv->anim)
+		return;
+	/* disable the animation */
+	etch_animation_disable(prv->anim);
+
+}
+
+static void _end_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Etk_Animation_Private *prv = PRIVATE(o);
+	Etk_Trigger *t;
+	Ekeko_Object *parent;
+
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
+
+	/* register an event listener to this event */
+	t = em->curr->value.pointer_value;
+	if (!prv->begin.obj)
+	{
+		/* FIXME change that is not the same! */
+		ekeko_event_listener_add(t->obj, t->event, _trigger_cb, EINA_FALSE, o);
+	}
+
+}
+
+static void _repeat_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Etk_Animation_Private *prv = PRIVATE(o);
+	Ekeko_Object *parent;
+
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
+
+	if (prv->anim)
+		etch_animation_repeat_set(prv->anim, em->curr->value.int_value);
+}
+
+static void _calc_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Object *parent;
+	Eina_Iterator *it;
+	Etk_Animation_Private *prv = PRIVATE(o);
+	Etch_Animation_Type atype;
+	Etch_Animation_Keyframe *k;
+
+
+	if (!(parent = ekeko_object_parent_get(o)))
+		return;
+
+	if (!prv->anim)
+		return;
+	atype = _calc_to_etch(em->curr->value.int_value);
+	/* for each keyframe set the calc mode to calc */
+	it = etch_animation_iterator_get(prv->anim);
+	while (eina_iterator_next(it, (void **)&k))
+	{
+		etch_animation_keyframe_type_set(k, atype);
+	}
+	eina_iterator_free(it);
 }
 
 static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
@@ -345,7 +434,14 @@ static void _ctor(void *instance)
 	/* default values */
 	prv->repeat = 1;
 	ekeko_event_listener_add((Ekeko_Object *)a, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)a, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_END_CHANGED, _end_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_BEGIN_CHANGED, _begin_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_PROPERTY_CHANGED, _prop_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_DURATION_CHANGED, _dur_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_REPEAT_CHANGED, _repeat_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_FROM_CHANGED, _from_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_TO_CHANGED, _to_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, ETK_ANIMATION_CALC_CHANGED, _calc_change, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *rect)
@@ -359,6 +455,15 @@ static void _dtor(void *rect)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Property_Id ETK_ANIMATION_END;
+Property_Id ETK_ANIMATION_BEGIN;
+Property_Id ETK_ANIMATION_PROPERTY;
+Property_Id ETK_ANIMATION_DURATION;
+Property_Id ETK_ANIMATION_REPEAT;
+Property_Id ETK_ANIMATION_FROM;
+Property_Id ETK_ANIMATION_TO;
+Property_Id ETK_ANIMATION_CALC;
+
 EAPI Ekeko_Type *etk_animation_type_get(void)
 {
 	static Ekeko_Type *type = NULL;
@@ -368,13 +473,13 @@ EAPI Ekeko_Type *etk_animation_type_get(void)
 		type = ekeko_type_new(ETK_TYPE_ANIMATION, sizeof(Etk_Animation),
 				sizeof(Etk_Animation_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
-		TYPE_PROP_SINGLE_ADD(type, "name", PROPERTY_STRING, OFFSET(Etk_Animation_Private, name));
-		TYPE_PROP_SINGLE_ADD(type, "dur", ETK_PROPERTY_CLOCK, OFFSET(Etk_Animation_Private, dur));
-		TYPE_PROP_SINGLE_ADD(type, "repeat", PROPERTY_INT, OFFSET(Etk_Animation_Private, repeat));
-		TYPE_PROP_SINGLE_ADD(type, "calc", PROPERTY_INT, OFFSET(Etk_Animation_Private, calc));
-		TYPE_PROP_SINGLE_ADD(type, "begin", ETK_PROPERTY_TRIGGER, OFFSET(Etk_Animation_Private, begin));
-		TYPE_PROP_SINGLE_ADD(type, "from", PROPERTY_VALUE, OFFSET(Etk_Animation_Private, from.value));
-		TYPE_PROP_SINGLE_ADD(type, "to", PROPERTY_VALUE, OFFSET(Etk_Animation_Private, to.value));
+		ETK_ANIMATION_PROPERTY = TYPE_PROP_SINGLE_ADD(type, "name", PROPERTY_STRING, OFFSET(Etk_Animation_Private, name));
+		ETK_ANIMATION_DURATION= TYPE_PROP_SINGLE_ADD(type, "dur", ETK_PROPERTY_CLOCK, OFFSET(Etk_Animation_Private, dur));
+		ETK_ANIMATION_REPEAT = TYPE_PROP_SINGLE_ADD(type, "repeat", PROPERTY_INT, OFFSET(Etk_Animation_Private, repeat));
+		ETK_ANIMATION_CALC = TYPE_PROP_SINGLE_ADD(type, "calc", PROPERTY_INT, OFFSET(Etk_Animation_Private, calc));
+		ETK_ANIMATION_BEGIN = TYPE_PROP_SINGLE_ADD(type, "begin", ETK_PROPERTY_TRIGGER, OFFSET(Etk_Animation_Private, begin));
+		ETK_ANIMATION_FROM = TYPE_PROP_SINGLE_ADD(type, "from", PROPERTY_VALUE, OFFSET(Etk_Animation_Private, from.value));
+		ETK_ANIMATION_TO = TYPE_PROP_SINGLE_ADD(type, "to", PROPERTY_VALUE, OFFSET(Etk_Animation_Private, to.value));
 	}
 
 	return type;

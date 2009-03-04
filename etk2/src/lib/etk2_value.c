@@ -155,6 +155,37 @@ void _matrix_free(Enesim_Matrix *m)
 {
 	free(m);
 }
+
+/*                                  Color                                     *
+ *============================================================================*/
+void * _color_create(void)
+{
+	return NULL;
+}
+
+void _color_pointer_from(Ekeko_Value *v, Etk_Color *c)
+{
+	v->value.int_value = *c;
+}
+
+void _color_pointer_to(Ekeko_Value *v, Etk_Color *c)
+{
+	*c = v->value.int_value;
+}
+
+Eina_Bool _color_cmp(Etk_Color *a, Etk_Color *b)
+{
+	if (*a == *b)
+		return EINA_FALSE;
+	else
+		return EINA_TRUE;
+}
+
+void _color_free(Etk_Color *c)
+{
+
+}
+
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -185,6 +216,12 @@ void etk_value_init(void)
 			EKEKO_VALUE_CMP(_matrix_cmp),
 			EKEKO_VALUE_POINTER_FROM(_matrix_pointer_from),
 			EKEKO_VALUE_POINTER_TO(_matrix_pointer_to));
+	ETK_PROPERTY_COLOR = ekeko_value_register("Etk_Color",
+			EKEKO_VALUE_CREATE(_color_create),
+			EKEKO_VALUE_FREE(_color_free),
+			EKEKO_VALUE_CMP(_color_cmp),
+			EKEKO_VALUE_POINTER_FROM(_color_pointer_from),
+			EKEKO_VALUE_POINTER_TO(_color_pointer_to));
 }
 void etk_value_shutdown(void)
 {
@@ -197,3 +234,4 @@ Ekeko_Value_Type ETK_PROPERTY_COORD;
 Ekeko_Value_Type ETK_PROPERTY_CLOCK;
 Ekeko_Value_Type ETK_PROPERTY_TRIGGER;
 Ekeko_Value_Type ETK_PROPERTY_MATRIX;
+Ekeko_Value_Type ETK_PROPERTY_COLOR;

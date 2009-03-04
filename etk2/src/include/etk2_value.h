@@ -12,6 +12,9 @@ extern Ekeko_Value_Type ETK_PROPERTY_COORD;
 extern Ekeko_Value_Type ETK_PROPERTY_CLOCK;
 extern Ekeko_Value_Type ETK_PROPERTY_TRIGGER;
 extern Ekeko_Value_Type ETK_PROPERTY_MATRIX;
+extern Ekeko_Value_Type ETK_PROPERTY_COLOR;
+
+typedef uint32_t Etk_Color;
 
 typedef enum
 {
@@ -84,4 +87,11 @@ static inline void etk_value_trigger_from(Ekeko_Value *v, Etk_Trigger *t)
 	v->value.pointer_value = t;
 	v->type = ETK_PROPERTY_TRIGGER;
 }
+
+static inline void etk_value_color_from(Ekeko_Value *v, Etk_Color c)
+{
+	v->value.int_value = c;
+	v->type = ETK_PROPERTY_COLOR;
+}
+
 #endif /* ETK_VALUE_H_ */

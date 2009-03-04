@@ -7,14 +7,40 @@
 
 #ifndef ETK2_ANIMATION_H_
 #define ETK2_ANIMATION_H_
-
+/*============================================================================*
+ *                                 Events                                     *
+ *============================================================================*/
+#define ETK_ANIMATION_END_CHANGED "endChanged"
+#define ETK_ANIMATION_BEGIN_CHANGED "beginChanged"
+#define ETK_ANIMATION_PROPERTY_CHANGED "nameChanged"
+#define ETK_ANIMATION_DURATION_CHANGED "durChanged"
+#define ETK_ANIMATION_REPEAT_CHANGED "repeatChanged"
+#define ETK_ANIMATION_FROM_CHANGED "fromChanged"
+#define ETK_ANIMATION_TO_CHANGED "toChanged"
+#define ETK_ANIMATION_CALC_CHANGED "calcChanged"
+/*============================================================================*
+ *                               Properties                                   *
+ *============================================================================*/
+extern Property_Id ETK_ANIMATION_END;
+extern Property_Id ETK_ANIMATION_BEGIN;
+extern Property_Id ETK_ANIMATION_PROPERTY;
+extern Property_Id ETK_ANIMATION_DURATION;
+extern Property_Id ETK_ANIMATION_REPEAT;
+extern Property_Id ETK_ANIMATION_FROM;
+extern Property_Id ETK_ANIMATION_TO;
+extern Property_Id ETK_ANIMATION_CALC;
+/*============================================================================*
+ *                                 Class                                      *
+ *============================================================================*/
 typedef struct _Etk_Animation_Private Etk_Animation_Private;
 struct _Etk_Animation
 {
 	Ekeko_Object parent;
 	Etk_Animation_Private *private;
 };
-
+/*============================================================================*
+ *                                Functions                                   *
+ *============================================================================*/
 EAPI Ekeko_Type *etk_animation_type_get(void);
 EAPI Etk_Animation * etk_animation_new(void);
 EAPI void etk_animation_end_set(Etk_Animation *a, Ekeko_Object *o, const char *event);
