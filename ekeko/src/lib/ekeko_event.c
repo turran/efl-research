@@ -87,9 +87,9 @@ EAPI void ekeko_event_listener_add(Ekeko_Object *o, const char *type,
 }
 
 EAPI void ekeko_event_listener_remove(Ekeko_Object *o, const char *type,
-		Event_Listener el)
+		Event_Listener el, Eina_Bool bubble, void *data)
 {
-	object_event_listener_remove(o, type, el);
+	object_event_listener_remove(o, type, el, bubble, data);
 }
 
 EAPI void ekeko_event_dispatch(Event *e)
@@ -103,11 +103,3 @@ EAPI void ekeko_event_init(Event *e, const char *type, const Ekeko_Object *o, Ei
 	e->type = type;
 	e->bubbles = bubbles;
 }
-#if 0
-EAPI void event_property_int_changed(Event *e, const char *type,
-		const Ekeko_Object *o, int prev, int curr)
-{
-
-}
-#endif
-

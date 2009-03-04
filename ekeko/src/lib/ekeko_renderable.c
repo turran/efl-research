@@ -32,6 +32,7 @@ struct _Ekeko_Renderable_Private
 		Eina_Bool prev;
 		char changed;
 	} visibility;
+	int zindex;
 	/* When the canvas manages the list of renderables it needs to know if
 	 * a renderable is appended */
 	Eina_Bool appended;
@@ -40,6 +41,70 @@ struct _Ekeko_Renderable_Private
 	 * also render the bottom one
 	 */
 };
+
+static Ekeko_Object * _prev_renderable_get(Ekeko_Object *o)
+{
+	Ekeko_Object *last;
+
+	/* check if the object is a canvas, if so, dont go down */
+	if (ekeko_type_instance_is_of(o, "Canvas"))
+		return o;
+	last = ekeko_object_child_last_get(o);
+	if (!last)
+	{
+		if (ekeko_type_instance_is_of(o, "Renderable"))
+			return o;
+		else
+			return NULL;
+	}
+	else
+	{
+		do
+		{
+			Ekeko_Object *g;
+
+			g = _prev_renderable_get(last);
+			if (g)
+				return g;
+		} while (last = ekeko_object_prev(last));
+		/* any of the childs is a renderable, check the object itself */
+		if (ekeko_type_instance_is_of(o, "Renderable"))
+			return o;
+		else
+			return NULL;
+	}
+}
+
+static Ekeko_Object * _prev_renderable_left(Ekeko_Object *r)
+{
+	while (r = ekeko_object_prev(r))
+	{
+		Ekeko_Object *g;
+
+		g = _prev_renderable_get(r);
+		if (g)
+			return g;
+	}
+	return NULL;
+}
+
+static Ekeko_Object * _prev_renderable_up(Ekeko_Object *o)
+{
+	Ekeko_Object *parent;
+
+	while (parent = ekeko_object_parent_get(o))
+	{
+		if (ekeko_type_instance_is_of(parent, "Renderable"))
+			return parent;
+		else
+		{
+			Ekeko_Object *l;
+
+			l = _prev_renderable_left(parent);
+			if (l) return l;
+		}
+	}
+}
 
 /* called whenever a double state property has changed */
 static void _visibility_change(const Ekeko_Object *o, Event *e, void *data)
@@ -54,6 +119,8 @@ static void _visibility_change(const Ekeko_Object *o, Event *e, void *data)
 		return;
 	if (!prv->canvas)
 		return;
+	/* TODO Check that the geometry is inside the pointer */
+	/* if it is visible, send a mouse in, if it was visible send a mouse out */
 	/* visibility changed */
 	/* TODO check that the renderable is appended? */
 	ekeko_canvas_damage_add(prv->canvas, &prv->geometry.curr);
@@ -66,12 +133,13 @@ static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
 
 #ifdef EKEKO_DEBUG
-	printf("[renderable %s] geometry updated\n", ekeko_object_type_name_get(o));
+	printf("[Ekeko_Renderable] %s geometry updated\n", ekeko_object_type_name_get(o));
 #endif
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
 	if (!prv->canvas)
 		return;
+	/* TODO Check that the new geometry is inside the pointer */
 	/* geometry changed */
 	/* TODO check that the renderable is appended? */
 	ekeko_canvas_damage_add(prv->canvas, &em->curr->value.rect);
@@ -83,6 +151,7 @@ static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 	Event_Mutation *em = (Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv;
 	Ekeko_Object *p = (Ekeko_Object *)em->related;
+	Ekeko_Object *last;
 
 	/* check that the upper hierarchy is of type canvas */
 	while (p && !ekeko_type_instance_is_of(p, "Canvas"))
@@ -97,13 +166,33 @@ static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 		return;
 	}
 #ifdef EKEKO_DEBUG
-	printf("[renderable %s] Some parent %p (%s) is a canvas? %p!!!\n", ekeko_object_type_name_get(o), p, ekeko_object_type_name_get(p), ekeko_renderable_canvas_get((Ekeko_Renderable *)p));
+	printf("[Ekeko_Renderable] %s Some parent %p (%s) is a canvas? %p!!!\n", ekeko_object_type_name_get(o), p, ekeko_object_type_name_get(p), ekeko_renderable_canvas_get((Ekeko_Renderable *)p));
 #endif
 	prv = PRIVATE(((Ekeko_Renderable *)o));
 #ifdef EKEKO_DEBUG
-	printf("[renderable] %p has a canvas at %p\n", o, p);
+	printf("[Ekeko_Renderable] %p has a canvas  at %p\n", o, p);
 #endif
 	prv->canvas = (Ekeko_Canvas *)p;
+	last = _prev_renderable_left(o);
+	/* no sibling with a renderable below or itself */
+	if (!last)
+		last = _prev_renderable_up(o);
+	/* no parent with a renderable below */
+	if (!last || last == p)
+	{
+		/* first element */
+		/* Set the zindex */
+		printf("[Ekeko_Renderable] %p no Z index found, first element\n", o);
+	}
+	else
+	{
+		int z;
+		z = ekeko_renderable_zindex_get((Ekeko_Renderable *)last);
+		printf("[Ekeko_Renderable] %p Z index found at %d in %p\n", o, z, last);
+		ekeko_renderable_zindex_set((Ekeko_Renderable *)o, z +1);
+	}
+	/* TODO propagate the change of zindex locally in case the object is not a canvas */
+	/* TODO propagate the change of zindex to the next sibling */
 }
 
 static void _ctor(void *instance)
@@ -118,7 +207,7 @@ static void _ctor(void *instance)
 	ekeko_event_listener_add((Ekeko_Object *)rend, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
-	printf("[renderable] ctor canvas = %p\n", prv->canvas);
+	printf("[Ekeko_Renderable] ctor canvas = %p\n", prv->canvas);
 #endif
 }
 
@@ -142,6 +231,28 @@ void renderable_appended_set(Ekeko_Renderable *r, Eina_Bool appended)
 
 	prv = PRIVATE(r);
 	prv->appended = appended;
+}
+int ekeko_renderable_zindex_get(Ekeko_Renderable *r)
+{
+	Ekeko_Renderable_Private *prv;
+
+	prv = PRIVATE(r);
+	return prv->zindex;
+}
+
+void ekeko_renderable_zindex_set(Ekeko_Renderable *r, int zindex)
+{
+	Ekeko_Renderable_Private *prv;
+
+	prv = PRIVATE(r);
+	prv->zindex = zindex;
+}
+
+Eina_Bool ekeko_renderable_intersect(Ekeko_Renderable *r, int x, int y)
+{
+	if (r->is_inside)
+		return r->is_inside(r, x, y);
+	return EINA_TRUE;
 }
 /*============================================================================*
  *                                   API                                      *
@@ -207,7 +318,7 @@ EAPI void ekeko_renderable_geometry_set(Ekeko_Renderable *r, Eina_Rectangle *rec
 	Ekeko_Value value;
 
 #ifdef EKEKO_DEBUG
-	printf("[rend] geometry_set %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
+	printf("[Ekeko_Renderable] geometry_set %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
 #endif
 	ekeko_value_rectangle_from(&value, rect);
 	ekeko_object_property_value_set((Ekeko_Object *)r, "geometry", &value);
@@ -227,7 +338,7 @@ EAPI void ekeko_renderable_visibility_get(Ekeko_Renderable *r, Eina_Bool *visibl
 
 	prv = PRIVATE(r);
 #ifdef EKEKO_DEBUG
-	printf("[renderable %s] visibility get %d (%d %d)\n", ekeko_object_type_name_get((Ekeko_Object *)r), prv->visibility.curr, EINA_FALSE, EINA_TRUE);
+	printf("[Ekeko_Renderable] %s visibility get %d (%d %d)\n", ekeko_object_type_name_get((Ekeko_Object *)r), prv->visibility.curr, EINA_FALSE, EINA_TRUE);
 #endif
 	*visible = prv->visibility.curr;
 }

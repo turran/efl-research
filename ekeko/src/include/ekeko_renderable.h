@@ -30,6 +30,7 @@ struct _Ekeko_Renderable
 	 * to be rendered
 	 */
 	void (*render)(Ekeko_Renderable *r, Eina_Rectangle *rect);
+	Eina_Bool (*is_inside)(Ekeko_Renderable *r, int x, int y);
 	Ekeko_Renderable_Private *private;
 };
 /*============================================================================*

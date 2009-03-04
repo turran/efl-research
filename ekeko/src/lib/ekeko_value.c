@@ -84,6 +84,7 @@ void ekeko_value_create(Ekeko_Value *value, Ekeko_Value_Type type)
 void ekeko_value_pointer_double_to(Ekeko_Value *value, Ekeko_Value_Type type, void *ptr,
 		void *prev, char *changed)
 {
+	*changed = EINA_FALSE;
 	switch (type)
 	{
 		case PROPERTY_INT:
@@ -93,8 +94,11 @@ void ekeko_value_pointer_double_to(Ekeko_Value *value, Ekeko_Value_Type type, vo
 		break;
 
 		case PROPERTY_STRING:
+		/* FIXME fix this mess */
 		*((char **)ptr) = strdup(value->value.string_value);
-		if (!strcmp(*((char **)ptr), *((char **)prev)))
+		if (!*((char **)prev))
+			*changed = EINA_TRUE;
+		else if (!strcmp(*((char **)ptr), *((char **)prev)))
 			*changed = EINA_TRUE;
 		break;
 
@@ -182,7 +186,7 @@ void ekeko_value_pointer_to(Ekeko_Value *value, Ekeko_Value_Type vtype, void *pt
 			if (v->value.pointer_value)
 				ekeko_value_free(v, v->type);
 			ekeko_value_create(v, v->type);
-			ekeko_value_pointer_to(value, value->type, v->value.pointer_value);
+			ekeko_value_pointer_to(value, value->type, v->value.pointer_value ? v->value.pointer_value : &v->value);
 		}
 		break;
 
@@ -268,7 +272,7 @@ void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 #ifndef EKEKO_DEBUG
 			printf("[Ekeko_Value] value pointer from %p %p\n", ptr, ((Ekeko_Value *)ptr)->value.pointer_value);
 #endif
-			ekeko_value_pointer_from(v, val->type, val->value.pointer_value);
+			ekeko_value_pointer_from(v, val->type, &val->value);
 		}
 		break;
 

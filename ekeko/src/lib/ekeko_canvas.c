@@ -15,6 +15,11 @@
 
 struct _Ekeko_Canvas_Private
 {
+	struct {
+		Eina_Bool curr;
+		Eina_Bool prev;
+		int changed;
+	} redraw;
 	Eina_Tiler *tiler;
 	Eina_List *renderables;
 	/* TODO obscures */
@@ -88,10 +93,21 @@ static inline void _renderable_append(Ekeko_Canvas *c, Ekeko_Renderable *r,
 	{
 		if (!renderable_appended_get(r))
 		{
+			Ekeko_Renderable *lr = NULL;
+			Eina_List *l;
 #ifdef EKEKO_DEBUG
 			printf("[canvas] %p adding renderable %p\n", c, r);
 #endif
-			prv->renderables = eina_list_append(prv->renderables, r);
+			EINA_LIST_FOREACH(prv->renderables, l, lr)
+			{
+				if (!(ekeko_renderable_zindex_get(r) > ekeko_renderable_zindex_get(lr)))
+				{
+					prv->renderables = eina_list_prepend_relative(prv->renderables, r, lr);
+					renderable_appended_set(r, EINA_TRUE);
+					return;
+				}
+			}
+			prv->renderables = eina_list_append_relative(prv->renderables, r, lr);
 			renderable_appended_set(r, EINA_TRUE);
 		}
 	}
@@ -148,7 +164,6 @@ static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
 
-
 	prv = PRIVATE(((Ekeko_Canvas *)o));
 	tiler = prv->tiler;
 	if (tiler)
@@ -162,7 +177,7 @@ static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
 	/* TODO In case it already has a tiler, mark everything again */
 	if (tiler)
 	{
-		ekeko_canvas_damage_add((Ekeko_Canvas *)o, &em->curr->value.rect);
+		eina_tiler_rect_add(prv->tiler, &em->curr->value.rect);
 	}
 #ifdef EKEKO_DEBUG
 	printf("[canvas %s] tiler is %p\n", ekeko_object_type_name_get(o), prv->tiler);
@@ -225,6 +240,17 @@ static void _process_cb(const Ekeko_Object *o, Event *e, void *data)
 	eina_iterator_free(it);
 	/* clear the tiler */
 	eina_tiler_clear(prv->tiler);
+}
+
+static void _redraw_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Canvas_Private *prv;
+
+	if (em->state != EVENT_MUTATION_STATE_POST)
+		return;
+	/* toggle property */
+	em->curr->value.bool_value = EINA_FALSE;
 }
 
 static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
@@ -293,21 +319,23 @@ static void _ctor(void *instance)
 	canvas = (Ekeko_Canvas*) instance;
 	canvas->private = prv = ekeko_type_instance_private_get(ekeko_canvas_type_get(), instance);
 	prv->renderables = NULL;
+	prv->tiler = eina_tiler_new(0, 0);
 	/* register to an event where some child is appended to this parent */
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	/* register the event where the size is changed */
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
 	/* TODO add the event listener when the object has finished the process() function */
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EKEKO_CANVAS_REDRAW_CHANGED, _redraw_change, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
-	printf("[canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)canvas));
+	printf("[Ekeko_Canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)canvas));
 #endif
 }
 
 static void _dtor(void *canvas)
 {
 #ifdef EKEKO_DEBUG
-	printf("[canvas] dtor %p\n", canvas);
+	printf("[Ekeko_Canvas] dtor %p\n", canvas);
 #endif
 }
 /*============================================================================*
@@ -317,18 +345,24 @@ static void _dtor(void *canvas)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Property_Id EKEKO_CANVAS_REDRAW;
+
 Ekeko_Type *ekeko_canvas_type_get(void)
 {
-	static Ekeko_Type *canvas_type = NULL;
+	static Ekeko_Type *type = NULL;
 
-	if (!canvas_type)
+	if (!type)
 	{
-		canvas_type = ekeko_type_new(TYPE_NAME, sizeof(Ekeko_Canvas),
+		type = ekeko_type_new(TYPE_NAME, sizeof(Ekeko_Canvas),
 				sizeof(Ekeko_Canvas_Private), ekeko_renderable_type_get(),
 				_ctor, _dtor, NULL);
+		/* the properties */
+		EKEKO_CANVAS_REDRAW = TYPE_PROP_DOUBLE_ADD(type, "redraw", PROPERTY_BOOL,
+				OFFSET(Ekeko_Canvas_Private, redraw.curr), OFFSET(Ekeko_Canvas_Private, redraw.prev),
+				OFFSET(Ekeko_Canvas_Private, redraw.changed));
 	}
 
-	return canvas_type;
+	return type;
 }
 
 EAPI Ekeko_Canvas * ekeko_canvas_new(void)
@@ -363,10 +397,19 @@ EAPI void ekeko_canvas_damage_add(Ekeko_Canvas *c, Eina_Rectangle *r)
 	prv = PRIVATE(c);
 	if (prv->tiler)
 	{
+		Ekeko_Value v;
 #ifdef EKEKO_DEBUG
-		printf("[canvas %s] %p adding damage rectangle %d %d %d %d\n", ekeko_object_type_name_get(c), c, r->x, r->y, r->w, r->h);
+		printf("[Ekeko_Canvas] %s %p adding damage rectangle %d %d %d %d\n", ekeko_object_type_name_get(c), c, r->x, r->y, r->w, r->h);
 #endif
+		/* if we only add a damage the process_cb wont be called, we need
+		 * to inform somehow that the canvas needs to be processed again
+		 */
 		eina_tiler_rect_add(prv->tiler, r);
+		/* as other objects might call this function during
+		 * ekeko_object_process() how to handle that situation?
+		 */
+		ekeko_value_bool_from(&v, EINA_TRUE);
+		ekeko_object_property_value_set((Ekeko_Object *)c, "redraw", &v);
 	}
 }
 /**
@@ -392,7 +435,7 @@ EAPI Ekeko_Input * ekeko_canvas_input_new(Ekeko_Canvas *c)
 }
 
 EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c,
-		unsigned int x, unsigned int y, Eina_Bool recursive)
+		unsigned int x, unsigned int y)
 {
 	Ekeko_Canvas_Private *prv;
 	Eina_List *l;
@@ -412,6 +455,15 @@ EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c,
 		ekeko_renderable_geometry_get(r, &rgeom);
 		if (!eina_rectangles_intersect(&igeom, &rgeom))
 			continue;
+		/* specific intersection */
+		if (ekeko_renderable_intersect(r, x, y))
+		{
+#ifdef EKEKO_DEBUG
+			printf("[Ekeko_Canvas] renderable found %p\n", r);
+#endif
+			return r;
+		}
+#if RECURSIVE
 		if (recursive)
 		{
 			if (ekeko_type_instance_is_of(r, "Canvas"))
@@ -453,8 +505,9 @@ EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c,
 #endif
 			return r;
 		}
+#endif
 	}
-#ifndef EKEKO_DEBUG
+#ifdef EKEKO_DEBUG
 	printf("[Ekeko_Canvas] no renderable found\n");
 #endif
 	return NULL;

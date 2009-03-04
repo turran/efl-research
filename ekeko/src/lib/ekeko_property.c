@@ -33,7 +33,9 @@ Property * property_new(Ekeko_Type *type, char *prop_name, Type_Property_Type pr
 	Property *property;
 	static Property_Id id = 0;
 
-	printf("[type] new %s property at offset %d with id %d\n", prop_name, curr_offset, id + 1);
+#ifdef EKEKO_DEBUG
+	printf("[Ekeko_Property] new %s property at offset %d with id %d\n", prop_name, curr_offset, id + 1);
+#endif
 	property = malloc(sizeof(Property));
 	property->name = strdup(prop_name);
 	property->prop_type = prop_type;

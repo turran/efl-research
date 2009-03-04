@@ -107,29 +107,6 @@ static Property *_property_get(Ekeko_Type *type, const char *prop_name)
 	return property;
 }
 
-static inline void _property_string_set(Ekeko_Value *vc, Ekeko_Value *vp, char **c, char **p, char *changed)
-{
-	char **str = (char**)c;
-	if (vp) vp->value.string_value = *str;
-	*str = strdup(vc->value.string_value);
-	/* TODO cmp curr and prev and update the change flag */
-	if (p)
-	{
-
-	}
-}
-
-static inline void _property_int_set(Ekeko_Value *vc, Ekeko_Value *vp, int *c, int *p, char *changed)
-{
-	if (vp) vp->value.int_value = *c;
-	*c = vc->value.int_value;
-	/* TODO cmp curr and prev and update the change flag */
-	if (p)
-	{
-
-	}
-}
-
 /* TODO should we register types per document?
  * Note that type_new_name_from wont work until the that type has been
  * added i.e first calling ekeko_type_new()
@@ -152,7 +129,9 @@ void type_construct(Ekeko_Type *t, void *instance)
 
 void * type_instance_private_get_internal(Ekeko_Type *final, Ekeko_Type *t, void *instance)
 {
-	printf("[type] private get %s (PUB=%d) %s (PRIV_OFF=%d) %p\n", final->name, type_public_size_get(final), t->name, type_private_size_get(t->parent), instance);
+#ifdef EKEKO_DEBUG
+	printf("[Ekeko_Type] private get %s (PUB=%d) %s (PRIV_OFF=%d) %p\n", final->name, type_public_size_get(final), t->name, type_private_size_get(t->parent), instance);
+#endif
 	return (char *)instance + type_public_size_get(final) + type_private_size_get(t->parent);
 }
 

@@ -48,7 +48,7 @@ EAPI void ekeko_input_feed_mouse_in(Ekeko_Input *i)
 	if (i->pointer.inside)
 		return;
 	i->pointer.inside = EINA_TRUE;
-	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y, EINA_TRUE);
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
 	if (!r)
 		return;
 	/* TODO send the event */
@@ -71,7 +71,7 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, unsigned int x, unsigned i
 	 * if mouse in an object and canvas(obj) != canvas => in canvas(obj) ?
 	 * if mouse out an object and canvas(obj) != canvas => out canvas(obj) ?
 	 */
-	r = ekeko_canvas_renderable_get_at_coord(i->c, x, y, EINA_TRUE);
+	r = ekeko_canvas_renderable_get_at_coord(i->c, x, y);
 	if (r == i->pointer.r)
 	{
 		/* send move */
@@ -114,7 +114,7 @@ EAPI void ekeko_input_feed_mouse_out(Ekeko_Input *i)
 	if (!i->pointer.inside)
 		return;
 	i->pointer.inside = EINA_FALSE;
-	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y, EINA_TRUE);
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
 	if (!r)
 		return;
 	/* TODO send the event */
@@ -127,7 +127,7 @@ EAPI void ekeko_input_feed_mouse_down(Ekeko_Input *i)
 
 	if (!i->pointer.inside)
 		return;
-	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y, EINA_TRUE);
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
 	if (!r)
 		return;
 	/* store the coordinates where the mouse buton down was done to
@@ -146,7 +146,7 @@ EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i)
 
 	if (!i->pointer.inside)
 		return;
-	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y, EINA_TRUE);
+	r = ekeko_canvas_renderable_get_at_coord(i->c, i->pointer.x, i->pointer.y);
 	if (!r)
 		return;
 	event_mouse_up_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);

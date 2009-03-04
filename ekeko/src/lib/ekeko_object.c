@@ -40,18 +40,6 @@ typedef struct _Object_Event
 	void *data;
 } Object_Event;
 
-static void _id_modify(const Ekeko_Object *o, Event *e, void *data)
-{
-	Event_Mutation *em = (Event_Mutation *)e;
-
-	/* TODO we should avoid that many strcmp() */
-	//if (!strcmp(em->prop, "id"))
-	if (em->prop_id == EKEKO_OBJECT_ID)
-	{
-		/* Send the idChanged event */
-	}
-}
-
 static void _ctor(void *instance)
 {
 	Ekeko_Object *obj;
@@ -66,16 +54,15 @@ static void _ctor(void *instance)
 	prv->changed = 0;
 	prv->rel = obj;
 	/* Set up the mutation event */
-	object_event_listener_add(obj, EVENT_PROP_MODIFY, _id_modify, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
-	printf("[obj] ctor %p %p %p\n", obj, obj->private, prv->type);
+	printf("[Ekeko_Object] ctor %p %p %p\n", obj, obj->private, prv->type);
 #endif
 }
 
 static void _dtor(void *object)
 {
 #ifdef EKEKO_DEBUG
-	printf("[obj] dtor %p\n", object);
+	printf("[Ekeko_Object] dtor %p\n", object);
 #endif
 }
 
@@ -105,7 +92,7 @@ static void _change_recursive(const Ekeko_Object *obj, int count)
 	prv = PRIVATE(obj);
 	prv->changed += count;
 	if (prv->parent)
-			_change_recursive(prv->parent, count);
+		_change_recursive(prv->parent, count);
 }
 
 static void _unchange_recursive(const Ekeko_Object *obj, int count)
@@ -117,6 +104,19 @@ static void _unchange_recursive(const Ekeko_Object *obj, int count)
 	if (prv->parent)
 		_unchange_recursive(prv->parent, count);
 
+}
+
+static void _dump_recursive(Ekeko_Object *o, Ekeko_Object_Dump dump, int level)
+{
+	Ekeko_Object *child;
+
+	dump(o, level);
+	child = ekeko_object_child_first_get(o);
+	while (child)
+	{
+		_dump_recursive(child, dump, level + 1);
+		child = ekeko_object_next(child);
+	}
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -134,7 +134,7 @@ void object_construct(Ekeko_Type *type, void *instance)
 	object->private = type_instance_private_get_internal(type, ekeko_object_type_get(), object);
 	object->private->type = type;
 #ifdef EKEKO_DEBUG
-	printf("[obj] construct %p %p %p\n", object, object->private, object->private->type);
+	printf("[Ekeko_Object] construct %p %p %p\n", object, object->private, object->private->type);
 #endif
 	/* call all the constructors on the type */
 	type_construct(type, instance);
@@ -160,9 +160,24 @@ void object_event_listener_add(Ekeko_Object *obj, const char *type,
 }
 
 void object_event_listener_remove(Ekeko_Object *obj, const char *type,
-		Event_Listener el)
+		Event_Listener el, Eina_Bool bubble, void *data)
 {
+	Ekeko_Object_Private *prv;
+	Object_Event *oe;
+	Eina_List *events;
+	Eina_Iterator *it;
 
+	prv = PRIVATE(obj);
+	events = eina_hash_find(prv->listeners, type);
+	it = eina_list_iterator_new(events);
+	while (eina_iterator_next(it, (void **)&oe))
+	{
+		if ((oe->bubble == bubble) && (oe->data == data) && (oe->el == el))
+		{
+			eina_list_remove(events, oe);
+			return;
+		}
+	}
 }
 /*============================================================================*
  *                                   API                                      *
@@ -240,7 +255,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 
 	prv = PRIVATE(o);
 #ifdef EKEKO_DEBUG
-	printf("[obj] value_set: %s %p %p %p %d\n", prop_name, o, prv, prv->type, prv->changed);
+	printf("[Ekeko_Object] value_set: %s %p %p %p %d\n", prop_name, o, prv, prv->type, prv->changed);
 #endif
 	/* FIXME this code isnt good enough */
 	prop = type_property_get(prv->type, prop_name);
@@ -257,7 +272,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 	prev_value.type = value->type;
 	type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
 #ifdef EKEKO_DEBUG
-	printf("[obj] pointers %p %p %p\n", curr, prev, changed);
+	printf("[Ekeko_Object] pointers %p %p %p\n", curr, prev, changed);
 #endif
 	if (property_ptype_get(prop) == PROPERTY_VALUE_DUAL_STATE)
 	{
@@ -279,7 +294,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 			_change_recursive(o, 1);
 		}
 #ifdef EKEKO_DEBUG
-		printf("[obj] changed bef = %d, changed now = %d\n", changed_bef, changed_now);
+		printf("[Ekeko_Object] %s changed bef = %d, changed now = %d\n", prop_name, changed_bef, changed_now);
 #endif
 	}
 	else
@@ -292,7 +307,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 		ekeko_value_pointer_to(value, vtype, curr);
 	}
 #ifdef EKEKO_DEBUG
-	printf("[obj] changed = %d\n", prv->changed);
+	printf("[Ekeko_Object] changed = %d\n", prv->changed);
 #endif
 	/* send the generic event */
 	event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop,
@@ -328,7 +343,7 @@ EAPI void ekeko_object_property_value_get(Ekeko_Object *o, char *prop_name, Ekek
 
 	prv = PRIVATE(o);
 #ifdef EKEKO_DEBUG
-	printf("[obj] value_get: %s\n", prop_name);
+	printf("[Ekeko_Object] value_get: %s\n", prop_name);
 #endif
 	prop = type_property_get(prv->type, prop_name);
 	if (!prop)
@@ -379,13 +394,13 @@ EAPI void ekeko_object_event_dispatch(const Ekeko_Object *obj, Event *e)
 	/* TODO set the phase on the event */
 	prv = PRIVATE(obj);
 #ifdef EKEKO_DEBUG
-	printf("[obj] Dispatching event %s\n", e->type);
+	printf("[Ekeko_Object] Dispatching event %s\n", e->type);
 #endif
 	_event_dispatch(obj, e, EINA_FALSE);
 	if (e->bubbles == EINA_TRUE)
 	{
 #ifdef EKEKO_DEBUG
-		printf("[obj] Event %s going to bubble %p %p\n", e->type, obj, prv->parent);
+		printf("[Ekeko_Object] Event %s going to bubble %p %p\n", e->type, obj, prv->parent);
 #endif
 		while (prv->parent)
 		{
@@ -424,7 +439,7 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 		pprv = PRIVATE(p);
 		oprv = PRIVATE(o);
 #ifdef EKEKO_DEBUG
-		printf("[obj] Setting the parent of %p (%p) to %p (%p) \n", o, oprv, p, pprv);
+		printf("[Ekeko_Object] Setting the parent of %p (%p) to %p (%p) \n", o, oprv, p, pprv);
 #endif
 		pprv->children = eina_inlist_append(pprv->children, EINA_INLIST_GET(oprv));
 		/* TODO check that there's a parent already
@@ -440,7 +455,7 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 		}
 		oprv->parent = p;
 #ifdef EKEKO_DEBUG
-		printf("[obj] pchanged = %d ochanged = %d\n", pprv->changed, oprv->changed);
+		printf("[Ekeko_Object] pchanged = %d ochanged = %d\n", pprv->changed, oprv->changed);
 #endif
 		/* TODO send the EVENT_PARENT_SET event */
 		/* send the EVENT_OBJECT_APPEND event */
@@ -460,7 +475,53 @@ EAPI void ekeko_object_child_remove(Ekeko_Object *p, Ekeko_Object *o)
 
 }
 
-EAPI Ekeko_Object * ekeko_object_parent_get(Ekeko_Object *o)
+EAPI Ekeko_Object * ekeko_object_child_last_get(Ekeko_Object *o)
+{
+	Ekeko_Object_Private *prv;
+	Ekeko_Object_Private *chprv;
+
+	prv = PRIVATE(o);
+	chprv = prv->children;
+	if (!chprv) return NULL;
+	else
+	{
+		chprv = chprv->__in_list.last;
+		return chprv->rel;
+	}
+}
+
+EAPI Ekeko_Object * ekeko_object_child_first_get(Ekeko_Object *o)
+{
+	Ekeko_Object_Private *prv;
+	Ekeko_Object_Private *chprv;
+
+	prv = PRIVATE(o);
+	chprv = prv->children;
+	if (!chprv) return NULL;
+	else return chprv->rel;
+}
+
+EAPI Ekeko_Object * ekeko_object_next(Ekeko_Object *o)
+{
+	Ekeko_Object_Private *prv;
+
+	prv = PRIVATE(o);
+	prv = (Ekeko_Object_Private *)prv->__in_list.next;
+	if (!prv) return NULL;
+	else return prv->rel;
+}
+
+EAPI Ekeko_Object * ekeko_object_prev(Ekeko_Object *o)
+{
+	Ekeko_Object_Private *prv;
+
+	prv = PRIVATE(o);
+	prv = (Ekeko_Object_Private *)prv->__in_list.prev;
+	if (!prv) return NULL;
+	else return prv->rel;
+}
+
+EAPI Ekeko_Object * ekeko_object_parent_get(const Ekeko_Object *o)
 {
 	Ekeko_Object_Private *prv;
 
@@ -468,10 +529,9 @@ EAPI Ekeko_Object * ekeko_object_parent_get(Ekeko_Object *o)
 	return prv->parent;
 }
 
-/**
- * @brief This function will update every two state attribute in case it has
- * changed
- * @param o
+#if 0
+/* old version, this version first checked out the object properties
+ * and then the children
  */
 EAPI void ekeko_object_process(Ekeko_Object *o)
 {
@@ -488,10 +548,138 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	prv = PRIVATE(o);
 	/* all childs */
 	if (!prv->changed)
+	return;
+#ifdef EKEKO_DEBUG
+	printf("[Ekeko_Object] [0  Object %p %s changed %d\n", o, ekeko_object_type_name_get(o), prv->changed);
+#endif
+	/* TODO handle the attributes as they dont have any parent, childs or siblings */
+	pit = type_property_iterator_new(prv->type);
+	while (type_property_iterator_next(pit, &prop))
+	{
+		Ekeko_Value prev_value, curr_value;
+		Event_Mutation evt;
+		void *curr, *prev;
+		char *changed;
+
+		if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
+		continue;
+		type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
+#ifdef EKEKO_DEBUG
+		printf("[Ekeko_Object] process pointers %p %p %p\n", curr, prev, changed);
+#endif
+		if (!(*changed))
+		continue;
+#ifdef EKEKO_DEBUG
+		printf("[Ekeko_Object] [1 updating %s %d\n", ekeko_property_name_get(prop), *changed);
+#endif
+
+		/* update the property */
+		*changed = EINA_FALSE;
+		prv->changed--;
+		/* send the generic mutation event */
+		ekeko_value_pointer_from(&prev_value, ekeko_property_value_type_get(prop), prev);
+		ekeko_value_pointer_from(&curr_value, ekeko_property_value_type_get(prop), curr);
+		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
+				&curr_value, EVENT_MUTATION_STATE_POST);
+		ekeko_object_event_dispatch(o, (Event *)&evt);
+		/* send the specific event */
+		{
+			char evt_name[256];
+
+			strcpy(evt_name, ekeko_property_name_get(prop));
+			strcat(evt_name, "Changed");
+			event_mutation_init(&evt, evt_name, o, o, prop,
+					&prev_value, &curr_value, EVENT_MUTATION_STATE_POST);
+			ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+		}
+		/* update prev */
+		ekeko_value_pointer_to(&curr_value, ekeko_property_value_type_get(prop), prev);
+		if (!prv->changed)
+		{
+			type_property_iterator_free(pit);
+#ifdef EKEKO_DEBUG
+			printf("[Ekeko_Object] 0] Object changed %d (only attributes)\n", prv->changed);
+#endif
+			goto event;
+		}
+	}
+	/* handle childs */
+	it = eina_inlist_iterator_new(prv->children);
+	while (eina_iterator_next(it, (void **) &in))
+	{
+		int changed;
+
+		changed = in->changed;
+
+		if (!changed)
+		continue;
+
+		ekeko_object_process(in->rel);
+		prv->changed -= changed;
+		if (!prv->changed)
+		{
+			break;
+		}
+	}
+#ifdef EKEKO_DEBUG
+	printf("[Ekeko_Object] 0] Object changed %d\n", prv->changed);
+#endif
+	/* post condition */
+	if (prv->changed)
+	{
+		printf("WRONG! %p %d\n", o, prv->changed);
+		exit(1);
+	}
+event:
+	/* send the event */
+	event_mutation_init(&evt, EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
+			EVENT_MUTATION_STATE_POST);
+	ekeko_object_event_dispatch(o, (Event *)&evt);
+}
+#endif
+
+/**
+ * @brief This function will update every two state attribute in case it has
+ * changed
+ * @param o
+ */
+EAPI void ekeko_object_process(Ekeko_Object *o)
+{
+	Ekeko_Object_Private *prv;
+	Ekeko_Object_Private *in;
+	Eina_Iterator *it;
+	Property_Iterator *pit;
+	Property *prop;
+	Event_Mutation evt;
+	int ch;
+	Ekeko_Object *parent;
+
+	/* TODO check that the object is actually the top most parent
+	 * on the hierarchy?
+	 */
+	prv = PRIVATE(o);
+	/* all childs */
+	if (!prv->changed)
 		return;
 #ifdef EKEKO_DEBUG
-	printf("[obj] [0  Object %p %s changed %d\n", o, ekeko_object_type_name_get(o), prv->changed);
+	printf("[Ekeko_Object] [0  Object %p %s changed %d\n", o, ekeko_object_type_name_get(o), prv->changed);
 #endif
+	/* handle childs */
+	it = eina_inlist_iterator_new(prv->children);
+	while (eina_iterator_next(it, (void **) &in))
+	{
+		int changed;
+
+		changed = in->changed;
+
+		if (!changed)
+			continue;
+
+		ekeko_object_process(in->rel);
+	}
+	/* store the old changed here as the childs might have changed some
+	 * parent's properties */
+	ch = prv->changed;
 	/* TODO handle the attributes as they dont have any parent, childs or siblings */
 	pit = type_property_iterator_new(prv->type);
 	while (type_property_iterator_next(pit, &prop))
@@ -505,12 +693,12 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 			continue;
 		type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
 #ifdef EKEKO_DEBUG
-		printf("[obj] process pointers %p %p %p\n", curr, prev, changed);
+		printf("[Ekeko_Object] process pointers %p %p %p\n", curr, prev, changed);
 #endif
 		if (!(*changed))
 			continue;
 #ifdef EKEKO_DEBUG
-		printf("[obj] [1 updating %s %d\n", ekeko_property_name_get(prop), *changed);
+		printf("[Ekeko_Object] [1 updating %s %d\n", ekeko_property_name_get(prop), *changed);
 #endif
 
 		/* update the property */
@@ -535,46 +723,30 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		/* update prev */
 		ekeko_value_pointer_to(&curr_value, ekeko_property_value_type_get(prop), prev);
 		if (!prv->changed)
-		{
-			type_property_iterator_free(pit);
-#ifdef EKEKO_DEBUG
-			printf("[obj] 0] Object changed %d (only attributes)\n", prv->changed);
-#endif
-			goto event;
-		}
-	}
-	/* handle childs */
-	it = eina_inlist_iterator_new(prv->children);
-	while (eina_iterator_next(it, (void **) &in))
-	{
-		int changed;
-
-		changed = in->changed;
-
-		if (!changed)
-			continue;
-
-		ekeko_object_process(in->rel);
-		prv->changed -= changed;
-		if (!prv->changed)
-		{
 			break;
-		}
 	}
+	/* FIXME this gives me an error, track it down */
+	//type_property_iterator_free(pit);
+event:
+	/* send the event */
+	event_mutation_init(&evt, EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
+			EVENT_MUTATION_STATE_POST);
+	ekeko_object_event_dispatch(o, (Event *)&evt);
+
 #ifdef EKEKO_DEBUG
-	printf("[obj] 0] Object changed %d\n", prv->changed);
+	printf("[Ekeko_Object] 0] Object %p changed %d\n", o, prv->changed);
 #endif
+	parent = ekeko_object_parent_get(o);
+	if (parent)
+	{
+		_unchange_recursive(parent, ch);
+	}
 	/* post condition */
 	if (prv->changed)
 	{
 		printf("WRONG! %p %d\n", o, prv->changed);
 		exit(1);
 	}
-event:
-	/* send the event */
-	event_mutation_init(&evt, EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
-			EVENT_MUTATION_STATE_POST);
-	ekeko_object_event_dispatch(o, (Event *)&evt);
 }
 
 EAPI Property * ekeko_object_property_get(Ekeko_Object *o, const char *prop_name)
@@ -585,4 +757,24 @@ EAPI Property * ekeko_object_property_get(Ekeko_Object *o, const char *prop_name
 	prv = PRIVATE(o);
 	prop = type_property_get(prv->type, prop_name);
 	return prop;
+}
+
+EAPI void ekeko_object_dump_printf(Ekeko_Object *o, int level)
+{
+	int i;
+
+	for (i = 1; i <= level; i++)
+		printf("\t");
+	printf("> %s (%p) ", ekeko_object_type_name_get(o), o);
+	/* some useful properties */
+	if (ekeko_type_instance_is_of(o, "Renderable"))
+	{
+		printf("z-index: %d", ekeko_renderable_zindex_get((Ekeko_Renderable *)o));
+	}
+	printf("\n");
+}
+
+EAPI void ekeko_object_dump(Ekeko_Object *o, Ekeko_Object_Dump dump)
+{
+	_dump_recursive(o, dump, 0);
 }
