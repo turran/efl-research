@@ -50,5 +50,8 @@ EAPI void etk_canvas_h_get(Etk_Canvas *c, Etk_Coord *w);
 EAPI void etk_canvas_h_set(Etk_Canvas *c, int h);
 EAPI void etk_canvas_h_rel_set(Etk_Canvas *c, int h);
 EAPI void etk_canvas_matrix_set(Etk_Canvas *c, Enesim_Matrix *m);
+/* renderable wrappers */
+#define etk_canvas_show(c) ekeko_renderable_show(EKEKO_RENDERABLE((c)))
+#define etk_canvas_hide(c) ekeko_renderable_hide(EKEKO_RENDERABLE((c)))
 
 #endif /* ETK2_CANVAS_H_ */

@@ -74,9 +74,9 @@ int main(int argc, char **argv)
 	etk_rect_y_rel_set(r, 0);
 	etk_rect_w_rel_set(r, 100);
 	etk_rect_h_rel_set(r, 100);
-	etk_shape_color_set((Etk_Shape *)r, 0xffffffff);
-	etk_shape_rop_set((Etk_Shape *)r, 1);
-	ekeko_renderable_show((Ekeko_Renderable *)r);
+	etk_rect_color_set(r, 0xffffffff);
+	etk_rect_rop_set(r, ENESIM_FILL);
+	etk_rect_show(r);
 #if 1
 	/* create an image */
 	i = etk_image_new(c);
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 	etk_image_w_rel_set(i, 60);
 	etk_image_h_rel_set(i, 60);
 	etk_image_file_set(i, "../data/tiger.png");
-	ekeko_renderable_show((Ekeko_Renderable *)i);
+	etk_image_show(i);
 #endif
 #if 1
 #if 1
@@ -104,15 +104,16 @@ int main(int argc, char **argv)
 	//enesim_matrix_translate(&mx1, 30, 30);
 	//enesim_matrix_scale(&mx1, 0.8, 0.8);
 	etk_canvas_matrix_set(sc, &mx1);
-	ekeko_renderable_show((Ekeko_Renderable *)sc);
+	etk_canvas_show(sc);
+
 	r = etk_rect_new(sc);
 	etk_rect_x_rel_set(r, 0);
 	etk_rect_y_rel_set(r, 0);
 	etk_rect_w_rel_set(r, 100);
 	etk_rect_h_rel_set(r, 100);
-	etk_shape_color_set((Etk_Shape *)r, 0xaaaa00aa);
-	etk_shape_rop_set((Etk_Shape *)r, ENESIM_FILL);
-	ekeko_renderable_show((Ekeko_Renderable *)r);
+	etk_rect_color_set(r, 0xaaaa00aa);
+	etk_rect_rop_set(r, ENESIM_FILL);
+	etk_rect_show(r);
 #endif
 	/* create a rectangle */
 	r = etk_rect_new(c);
@@ -120,9 +121,9 @@ int main(int argc, char **argv)
 	etk_rect_y_rel_set(r, 25);
 	etk_rect_w_rel_set(r, 50);
 	etk_rect_h_rel_set(r, 50);
-	etk_shape_color_set((Etk_Shape *)r, 0xaaaa0000);
-	etk_shape_rop_set((Etk_Shape *)r, 0);
-	ekeko_renderable_show((Ekeko_Renderable *)r);
+	etk_rect_color_set(r, 0xaaaa0000);
+	etk_rect_rop_set(r, ENESIM_BLEND);
+	etk_rect_show(r);
 	_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
 	_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 3);
 #endif

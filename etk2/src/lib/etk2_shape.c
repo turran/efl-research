@@ -177,7 +177,7 @@ EAPI void etk_shape_color_set(Etk_Shape *s, Etk_Color color)
 	ekeko_object_property_value_set((Ekeko_Object *)s, "color", &v);
 }
 
-EAPI void etk_shape_rop_set(Etk_Shape *s, int rop)
+EAPI void etk_shape_rop_set(Etk_Shape *s, Enesim_Rop rop)
 {
 	Ekeko_Value v;
 

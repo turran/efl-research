@@ -14,21 +14,6 @@ extern Ekeko_Value_Type ETK_PROPERTY_TRIGGER;
 extern Ekeko_Value_Type ETK_PROPERTY_MATRIX;
 extern Ekeko_Value_Type ETK_PROPERTY_COLOR;
 
-typedef uint32_t Etk_Color;
-
-typedef enum
-{
-	ETK_COORD_ABSOLUTE,
-	ETK_COORD_RELATIVE,
-} Etk_Coord_Type;
-
-typedef struct _Etk_Coord
-{
-	int final;
-	Etk_Coord_Type type;
-	int value;
-} Etk_Coord;
-
 typedef struct _Etk_Trigger
 {
 	Ekeko_Object *obj;

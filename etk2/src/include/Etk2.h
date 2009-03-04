@@ -27,8 +27,9 @@ EAPI int etk_init(void);
 EAPI void etk_loop(void);
 EAPI int etk_shutdown(void);
 
-#include "etk2_value.h"
 #include "etk2_coord.h"
+#include "etk2_color.h"
+#include "etk2_value.h"
 #include "etk2_document.h"
 #include "etk2_canvas.h"
 #include "etk2_shape.h"

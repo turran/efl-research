@@ -30,6 +30,8 @@ struct _Etk_Shape
 
 EAPI Ekeko_Type *etk_shape_type_get(void);
 EAPI void etk_shape_color_set(Etk_Shape *s, Etk_Color color);
-EAPI void etk_shape_rop_set(Etk_Shape *s, int rop);
+EAPI void etk_shape_rop_set(Etk_Shape *s, Enesim_Rop rop);
+#define etk_shape_show(s) ekeko_renderable_show(EKEKO_RENDERABLE((s)))
+#define etk_shape_hide(s) ekeko_renderable_hide(EKEKO_RENDERABLE((s)))
 
 #endif /* ETK2_SHAPE_H_ */

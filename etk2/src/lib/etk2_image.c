@@ -40,12 +40,20 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 	Etk_Image_Private *prv = PRIVATE(i);
 	Eina_Rectangle r;
 
-	c = etk_shape_canvas_get((Etk_Shape *)i);
-	ekeko_renderable_geometry_get((Ekeko_Renderable *)i, &r);
-	printf("[Etk_Image] Image file %s loaded and will be displayed in %p %d %d %d %d!!\n", prv->file.curr, c, r.x, r.y, r.w, r.h);
-	/* add a damage to the canvas to force a redraw of the image */
-	ekeko_canvas_damage_add((Ekeko_Canvas *)c, &r);
-	prv->src.loaded = EINA_TRUE;
+	/* TODO check for error */
+	if (error)
+	{
+		printf("[Etk_Image] Error %d\n", error);
+	}
+	else
+	{
+		c = etk_shape_canvas_get((Etk_Shape *)i);
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)i, &r);
+		printf("[Etk_Image] Image file %s loaded and will be displayed in %p %d %d %d %d!!\n", prv->file.curr, c, r.x, r.y, r.w, r.h);
+		/* add a damage to the canvas to force a redraw of the image */
+		ekeko_canvas_damage_add((Ekeko_Canvas *)c, &r);
+		prv->src.loaded = EINA_TRUE;
+	}
 }
 
 static void _geometry_calc(const Ekeko_Object *o, Event *e, void *data)
