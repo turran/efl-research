@@ -12,6 +12,7 @@ extern Property_Id EKEKO_OBJECT_ID;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
+#define EKEKO_OBJECT(o) EKEKO_CAST(o, ekeko_object_type_get(), Ekeko_Object)
 typedef struct _Ekeko_Object_Private Ekeko_Object_Private;
 
 struct _Ekeko_Object
@@ -21,6 +22,8 @@ struct _Ekeko_Object
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
+EAPI Ekeko_Object * ekeko_object_cast(Ekeko_Object *o, Ekeko_Type *t);
+
 EAPI Ekeko_Object *ekeko_object_new(void);
 EAPI void ekeko_object_id_set(Ekeko_Object *object, const char *name);
 EAPI const char *ekeko_object_id_get(Ekeko_Object *object);

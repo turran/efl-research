@@ -778,3 +778,15 @@ EAPI void ekeko_object_dump(Ekeko_Object *o, Ekeko_Object_Dump dump)
 {
 	_dump_recursive(o, dump, 0);
 }
+
+/* check that the object is of that type */
+EAPI Ekeko_Object * ekeko_object_cast(Ekeko_Object *o, Ekeko_Type *t)
+{
+	if (!o || !t)
+		return NULL;
+	if (!ekeko_type_instance_is_of_type(o, t))
+	{
+		EINA_ERROR_PERR("[Ekeko] Object %p is not of type %s\n", o, type_name_get(t));
+	}
+	return o;
+}

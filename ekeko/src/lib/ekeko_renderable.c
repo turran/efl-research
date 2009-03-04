@@ -113,7 +113,7 @@ static void _visibility_change(const Ekeko_Object *o, Event *e, void *data)
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
 
 #ifdef EKEKO_DEBUG
-	printf("[renderable %s] prop updated %s\n", ekeko_object_type_name_get(o), em->prop);
+	printf("[Ekeko_Renderable] %s prop updated %s\n", ekeko_object_type_name_get(o), em->prop);
 #endif
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
@@ -161,7 +161,7 @@ static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 	if (!p)
 	{
 #ifdef EKEKO_DEBUG
-		printf("[renderable %s] Is not of type canvas\n", ekeko_object_type_name_get(o));
+		printf("[Ekeko_Renderable] %s Is not of type canvas\n", ekeko_object_type_name_get(o));
 #endif
 		return;
 	}
@@ -200,12 +200,12 @@ static void _ctor(void *instance)
 	Ekeko_Renderable *rend;
 	Ekeko_Renderable_Private *prv;
 
-	rend = (Ekeko_Renderable*) instance;
+	rend = EKEKO_RENDERABLE(instance);
 	rend->private = prv = ekeko_type_instance_private_get(ekeko_renderable_type_get(), instance);
 	/* register to an event where this child is appended to a canvas parent */
-	ekeko_event_listener_add((Ekeko_Object *)rend, EKEKO_RENDERABLE_VISIBILITY_CHANGED, _visibility_change, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)rend, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)rend, EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add(EKEKO_OBJECT(rend), EKEKO_RENDERABLE_VISIBILITY_CHANGED, _visibility_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add(EKEKO_OBJECT(rend), EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add(EKEKO_OBJECT(rend), EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
 	printf("[Ekeko_Renderable] ctor canvas = %p\n", prv->canvas);
 #endif
@@ -350,7 +350,7 @@ EAPI void ekeko_renderable_show(Ekeko_Renderable *r)
 
 	prv = PRIVATE(r);
 #ifdef EKEKO_DEBUG
-	printf("[renderable] show\n");
+	printf("[Ekeko_Renderable] show\n");
 #endif
 	if (prv->visibility.curr)
 		return;
@@ -365,7 +365,7 @@ EAPI void ekeko_renderable_hide(Ekeko_Renderable *r)
 
 	prv = PRIVATE(r);
 #ifdef EKEKO_DEBUG
-	printf("[renderable] hide\n");
+	printf("[Ekeko_Renderable] hide\n");
 #endif
 	if (!prv->visibility.curr)
 		return;

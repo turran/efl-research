@@ -357,3 +357,20 @@ EAPI Eina_Bool ekeko_type_instance_is_of(void *instance, const char *type)
 
 	return EINA_FALSE;
 }
+
+/* TODO normalize this and the above function into one */
+EAPI Eina_Bool ekeko_type_instance_is_of_type(void *instance, Ekeko_Type *type)
+{
+	Ekeko_Type *t;
+
+	t = object_private_type_get(instance);
+	do
+	{
+		if (t == type)
+			return EINA_TRUE;
+		t = t->parent;
+	}
+	while (t);
+
+	return EINA_FALSE;
+}

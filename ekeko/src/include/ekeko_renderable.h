@@ -21,6 +21,7 @@ extern Property_Id EKEKO_RENDERABLE_VISIBILITY;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
+#define EKEKO_RENDERABLE(o) EKEKO_CAST(o, ekeko_renderable_type_get(), Ekeko_Renderable)
 typedef struct _Ekeko_Renderable_Private Ekeko_Renderable_Private;
 
 struct _Ekeko_Renderable
