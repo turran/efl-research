@@ -19,10 +19,8 @@ ekeko_renderable.c \
 ekeko_canvas.c
 
 libekeko_la_LIBADD = \
-tiler/libekeko_tiler.la \
 @EKEKO_LIBS@
 
-libekeko_la_DEPENDENCIES = \
-tiler/libekeko_tiler.la
+libekeko_la_DEPENDENCIES =
 
 libekeko_la_LDFLAGS = @create_shared_lib@ -version-info @version_info@
