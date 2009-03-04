@@ -71,7 +71,7 @@ void _provider_data_load(Emage_Provider *p, const char *file, Enesim_Surface **s
 	/* convert if needed */
 	if (ls != *s)
 	{
-		enesim_surface_convert(ls, *s);
+		enesim_surface_convert(ls, *s, NULL);
 		enesim_surface_delete(ls);
 	}
 }
