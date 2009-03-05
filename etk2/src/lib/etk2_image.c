@@ -43,7 +43,7 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 	/* TODO check for error */
 	if (error)
 	{
-		printf("[Etk_Image] Error %d\n", error);
+		printf("[Etk_Image] Error %d %s\n", error, eina_error_msg_get(error));
 	}
 	else
 	{
