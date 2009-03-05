@@ -45,8 +45,6 @@ EMAGE_LIBS="$EINA_LIBS $ENESIM_LIBS"
 AC_SUBST(EMAGE_CFLAGS)
 AC_SUBST(EMAGE_LIBS)
 
-AC_DEFINE_UNQUOTED(PACKAGE_LIB_DIR, "${ac_default_prefix}/lib", [Installation directory for libraries])
-
 ## Different Modules
 ## PNG
 PKG_CHECK_MODULES(PNG, [libpng >= 0.22], [enable_png="yes"], [enable_png="no"])

@@ -4,6 +4,7 @@ Makefile.in
 AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/include \
+-DPACKAGE_LIB_DIR=\"$(libdir)\" \
 @EMAGE_CFLAGS@
 
 lib_LTLIBRARIES = libemage.la
