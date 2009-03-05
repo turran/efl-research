@@ -53,17 +53,54 @@ static void _coord_animation(Ekeko_Object *o, const char *prop,
 	etk_animation_repeat_set(a, -1);
 }
 
+static void _setup_scene(Etk_Canvas *c)
+{
+	Etk_Image *i;
+	Etk_Rect *r;
+#if 0
+	/* create an image */
+	i = etk_image_new(c);
+	etk_image_x_rel_set(i, 10);
+	etk_image_y_rel_set(i, 10);
+	etk_image_w_set(i, 400);
+	etk_image_h_set(i, 412);
+	etk_image_file_set(i, "../data/tiger.png");
+	etk_image_show(i);
+#endif
+	/* create a rectangle */
+	r = etk_rect_new(c);
+	etk_rect_x_rel_set(r, 25);
+	etk_rect_y_rel_set(r, 25);
+	etk_rect_w_rel_set(r, 50);
+	etk_rect_h_rel_set(r, 50);
+	etk_rect_color_set(r, 0xaaaa0000);
+	etk_rect_rop_set(r, ENESIM_BLEND);
+	etk_rect_show(r);
+	_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
+	_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 3);
+#if 0
+	r = etk_rect_new(sc);
+	etk_rect_x_rel_set(r, 0);
+	etk_rect_y_rel_set(r, 0);
+	etk_rect_w_rel_set(r, 100);
+	etk_rect_h_rel_set(r, 100);
+	etk_rect_color_set(r, 0xaaaa00aa);
+	etk_rect_rop_set(r, ENESIM_FILL);
+	etk_rect_show(r);
+#endif
+
+}
+
 int main(int argc, char **argv)
 {
 	Etk_Document *d;
 	Etk_Canvas *c, *sc;
 	Etk_Rect *r;
 	Enesim_Matrix mx1, mx2;
-	Etk_Image *i;
 
 	etk_init();
 
-	d = etk_document_new("sdl", 320, 240);
+	d = etk_document_new("sdl", 480, 640);
 	c = etk_document_canvas_get(d);
 	etk_canvas_w_rel_set(c, 100);
 	etk_canvas_h_rel_set(c, 100);
@@ -77,18 +114,8 @@ int main(int argc, char **argv)
 	etk_rect_color_set(r, 0xffffffff);
 	etk_rect_rop_set(r, ENESIM_FILL);
 	etk_rect_show(r);
-#if 1
-	/* create an image */
-	i = etk_image_new(c);
-	etk_image_x_rel_set(i, 10);
-	etk_image_y_rel_set(i, 10);
-	etk_image_w_rel_set(i, 60);
-	etk_image_h_rel_set(i, 60);
-	etk_image_file_set(i, "../data/tiger.png");
-	etk_image_show(i);
-#endif
-#if 1
-#if 1
+
+	_setup_scene(c);
 	/* add a subcanvas */
 	sc = etk_canvas_new(c);
 	etk_canvas_x_rel_set(sc, 0);
@@ -96,37 +123,19 @@ int main(int argc, char **argv)
 	etk_canvas_w_rel_set(sc, 50);
 	etk_canvas_h_rel_set(sc, 50);
 
+	enesim_matrix_scale(&mx1, 0.8, 0.8);
+	/*
 	enesim_matrix_rotate(&mx1, 1.3);
 	enesim_matrix_translate(&mx2, 60, 20);
 	enesim_matrix_compose(&mx2, &mx1, &mx1);
 	enesim_matrix_translate(&mx2, -60, -20);
 	enesim_matrix_compose(&mx1, &mx2, &mx1);
 	//enesim_matrix_translate(&mx1, 30, 30);
-	//enesim_matrix_scale(&mx1, 0.8, 0.8);
-	etk_canvas_matrix_set(sc, &mx1);
-	etk_canvas_show(sc);
 
-	r = etk_rect_new(sc);
-	etk_rect_x_rel_set(r, 0);
-	etk_rect_y_rel_set(r, 0);
-	etk_rect_w_rel_set(r, 100);
-	etk_rect_h_rel_set(r, 100);
-	etk_rect_color_set(r, 0xaaaa00aa);
-	etk_rect_rop_set(r, ENESIM_FILL);
-	etk_rect_show(r);
-#endif
-	/* create a rectangle */
-	r = etk_rect_new(c);
-	etk_rect_x_rel_set(r, 25);
-	etk_rect_y_rel_set(r, 25);
-	etk_rect_w_rel_set(r, 50);
-	etk_rect_h_rel_set(r, 50);
-	etk_rect_color_set(r, 0xaaaa0000);
-	etk_rect_rop_set(r, ENESIM_BLEND);
-	etk_rect_show(r);
-	_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
-	_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 3);
-#endif
+	etk_canvas_matrix_set(sc, &mx1);
+	*/
+	_setup_scene(sc);
+	etk_canvas_show(sc);
 
 	ekeko_object_dump((Ekeko_Object *)d, ekeko_object_dump_printf);
 	etk_loop();
