@@ -1,7 +1,7 @@
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
-AC_INIT(emage, 0.0.1, enlightenment-devel@lists.sourceforge.net)
+AC_INIT(emage, 0.0.2, enlightenment-devel@lists.sourceforge.net)
 AC_PREREQ(2.52)
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CANONICAL_BUILD
@@ -62,6 +62,7 @@ src/Makefile
 src/include/Makefile
 src/lib/Makefile
 src/modules/Makefile
+examples/Makefile
 ])
 
 

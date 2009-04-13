@@ -17,9 +17,12 @@ Eina_Bool _png_loadable(const char *file)
 {
 	FILE *f;
 	unsigned char buf[PNG_BYTES_TO_CHECK];
-	
+	int ret;
+
 	f = fopen(file, "rb");
-	fread(buf, 1, PNG_BYTES_TO_CHECK, f);
+	ret = fread(buf, 1, PNG_BYTES_TO_CHECK, f);
+	if (ret < 0)
+		return EINA_FALSE;
 	if (!png_check_sig(buf, PNG_BYTES_TO_CHECK))
 	{
 		fclose(f);
@@ -28,19 +31,18 @@ Eina_Bool _png_loadable(const char *file)
 	return EINA_TRUE;
 }
 
-Eina_Bool _png_info_load(const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
+Eina_Bool _png_info_load(const char *file, int *w, int *h, Enesim_Converter_Format *sfmt)
 {
 	Enesim_Surface *s;
 	FILE *f;
 	int bit_depth, color_type, interlace_type;
 	char hasa, hasg;
 	int i;
-		
+
 	png_uint_32 w32, h32;
 	png_structp png_ptr = NULL;
 	png_infop info_ptr = NULL;
-		
-	Enesim_Surface_Data sdata;
+
 	Eina_Bool ret = EINA_TRUE;
 
 	hasa = 0;
@@ -53,7 +55,7 @@ Eina_Bool _png_info_load(const char *file, int *w, int *h, Enesim_Surface_Format
 	}
 
 	rewind(f);
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, 
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
 	NULL);
 	if (!png_ptr)
 	{
@@ -78,10 +80,10 @@ Eina_Bool _png_info_load(const char *file, int *w, int *h, Enesim_Surface_Format
 	png_get_IHDR(png_ptr, info_ptr, (png_uint_32 *) (&w32), (png_uint_32 *) (&h32), &bit_depth, &color_type, &interlace_type, NULL, NULL);
 	if (w) *w = w32;
 	if (h) *h = h32;
-	if (sfmt) *sfmt = ENESIM_SURFACE_ARGB8888_UNPRE;
+	if (sfmt) *sfmt = ENESIM_CONVERTER_ARGB8888;
 }
 
-Eina_Bool _png_load(const char *file, Enesim_Surface *s)
+Eina_Bool _png_load(const char *file, void *data)
 {
 	FILE *f;
 	int bit_depth, color_type, interlace_type;
@@ -89,12 +91,12 @@ Eina_Bool _png_load(const char *file, Enesim_Surface *s)
 	unsigned char **lines;
 	char hasa, hasg;
 	int i;
-	
+
 	png_uint_32 w32, h32;
 	png_structp png_ptr = NULL;
 	png_infop info_ptr = NULL;
-	
-	Enesim_Surface_Data sdata;
+
+	uint32_t *sdata = data;
 	Eina_Bool ret = EINA_TRUE;
 
 	hasa = 0;
@@ -138,7 +140,7 @@ Eina_Bool _png_load(const char *file, Enesim_Surface *s)
 	png_get_IHDR(png_ptr, info_ptr, (png_uint_32 *) (&w32),
 			(png_uint_32 *) (&h32), &bit_depth, &color_type,
 			&interlace_type, NULL, NULL);
-	
+
 	if (color_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_expand(png_ptr);
 	if (info_ptr->color_type == PNG_COLOR_TYPE_RGB_ALPHA)
@@ -176,17 +178,18 @@ Eina_Bool _png_load(const char *file, Enesim_Surface *s)
 			png_set_gray_1_2_4_to_8(png_ptr);
 	}
 	/* setup the pointers */
-	enesim_surface_data_get(s, &sdata);
 	for (i = 0; i < h32; i++)
-		lines[i] = ((unsigned char *)(sdata.data.argb8888_unpre.plane0)) + (i * w32
+	{
+		lines[i] = ((unsigned char *)(sdata)) + (i * w32
 				* sizeof(uint32_t));
+	}
 	png_read_image(png_ptr, lines);
 	png_read_end(png_ptr, info_ptr);
-	
+
 err_setup:
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
 	fclose(f);
-	
+
 	return ret;
 }
 

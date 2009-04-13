@@ -24,10 +24,67 @@ typedef struct _Emage_Job
 	Eina_Error err;
 } Emage_Job;
 
-void _provider_info_load(Emage_Provider *p, const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
+/* TODO this can be merged into enesim itself */
+static void * _provider_data_create(Enesim_Converter_Format cfmt, int w, int h)
+{
+	void *data;
+	switch(cfmt)
+	{
+		case ENESIM_CONVERTER_ARGB8888:
+		case ENESIM_CONVERTER_ARGB8888_PRE:
+		data = malloc(w * h * sizeof(uint32_t));
+		break;
+
+		case ENESIM_CONVERTER_RGB565:
+		data = malloc(w * h * sizeof(uint16_t));
+		break;
+
+		default:
+		break;
+	}
+	return data;
+}
+
+static void _provider_data_convert(uint32_t *cdata, uint32_t w, uint32_t h, Enesim_Surface *s)
+{
+	Enesim_Operator op;
+	Enesim_Cpu **cpu;
+	int cpunum;
+	uint32_t sw, sh;
+	uint32_t *src;
+	uint32_t sstride;
+
+	src = enesim_surface_data_get(s);
+	enesim_surface_size_get(s, &sw, &sh);
+	sstride = enesim_surface_stride_get(s);
+	/* FIXME by default we are using the first cpu, it should be a
+	 * parameter to the load function
+	 */
+	/* FIXME use the 2d converter */
+	cpu = enesim_cpu_get(&cpunum);
+	if (!cpunum)
+	{
+		printf("No enesim cpus available\n");
+		return;
+	}
+	if (!enesim_converter_1d_to_get(&op, cpu[0], ENESIM_CONVERTER_ARGB8888,
+			ENESIM_FORMAT_ARGB8888))
+	{
+		printf("No enesim converter available\n");
+		return;
+	}
+	while (sh--)
+	{
+		enesim_operator_converter_1d(&op, src, sw, cdata);
+		src += sstride;
+		cdata += w;
+	}
+}
+
+static void _provider_info_load(Emage_Provider *p, const char *file, int *w, int *h, Enesim_Converter_Format *sfmt)
 {
 	int pw, ph;
-	Enesim_Surface_Format pfmt;
+	Enesim_Converter_Format pfmt;
 
 	/* get the info from the image */
 	p->info_get(file, &pw, &ph, &pfmt);
@@ -36,47 +93,31 @@ void _provider_info_load(Emage_Provider *p, const char *file, int *w, int *h, En
 	if (sfmt) *sfmt = pfmt;
 }
 
-void _provider_data_load(Emage_Provider *p, const char *file, Enesim_Surface **s)
+static void _provider_data_load(Emage_Provider *p, const char *file, Enesim_Surface **s)
 {
 	Enesim_Surface *ls;
 	Enesim_Surface *stmp;
 	int w, h;
-	Enesim_Surface_Format sfmt;
+	Enesim_Converter_Format cfmt;
+	uint32_t *cdata;
 
-	_provider_info_load(p, file, &w, &h, &sfmt);
-	if (*s)
+	_provider_info_load(p, file, &w, &h, &cfmt);
+	/* create a buffer of format cfmt where the provider will fill */
+	cdata = _provider_data_create(cfmt, w, h);
+	if (!*s)
 	{
-		int sw, sh;
-		Enesim_Surface_Format ssfmt;
-
-		ssfmt = enesim_surface_format_get(*s);
-		enesim_surface_size_get(*s, &sw, &sh);
-		/* create a temporary surface */
-		if ((ssfmt != sfmt) || (sw != w) || (sh != h))
-		{
-			ls = enesim_surface_new(sfmt, w, h);
-		}
-		else
-			ls = *s;
-	}
-	/* create a temporary surface */
-	else
-	{
-		ls = enesim_surface_new(sfmt, w, h);
-		*s = ls;
+		*s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, w, h);
 	}
 	/* load the file */
-	if (p->load(file, ls) == EINA_FALSE)
-		return;
-	/* convert if needed */
-	if (ls != *s)
+	if (p->load(file, cdata) == EINA_FALSE)
 	{
-		enesim_surface_convert(ls, *s, NULL);
-		enesim_surface_delete(ls);
+		return;
 	}
+	/* convert */
+	_provider_data_convert(cdata, w, h, *s);
 }
 
-Emage_Provider * _provider_get(const char *file)
+static Emage_Provider * _provider_get(const char *file)
 {
 	Eina_List *tmp;
 	Emage_Provider *p;
@@ -98,13 +139,13 @@ Emage_Provider * _provider_get(const char *file)
 	return NULL;
 }
 
-void _thread_finish(Emage_Job *j)
+static void _thread_finish(Emage_Job *j)
 {
 	int ret;
 	ret = write(_fifo[1], &j, sizeof(j));
 }
 
-void * _thread_load(void *data)
+static void * _thread_load(void *data)
 {
 	Emage_Provider *prov;
 	Emage_Job *j = data;
@@ -136,6 +177,15 @@ EAPI int emage_init(void)
 	if (!_init_count)
 	{
 		eina_init();
+		enesim_init();
+		/* the fifo */
+		if (pipe(_fifo) < 0)
+		{
+			eina_shutdown();
+			enesim_shutdown();
+			return 0;
+		}
+		fcntl(_fifo[0], F_SETFL, O_NONBLOCK);
 		/* the errors */
 		EMAGE_ERROR_EXIST = eina_error_msg_register("Files does not exist");
 		EMAGE_ERROR_PROVIDER = eina_error_msg_register("No provider for such file");
@@ -148,9 +198,6 @@ EAPI int emage_init(void)
 #else
 		png_provider_init();
 #endif
-		/* the fifo */
-		pipe(_fifo);
-		fcntl(_fifo[0], F_SETFL, O_NONBLOCK);
 		/* TODO the pool of threads */
 	}
 	return ++_init_count;
@@ -163,7 +210,6 @@ EAPI void emage_shutdown(void)
 	_init_count--;
 	if (!_init_count)
 	{
-		eina_shutdown();
 		/* unload every module */
 #if 1
 		eina_module_list_delete(_modules);
@@ -175,12 +221,14 @@ EAPI void emage_shutdown(void)
 		/* the fifo */
 		close(_fifo[0]);
 		close(_fifo[1]);
+		enesim_shutdown();
+		eina_shutdown();
 	}
 }
 /**
  *
  */
-EAPI Eina_Bool emage_info_load(const char *file, int *w, int *h, Enesim_Surface_Format *sfmt)
+EAPI Eina_Bool emage_info_load(const char *file, int *w, int *h, Enesim_Converter_Format *sfmt)
 {
 	Emage_Provider *prov;
 
