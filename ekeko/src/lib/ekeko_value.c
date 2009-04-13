@@ -237,6 +237,43 @@ int ekeko_value_register(const char *name, Ekeko_Value_Create create,
 	return _curr;
 }
 
+void ekeko_value_free(Ekeko_Value *v, Ekeko_Value_Type vtype)
+{
+	switch (vtype)
+	{
+		case PROPERTY_UNDEFINED:
+		printf("[Ekeko_Value] freeing an undefined value?\n");
+		break;
+
+		case PROPERTY_INT:
+		case PROPERTY_BOOL:
+		case PROPERTY_CHAR:
+		case PROPERTY_FLOAT:
+		case PROPERTY_DOUBLE:
+		case PROPERTY_SHORT:
+		case PROPERTY_LONG:
+		case PROPERTY_RECTANGLE:
+		break;
+
+		case PROPERTY_STRING:
+		free(v->value.string_value);
+		break;
+
+		case PROPERTY_VALUE:
+		ekeko_value_free(v, v->type);
+		break;
+
+		default:
+		{
+			Ekeko_Value_Impl *impl;
+
+			impl = _implementation_get(vtype);
+			impl->free(v->value.pointer_value);
+			v->value.pointer_value = NULL;
+		}
+	}
+}
+
 void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 {
 	switch (vtype)
@@ -288,42 +325,5 @@ void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 			impl->pointer_from(v, ptr);
 		}
 		break;
-	}
-}
-
-void ekeko_value_free(Ekeko_Value *v, Ekeko_Value_Type vtype)
-{
-	switch (vtype)
-	{
-		case PROPERTY_UNDEFINED:
-		printf("[Ekeko_Value] freeing an undefined value?\n");
-		break;
-
-		case PROPERTY_INT:
-		case PROPERTY_BOOL:
-		case PROPERTY_CHAR:
-		case PROPERTY_FLOAT:
-		case PROPERTY_DOUBLE:
-		case PROPERTY_SHORT:
-		case PROPERTY_LONG:
-		case PROPERTY_RECTANGLE:
-		break;
-
-		case PROPERTY_STRING:
-		free(v->value.string_value);
-		break;
-
-		case PROPERTY_VALUE:
-		ekeko_value_free(v, v->type);
-		break;
-
-		default:
-		{
-			Ekeko_Value_Impl *impl;
-
-			impl = _implementation_get(vtype);
-			impl->free(v->value.pointer_value);
-			v->value.pointer_value = NULL;
-		}
 	}
 }

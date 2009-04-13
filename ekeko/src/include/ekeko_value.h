@@ -59,6 +59,7 @@ typedef void (*Ekeko_Value_Pointer_To)(Ekeko_Value *v, void *ptr);
 #define EKEKO_VALUE_POINTER_TO(f) ((Ekeko_Value_Pointer_To)(f))
 
 void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *val);
+void ekeko_value_free(Ekeko_Value *v, Ekeko_Value_Type vtype);
 int ekeko_value_register(const char *name, Ekeko_Value_Create create,
 		Ekeko_Value_Free free, Ekeko_Value_Compare cmp,
 		Ekeko_Value_Pointer_From pointer_from,
