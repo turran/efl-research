@@ -5,6 +5,7 @@
  *      Author: jl
  */
 #include "Etk2.h"
+#include "Emage.h"
 #include "etk2_private.h"
 #define ETK_IMAGE_DEBUG 0
 /* TODO
@@ -117,8 +118,8 @@ static void _render(Etk_Shape *s, Etk_Engine *func, Etk_Surface *surface, Etk_Co
 
 	etk_square_coords_get((Etk_Square *)i, &x, &y, &w, &h);
 	eina_rectangle_coords_from(&srect, x.final, y.final, w.final, h.final);
-#if ETK_IMAGE_DEBUG
-	printf("[Etk_Image] Trying to render the image\n");
+#ifdef ETK_IMAGE_DEBUG
+	printf("[Etk_Image] Trying to render the image at %d %d %d %d\n", srect.x, srect.y, srect.w, srect.h);
 #endif
 	if (!prv->src.loaded)
 	{

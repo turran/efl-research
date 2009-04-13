@@ -88,34 +88,17 @@ static Eina_Bool _flush(void *src, Eina_Rectangle *srect)
 
 static void * _enesim_create(Eina_Bool root, int w, int h)
 {
-	SDL_Surface *s;
 	Enesim_Surface *es;
-	Enesim_Surface_Data sdata;
 
-	s = _create(root, w, h);
-	if (!root)
+	es = enesim_surface_new(ENESIM_FORMAT_ARGB8888, w, h);
+	if (root)
 	{
-		/* FIXME SDL is UNPRE */
-		sdata.format= ENESIM_SURFACE_ARGB8888;
-		sdata.data.argb8888.plane0 = s->pixels;
-		es = enesim_surface_new_data_from(w, h, &sdata);
+		SDL_Surface *s;
+
+		/* the destination surface */
+		s = _create(root, w, h);
 		enesim_surface_private_set(es, s);
 	}
-	else
-	{
-		Enesim_Surface *root;
-
-		/* the backbuffer */
-		es = enesim_surface_new(ENESIM_SURFACE_ARGB8888, w, h);
-		/* FIXME SDL is UNPRE */
-		sdata.format= ENESIM_SURFACE_ARGB8888_UNPRE;
-		sdata.data.argb8888.plane0 = s->pixels;
-		root = enesim_surface_new_data_from(w, h, &sdata);
-		enesim_surface_private_set(root, s);
-		enesim_surface_private_set(es, root);
-	}
-
-
 	return es;
 }
 
@@ -126,20 +109,60 @@ static void _enesim_blit(void *src, Eina_Rectangle *srect, void *context, void *
 	Enesim_Surface *d = dst;
 	Enesim_Matrix m;
 
+	/* TODO just blit from the offscreen image into the backbuffer */
 	/* FIXME fix this */
-	enesim_context_clip_set(context, drect);
-	enesim_image_draw(d, context, s, srect);
+	//enesim_context_clip_set(context, drect);
+	//enesim_image_draw(d, context, s, srect);
 }
 
 static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
 {
 	Enesim_Surface *es = src;
-	Enesim_Surface *root;
+	Enesim_Operator op;
+	Enesim_Cpu **cpus;
+	uint32_t *sdata;
+	uint8_t *cdata;
+
 	SDL_Surface *s;
 
-	root = enesim_surface_private_get(es);
-	s = enesim_surface_private_get(root);
-	enesim_surface_convert(es, root, srect);
+	int h = srect->h;
+	int stride;
+	int inc;
+	int numcpus;
+	int soffset;
+	int coffset;
+
+	printf("Flushing the canvas %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+	{
+		int w, h;
+		enesim_surface_size_get(es, &w, &h);
+		printf("%d %d\n", w, h);
+	}
+
+	/* setup the pointers */
+	s = enesim_surface_private_get(es);
+	stride = enesim_surface_stride_get(es);
+
+	sdata = enesim_surface_data_get(es);
+	cdata = s->pixels;
+
+	soffset = (stride * srect->y) + srect->x;
+	coffset = (s->pitch * srect->y) + (srect->x * 4);
+
+	cdata += coffset;
+	sdata += soffset;
+	/* convert */
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_converter_1d_from_get(&op, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_CONVERTER_ARGB8888);
+
+	_lock(s);
+	while (h--)
+	{
+		enesim_operator_converter_1d(&op, sdata, srect->w, cdata);
+		sdata += stride;
+		cdata += s->pitch;
+	}
+	_unlock(s);
 	return _flush(s, srect);
 }
 

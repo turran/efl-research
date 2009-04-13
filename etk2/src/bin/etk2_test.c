@@ -57,14 +57,14 @@ static void _setup_scene(Etk_Canvas *c)
 {
 	Etk_Image *i;
 	Etk_Rect *r;
-#if 0
+#if 1
 	/* create an image */
 	i = etk_image_new(c);
 	etk_image_x_rel_set(i, 10);
 	etk_image_y_rel_set(i, 10);
 	etk_image_w_set(i, 400);
 	etk_image_h_set(i, 412);
-	etk_image_file_set(i, "../data/tiger.png");
+	etk_image_file_set(i, "/home/jl/code/efl-research/trunk/etk2/data/tiger.png");
 	etk_image_show(i);
 #endif
 	/* create a rectangle */
@@ -116,6 +116,7 @@ int main(int argc, char **argv)
 	etk_rect_show(r);
 
 	_setup_scene(c);
+#if 0
 	/* add a subcanvas */
 	sc = etk_canvas_new(c);
 	etk_canvas_x_rel_set(sc, 0);
@@ -136,7 +137,7 @@ int main(int argc, char **argv)
 	*/
 	_setup_scene(sc);
 	etk_canvas_show(sc);
-
+#endif
 	ekeko_object_dump((Ekeko_Object *)d, ekeko_object_dump_printf);
 	etk_loop();
 	etk_shutdown();

@@ -2,7 +2,6 @@
 #define _ETK2_H
 
 #include "Eina.h"
-#include "Emage.h"
 #include "Ekeko.h"
 #include "Enesim.h"
 #include "Ecore.h"

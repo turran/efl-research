@@ -1,3 +1,19 @@
+Comments on the implementation
++ Do we actaully need to export as an API function the foo_type_get() ?
+  where it can be used? the only place it makes sense (beside of foo.c file itself)
+  is for the cast, like what Etk had. But the cast can be done internal (slower)
+  but we avoid the need to export those function which might be problematic
+  Another place to use it is on type_instance_new(foo_type_get()), but in case of
+  a xml parser:
+  <widget>
+  </widget>
+  we should do:
+  if (!strcmp(tag, "widget"))
+    widget_new(); // or type_instance_new(widget_type_get());
+  what if we just do this:
+  type_instance_new_name_from(tag);
+  so this works like type_instance_property_set(type, instance, attribute, value); 
+ 
 + The foo_bar_get(Foo *f) functions should be fast, as it access the private
   struct and the type/object interface is not used at all
 + The foo_bar_set(Foo *f, void *bar) functions are slower as it access the

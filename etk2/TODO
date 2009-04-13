@@ -1,15 +1,2 @@
-+ Do we actaully need to export as an API function the foo_type_get() ?
-  where it can be used? the only place it makes sense (beside of foo.c file itself)
-  is for the cast, like what Etk had. But the cast can be done internal (slower)
-  but we avoid the need to export those function which might be problematic
-  Another place to use it is on type_instance_new(foo_type_get()), but in case of
-  a xml parser:
-  <widget>
-  </widget>
-  we should do:
-  if (!strcmp(tag, "widget"))
-    widget_new(); // or type_instance_new(widget_type_get());
-  what if we just do this:
-  type_instance_new_name_from(tag);
-  so this works like type_instance_property_set(type, instance, attribute, value); 
- 
++ Implement the basic widgetery
++ Implement fancy types, like a graphviz type
