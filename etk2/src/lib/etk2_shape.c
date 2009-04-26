@@ -51,9 +51,11 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 #endif
 	/* TODO context clip set */
 	func->context->clip_set(prv->context, rect);
+	//printf("Rendering %s\n", ekeko_object_type_name_get((Ekeko_Object *)s));
 	func->canvas->lock(surface);
 	/* Call the shape's render function */
 	s->render(s, func, surface, prv->context);
+	func->context->clip_clear(prv->context);
 	func->canvas->unlock(surface);
 	/* TODO context clear ? */
 }

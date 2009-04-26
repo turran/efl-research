@@ -41,8 +41,8 @@ typedef struct _Etk_Canvas_Engine
 	void (*lock)(void *s);
 	void (*unlock)(void *s);
 	void * (*create)(Eina_Bool root, int w, int h);
-	void (*blit)(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rectangle *drect);
-	Eina_Bool (*flush)(void *src, Eina_Rectangle *srect);
+	void (*blit)(void *s, void *context, void *src, Eina_Rectangle *srect);
+	Eina_Bool (*flush)(void *s, Eina_Rectangle *srect);
 } Etk_Canvas_Engine;
 
 typedef struct _Etk_Context_Engine
@@ -53,6 +53,7 @@ typedef struct _Etk_Context_Engine
 	void (*rop_set)(void *context, int rop); /* FIXME change this int */
 	void (*matrix_set)(void *c, Enesim_Matrix *m);
 	void (*clip_set)(void *c, Eina_Rectangle *r);
+	void (*clip_clear)(void *c);
 } Etk_Context_Engine;
 
 typedef struct _Etk_Shape_Engine

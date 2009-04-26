@@ -18,3 +18,11 @@ Comments on the implementation
   struct and the type/object interface is not used at all
 + The foo_bar_set(Foo *f, void *bar) functions are slower as it access the
   type interface
+
++ Filters!!!
+  basically a filter is just a definition, you can't render a definition but objects.
+  this objects can reference a filter pipe to use in order to generate the destination
+  pixels.
+
++ Handle the case whenever an object references another and the referenced object changes
+  a duual state attribute, if that's the case the referencing object should change too.

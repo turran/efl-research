@@ -46,7 +46,7 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	cprv = PRIVATE(c);
 
 	func = etk_document_engine_get(sprv->doc);
-#ifdef BOUNDING_DEBUG
+#ifndef BOUNDING_DEBUG
 	{
 		Etk_Context *ctx;
 
@@ -73,7 +73,9 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 #ifdef ETK_DEBUG
 	printf("[Etk_Canvas] Subcanvas render %d %d %d %d (%d %d %d %d)\n", srect.x, srect.y, srect.w, srect.h, rect->x, rect->y, rect->w, rect->h);
 #endif
-	func->canvas->blit(sprv->s, &srect, sprv->context, cprv->s, rect);
+	func->context->clip_set(sprv->context, rect);
+	func->canvas->blit(cprv->s, sprv->context, sprv->s, &srect);
+	func->context->clip_clear(sprv->context);
 }
 
 static Eina_Bool _subcanvas_is_inside(Ekeko_Canvas *c, int x, int y)
@@ -669,3 +671,4 @@ EAPI void etk_canvas_matrix_set(Etk_Canvas *c, Enesim_Matrix *m)
 	etk_value_matrix_from(&v, m);
 	ekeko_object_property_value_set((Ekeko_Object *)c, "matrix", &v);
 }
+

@@ -6,6 +6,7 @@
  */
 #include "Etk2.h"
 #include "etk2_private.h"
+#include "Ecore_Input.h"
 #include "Ecore_Sdl.h"
 #include "SDL.h"
 /*============================================================================*
@@ -43,7 +44,7 @@ static int _mouse_up_cb(void *data, int type, void *event)
 static int _mouse_move_cb(void *data, int type, void *event)
 {
 	Ekeko_Input *input = (Ekeko_Input *)data;
-	Ecore_Sdl_Event_Mouse_Move *e = event;
+	Ecore_Event_Mouse_Move *e = event;
 
 	ekeko_input_feed_mouse_move(input, e->x, e->y);
 	return 1;
@@ -77,9 +78,9 @@ static void * _create(Etk_Document *d)
 	ecore_event_handler_add(ECORE_SDL_EVENT_RESIZE, _resize_cb, d);
 	ecore_event_handler_add(ECORE_SDL_EVENT_GOT_FOCUS, _in_cb, input);
 	ecore_event_handler_add(ECORE_SDL_EVENT_LOST_FOCUS, _out_cb, input);
-	ecore_event_handler_add(ECORE_SDL_EVENT_MOUSE_BUTTON_DOWN, _mouse_down_cb, input);
-	ecore_event_handler_add(ECORE_SDL_EVENT_MOUSE_BUTTON_UP, _mouse_up_cb, input);
-	ecore_event_handler_add(ECORE_SDL_EVENT_MOUSE_MOVE, _mouse_move_cb, input);
+	ecore_event_handler_add(ECORE_EVENT_MOUSE_BUTTON_DOWN, _mouse_down_cb, input);
+	ecore_event_handler_add(ECORE_EVENT_MOUSE_BUTTON_UP, _mouse_up_cb, input);
+	ecore_event_handler_add(ECORE_EVENT_MOUSE_MOVE, _mouse_move_cb, input);
 	/* FIXME Ecore_SDL doesnt support the in/out events, make it always in */
 	ekeko_input_feed_mouse_in(input);
 	/* the event feeder evas/ecore has a very weird way to feed sdl events! */

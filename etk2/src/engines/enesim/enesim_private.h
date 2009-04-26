@@ -9,6 +9,10 @@ typedef struct _Context
 		Eina_Rectangle rect;
 		Eina_Bool used;
 	} clip;
+	struct {
+		Enesim_Matrix m;
+		Eina_Bool used;
+	} matrix;
 
 } Context;
 

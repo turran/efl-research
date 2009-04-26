@@ -18,10 +18,12 @@ static void * _create(Eina_Bool root, int w, int h)
 	{
 		printf("[SDL] Setting video mode to %d %d\n", w, h);
 #ifdef SINGLE_BUFFER
-		return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA);
+		//return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA);
+		return SDL_SetVideoMode(w, h, 32, SDL_SRCALPHA);
 #else
-		return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA |
-				SDL_DOUBLEBUF);
+		//return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA |
+		//		SDL_DOUBLEBUF);
+		return SDL_SetVideoMode(w, h, 32, SDL_SRCALPHA | SDL_DOUBLEBUF);
 #endif
 	}
 	else
@@ -103,16 +105,9 @@ static void * _enesim_create(Eina_Bool root, int w, int h)
 }
 
 
-static void _enesim_blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Eina_Rectangle *drect)
+static void _enesim_blit(void *s, void *context, void *src, Eina_Rectangle *srect)
 {
-	Enesim_Surface *s = src;
-	Enesim_Surface *d = dst;
-	Enesim_Matrix m;
-
-	/* TODO just blit from the offscreen image into the backbuffer */
-	/* FIXME fix this */
-	//enesim_context_clip_set(context, drect);
-	//enesim_image_draw(d, context, s, srect);
+	etk2_enesim_image(s, context, src, srect);
 }
 
 static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
@@ -132,13 +127,14 @@ static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
 	int soffset;
 	int coffset;
 
+#if 0
 	printf("Flushing the canvas %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 	{
 		int w, h;
 		enesim_surface_size_get(es, &w, &h);
 		printf("%d %d\n", w, h);
 	}
-
+#endif
 	/* setup the pointers */
 	s = enesim_surface_private_get(es);
 	stride = enesim_surface_stride_get(es);
@@ -169,17 +165,23 @@ static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
 static void _enesim_lock(void *src)
 {
 	Enesim_Surface *es = src;
+	SDL_Surface *s;
 
 	/* FIXME here we can have a SDL_Surface or an Enesim_Surface */
-	_lock(enesim_surface_private_get(es));
+	s = enesim_surface_private_get(es);
+	if (s)
+		_lock(s);
 }
 
 static void _enesim_unlock(void *src)
 {
 	Enesim_Surface *es = src;
+	SDL_Surface *s;
 
 	/* FIXME here we can have a SDL_Surface or an Enesim_Surface */
-	_unlock(enesim_surface_private_get(es));
+	s = enesim_surface_private_get(es);
+	if (s)
+		_unlock(s);
 }
 /*============================================================================*
  *                                 Global                                     *

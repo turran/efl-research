@@ -48,6 +48,10 @@ static void _rop_set(void *c, int rop)
 
 static void _matrix_set(void *c, Enesim_Matrix *m)
 {
+	Context *ctx = c;
+
+	ctx->matrix.used = EINA_TRUE;
+	ctx->matrix.m = *m;
 	//enesim_context_matrix_set(c, m);
 }
 
@@ -55,6 +59,7 @@ static void _clip_set(void *c, Eina_Rectangle *r)
 {
 	Context *ctx = c;
 
+	//printf("0 setting clip to %d %d %d %d\n", r->x, r->y, r->w, r->h);
 	ctx->clip.rect = *r;
 	ctx->clip.used = EINA_TRUE;
 	//enesim_context_clip_set(c, r);
@@ -65,6 +70,7 @@ static void _clip_clear(void *c)
 	Context *ctx = c;
 
 	ctx->clip.used = EINA_FALSE;
+	//printf("1 unsetting clip\n");
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -76,6 +82,7 @@ Etk_Context_Engine etk_context_engine_enesim = {
 	.rop_set = _rop_set,
 	.matrix_set = _matrix_set,
 	.clip_set = _clip_set,
+	.clip_clear = _clip_clear,
 };
 /*============================================================================*
  *                                   API                                      *

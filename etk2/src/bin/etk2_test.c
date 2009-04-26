@@ -53,6 +53,22 @@ static void _coord_animation(Ekeko_Object *o, const char *prop,
 	etk_animation_repeat_set(a, -1);
 }
 
+static void _click_cb(const Ekeko_Object *o, Event *e, void *data)
+{
+	Enesim_Matrix m;
+#if 0
+	Eina_Rectangle r;
+	printf("clicked!!\n");
+
+	eina_rectangle_coords_from(&r, 200, 200, 100, 400);
+	ekeko_canvas_damage_add((Ekeko_Canvas *)data, &r);
+#endif
+	enesim_matrix_identity(&m);
+	enesim_matrix_scale(&m, 1, 1);
+	etk_image_matrix_set((Etk_Image *)data, &m);
+
+}
+
 static void _setup_scene(Etk_Canvas *c)
 {
 	Etk_Image *i;
@@ -60,13 +76,19 @@ static void _setup_scene(Etk_Canvas *c)
 #if 1
 	/* create an image */
 	i = etk_image_new(c);
-	etk_image_x_rel_set(i, 10);
-	etk_image_y_rel_set(i, 10);
-	etk_image_w_set(i, 400);
-	etk_image_h_set(i, 412);
-	etk_image_file_set(i, "/home/jl/code/efl-research/trunk/etk2/data/tiger.png");
+	//etk_image_x_set(i, 30);
+	//etk_image_y_set(i, 30);
+	//etk_image_w_set(i, 400);
+	//etk_image_h_set(i, 412);
+	//etk_image_file_set(i, "/home/jl/code/efl-research/trunk/etk2/data/tiger.png");
+	etk_image_file_set(i, "/home/jl/checker.png");
+	etk_image_x_set(i, 150);
+	etk_image_y_set(i, 150);
+	etk_image_w_set(i, 256);
+	etk_image_h_set(i, 256);
 	etk_image_show(i);
 #endif
+#if 1
 	/* create a rectangle */
 	r = etk_rect_new(c);
 	etk_rect_x_rel_set(r, 25);
@@ -76,8 +98,11 @@ static void _setup_scene(Etk_Canvas *c)
 	etk_rect_color_set(r, 0xaaaa0000);
 	etk_rect_rop_set(r, ENESIM_BLEND);
 	etk_rect_show(r);
+#endif
 	_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
-	_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 3);
+	_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 30);
+	//ekeko_event_listener_add((Ekeko_Object *)i, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, c);
+	ekeko_event_listener_add((Ekeko_Object *)r, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, i);
 #if 0
 	r = etk_rect_new(sc);
 	etk_rect_x_rel_set(r, 0);
@@ -133,8 +158,8 @@ int main(int argc, char **argv)
 	enesim_matrix_compose(&mx1, &mx2, &mx1);
 	//enesim_matrix_translate(&mx1, 30, 30);
 
-	etk_canvas_matrix_set(sc, &mx1);
 	*/
+	etk_canvas_matrix_set(sc, &mx1);
 	_setup_scene(sc);
 	etk_canvas_show(sc);
 #endif

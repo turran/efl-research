@@ -76,7 +76,7 @@ static void _geometry_calc(const Ekeko_Object *o, Event *e, void *data)
 	enesim_quad_coords_get(&q, &x1, &y1, &x2, &y2, &x3, &y3, &x4, &y4);
 	enesim_quad_rectangle_to(&q, &r);
 
-#ifdef ETK_DEBUG
+#ifndef ETK_DEBUG
 	printf("[Etk_Image] Setting geometry of size %d %d %d %d\n",
 			r.x, r.y, r.w, r.h);
 #endif
@@ -89,11 +89,21 @@ static void _matrix_change(const Ekeko_Object *o, Event *e, void *data)
 	Etk_Image *i = (Etk_Image *)o;
 	Etk_Image_Private *prv = PRIVATE(i);
 	Enesim_Matrix *m;
+	Ekeko_Object *parent;
 
 	m = em->curr->value.pointer_value;
 	enesim_matrix_inverse(m, &prv->inverse);
-	/* update the geometry */
 	_geometry_calc(o, e, data);
+	/* update the geometry */
+ 	if (parent = ekeko_object_parent_get(o))
+	{
+		Etk_Engine *func;
+		Etk_Document *d;
+
+		d = etk_canvas_document_get((Etk_Canvas *)parent);
+		func = etk_document_engine_get(d);
+		func->context->matrix_set(etk_shape_context_get((Etk_Shape *)o), &prv->inverse);
+	}
 }
 
 
@@ -119,7 +129,7 @@ static void _render(Etk_Shape *s, Etk_Engine *func, Etk_Surface *surface, Etk_Co
 	etk_square_coords_get((Etk_Square *)i, &x, &y, &w, &h);
 	eina_rectangle_coords_from(&srect, x.final, y.final, w.final, h.final);
 #ifdef ETK_IMAGE_DEBUG
-	printf("[Etk_Image] Trying to render the image at %d %d %d %d\n", srect.x, srect.y, srect.w, srect.h);
+	//printf("[Etk_Image] Trying to render the image at %d %d %d %d\n", srect.x, srect.y, srect.w, srect.h);
 #endif
 	if (!prv->src.loaded)
 	{
