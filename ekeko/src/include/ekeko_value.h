@@ -23,6 +23,8 @@
 #define PROPERTY_POINTER 9 /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
 #define PROPERTY_VALUE 10 /**< The value of the property is value */  //!< PROPERTY_VALUE
 #define PROPERTY_STRING 11 /**< The value of the property is a string (char *) */ //!< PROPERTY_STRING
+#define PROPERTY_OBJECT 12 /**< The value of the property is an Object */ //!< PROPERTY_OBJECT
+#define PROPERTY_LAST PROPERTY_OBJECT
 
 typedef int Ekeko_Value_Type;
 /**
@@ -43,6 +45,7 @@ typedef struct _Ekeko_Value
 		void *pointer_value;
 		char *string_value;
 		Eina_Rectangle rect;
+		Ekeko_Object *object;
 	} value;
 } Ekeko_Value;
 
@@ -96,6 +99,13 @@ static inline void ekeko_value_bool_from(Ekeko_Value *v, Eina_Bool b)
 {
 	v->type = PROPERTY_BOOL;
 	v->value.bool_value = b;
+}
+
+
+static inline void ekeko_value_object_from(Ekeko_Value *v, Ekeko_Object *o)
+{
+	v->type = PROPERTY_OBJECT;
+	v->value.object = o;
 }
 
 #endif /* EKEKO_VALUE_H_ */

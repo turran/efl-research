@@ -28,6 +28,7 @@ struct _Ekeko_Object_Private
 	Ekeko_Object *rel; /* when we store an inlist we only store the private no the public memory area */
 	/* we need a changed counter, to keep track of every async prop change */
 	int changed;
+	Eina_List *references; /* list of objects that reference this one */
 };
 
 /* We use a container for the object-event in case we need

@@ -53,9 +53,29 @@ static void _coord_animation(Ekeko_Object *o, const char *prop,
 	etk_animation_repeat_set(a, -1);
 }
 
+static Etk_Filter * _filter_add(Etk_Canvas *c)
+{
+	Etk_Filter *f;
+	Etk_Fe_Displace *disp;
+
+	f = etk_filter_new(c);
+	//disp = etk2_fe_displace_new(f);
+	return f;
+}
+
+static void _filter_apply(Etk_Shape *s, Etk_Filter *f)
+{
+	printf("Applying filter!!!\n");
+	etk_shape_filter_set(s, f);
+}
+
 static void _click_cb(const Ekeko_Object *o, Event *e, void *data)
 {
 	Enesim_Matrix m;
+	static Etk_Filter *f1 = NULL;
+	static Etk_Filter *f2 = NULL;
+	static Etk_Filter *curr = NULL;
+
 #if 0
 	Eina_Rectangle r;
 	printf("clicked!!\n");
@@ -63,16 +83,37 @@ static void _click_cb(const Ekeko_Object *o, Event *e, void *data)
 	eina_rectangle_coords_from(&r, 200, 200, 100, 400);
 	ekeko_canvas_damage_add((Ekeko_Canvas *)data, &r);
 #endif
+#if 0
 	enesim_matrix_identity(&m);
 	enesim_matrix_scale(&m, 1, 1);
 	etk_image_matrix_set((Etk_Image *)data, &m);
+#endif
+	if (!f1)
+	{
+		Etk_Canvas *c;
 
+		c = etk_shape_canvas_get((Etk_Shape *)data);
+		f1 = _filter_add(c);
+		f2 = _filter_add(c);
+		curr = f1;
+	}
+	if (curr == f1)
+	{
+
+		curr = f2;
+	}
+	else
+	{
+		curr = f1;
+	}
+	_filter_apply((Etk_Shape *)data, curr);
 }
 
 static void _setup_scene(Etk_Canvas *c)
 {
 	Etk_Image *i;
 	Etk_Rect *r;
+
 #if 1
 	/* create an image */
 	i = etk_image_new(c);
@@ -99,10 +140,11 @@ static void _setup_scene(Etk_Canvas *c)
 	etk_rect_rop_set(r, ENESIM_BLEND);
 	etk_rect_show(r);
 #endif
-	_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
-	_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 30);
+	//_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
+	//_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 30);
 	//ekeko_event_listener_add((Ekeko_Object *)i, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, c);
-	ekeko_event_listener_add((Ekeko_Object *)r, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, i);
+	ekeko_event_listener_add((Ekeko_Object *)r, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, r);
+
 #if 0
 	r = etk_rect_new(sc);
 	etk_rect_x_rel_set(r, 0);
@@ -113,7 +155,6 @@ static void _setup_scene(Etk_Canvas *c)
 	etk_rect_rop_set(r, ENESIM_FILL);
 	etk_rect_show(r);
 #endif
-
 }
 
 int main(int argc, char **argv)

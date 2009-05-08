@@ -9,6 +9,9 @@ INCLUDES = \
 @ETK_CFLAGS@
 
 bin_PROGRAMS = etk2_test
+if HAVE_EXML
+bin_PROGRAMS += etk2_testsuite
+endif
 
 etk2_test_DEPENDENCIES = $(top_builddir)/src/lib/libetk2.la
 
@@ -21,4 +24,17 @@ etk2_test_LDADD = $(top_builddir)/src/lib/libetk2.la \
 
 if BUILD_ENGINE_SDL
 etk2_test_LDADD += @ECORE_SDL_LIBS@ @SDL_LIBS@ 
+endif
+
+## Testsuite
+etk2_testsuite_DEPENDENCIES = $(top_builddir)/src/lib/libetk2.la
+ 
+etk2_testsuite_SOURCES = \
+etk2_testsuite.c 
+
+etk2_testsuite_LDADD = $(top_builddir)/src/lib/libetk2.la \
+@ETK_LIBS@
+
+if BUILD_ENGINE_SDL
+etk2_testsuite_LDADD += @ECORE_SDL_LIBS@ @SDL_LIBS@ @EXML_LIBS@
 endif

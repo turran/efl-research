@@ -221,7 +221,7 @@ int ekeko_value_register(const char *name, Ekeko_Value_Create create,
 		Ekeko_Value_Pointer_From pointer_from,
 		Ekeko_Value_Pointer_To pointer_to)
 {
-	static int _curr = PROPERTY_STRING; // the last internal property
+	static int _curr = PROPERTY_LAST; // the last internal property
 	Ekeko_Value_Impl *impl;
 
 	impl = malloc(sizeof(Ekeko_Value_Impl));

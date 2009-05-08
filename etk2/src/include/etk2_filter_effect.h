@@ -1,35 +1,36 @@
 /*
- * etk2_image.h
+ * etk2_filter_effect.h
  *
- *  Created on: 26-feb-2009
+ *  Created on: 07-may-2009
  *      Author: jl
  */
-#ifndef ETK2_FILTER_H_
-#define ETK2_FILTER_H_
+
+#ifndef ETK2_FILTER_EFFECT_H_
+#define ETK2_FILTER_EFFECT_H_
 
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
+
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-Property_Id ETK_FILTER_EFFECT_X;
-Property_Id ETK_FILTER_EFFECT_Y;
-Property_Id ETK_FILTER_EFFECT_W;
-Property_Id ETK_FILTER_EFFECT_H;
+extern Property_Id ETK_FILTER_EFFECT_X;
+extern Property_Id ETK_FILTER_EFFECT_Y;
+extern Property_Id ETK_FILTER_EFFECT_W;
+extern Property_Id ETK_FILTER_EFFECT_H;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
-typedef struct _Etk_Filter_Private Etk_Filter_Private;
-struct _Etk_Filter
+typedef struct _Etk_Filter_Effect_Private Etk_Filter_Effect_Private;
+struct _Etk_Filter_Effect
 {
-	Ekeko_Object parent;
-	Etk_Filter_Private *private;
+	Etk_Square parent;
+	Etk_Filter_Effect_Private *private;
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
-EAPI Ekeko_Type *etk_filter_type_get(void);
-EAPI Etk_Filter * etk_filter_new(Etk_Canvas *c);
+EAPI Ekeko_Type *etk_filter_effect_type_get(void);
 
-#endif
+#endif /* ETK2_FILTER_EFFECT_H_ */

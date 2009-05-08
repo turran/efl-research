@@ -10,7 +10,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define RADDIST 0
+#define RADDIST 1
 static void _rect(void *surface, void *context, int x, int y, int w, int h)
 {
 	Enesim_Surface *s = surface;

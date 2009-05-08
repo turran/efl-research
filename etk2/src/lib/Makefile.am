@@ -21,7 +21,9 @@ etk2_shape.c \
 etk2_square.c \
 etk2_rect.c \
 etk2_image.c \
-etk2_animation.c
+etk2_animation.c \
+etk2_filter.c \
+etk2_filter_effect.c
 #
 #etk2_button.c
 #etk2_widget.c

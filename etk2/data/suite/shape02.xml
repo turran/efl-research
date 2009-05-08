@@ -1,0 +1,4 @@
+<etk width="100%" height="100%">
+	<rect x="0" y="0" width="100%" height="100%" color="white"/>
+	<rect x="25%" y="25%" width="50%" height="50%" color="red"/>
+</etk>

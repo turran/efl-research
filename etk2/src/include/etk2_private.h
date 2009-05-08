@@ -26,6 +26,8 @@
 #define ETK_TYPE_RECT "Etk_Rect"
 #define ETK_TYPE_IMAGE "Etk_Image"
 #define ETK_TYPE_ANIMATION "Etk_Animation"
+#define ETK_TYPE_FILTER "Etk_Filter"
+#define ETK_TYPE_FILTER_EFFECT "Etk_Filter_Effect"
 
 /* Engine! */
 typedef void * Etk_Engine_Surface;
@@ -96,6 +98,7 @@ Etk_Document * etk_canvas_document_get(Etk_Canvas *c);
 /* Shape */
 Etk_Canvas * etk_shape_canvas_get(Etk_Shape *s);
 void * etk_shape_context_get(Etk_Shape *s);
+void etk_shape_change(Etk_Shape *s);
 
 /* Coord */
 void etk_coord_change(const Ekeko_Object *o, Etk_Coord *dst, Etk_Coord *curr,

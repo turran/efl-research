@@ -16,6 +16,7 @@ struct _Etk_Shape_Private
 {
 	void *context;
 	Etk_Color color; /* FIXME the color should be double state? */
+	Etk_Filter *filter;
 	int rop;
 };
 
@@ -76,13 +77,13 @@ static void _rop_change(const Ekeko_Object *o, Event *e, void *data)
 	func = etk_document_engine_get(d);
 	prv = PRIVATE(s);
 	func->context->rop_set(prv->context, em->curr->value.int_value);
+	etk_shape_change(s);
 }
 
 
 static void _color_change(const Ekeko_Object *o, Event *e, void *data)
 {
 	Etk_Engine *func;
-	Eina_Rectangle geom;
 	Ekeko_Object *parent;
 	Event_Mutation *em = (Event_Mutation *)e;
 	Etk_Shape *s = (Etk_Shape *)o;
@@ -96,9 +97,12 @@ static void _color_change(const Ekeko_Object *o, Event *e, void *data)
 	func = etk_document_engine_get(d);
 	prv = PRIVATE(s);
 	func->context->color_set(prv->context, em->curr->value.int_value);
-	/* add a damage here */
-	ekeko_renderable_geometry_get((Ekeko_Renderable *)o, &geom);
-	ekeko_canvas_damage_add((Ekeko_Canvas *)parent, &geom);
+	etk_shape_change(s);
+}
+
+static void _filter_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	printf("CALLEEEEEEEEEEEEE\n");
 }
 
 static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
@@ -130,6 +134,7 @@ static void _ctor(void *instance)
 	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, ETK_SHAPE_COLOR_CHANGED, _color_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, ETK_SHAPE_ROP_CHANGED, _rop_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)s, ETK_SHAPE_FILTER_CHANGED, _filter_change, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *shape)
@@ -150,11 +155,26 @@ Etk_Canvas * etk_shape_canvas_get(Etk_Shape *s)
 {
 	return (Etk_Canvas *)ekeko_renderable_canvas_get((Ekeko_Renderable *)s);
 }
+
+void etk_shape_change(Etk_Shape *s)
+{
+	Ekeko_Object *parent;
+	Eina_Rectangle geom;
+
+	/* add a damage here */
+	if (!(parent = ekeko_object_parent_get((Ekeko_Object *)s)))
+		return;
+
+	ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
+	ekeko_canvas_damage_add((Ekeko_Canvas *)parent, &geom);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
 Property_Id ETK_SHAPE_COLOR;
 Property_Id ETK_SHAPE_ROP;
+Property_Id ETK_SHAPE_FILTER;
+
 EAPI Ekeko_Type *etk_shape_type_get(void)
 {
 	static Ekeko_Type *type = NULL;
@@ -166,6 +186,7 @@ EAPI Ekeko_Type *etk_shape_type_get(void)
 				_ctor, _dtor, NULL);
 		ETK_SHAPE_COLOR = TYPE_PROP_SINGLE_ADD(type, "color", ETK_PROPERTY_COLOR, OFFSET(Etk_Shape_Private, color));
 		ETK_SHAPE_ROP = TYPE_PROP_SINGLE_ADD(type, "rop", PROPERTY_INT, OFFSET(Etk_Shape_Private, rop));
+		ETK_SHAPE_FILTER = TYPE_PROP_SINGLE_ADD(type, "filter", PROPERTY_OBJECT, OFFSET(Etk_Shape_Private, filter));
 	}
 
 	return type;
@@ -185,4 +206,12 @@ EAPI void etk_shape_rop_set(Etk_Shape *s, Enesim_Rop rop)
 
 	ekeko_value_int_from(&v, rop);
 	ekeko_object_property_value_set((Ekeko_Object *)s, "rop", &v);
+}
+
+EAPI void etk_shape_filter_set(Etk_Shape *s, Etk_Filter *filter)
+{
+	Ekeko_Value v;
+
+	ekeko_value_object_from(&v, (Ekeko_Object *)filter);
+	ekeko_object_property_value_set((Ekeko_Object *)s, "filter", &v);
 }

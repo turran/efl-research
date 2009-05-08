@@ -103,6 +103,10 @@ PKG_CHECK_MODULES(ECORE, [ecore >= 0.9.9])
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
 PKG_CHECK_MODULES(EMAGE, [emage >= 0.0.1])
 PKG_CHECK_MODULES(ETCH, [etch >= 0.0.1])
+PKG_CHECK_MODULES(EXML, [exml >= 0.1.1], [have_exml="yes"], [have_exml="no"])
+## Needed to build the testsuite xml parser
+AM_CONDITIONAL(HAVE_EXML, test "x$have_exml" = "xyes")
+
 
 #####################################################################
 ## Ecore_X
