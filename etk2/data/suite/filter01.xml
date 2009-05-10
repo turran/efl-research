@@ -1,0 +1,7 @@
+<etk w="100%" h="100%">
+	<filter id="filter01">
+		<feDisplace />
+	</filter>
+	<rect x="0" y="0" w="100%" h="100%" color="white">
+	<rect x="50%" y="25%" w="25%" h="25%" color="red" filter="#filter01" />
+</etk>

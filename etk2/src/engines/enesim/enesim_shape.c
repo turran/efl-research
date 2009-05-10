@@ -33,8 +33,10 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	printf("[Etk_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
 #endif
 	cpus = enesim_cpu_get(&numcpus);
+#if 0
 if (c->color == 0xffffffff)
 {
+#endif
 	/* the context has the clipping rect relative to the canvas */
 	enesim_drawer_span_color_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, c->color);
 	//printf("Trying to render a rectangle at %d %d %d %d\n", x, y, w, h);
@@ -57,6 +59,7 @@ if (c->color == 0xffffffff)
 		src += stride;
 	}
 }
+#if 0
 else {
 	enesim_drawer_span_pixel_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
 #if RADDIST
@@ -119,8 +122,15 @@ else {
 		enesim_surface_delete(ftmp);
 #endif
 }
-}
+#endif
 
+
+/*
+ * surface: destintation surface
+ * context: destination clipping?
+ * srect: source rectangle (scaling??)
+ * src: src image
+ */
 void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Rectangle *srect)
 {
 	Enesim_Surface *dst = surface;
@@ -132,10 +142,17 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 	uint32_t *ssrc, *ddst;
 	uint32_t sstride, dstride;
 	Eina_Rectangle imgclip;
+	uint32_t sw, sh;
 
 #ifdef ETK2_DEBUG
 	printf("[Etk_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 #endif
+	enesim_surface_size_get(src, &sw, &sh);
+	/* downscale or upscale the image */
+	if ((srect->w != sw) || (srect->h != sh))
+	{
+		printf("SURFACE %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+	}
 	cpus = enesim_cpu_get(&numcpus);
 	enesim_drawer_span_pixel_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
 

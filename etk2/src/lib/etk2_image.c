@@ -25,8 +25,6 @@ struct _Etk_Image_Private
 		int changed;
 	} file;
 	struct {
-		int w;
-		int h;
 		Enesim_Surface *img;
 		Eina_Bool loaded;
 	} src;
@@ -137,6 +135,7 @@ static void _render(Etk_Shape *s, Etk_Engine *func, Etk_Surface *surface, Etk_Co
 	}
 	else
 	{
+		/* TODO pass the image size */
 		func->shape->image(surface, context, prv->src.img, &srect);
 	}
 }

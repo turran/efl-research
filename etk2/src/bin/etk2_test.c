@@ -15,6 +15,7 @@ static void _color_animation(Ekeko_Object *o, const char *prop,
 	a = etk_animation_new();
 	ekeko_object_child_append((Ekeko_Object *)o, (Ekeko_Object *)a);
 	etk_animation_property_set(a, prop);
+	etk_animation_begin_set(a, (Ekeko_Object *)o, EVENT_UI_MOUSE_CLICK);
 	etk_value_color_from(&v, orig);
 	etk_animation_from_set(a, &v);
 	etk_value_color_from(&v, dst);
@@ -23,7 +24,6 @@ static void _color_animation(Ekeko_Object *o, const char *prop,
 	etk_animation_duration_set(a, &clock);
 	etk_animation_calc_set(a, ETK_CALC_LINEAR);
 	etk_animation_end_set(a, (Ekeko_Object *)o, EVENT_UI_MOUSE_CLICK);
-	etk_animation_begin_set(a, (Ekeko_Object *)o, EVENT_UI_MOUSE_CLICK);
 	etk_animation_repeat_set(a, -1);
 }
 
@@ -140,10 +140,10 @@ static void _setup_scene(Etk_Canvas *c)
 	etk_rect_rop_set(r, ENESIM_BLEND);
 	etk_rect_show(r);
 #endif
-	//_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
+	_color_animation((Ekeko_Object *)r, "color", 0xff00ff00, 0xaaffaaff, 30);
 	//_coord_animation((Ekeko_Object *)r, "w", 10, ETK_COORD_RELATIVE, 100, ETK_COORD_RELATIVE, 30);
 	//ekeko_event_listener_add((Ekeko_Object *)i, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, c);
-	ekeko_event_listener_add((Ekeko_Object *)r, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, r);
+	//ekeko_event_listener_add((Ekeko_Object *)r, EVENT_UI_MOUSE_DOWN, _click_cb, EINA_FALSE, r);
 
 #if 0
 	r = etk_rect_new(sc);

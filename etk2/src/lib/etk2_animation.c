@@ -7,7 +7,7 @@
 #include "Etk2.h"
 #include "etk2_private.h"
 
-#define ETK_ANIMATION_DEBUG 0
+#define ETK_ANIMATION_DEBUG 1
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -343,6 +343,7 @@ static void _begin_change(const Ekeko_Object *o, Event *e, void *data)
 
 	/* register an event listener to this event */
 	t = em->curr->value.pointer_value;
+	printf("[Etk_Animation] Begin changed %p %s\n", t->obj, t->event);
 	if (!prv->end.obj)
 	{
 		/* FIXME change that is not the same! */
