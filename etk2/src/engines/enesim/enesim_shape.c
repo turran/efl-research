@@ -124,18 +124,66 @@ else {
 }
 #endif
 
-/* render an image just scaling it */
-static void _image_scale(Enesim_Surface *dst, Enesim_Surface *src, Enesim_Rectangle *srect)
+/* 
+ * TODO we should use the SCALER2D
+ * TODO use another scale qualities
+ * render an image just scaling it
+ */
+static void _image_scale(Enesim_Surface *dst, void *context, Enesim_Surface *src, Eina_Rectangle *srect)
 {
-#if 0
-	Enesim_Surface *dst = surface;
 	Context *c = context;
-
-	Enesim_Operator op;
+	Enesim_Operator drawer, scaler;
 	Enesim_Cpu **cpus;
 	int numcpus;
-	uint32_t *ssrc, *ddst;
 	uint32_t sstride, dstride;
+	uint32_t *s, *d, *tmp;
+	uint32_t sw, sh;
+	uint32_t dw, dh;
+	int y;
+	Eina_Rectangle drect;
+	
+	s = enesim_surface_data_get(src);
+	sstride = enesim_surface_stride_get(src);
+	enesim_surface_size_get(src, &sw, &sh);
+        d = enesim_surface_data_get(dst);
+	dstride = enesim_surface_stride_get(dst);
+	enesim_surface_size_get(dst, &dw, &dh);
+	eina_rectangle_coords_from(&drect, 0, 0, dw, dh);
+
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	enesim_scaler_1d_op_get(&scaler, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+
+	//printf("S = %d %d D = %d %d\n", sw, sh, dw, dh);
+	//printf("DRECT0 %d %d %d %d\n", drect.x, drect.y, drect.w, drect.h);
+	if (c->clip.used)
+	{
+		eina_rectangle_rescale_in(&drect, &c->clip.rect, &drect);
+	}
+	//printf("DRECT1 %d %d %d %d\n", drect.x, drect.y, drect.w, drect.h);
+	//printf("SRECT %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+	d = d + (drect.y * dstride) + drect.x;
+	/* TODO offset the source to the destination clipping */
+	//s = s + (srect->y * sstride) + srect->x;
+	y = 0;
+	tmp = malloc(sizeof(uint32_t) * drect.w);
+	while (y < drect.h)
+	{
+		uint32_t sy;
+		uint32_t rs;
+
+		sy = (y * sh) / srect->h;
+		rs = s + (sy * sstride);	
+		enesim_operator_scaler_1d(&scaler, rs, sw, 0,
+                                        drect.w, srect->w, tmp);
+		enesim_operator_drawer_span(&drawer, d, drect.w, tmp, 0, NULL);
+		/* increment the source by the scale factor */
+		d += dstride;
+		y++;
+	}
+	free(tmp);
+#if 0
+
 	Eina_Rectangle imgclip;
 	uint32_t sw, sh;
 
@@ -155,8 +203,6 @@ static void _image_scale(Enesim_Surface *dst, Enesim_Surface *src, Enesim_Rectan
 		//printf("old at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 	}
 
-	sstride = enesim_surface_stride_get(src);
-	dstride = enesim_surface_stride_get(dst);
 	ssrc = enesim_surface_data_get(src);
 	ssrc += (imgclip.y * sstride) + imgclip.x;
 	ddst = enesim_surface_data_get(dst);
@@ -197,6 +243,8 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 	if ((srect->w != sw) || (srect->h != sh))
 	{
 		printf("SURFACE %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		_image_scale(dst, context, src, srect);
+		return;
 	}
 	/* TODO get the quality */
 	cpus = enesim_cpu_get(&numcpus);

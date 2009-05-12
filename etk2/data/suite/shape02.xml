@@ -4,5 +4,5 @@
 	<rect x="10" y="10" w="180" h="110" color="blue"/>
 	<rect x="75%" y="75%" w="25" h="25" color="0xAA55AA55"/>
 	<!-- relative image -->
-	<image x="10%" y="10%" w="40%" h="40%" file="tiger.png"/>
+	<image x="10%" y="10%" w="80%" h="80%" file="tiger.png"/>
 </etk>

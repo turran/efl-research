@@ -107,7 +107,8 @@ void object_etk_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 		Etk_Trigger t;
 
 		t.event = value;
-		t.obj = o;
+		/* FIXME the object can be referenced by #id :) */
+		t.obj = ekeko_object_parent_get(o);
 		etk_value_trigger_from(&v, &t);
 		ekeko_object_property_value_set(o, attr, &v);
 	}
@@ -248,7 +249,7 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	{
 		o = (Ekeko_Object *)etk_rect_new((Etk_Canvas *)parent);
 		etk_rect_show(o);
-		etk_rect_rop_set(o, ENESIM_FILL);
+		etk_rect_rop_set(o, ENESIM_BLEND);
 	}
 	else if (!strcmp(tag, "image"))
 	{

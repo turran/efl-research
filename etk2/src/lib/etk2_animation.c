@@ -344,8 +344,10 @@ static void _begin_change(const Ekeko_Object *o, Event *e, void *data)
 	/* register an event listener to this event */
 	t = em->curr->value.pointer_value;
 	printf("[Etk_Animation] Begin changed %p %s\n", t->obj, t->event);
+	printf("%p\n", prv->end.obj);
 	if (!prv->end.obj)
 	{
+		printf("[Etk_Animation] event listener!!!!!\n");
 		/* FIXME change that is not the same! */
 		ekeko_event_listener_add(t->obj, t->event, _trigger_cb, EINA_FALSE, o);
 	}
@@ -366,6 +368,7 @@ static void _end_change(const Ekeko_Object *o, Event *e, void *data)
 	if (!(parent = ekeko_object_parent_get(o)))
 		return;
 
+	printf("[Etk_Animation] End changed %p %s\n", t->obj, t->event);
 	/* register an event listener to this event */
 	t = em->curr->value.pointer_value;
 	if (!prv->begin.obj)
@@ -373,7 +376,6 @@ static void _end_change(const Ekeko_Object *o, Event *e, void *data)
 		/* FIXME change that is not the same! */
 		ekeko_event_listener_add(t->obj, t->event, _trigger_cb, EINA_FALSE, o);
 	}
-
 }
 
 static void _repeat_change(const Ekeko_Object *o, Event *e, void *data)
@@ -398,12 +400,13 @@ static void _calc_change(const Ekeko_Object *o, Event *e, void *data)
 	Etch_Animation_Type atype;
 	Etch_Animation_Keyframe *k;
 
-
 	if (!(parent = ekeko_object_parent_get(o)))
 		return;
 
 	if (!prv->anim)
 		return;
+
+	printf("[Etk_Animation] Calc mode changed %d\n", em->curr->value.int_value);
 	atype = _calc_to_etch(em->curr->value.int_value);
 	/* for each keyframe set the calc mode to calc */
 	it = etch_animation_iterator_get(prv->anim);
