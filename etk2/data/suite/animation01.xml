@@ -1,7 +1,11 @@
 <etk w="100%" h="100%">
 	<rect x="0" y="0" w="100%" h="100%" color="white"/>
 	<image x="40%" y="25%" w="50%" h="50%" file="tiger.png"/>
-	<rect x="10%" y="25%" w="25%" h="25%" color="red">
+	<rect x="60%" y="10%" w="25%" h="25%" color="0xaa0000aa">
+		<anim name="y" dur="10s" from="10%" to="80%" calc="0" begin="click" repeat="-1"/>
+		<anim name="color" dur="5s" from="blue" to="0xaaaaaaaa" calc="0" begin="click" repeat="-1"/>
+	</rect>
+	<rect x="10%" y="45%" w="25%" h="25%" color="red">
 		<anim name="x" dur="10s" from="10%" to="80%" calc="0" begin="click" repeat="-1"/>
 		<anim name="color" dur="5s" from="red" to="0xaaaaaaaa" calc="0" begin="click" repeat="-1"/>
 	</rect>

@@ -18,8 +18,8 @@ static void * _create(Eina_Bool root, int w, int h)
 	{
 		printf("[SDL] Setting video mode to %d %d\n", w, h);
 #ifdef SINGLE_BUFFER
-		//return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA);
-		return SDL_SetVideoMode(w, h, 32, SDL_SRCALPHA);
+		return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA);
+		//return SDL_SetVideoMode(w, h, 32, SDL_SRCALPHA);
 #else
 		//return SDL_SetVideoMode(w, h, 32, SDL_RESIZABLE | SDL_SRCALPHA |
 		//		SDL_DOUBLEBUF);
