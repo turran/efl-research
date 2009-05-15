@@ -1,3 +1,8 @@
++ Possible new names:
+  egun
+  eon
+  
+
 Comments on the implementation
 + Do we actaully need to export as an API function the foo_type_get() ?
   where it can be used? the only place it makes sense (beside of foo.c file itself)

@@ -102,10 +102,11 @@ static inline Etk_Document * _document_get(Ekeko_Object *o)
 	/* shape */
 	else
 	{
-		Etk_Canvas *c;
+		Ekeko_Object *parent;
 
-		c = ekeko_object_parent_get(o);
-		doc = etk_canvas_document_get(c);
+		parent = ekeko_object_parent_get(o);
+		if (!parent) return NULL;
+		doc = _document_get(parent);
 	}
 	return doc;
 }
@@ -197,10 +198,16 @@ static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
 	Etch_Animation_Type atype;
 
 	/* get the property */
+	if (!prv->name)
+		return;
+	printf("PROPERTY ANIMATE!!! %p %p\n", a, parent);
 	p = ekeko_object_property_get(parent, prv->name);
 	if (!p)
 		return;
 	doc = _document_get(parent);
+	printf("DOOOOOOOOOOOOOOOOOOOOOOOOOOOC %s %p\n", ekeko_object_type_name_get(parent), doc);
+	if (!doc)
+		return;
 	etch = etk_document_etch_get(doc);
 	vtype = ekeko_property_value_type_get(p);
 #if ETK_ANIMATION_DEBUG

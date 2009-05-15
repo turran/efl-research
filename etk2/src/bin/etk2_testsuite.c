@@ -43,7 +43,7 @@ void clock_parse(Etk_Clock *c, char *v)
 		float secs;
 
 		*units = '\0';
-		num = strtof(v, NULL);
+		num = atof(v);
 		secs = num * 60;
 
 		dec = secs - (int)secs;
@@ -64,7 +64,7 @@ void clock_parse(Etk_Clock *c, char *v)
 	}
 	else
 	{
-		num = strtof(v, NULL);
+		num = atof(v);
 		dec = num - (int)num;
 		c->seconds = (int)num;
 		c->micro = dec * 100000;
@@ -97,10 +97,13 @@ void object_etk_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	else if (type == ETK_PROPERTY_CLOCK)
 	{
 		Etk_Clock c;
+		char *tmp;
 
-		clock_parse(&c, value);
+		tmp = strdup(value);
+		clock_parse(&c, tmp);
 		etk_value_clock_from(&v, &c);
 		ekeko_object_property_value_set(o, attr, &v);
+		free(tmp);
 	}
 	else if (type == ETK_PROPERTY_TRIGGER)
 	{
@@ -149,6 +152,7 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 	{
 		case PROPERTY_INT:
 		ekeko_value_int_from(&v, strtol(name, NULL, 0));
+		ekeko_object_property_value_set(o, attr, &v);
 		break;
 
 		case PROPERTY_VALUE:
@@ -165,6 +169,8 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 				/* FIXME remove "name" */
 				ekeko_object_property_value_get(o, "name", &nvalue);
 				parent = ekeko_object_parent_get(o);
+				if (!parent)
+					return;
 				prop = ekeko_object_property_get(parent, nvalue.value.string_value);
 				vtype = ekeko_property_value_type_get(prop);
 				printf("[PARSER] Going to set a value for prop %d %s with %d\n", nvalue.type, nvalue.value.string_value, vtype);
@@ -194,9 +200,13 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 				sprintf(real_file, "%s/%s", image_dir, name);
 				printf("image at %s\n", real_file);
 				ekeko_value_str_from(&v, strdup(real_file));
+				ekeko_object_property_value_set(o, attr, &v);
 			}
 			else
+			{
 				ekeko_value_str_from(&v, strdup(name));
+				ekeko_object_property_value_set(o, attr, &v);
+			}
 		}
 		break;
 
@@ -204,7 +214,6 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 		object_etk_attribute_set(o, type, attr, name);
 		return;
 	}
-	ekeko_object_property_value_set(o, attr, &v);
 }
 
 void attributes_set(void *value, void *data)
@@ -241,6 +250,7 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	Ekeko_Object *o = NULL;
 
 	n = exml_get(exml);
+	printf("[PARSER] creating tag %s for parent %s\n", tag, ekeko_object_type_name_get(parent));
 	if (!strcmp(tag, "etk"))
 	{
 
@@ -262,6 +272,8 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 		char *value;
 
 		o = (Ekeko_Object *)etk_animation_new();
+		if (!o)
+			return NULL;
 		ekeko_object_child_append(parent, o);
 		/* if we set the attributes "from/to" we should know the prop name
 		 * before setting them
@@ -289,9 +301,9 @@ void parse(EXML *exml, Ekeko_Object *parent)
 
 	if (!parent)
 		return;
+	printf("[PARSER] parsing %s\n", ekeko_object_type_name_get(parent));
 	n = exml_get(exml);
 	tag = exml_down(exml);
-	//printf("going down\n");
 	while (tag)
 	{
 		Ekeko_Object *o;
@@ -300,11 +312,10 @@ void parse(EXML *exml, Ekeko_Object *parent)
 		/* children */
 		parse(exml, o);
 		/* siblings */
-		//printf("going next\n");
 		tag = exml_next(exml);
 	}
-	exml_goto_node(exml, n);
 	//printf("going up\n");
+	exml_goto_node(exml, n);
 }
 
 int main(int argc, char **argv)

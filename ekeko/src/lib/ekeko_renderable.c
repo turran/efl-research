@@ -182,13 +182,17 @@ static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
 	{
 		/* first element */
 		/* Set the zindex */
+#ifdef EKEKO_DEBUG
 		printf("[Ekeko_Renderable] %p no Z index found, first element\n", o);
+#endif
 	}
 	else
 	{
 		int z;
 		z = ekeko_renderable_zindex_get((Ekeko_Renderable *)last);
+#ifdef EKEKO_DEBUG
 		printf("[Ekeko_Renderable] %p Z index found at %d in %p\n", o, z, last);
+#endif
 		ekeko_renderable_zindex_set((Ekeko_Renderable *)o, z +1);
 	}
 	/* TODO propagate the change of zindex locally in case the object is not a canvas */

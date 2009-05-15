@@ -75,6 +75,8 @@ static void _event_dispatch(const Ekeko_Object *obj, Event *e, Eina_Bool bubble)
 	Ekeko_Object_Private *prv;
 
 	prv = PRIVATE(obj);
+	if (!prv->listeners)
+		return;
 	listeners = eina_hash_find(prv->listeners, e->type);
 	if (!listeners) return;
 
@@ -84,6 +86,7 @@ static void _event_dispatch(const Ekeko_Object *obj, Event *e, Eina_Bool bubble)
 		if (oe->bubble == bubble)
 			oe->el(obj, e, oe->data);
 	}
+	eina_iterator_free(it);
 }
 
 static void _change_recursive(const Ekeko_Object *obj, int count)
@@ -326,7 +329,6 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 	}
 	if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
 		ekeko_value_free(&prev_value, vtype);
-
 }
 /**
  *
