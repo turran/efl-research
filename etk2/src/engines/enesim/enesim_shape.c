@@ -124,7 +124,26 @@ else {
 }
 #endif
 
-/* 
+
+static void _polygon_point_add(Enesim_Surface *dst, void *context, void *polygon)
+{
+	/* create a rasterizer */
+	/* check the quality to create a kiia or a cpsc rasterizer */
+	/* add a vertex to it */
+}
+
+static void _polygon_draw(Enesim_Surface *dst, void *context)
+{
+	/* rasterize the polygon */
+	/* render it */
+}
+/* Function used to draw a pattern whenever the rendering of an object isnt ready yet
+ * like when an image isnt loaded yet
+ */
+static void _pattern_draw(Enesim_Surface *dst, void *context, Eina_Rectangle *darea)
+{
+}
+/*
  * TODO we should use the SCALER2D
  * TODO use another scale qualities
  * render an image just scaling it
@@ -141,7 +160,7 @@ static void _image_scale(Enesim_Surface *dst, void *context, Enesim_Surface *src
 	uint32_t dw, dh;
 	int y;
 	Eina_Rectangle dclip, sclip;
-	
+
 	s = enesim_surface_data_get(src);
 	sstride = enesim_surface_stride_get(src);
 	enesim_surface_size_get(src, &sw, &sh);
@@ -180,7 +199,7 @@ static void _image_scale(Enesim_Surface *dst, void *context, Enesim_Surface *src
 
 		/* pick the to-scaled line */
 		sy = ((sclip.y + y) * sh) / sgeom->h;
-		rs = s + (sy * sstride);	
+		rs = s + (sy * sstride);
 		enesim_operator_scaler_1d(&scaler, rs, sw, 0,
                                         dclip.w, sgeom->w, tmp);
 		enesim_operator_drawer_span(&drawer, d, dclip.w, tmp, 0, NULL);

@@ -20,6 +20,7 @@ etk2_canvas.c \
 etk2_shape.c \
 etk2_square.c \
 etk2_rect.c \
+etk2_polygon.c \
 etk2_image.c \
 etk2_animation.c \
 etk2_filter.c \

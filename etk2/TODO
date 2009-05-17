@@ -1,2 +1,13 @@
+Short term
+==========
++ Move etch into its own thread. Create a fifo to receive events from etch and then select() it on main thread. Then etk2 should
+  set the attributes and only the final version should be displayed to avoid delayed rendering.
++ Add rop to the xml
+Mid term
+========
 + Implement the basic widgetery
+
+Long term
+=========
 + Implement fancy types, like a graphviz type
++ Implement a console widget

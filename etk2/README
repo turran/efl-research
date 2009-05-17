@@ -1,7 +1,10 @@
 + Possible new names:
   egun
   eon
-  
+  equo
+  efigie
+  endrina
+  enea
 
 Comments on the implementation
 + Do we actaully need to export as an API function the foo_type_get() ?
