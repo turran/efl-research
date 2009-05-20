@@ -1,8 +1,12 @@
+//#define _XOPEN_SOURCE 600
+//#define _ISOC99_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <stdarg.h>
 
 #include "Etk2.h"
 #include "EXML.h"
@@ -27,6 +31,105 @@ void help(void)
 	printf("-H Height\n");
 	printf("-I Image directory\n");
 	printf("FILE Etk2 XML file\n");
+}
+
+
+void function_parse(char *v, int *num, ...)
+{
+	va_list ap;
+	char *tmp;
+	char *end;
+
+	*num = 0;
+	tmp = v;
+	if (*tmp == '(')
+		tmp++;
+	va_start(ap, num);
+	do
+	{
+		float *f;
+		float ftmp;
+
+		/* get the value */
+		ftmp = strtof(tmp, &end);
+		if (end == tmp)
+			break;
+		if (*end)
+		{
+			printf("end = %c\n", *end);
+			tmp = end + 1;
+		}
+		else
+			break;
+		f = va_arg(ap, float *);
+		if (!f)
+		{
+			va_end(ap);
+			return;
+		}
+		*f = ftmp;
+		(*num)++;
+	} while (tmp);
+	va_end(ap);
+}
+
+Eina_Bool matrix_parse(Enesim_Matrix *m, char *v)
+{
+	/* well known names */
+	/* rotate(degrees) */
+	if (!strncmp(v, "rotate", strlen("rotate")))
+	{
+		float grad;
+		int num;
+
+		function_parse(v + strlen("rotate"), &num, &grad);
+		if (num != 1)
+		{
+			/* TODO put some warnings */
+			return EINA_FALSE;
+		}
+		enesim_matrix_rotate(m, grad);
+		return EINA_TRUE;
+	}
+	/* move(x, y) */
+	else if (!strncmp(v, "move", strlen("move")))
+	{
+		float tx, ty;
+		int num;
+
+		function_parse(v + strlen("move"), &num, &tx, &ty);
+		if (num != 2)
+		{
+			/* TODO put some warnings */
+			return EINA_FALSE;
+		}
+		enesim_matrix_translate(m, tx, ty);
+		return EINA_TRUE;
+
+	}
+	/* scale(s) scale(sx, sy) */
+	else if (!strncmp(v, "scale", strlen("scale")))
+	{
+		float sx, sy;
+		int num;
+
+		function_parse(v + strlen("scale"), &num, &sx, &sy);
+		if ((num < 1) || (num > 2))
+		{
+			/* TODO put some warnings */
+			return EINA_FALSE;
+		}
+		if (num == 1)
+			sy = sx;
+		enesim_matrix_scale(m, sx, sy);
+		return EINA_TRUE;
+	}
+	/* matrix="xx xy xz yx yy yz zx zy zz */
+	else
+	{
+
+	}
+	return EINA_FALSE;
 }
 
 void clock_parse(Etk_Clock *c, char *v)
@@ -117,7 +220,13 @@ void object_etk_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	}
 	else if (type == ETK_PROPERTY_MATRIX)
 	{
+		Enesim_Matrix m;
 
+		if (matrix_parse(&m, value))
+		{
+			etk_value_matrix_from(&v, &m);
+			ekeko_object_property_value_set(o, attr, &v);
+		}
 	}
 	else if (type == ETK_PROPERTY_COLOR)
 	{
@@ -148,6 +257,23 @@ void object_value_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *at
 void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, char *name)
 {
 	Ekeko_Value v;
+
+	/* properties with special values */
+	/* rop */
+	if (!strcmp(attr, "rop"))
+	{
+		Enesim_Rop rop = ENESIM_BLEND;
+
+		if (!strcmp(name, "blend"))
+			rop = ENESIM_BLEND;
+		else if (!strcmp(name, "fill"))
+			rop = ENESIM_FILL;
+		ekeko_value_int_from(&v, rop);
+		ekeko_object_property_value_set(o, attr, &v);
+		return;
+	}
+	/* quality */
+	/* properties with simple values */
 	switch (type)
 	{
 		case PROPERTY_INT:
@@ -253,7 +379,9 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	printf("[PARSER] creating tag %s for parent %s\n", tag, ekeko_object_type_name_get(parent));
 	if (!strcmp(tag, "etk"))
 	{
-
+		o = (Ekeko_Object *)etk_canvas_new((Etk_Canvas *)parent);
+		etk_rect_show(o);
+		etk_rect_rop_set(o, ENESIM_BLEND);
 	}
 	if (!strcmp(tag, "rect"))
 	{
@@ -362,9 +490,10 @@ int main(int argc, char **argv)
 			break;
 
 			default:
+			help();
+			return 0;
 			break;
 		}
-
 	}
 	exml = exml_new();
 	printf("%s\n", file);

@@ -48,7 +48,9 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 	{
 		c = etk_shape_canvas_get((Etk_Shape *)i);
 		ekeko_renderable_geometry_get((Ekeko_Renderable *)i, &r);
+#ifdef ETK_DEBUG
 		printf("[Etk_Image] Image file %s loaded and will be displayed in %p %d %d %d %d!!\n", prv->file.curr, c, r.x, r.y, r.w, r.h);
+#endif
 		/* add a damage to the canvas to force a redraw of the image */
 		ekeko_canvas_damage_add((Ekeko_Canvas *)c, &r);
 		prv->src.loaded = EINA_TRUE;
@@ -64,6 +66,10 @@ static void _geometry_calc(const Ekeko_Object *o, Event *e, void *data)
 	Enesim_Quad q;
 	float x1, y1, x2, y2, x3, y3, x4, y4;
 
+	/* TODO matrix operation should be:
+	 * - multiply w,h * matrix
+	 * - translate the result to x, y
+	 */
 	/* TODO check that the matrix is not identity */
 	/* compute the final geometry multiplying by the context matrix */
 	etk_square_coords_get((Etk_Square *)i, &x, &y, &w, &h);
@@ -91,8 +97,9 @@ static void _matrix_change(const Ekeko_Object *o, Event *e, void *data)
 
 	m = em->curr->value.pointer_value;
 	enesim_matrix_inverse(m, &prv->inverse);
-	_geometry_calc(o, e, data);
 	/* update the geometry */
+	_geometry_calc(o, e, data);
+	/* store the matrix */
  	if (parent = ekeko_object_parent_get(o))
 	{
 		Etk_Engine *func;
@@ -127,7 +134,7 @@ static void _render(Etk_Shape *s, Etk_Engine *func, Etk_Surface *surface, Etk_Co
 	etk_square_coords_get((Etk_Square *)i, &x, &y, &w, &h);
 	eina_rectangle_coords_from(&srect, x.final, y.final, w.final, h.final);
 #ifdef ETK_IMAGE_DEBUG
-	//printf("[Etk_Image] Trying to render the image at %d %d %d %d\n", srect.x, srect.y, srect.w, srect.h);
+	printf("[Etk_Image] Trying to render the image at %d %d %d %d\n", srect.x, srect.y, srect.w, srect.h);
 #endif
 	if (!prv->src.loaded)
 	{

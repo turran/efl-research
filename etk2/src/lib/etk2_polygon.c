@@ -10,23 +10,35 @@
 #define PRIVATE(d) ((Etk_Polygon_Private *)((Etk_Polygon *)(d))->private)
 struct _Etk_Polygon_Private
 {
-
+	void *engine_data;
 };
 
-static void _geometry_calc(const Ekeko_Object *o, Event *e, void *data)
+/* 
+ * When the polygon has been appended to a canvas get the engine
+ * and call polygon_new(), if the polygon has points call
+ * polygon_point_add()
+ */
+static void _appended_cb(const Ekeko_Object *o, Event *e, void *data)
 {
-	Etk_Polygon *r = (Etk_Polygon *)o;
-	Eina_Polygonangle geom;
-	Etk_Coord x, y, w, h;
 
-	etk_square_coords_get((Etk_Square *)r, &x, &y, &w, &h);
-	eina_polygonangle_coords_from(&geom, x.final, y.final, w.final,
-			h.final);
-#ifdef ETK_DEBUG
-	printf("[Etk_Polygon] Setting geometry of size %d %d %d %d\n",
-			x.final, y.final, w.final, h.final);
-#endif
-	ekeko_renderable_geometry_set((Ekeko_Renderable *)r, &geom);
+}
+
+/*
+ * Called whenever a point has been added/removed/set???
+ * Re-calc the bounding box of the polygon
+ */
+static void _point_appended_cb(const Ekeko_Object *o, Event *e, void *data)
+{
+
+}
+
+/*
+ * When the quality of the shape has changed, check if we have a polygon
+ * if so, delete it, create a new one and re-append the points
+ */
+static void _quality_cb(const Ekeko_Object *o, Event *e, void *data)
+{
+
 }
 
 static void _render(Etk_Shape *s, Etk_Engine *func, Etk_Surface *surface, Etk_Context *context)

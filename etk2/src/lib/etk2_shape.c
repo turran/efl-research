@@ -9,6 +9,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+#define BOUNDING_DEBUG
 #define PRIVATE(d) ((Etk_Shape_Private *)((Etk_Shape *)(d))->private)
 #define TYPE_NAME "Etk_Shape"
 
@@ -77,9 +78,9 @@ static void _rop_change(const Ekeko_Object *o, Event *e, void *data)
 	func = etk_document_engine_get(d);
 	prv = PRIVATE(s);
 	func->context->rop_set(prv->context, em->curr->value.int_value);
+	/* before adding the damage check that the rop has changed */
 	etk_shape_change(s);
 }
-
 
 static void _color_change(const Ekeko_Object *o, Event *e, void *data)
 {

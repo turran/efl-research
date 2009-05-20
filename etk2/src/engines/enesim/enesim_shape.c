@@ -143,72 +143,163 @@ static void _polygon_draw(Enesim_Surface *dst, void *context)
 static void _pattern_draw(Enesim_Surface *dst, void *context, Eina_Rectangle *darea)
 {
 }
+
+static inline void _image_setup(Enesim_Surface *src, uint32_t **s,
+		uint32_t *sstride, Enesim_Surface *dst, uint32_t **d,
+	 	uint32_t *dstride)
+{
+	*s = enesim_surface_data_get(src);
+	*sstride = enesim_surface_stride_get(src);
+
+        *d = enesim_surface_data_get(dst);
+	*dstride = enesim_surface_stride_get(dst);
+}
+
 /*
  * TODO we should use the SCALER2D
  * TODO use another scale qualities
  * render an image just scaling it
+ * FIXME in case the rop is fill dont call the operator
  */
-static void _image_scale(Enesim_Surface *dst, void *context, Enesim_Surface *src, Eina_Rectangle *sgeom)
+static void _image_scale(Enesim_Surface *dst, Eina_Rectangle *dclip,
+		Context *c, Enesim_Surface *src, uint32_t sw, uint32_t sh,
+		Eina_Rectangle *sgeom, Eina_Rectangle *sclip)
 {
-	Context *c = context;
-	Enesim_Operator drawer, scaler;
 	Enesim_Cpu **cpus;
 	int numcpus;
+	Enesim_Operator drawer, scaler;
 	uint32_t sstride, dstride;
 	uint32_t *s, *d, *tmp;
-	uint32_t sw, sh;
-	uint32_t dw, dh;
 	int y;
-	Eina_Rectangle dclip, sclip;
-
-	s = enesim_surface_data_get(src);
-	sstride = enesim_surface_stride_get(src);
-	enesim_surface_size_get(src, &sw, &sh);
-        d = enesim_surface_data_get(dst);
-	dstride = enesim_surface_stride_get(dst);
-	enesim_surface_size_get(dst, &dw, &dh);
-	//eina_rectangle_coords_from(&dclip, 0, 0, dw, dh);
-	eina_rectangle_coords_from(&dclip, sgeom->x, sgeom->y, sgeom->w, sgeom->h);
+	
+	_image_setup(src, &s, &sstride, dst, &d, &dstride);
 
 	cpus = enesim_cpu_get(&numcpus);
 	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
 	enesim_scaler_1d_op_get(&scaler, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
 
-	//printf("ENTERING\n");
-	//printf("S = %d %d D = %d %d\n", sw, sh, dw, dh);
-	//printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
-	if (c->clip.used)
-	{
-		eina_rectangle_rescale_in(sgeom, &c->clip.rect, &sclip);
-		eina_rectangle_coords_from(&dclip, c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
-		//printf("CLIP %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
-		//printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
-	}
 	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
 	//printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
 	//printf("ENDING\n");
-	d = d + (dclip.y * dstride) + dclip.x;
+	d = d + (dclip->y * dstride) + dclip->x;
 	/* offset the source in x */
-	s = s + ((sclip.x * sw) / sgeom->w);
+	s = s + ((sclip->x * sw) / sgeom->w);
 	y = 0;
-	tmp = malloc(sizeof(uint32_t) * dclip.w);
-	while (y < dclip.h)
+	tmp = malloc(sizeof(uint32_t) * dclip->w);
+	while (y < dclip->h)
 	{
 		uint32_t sy;
-		uint32_t rs;
+		uint32_t *rs;
 
 		/* pick the to-scaled line */
-		sy = ((sclip.y + y) * sh) / sgeom->h;
+		sy = ((sclip->y + y) * sh) / sgeom->h;
 		rs = s + (sy * sstride);
 		enesim_operator_scaler_1d(&scaler, rs, sw, 0,
-                                        dclip.w, sgeom->w, tmp);
-		enesim_operator_drawer_span(&drawer, d, dclip.w, tmp, 0, NULL);
+                                        dclip->w, sgeom->w, tmp);
+		enesim_operator_drawer_span(&drawer, d, dclip->w, tmp, 0, NULL);
 		/* increment the source by the scale factor */
 		d += dstride;
 		y++;
 	}
 	free(tmp);
 }
+
+
+static void _image_noscale(Enesim_Surface *dst, Eina_Rectangle *dclip, Context *c, Enesim_Surface *src, Eina_Rectangle *sgeom, Eina_Rectangle *sclip)
+{
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Operator op;
+	uint32_t sstride, dstride;
+	uint32_t *s, *d;
+	int y;
+	/* TODO get the quality */
+
+	_image_setup(src, &s, &sstride, dst, &d, &dstride);
+
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_drawer_span_pixel_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+
+	s = s + (sclip->y * sstride) + sclip->x;
+	d = d + (dclip->y * dstride) + dclip->x;
+	while (dclip->h--)
+	{
+		enesim_operator_drawer_span(&op, d, dclip->w, s, 0, NULL);
+		s += sstride;
+		d += dstride;
+	}
+}
+
+/* As enesim doesnt support prescaling on the fly while doing transformations
+ * we need to create a scaled image before transforming
+ */
+static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context *c, Enesim_Surface *src, uint32_t sw, uint32_t sh, Eina_Rectangle *sgeom, Eina_Rectangle *sclip)
+{
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Operator drawer, tx;
+	uint32_t sstride, dstride;
+	uint32_t *s, *d, *t;
+	Enesim_Surface *realsrc = src;
+
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	enesim_transformer_1d_op_get(&tx, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_MATRIX_AFFINE,  ENESIM_FAST, ENESIM_FORMAT_ARGB8888);
+	
+	printf("[%f %f %f]\n", c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz);
+	printf("[%f %f %f]\n", c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz);
+	printf("[%f %f %f]\n", c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz);
+	
+	/* setup a temporary surface */
+	/* downscale or upscale the image */
+	if (((sgeom->w != sw) || (sgeom->h != sh)))
+	{
+		Enesim_Surface *tmp;
+		Eina_Rectangle rclip;
+		Eina_Rectangle srclip;
+		Context rc;
+
+		rc.rop = ENESIM_FILL;
+
+		tmp = enesim_surface_new(ENESIM_FORMAT_ARGB8888, sgeom->w, sgeom->h);
+		eina_rectangle_coords_from(&rclip, 0, 0, sgeom->w, sgeom->h);
+		eina_rectangle_coords_from(&srclip, 0, 0, sw, sh);
+		_image_scale(realsrc, &rclip, &rc, src, sw, sh, sgeom, &srclip);
+		realsrc = tmp;
+	}
+	_image_setup(realsrc, &s, &sstride, dst, &d, &dstride);
+
+	t = malloc(dclip->w * sizeof(uint32_t));
+	d =  d + (dclip->y * dstride) + dclip->x;
+
+	printf("DCLIP %d %d %d %d\n", dclip->x, dclip->y, dclip->w, dclip->h);
+	printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
+	printf("SCLIP %d %d %d %d\n", sclip->x, sclip->y, sclip->w, sclip->h);
+	//printf("%d %d %d\n", w, h, sstride);
+	//printf("old at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+	while (dclip->y--)
+	{
+		/*
+		enesim_operator_transformer_1d(&tx, s,
+				sstride, sw, sh,
+				0, 0,
+				c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz,
+				c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz,
+				c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz,
+				dclip->x, dclip->y++, dclip->w, t);*/
+		//enesim_operator_drawer_span(&drawer, d, dclip->w, t, 0, NULL);
+		d += dstride;
+	}
+	/* clean up */
+	free(t);
+	/* the temporary surface */
+	if (realsrc != src)
+	{
+		enesim_surface_delete(realsrc);
+	}
+}
+
+
 
 /*
  * surface: destintation surface
@@ -220,99 +311,50 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 {
 	Enesim_Surface *dst = surface;
 	Context *c = context;
-
-	Enesim_Operator op;
-	Enesim_Cpu **cpus;
-	int numcpus;
-	uint32_t *ssrc, *ddst;
-	uint32_t sstride, dstride;
-	Eina_Rectangle imgclip;
+	Eina_Rectangle dclip, sclip;
 	uint32_t sw, sh;
-
+	uint32_t dw, dh;
+	
 #ifdef ETK2_DEBUG
 	printf("[Etk_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 #endif
 	enesim_surface_size_get(src, &sw, &sh);
-	/* downscale or upscale the image */
-	if ((srect->w != sw) || (srect->h != sh))
-	{
-		printf("SURFACE %d %d - %d %d\n", sw, sh, srect->w, srect->h);
-		_image_scale(dst, context, src, srect);
-		return;
-	}
-	/* TODO get the quality */
-	cpus = enesim_cpu_get(&numcpus);
-	enesim_drawer_span_pixel_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	enesim_surface_size_get(dst, &dw, &dh);
+	eina_rectangle_coords_from(&dclip, srect->x, srect->y, srect->w, srect->h);
 
-	//printf("Trying to render an image at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 	/* the context has the clipping rect relative to the canvas */
-	imgclip = *srect;
+	printf("ENTERING\n");
+	printf("S = %d %d D = %d %d\n", sw, sh, dw, dh);
+	printf("SGEOM %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+	printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
 	if (c->clip.used)
 	{
-		//printf("using clip at %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
-		eina_rectangle_rescale_in(srect, &c->clip.rect, &imgclip);
-		//printf("rescaled to %d %d %d %d\n", imgclip.x, imgclip.y, imgclip.w, imgclip.h);
-		//printf("old at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+		printf("CLIP %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
+		eina_rectangle_rescale_in(srect, &c->clip.rect, &sclip);
+		eina_rectangle_coords_from(&dclip, c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
 	}
+	printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
+	printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
+
+	/* transformed matrix */
 	if (c->matrix.used)
 	{
-		int w, h;
-		Enesim_Operator tx;
-		uint32_t *stmp;
-
-		if (!enesim_transformer_1d_op_get(&tx, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_MATRIX_AFFINE,
-			 ENESIM_FAST, ENESIM_FORMAT_ARGB8888))
-		{
-			//printf("no transformer available\n");
-			return;
-		}
-		else
-		{
-			//printf("transformer used %d %d!!!!!\n", imgclip.x, imgclip.y);
-			//printf("%f %f %f\n", c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz);
-			//printf("%f %f %f\n", c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz);
-			//printf("%f %f %f\n", c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz);
-		}
-		enesim_surface_size_get(src, &w, &h);
-		stmp = malloc(imgclip.w * sizeof(uint32_t));
-		sstride = enesim_surface_stride_get(src);
-		dstride = enesim_surface_stride_get(dst);
-		ssrc = enesim_surface_data_get(src);
-		ddst = enesim_surface_data_get(dst);
-		ddst +=  (c->clip.rect.y * dstride) + c->clip.rect.x;
-
-		//printf("%d %d %d\n", w, h, sstride);
-		//printf("old at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
-		while (imgclip.h--)
-		{
-			int i;
-
-			enesim_operator_transformer_1d(&tx, ssrc,
-					sstride, w, h,
-					0, 0,
-					c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz,
-					c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz,
-					c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz,
-					imgclip.x, imgclip.y++, imgclip.w, stmp);
-			enesim_operator_drawer_span(&op, ddst, imgclip.w, stmp, 0, NULL);
-			ddst += dstride;
-		}
-		free(stmp);
+		printf("Transforming image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		_image_transform(dst, &dclip, c, src, sw, sh, srect, &sclip);
 	}
+	// TODO filter
+	/* downscale or upscale the image */
+	else if (((srect->w != sw) || (srect->h != sh)))
+	{
+		printf("Scaling image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		_image_scale(dst, &dclip, c, src, sw, sh, srect, &sclip);
+		return;
+	}
+	/* no scale */
 	else
 	{
-		sstride = enesim_surface_stride_get(src);
-		dstride = enesim_surface_stride_get(dst);
-		ssrc = enesim_surface_data_get(src);
-		ssrc += (imgclip.y * sstride) + imgclip.x;
-		ddst = enesim_surface_data_get(dst);
-		ddst +=  (c->clip.rect.y * dstride) + c->clip.rect.x;
-		while (imgclip.h--)
-		{
-			enesim_operator_drawer_span(&op, ddst, imgclip.w, ssrc, 0, NULL);
-			ssrc += sstride;
-			ddst += dstride;
-		}
+		printf("No scaling image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		_image_noscale(dst, &dclip, c, src, srect, &sclip);
 	}
 }
 /*============================================================================*
