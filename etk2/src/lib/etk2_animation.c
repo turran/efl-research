@@ -69,6 +69,11 @@ static void _animation_color_callback(const Etch_Data *curr, const Etch_Data *pr
 	ekeko_object_property_value_set(rel, prv->name, &v);
 }
 
+static void _animation_matrix_callback(const Etch_Data *curr, const Etch_Data *prev, void *data)
+{
+	printf("Matrix animation callback called\n");
+}
+
 static inline Etch_Animation_Type _calc_to_etch(Etk_Calc c)
 {
 	switch (c)
@@ -130,6 +135,13 @@ static inline void _value_set(Etk_Animation *a, Ekeko_Value *v, Etch_Animation_K
 
 		etch_animation_keyframe_value_set(k, c);
 		printf("[Etk_Animation] Setting color to %08x\n", c);
+	}
+	else if (v->type == ETK_PROPERTY_MATRIX)
+	{
+		Enesim_Matrix *m = v->value.pointer_value;
+		printf("[Etk_Animation] Setting matrix to:\n");
+		printf("[%g %g %g]\n[%g %g %g]\n[%g %g %g]\n", m->xx, m->xy, m->xz, m->yx, m->yy, m->yz, m->zx, m->zy, m->zz);
+
 	}
 	else
 	{
@@ -231,6 +243,10 @@ static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
 
 			dtype = ETCH_ARGB;
 			cb = _animation_color_callback;
+		}
+		else if (vtype == ETK_PROPERTY_MATRIX)
+		{
+			cb = _animation_matrix_callback;
 		}
 		break;
 	}

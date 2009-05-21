@@ -171,7 +171,8 @@ static void _image_scale(Enesim_Surface *dst, Eina_Rectangle *dclip,
 	uint32_t sstride, dstride;
 	uint32_t *s, *d, *tmp;
 	int y;
-	
+
+	printf("Scaling image from %d %d to %d %d\n", sw, sh, sgeom->w, sgeom->h);	
 	_image_setup(src, &s, &sstride, dst, &d, &dstride);
 
 	cpus = enesim_cpu_get(&numcpus);
@@ -241,6 +242,7 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 	uint32_t sstride, dstride;
 	uint32_t *s, *d, *t;
 	Enesim_Surface *realsrc = src;
+	int y;
 
 	cpus = enesim_cpu_get(&numcpus);
 	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
@@ -256,39 +258,45 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 	{
 		Enesim_Surface *tmp;
 		Eina_Rectangle rclip;
-		Eina_Rectangle srclip;
 		Context rc;
 
 		rc.rop = ENESIM_FILL;
 
 		tmp = enesim_surface_new(ENESIM_FORMAT_ARGB8888, sgeom->w, sgeom->h);
 		eina_rectangle_coords_from(&rclip, 0, 0, sgeom->w, sgeom->h);
-		eina_rectangle_coords_from(&srclip, 0, 0, sw, sh);
-		_image_scale(realsrc, &rclip, &rc, src, sw, sh, sgeom, &srclip);
+		_image_scale(tmp, &rclip, &rc, src, sw, sh, &rclip, &rclip);
 		realsrc = tmp;
 	}
 	_image_setup(realsrc, &s, &sstride, dst, &d, &dstride);
 
 	t = malloc(dclip->w * sizeof(uint32_t));
 	d =  d + (dclip->y * dstride) + dclip->x;
+	y = 0;
 
 	printf("DCLIP %d %d %d %d\n", dclip->x, dclip->y, dclip->w, dclip->h);
 	printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
 	printf("SCLIP %d %d %d %d\n", sclip->x, sclip->y, sclip->w, sclip->h);
 	//printf("%d %d %d\n", w, h, sstride);
 	//printf("old at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
-	while (dclip->y--)
+	while (y < dclip->h)
 	{
-		/*
+		memset(t, 0, sizeof(uint32_t) * dclip->w);
+#if !DEBUG
 		enesim_operator_transformer_1d(&tx, s,
-				sstride, sw, sh,
+				sstride, sgeom->w, sgeom->h,
 				0, 0,
 				c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz,
 				c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz,
 				c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz,
-				dclip->x, dclip->y++, dclip->w, t);*/
-		//enesim_operator_drawer_span(&drawer, d, dclip->w, t, 0, NULL);
+				0, y, dclip->w, t);
+		enesim_operator_drawer_span(&drawer, d, dclip->w, t, 0, NULL);
 		d += dstride;
+#else
+		enesim_operator_drawer_span(&drawer, d, dclip->w, s, 0, NULL);
+		s += sstride;
+		d += dstride;
+#endif
+		y++;
 	}
 	/* clean up */
 	free(t);

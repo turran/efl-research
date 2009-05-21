@@ -73,12 +73,14 @@ static void _geometry_calc(const Ekeko_Object *o, Event *e, void *data)
 	/* TODO check that the matrix is not identity */
 	/* compute the final geometry multiplying by the context matrix */
 	etk_square_coords_get((Etk_Square *)i, &x, &y, &w, &h);
-	eina_rectangle_coords_from(&r, x.final, y.final, w.final,
+	eina_rectangle_coords_from(&r, 0, 0, w.final,
 			h.final);
 	/* get the largest rectangle that fits on the matrix */
 	enesim_matrix_rect_transform(&prv->matrix, &r, &q);
 	enesim_quad_coords_get(&q, &x1, &y1, &x2, &y2, &x3, &y3, &x4, &y4);
 	enesim_quad_rectangle_to(&q, &r);
+	r.x = x.final;
+	r.y = y.final;
 
 #ifndef ETK_DEBUG
 	printf("[Etk_Image] Setting geometry of size %d %d %d %d\n",

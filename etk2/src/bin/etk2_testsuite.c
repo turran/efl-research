@@ -121,13 +121,38 @@ Eina_Bool matrix_parse(Enesim_Matrix *m, char *v)
 		}
 		if (num == 1)
 			sy = sx;
+		printf("Scaling by %g %g\n", sx, sy);
 		enesim_matrix_scale(m, sx, sy);
 		return EINA_TRUE;
 	}
 	/* matrix="xx xy xz yx yy yz zx zy zz */
 	else
 	{
+		float matrix[9];
+		int i;
+		char *tmp, *end;
 
+		tmp = v;
+		for (i = 0; i < 9; i++)
+		{
+			/* get the value */
+			matrix[i] = strtof(tmp, &end);
+			if (end == tmp)
+				break;
+			if (*end)
+			{
+				printf("%g end = %c\n", matrix[i], *end);
+				tmp = end + 1;
+			}
+			else
+				break;
+		}
+		if (i < 8)
+			return EINA_FALSE;
+		enesim_matrix_values_set(m, matrix[0], matrix[1], matrix[2],
+				matrix[3], matrix[4], matrix[5], matrix[6],
+				matrix[7], matrix[8]);
+		return EINA_TRUE;
 	}
 	return EINA_FALSE;
 }
