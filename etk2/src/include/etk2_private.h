@@ -25,7 +25,11 @@
 #define ETK_TYPE_CANVAS "Etk_Canvas"
 #define ETK_TYPE_RECT "Etk_Rect"
 #define ETK_TYPE_IMAGE "Etk_Image"
+
 #define ETK_TYPE_ANIMATION "Etk_Animation"
+#define ETK_TYPE_ANIMATION_BASIC "Etk_Animation_Basic"
+#define ETK_TYPE_ANIMATION_MATRIX "Etk_Animation_Matrix"
+
 #define ETK_TYPE_FILTER "Etk_Filter"
 #define ETK_TYPE_FILTER_EFFECT "Etk_Filter_Effect"
 

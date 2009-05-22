@@ -32,17 +32,22 @@ extern Property_Id ETK_ANIMATION_CALC;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
+typedef void (*Etk_Animation_Callback)(Etk_Animation *a, const char *prop,
+		Ekeko_Object *o, const Etch_Data *curr, const Etch_Data *prev);
+
 typedef struct _Etk_Animation_Private Etk_Animation_Private;
 struct _Etk_Animation
 {
 	Ekeko_Object parent;
 	Etk_Animation_Private *private;
+	void (*value_set)(Ekeko_Value *v, Etch_Animation_Keyframe *k);
+	void (*callback_set)(Ekeko_Value_Type vtype, Etch_Data_Type *dtype, Etk_Animation_Callback *cb);
+
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
 EAPI Ekeko_Type *etk_animation_type_get(void);
-EAPI Etk_Animation * etk_animation_new(void);
 EAPI void etk_animation_end_set(Etk_Animation *a, Ekeko_Object *o, const char *event);
 EAPI void etk_animation_begin_set(Etk_Animation *a, Ekeko_Object *o, char *event);
 EAPI void etk_animation_property_set(Etk_Animation *a, const char *prop);

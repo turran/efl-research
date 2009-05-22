@@ -23,6 +23,8 @@ etk2_rect.c \
 etk2_polygon.c \
 etk2_image.c \
 etk2_animation.c \
+etk2_anim_basic.c \
+etk2_anim_matrix.c \
 etk2_filter.c \
 etk2_filter_effect.c
 #

@@ -12,7 +12,7 @@ static void _color_animation(Ekeko_Object *o, const char *prop,
 	Etk_Clock clock;
 	Ekeko_Value v;
 
-	a = etk_animation_new();
+	a = (Etk_Animation *)etk_animation_basic_new();
 	ekeko_object_child_append((Ekeko_Object *)o, (Ekeko_Object *)a);
 	etk_animation_property_set(a, prop);
 	etk_animation_begin_set(a, (Ekeko_Object *)o, EVENT_UI_MOUSE_CLICK);
@@ -36,7 +36,7 @@ static void _coord_animation(Ekeko_Object *o, const char *prop,
 	Etk_Clock clock;
 	Ekeko_Value v;
 
-	a = etk_animation_new();
+	a = (Etk_Animation *)etk_animation_basic_new();
 	ekeko_object_child_append((Ekeko_Object *)o, (Ekeko_Object *)a);
 	etk_animation_property_set(a, prop);
 	etk_coord_set(&coord, orig, torig);

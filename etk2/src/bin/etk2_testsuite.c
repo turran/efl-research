@@ -313,7 +313,6 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 			{
 				Ekeko_Value nvalue;
 				Ekeko_Object *parent;
-				Property *prop;
 				Ekeko_Value_Type vtype;
 
 				/* get the name of the attribute to animate */
@@ -322,8 +321,21 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 				parent = ekeko_object_parent_get(o);
 				if (!parent)
 					return;
-				prop = ekeko_object_property_get(parent, nvalue.value.string_value);
-				vtype = ekeko_property_value_type_get(prop);
+
+				if (ekeko_type_instance_is_of(o, "Etk_Animation_Basic"))
+				{
+					Property *prop;
+
+					/* in case of anim tag, handle every type */
+					prop = ekeko_object_property_get(parent, nvalue.value.string_value);
+					vtype = ekeko_property_value_type_get(prop);
+				}
+				else if (ekeko_type_instance_is_of(o, "Etk_Animation_Matrix"))
+				{
+					/* in case of animmatrix, this is handled differently */
+					printf("HEEEEEEEEEEEEEEEEEEEEREEEEEEE %s %s\n", name, attr);
+					vtype = PROPERTY_INT;
+				}
 				printf("[PARSER] Going to set a value for prop %d %s with %d\n", nvalue.type, nvalue.value.string_value, vtype);
 				object_attribute_set(o, vtype, attr, name);
 			}
@@ -420,11 +432,14 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 		etk_rect_show(o);
 		etk_rect_rop_set(o, ENESIM_BLEND);
 	}
-	else if (!strcmp(tag, "anim"))
+	else if (!strcmp(tag, "anim") || !strcmp(tag, "animMatrix"))
 	{
 		char *value;
 
-		o = (Ekeko_Object *)etk_animation_new();
+		if (!strcmp(tag, "animMatrix"))
+			o = (Ekeko_Object *)etk_animation_matrix_new();
+		else
+			o = (Ekeko_Object *)etk_animation_basic_new();
 		if (!o)
 			return NULL;
 		ekeko_object_child_append(parent, o);

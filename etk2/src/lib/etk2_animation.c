@@ -7,7 +7,7 @@
 #include "Etk2.h"
 #include "etk2_private.h"
 
-#define ETK_ANIMATION_DEBUG 1
+#define ETK_ANIMATION_DEBUG 0
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -36,43 +36,11 @@ struct _Etk_Animation_Private
 	 */
 };
 
-static void _animation_coord_callback(const Etch_Data *curr, const Etch_Data *prev, void *data)
+typedef struct _Etk_Animation_Callback_Container
 {
-	Etk_Animation *a = data;
-	Ekeko_Object *rel;
-	Etk_Animation_Private *prv = PRIVATE(a);
-	Etk_Coord coord;
-	Ekeko_Value v;
-
-#if ETK_ANIMATION_DEBUG
-	printf("[Etk_Animation] Entering animation callback\n");
-#endif
-	rel = ekeko_object_parent_get((Ekeko_Object *)a);
-	ekeko_object_property_value_get(rel, prv->name, &v);
-#if ETK_ANIMATION_DEBUG
-	printf("[Etk_Animation] Animation %p %p called %d -> %d\n", a, v.value.pointer_value, prev->data.i32, curr->data.i32);
-#endif
-	etk_coord_set(&coord, curr->data.i32, ((Etk_Coord *)v.value.pointer_value)->type);
-	etk_value_coord_from(&v, &coord);
-	ekeko_object_property_value_set(rel, prv->name, &v);
-}
-
-static void _animation_color_callback(const Etch_Data *curr, const Etch_Data *prev, void *data)
-{
-	Etk_Animation *a = data;
-	Ekeko_Object *rel;
-	Etk_Animation_Private *prv = PRIVATE(a);
-	Ekeko_Value v;
-
-	rel = ekeko_object_parent_get((Ekeko_Object *)a);
-	etk_value_color_from(&v, curr->data.argb);
-	ekeko_object_property_value_set(rel, prv->name, &v);
-}
-
-static void _animation_matrix_callback(const Etch_Data *curr, const Etch_Data *prev, void *data)
-{
-	printf("Matrix animation callback called\n");
-}
+	Etk_Animation *a;
+	Etk_Animation_Callback cb;
+} Etk_Animation_Callback_Container;
 
 static inline Etch_Animation_Type _calc_to_etch(Etk_Calc c)
 {
@@ -116,39 +84,24 @@ static inline Etk_Document * _document_get(Ekeko_Object *o)
 	return doc;
 }
 
-static inline void _value_set(Etk_Animation *a, Ekeko_Value *v, Etch_Animation_Keyframe *k)
+static void _etch_callback(const Etch_Data *curr, const Etch_Data *prev, void *data)
 {
+	Etk_Animation_Callback_Container *acc = data;
+	Etk_Animation *a = acc->a;
+	Ekeko_Object *rel;
 	Etk_Animation_Private *prv = PRIVATE(a);
 
-	if (v->type == ETK_PROPERTY_COORD)
-	{
-		Etk_Coord *c = v->value.pointer_value;
-
-		etch_animation_keyframe_value_set(k, c->value);
-#if !ETK_ANIMATION_DEBUG
-		printf("[Etk_Animation] Setting coord to %d\n", c->value);
-#endif
-	}
-	else if (v->type == ETK_PROPERTY_COLOR)
-	{
-		Etk_Color c = v->value.int_value;
-
-		etch_animation_keyframe_value_set(k, c);
-		printf("[Etk_Animation] Setting color to %08x\n", c);
-	}
-	else if (v->type == ETK_PROPERTY_MATRIX)
-	{
-		Enesim_Matrix *m = v->value.pointer_value;
-		printf("[Etk_Animation] Setting matrix to:\n");
-		printf("[%g %g %g]\n[%g %g %g]\n[%g %g %g]\n", m->xx, m->xy, m->xz, m->yx, m->yy, m->yz, m->zx, m->zy, m->zz);
-
-	}
-	else
-	{
 #if ETK_ANIMATION_DEBUG
-		printf("ERRRRRRRRRRRRRROOOOOOOOORRRRRR setting wrong animation value %d\n", v->type);
+	printf("[Etk_Animation] Entering animation callback\n");
 #endif
-	}
+	rel = ekeko_object_parent_get((Ekeko_Object *)a);
+	acc->cb(a, prv->name, rel, curr, prev);
+}
+
+static inline void _value_set(Etk_Animation *a, Ekeko_Value *v, Etch_Animation_Keyframe *k)
+{
+	if (a->value_set)
+		a->value_set(v, k);
 }
 
 static inline void _from_set(Etk_Animation *a)
@@ -206,54 +159,42 @@ static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
 	Etch *etch;
 	Ekeko_Value_Type vtype;
 	Etch_Data_Type dtype;
-	Etch_Animation_Callback cb = NULL;
+	Etk_Animation_Callback cb = NULL;
+	Etk_Animation_Callback_Container *acc;
 	Etch_Animation_Type atype;
 
 	/* get the property */
 	if (!prv->name)
 		return;
-	printf("PROPERTY ANIMATE!!! %p %p\n", a, parent);
+
 	p = ekeko_object_property_get(parent, prv->name);
 	if (!p)
 		return;
+
 	doc = _document_get(parent);
-	printf("DOOOOOOOOOOOOOOOOOOOOOOOOOOOC %s %p\n", ekeko_object_type_name_get(parent), doc);
 	if (!doc)
 		return;
+
 	etch = etk_document_etch_get(doc);
 	vtype = ekeko_property_value_type_get(p);
 #if ETK_ANIMATION_DEBUG
 	printf("[Etk_Animation] Trying to animate property %s of type %d\n", prv->name, vtype);
 #endif
-	switch (vtype)
-	{
-		/* basic types */
-		case PROPERTY_INT:
-		dtype = ETCH_INT32;
-		break;
 
-		default:
-		if (vtype == ETK_PROPERTY_COORD)
-		{
-			dtype = ETCH_UINT32;
-			cb = _animation_coord_callback;
-		}
-		else if (vtype == ETK_PROPERTY_COLOR)
-		{
+	if (!a->callback_set)
+		return;
+	a->callback_set(vtype, &dtype, &cb);
+	if (!cb)
+		return;
 
-			dtype = ETCH_ARGB;
-			cb = _animation_color_callback;
-		}
-		else if (vtype == ETK_PROPERTY_MATRIX)
-		{
-			cb = _animation_matrix_callback;
-		}
-		break;
-	}
+	acc = malloc(sizeof(Etk_Animation_Callback_Container));
+	acc->a = a;
+	acc->cb = cb;
 	/* TODO check if the animation already has an anim */
-	prv->anim = etch_animation_add(etch, dtype, cb, a);
+	prv->anim = etch_animation_add(etch, dtype, _etch_callback, acc);
 	atype = _calc_to_etch(prv->calc);
 	etch_animation_repeat_set(prv->anim, prv->repeat);
+
 	/* If we have some trigger event disable the animation for now */
 	if (prv->begin.obj)
 		etch_animation_disable(prv->anim);
@@ -510,15 +451,6 @@ EAPI Ekeko_Type *etk_animation_type_get(void)
 	}
 
 	return type;
-}
-
-EAPI Etk_Animation * etk_animation_new(void)
-{
-	Etk_Animation *a;
-
-	a = ekeko_type_instance_new(etk_animation_type_get());
-
-	return a;
 }
 
 EAPI void etk_animation_property_set(Etk_Animation *a, const char *prop)
