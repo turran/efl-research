@@ -11,6 +11,8 @@
 #include "Etk2.h"
 #include "EXML.h"
 
+
+#define PARSER_DEBUG 0
 /*
  * The testsuite is an application that parses xml files with etk scenes
  * TODO make etk2 type system to be defined at etk_init() to avoid strcmp => etk_foo
@@ -121,7 +123,6 @@ Eina_Bool matrix_parse(Enesim_Matrix *m, char *v)
 		}
 		if (num == 1)
 			sy = sx;
-		printf("Scaling by %g %g\n", sx, sy);
 		enesim_matrix_scale(m, sx, sy);
 		return EINA_TRUE;
 	}
@@ -141,7 +142,6 @@ Eina_Bool matrix_parse(Enesim_Matrix *m, char *v)
 				break;
 			if (*end)
 			{
-				printf("%g end = %c\n", matrix[i], *end);
 				tmp = end + 1;
 			}
 			else
@@ -183,9 +183,7 @@ void clock_parse(Etk_Clock *c, char *v)
 	{
 
 		*units = '\0';
-		//num = strtof(v, NULL);
-		num = atof(v);
-		printf("num = %g\n", num);
+		num = strtof(v, NULL);
 		dec = num - (int)num;
 		c->seconds = (int)num;
 		c->micro = dec * 100000;
@@ -311,40 +309,45 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 			/* FIXME remove "Etk_Animation" */
 			if (ekeko_type_instance_is_of(o, "Etk_Animation"))
 			{
-				Ekeko_Value nvalue;
 				Ekeko_Object *parent;
 				Ekeko_Value_Type vtype;
 
 				/* get the name of the attribute to animate */
 				/* FIXME remove "name" */
-				ekeko_object_property_value_get(o, "name", &nvalue);
 				parent = ekeko_object_parent_get(o);
 				if (!parent)
 					return;
 
 				if (ekeko_type_instance_is_of(o, "Etk_Animation_Basic"))
 				{
+					Ekeko_Value nvalue;
 					Property *prop;
 
+					ekeko_object_property_value_get(o, "name", &nvalue);
 					/* in case of anim tag, handle every type */
 					prop = ekeko_object_property_get(parent, nvalue.value.string_value);
 					vtype = ekeko_property_value_type_get(prop);
+#if PARSER_DEBUG
+					printf("[PARSER] Going to set a value for prop %d %s with %d\n", nvalue.type, nvalue.value.string_value, vtype);
+#endif
 				}
 				else if (ekeko_type_instance_is_of(o, "Etk_Animation_Matrix"))
 				{
 					/* in case of animmatrix, this is handled differently */
-					printf("HEEEEEEEEEEEEEEEEEEEEREEEEEEE %s %s\n", name, attr);
-					vtype = PROPERTY_INT;
+					vtype = PROPERTY_FLOAT;
 				}
-				printf("[PARSER] Going to set a value for prop %d %s with %d\n", nvalue.type, nvalue.value.string_value, vtype);
 				object_attribute_set(o, vtype, attr, name);
 			}
 		}
 		return;
 
+		case PROPERTY_FLOAT:
+		ekeko_value_float_from(&v, strtof(name, NULL));
+		ekeko_object_property_value_set(o, attr, &v);
+		break;
+
 		case PROPERTY_BOOL:
 		case PROPERTY_CHAR:
-		case PROPERTY_FLOAT:
 		case PROPERTY_DOUBLE:
 		case PROPERTY_SHORT:
 		case PROPERTY_LONG:
@@ -361,7 +364,6 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 				char real_file[256];
 
 				sprintf(real_file, "%s/%s", image_dir, name);
-				printf("image at %s\n", real_file);
 				ekeko_value_str_from(&v, strdup(real_file));
 				ekeko_object_property_value_set(o, attr, &v);
 			}
@@ -398,7 +400,6 @@ void attributes_set(void *value, void *data)
 	{
 		if (ekeko_property_id_get(prop) == ETK_ANIMATION_PROPERTY)
 		{
-			printf("[PARSER] Skipping the name attribute\n");
 			return;
 		}
 	}
@@ -413,7 +414,9 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	Ekeko_Object *o = NULL;
 
 	n = exml_get(exml);
+#if PARSER_DEBUG
 	printf("[PARSER] creating tag %s for parent %s\n", tag, ekeko_object_type_name_get(parent));
+#endif
 	if (!strcmp(tag, "etk"))
 	{
 		o = (Ekeko_Object *)etk_canvas_new((Etk_Canvas *)parent);
@@ -469,7 +472,9 @@ void parse(EXML *exml, Ekeko_Object *parent)
 
 	if (!parent)
 		return;
+#if PARSER_DEBUG
 	printf("[PARSER] parsing %s\n", ekeko_object_type_name_get(parent));
+#endif
 	n = exml_get(exml);
 	tag = exml_down(exml);
 	while (tag)
@@ -482,7 +487,6 @@ void parse(EXML *exml, Ekeko_Object *parent)
 		/* siblings */
 		tag = exml_next(exml);
 	}
-	//printf("going up\n");
 	exml_goto_node(exml, n);
 }
 
@@ -536,7 +540,6 @@ int main(int argc, char **argv)
 		}
 	}
 	exml = exml_new();
-	printf("%s\n", file);
 	if (!exml_file_read(exml, file))
 	{
 		printf("no file\n");

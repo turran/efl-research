@@ -20,31 +20,29 @@ static void _animation_matrix_callback(Etk_Animation *a, const char *prop,
 
 	if (prv->type == ETK_ROTATE)
 	{
-			enesim_matrix_rotate(&m, curr->data.u32);
+		enesim_matrix_rotate(&m, curr->data.f);
 	}
 	else if (prv->type == ETK_SCALE)
 	{
-		enesim_matrix_scale(&m, curr->data.u32, curr->data.u32);
+		enesim_matrix_scale(&m, curr->data.f, curr->data.f);
 	}
 	/* get the matrix type from the animation */
 	/* create a new one */
 	/* set the matrix on the object */
-	printf("CAAAAAAAAAAAAALLLLLLLLLLLLLLLLLLLEEEEEEEEEEEEEEEEEEDDDDDDDDDDDD %d\n", curr->data.u32);
 	etk_value_matrix_from(&v, &m);
 	ekeko_object_property_value_set(o, prop, &v);
 }
 
 static void _value_set(Ekeko_Value *v, Etch_Animation_Keyframe *k)
 {
-	if (v->type == ETCH_UINT32)
+	if (v->type == PROPERTY_FLOAT)
 	{
-		printf("CAAAAAAAAAAAAALLLLLLLLLLLLLLLLLLLEEEEEEEEEEEEEEEEEEDDDDDDDDDDDD with value %d %d\n", v->type, v->value.int_value);
 #if 0
 		Enesim_Matrix *m = v->value.pointer_value;
 		printf("[Etk_Animation] Setting matrix to:\n");
 		printf("[%g %g %g]\n[%g %g %g]\n[%g %g %g]\n", m->xx, m->xy, m->xz, m->yx, m->yy, m->yz, m->zx, m->zy, m->zz);
 #endif
-		etch_animation_keyframe_value_set(k, v->value.int_value);
+		etch_animation_keyframe_value_set(k, v->value.float_value);
 	}
 }
 
@@ -52,7 +50,7 @@ static void _callback_set(Ekeko_Value_Type vtype, Etch_Data_Type *dtype, Etk_Ani
 {
 	if (vtype == ETK_PROPERTY_MATRIX)
 	{
-		*dtype = ETCH_UINT32;
+		*dtype = ETCH_FLOAT;
 		*cb = _animation_matrix_callback;
 	}
 }
@@ -101,7 +99,6 @@ EAPI Etk_Animation_Matrix * etk_animation_matrix_new(void)
 {
 	Etk_Animation_Matrix *a;
 
-	printf("ANIMATION MATRIX NEWWWWWWWWWW\n");
 	a = ekeko_type_instance_new(etk_animation_matrix_type_get());
 
 	return a;

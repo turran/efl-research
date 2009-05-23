@@ -9,7 +9,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define BOUNDING_DEBUG
+#define BOUNDING_DEBUG 0
 #define PRIVATE(d) ((Etk_Shape_Private *)((Etk_Shape *)(d))->private)
 #define TYPE_NAME "Etk_Shape"
 
@@ -38,7 +38,7 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	func = etk_document_engine_get(d);
 	surface = etk_canvas_surface_get(c);
 
-#ifdef BOUNDING_DEBUG
+#if BOUNDING_DEBUG
 	{
 		Etk_Context *ctx;
 

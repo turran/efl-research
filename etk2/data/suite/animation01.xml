@@ -1,7 +1,8 @@
 <etk w="100%" h="100%">
 	<rect x="0" y="0" w="100%" h="100%" color="white"/>
 	<image x="40%" y="25%" w="50%" h="50%" file="tiger.png">
-		<animMatrix name="matrix" type="0" dur="10s" from="1" to="10" calc="0" begin="click" repeat="-1"/>
+		<animMatrix name="matrix" type="0" dur="3s" from="0" to="0.7" calc="0" begin="click" repeat="-1"/>
+		<anim name="color" dur="5s" from="0x00ff0000" to="0x00000000" calc="0" begin="click" repeat="-1"/>
 	</image>
 	<rect x="60%" y="10%" w="25%" h="25%" color="0xaa0000aa">
 		<anim name="y" dur="10s" from="10%" to="80%" calc="0" begin="click" repeat="-1"/>

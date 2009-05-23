@@ -9,7 +9,7 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define BOUNDING_DEBUG
+#define BOUNDING_DEBUG 0
 #define PRIVATE(d) ((Etk_Canvas_Private *)((Etk_Canvas *)(d))->private)
 struct _Etk_Canvas_Private
 {
@@ -46,7 +46,7 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	cprv = PRIVATE(c);
 
 	func = etk_document_engine_get(sprv->doc);
-#ifndef BOUNDING_DEBUG
+#if BOUNDING_DEBUG
 	{
 		Etk_Context *ctx;
 

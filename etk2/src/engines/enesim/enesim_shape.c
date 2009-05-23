@@ -29,7 +29,7 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	int fy;
 	Enesim_Surface *ftmp = NULL;
 
-#ifdef ETK2_DEBUG
+#if ETK2_DEBUG
 	printf("[Etk_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
 #endif
 	cpus = enesim_cpu_get(&numcpus);
@@ -172,7 +172,7 @@ static void _image_scale(Enesim_Surface *dst, Eina_Rectangle *dclip,
 	uint32_t *s, *d, *tmp;
 	int y;
 
-	printf("Scaling image from %d %d to %d %d\n", sw, sh, sgeom->w, sgeom->h);	
+	//printf("Scaling image from %d %d to %d %d\n", sw, sh, sgeom->w, sgeom->h);
 	_image_setup(src, &s, &sstride, dst, &d, &dstride);
 
 	cpus = enesim_cpu_get(&numcpus);
@@ -245,13 +245,22 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 	int y;
 
 	cpus = enesim_cpu_get(&numcpus);
+	/* check the mul color */
+	if (c->color != 0xffffffff)
+	{
+		enesim_drawer_span_pixel_color_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
+	}
+	else
+	{
+		enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	}
 	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
 	enesim_transformer_1d_op_get(&tx, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_MATRIX_AFFINE,  ENESIM_FAST, ENESIM_FORMAT_ARGB8888);
-	
-	printf("[%f %f %f]\n", c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz);
-	printf("[%f %f %f]\n", c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz);
-	printf("[%f %f %f]\n", c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz);
-	
+
+	//printf("[%f %f %f]\n", c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz);
+	//printf("[%f %f %f]\n", c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz);
+	//printf("[%f %f %f]\n", c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz);
+
 	/* setup a temporary surface */
 	/* downscale or upscale the image */
 	if (((sgeom->w != sw) || (sgeom->h != sh)))
@@ -273,9 +282,9 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 	d =  d + (dclip->y * dstride) + dclip->x;
 	y = 0;
 
-	printf("DCLIP %d %d %d %d\n", dclip->x, dclip->y, dclip->w, dclip->h);
-	printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
-	printf("SCLIP %d %d %d %d\n", sclip->x, sclip->y, sclip->w, sclip->h);
+	//printf("DCLIP %d %d %d %d\n", dclip->x, dclip->y, dclip->w, dclip->h);
+	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
+	//printf("SCLIP %d %d %d %d\n", sclip->x, sclip->y, sclip->w, sclip->h);
 	//printf("%d %d %d\n", w, h, sstride);
 	//printf("old at %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 	while (y < dclip->h)
@@ -289,7 +298,7 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 				c->matrix.m.yx, c->matrix.m.yy, c->matrix.m.yz,
 				c->matrix.m.zx, c->matrix.m.zy, c->matrix.m.zz,
 				0, y, dclip->w, t);
-		enesim_operator_drawer_span(&drawer, d, dclip->w, t, 0, NULL);
+		enesim_operator_drawer_span(&drawer, d, dclip->w, t, c->color, NULL);
 		d += dstride;
 #else
 		enesim_operator_drawer_span(&drawer, d, dclip->w, s, 0, NULL);
@@ -322,7 +331,7 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 	Eina_Rectangle dclip, sclip;
 	uint32_t sw, sh;
 	uint32_t dw, dh;
-	
+
 #ifdef ETK2_DEBUG
 	printf("[Etk_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 #endif
@@ -331,37 +340,37 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 	eina_rectangle_coords_from(&dclip, srect->x, srect->y, srect->w, srect->h);
 
 	/* the context has the clipping rect relative to the canvas */
-	printf("ENTERING\n");
-	printf("S = %d %d D = %d %d\n", sw, sh, dw, dh);
-	printf("SGEOM %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
-	printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
+	//printf("ENTERING\n");
+	//printf("S = %d %d D = %d %d\n", sw, sh, dw, dh);
+	//printf("SGEOM %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+	//printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
 	if (c->clip.used)
 	{
-		printf("CLIP %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
+		//printf("CLIP %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
 		eina_rectangle_rescale_in(srect, &c->clip.rect, &sclip);
 		eina_rectangle_coords_from(&dclip, c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
 	}
-	printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
-	printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
+	//printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
+	//printf("DCLIP %d %d %d %d\n", dclip.x, dclip.y, dclip.w, dclip.h);
 
 	/* transformed matrix */
 	if (c->matrix.used)
 	{
-		printf("Transforming image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		//printf("Transforming image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
 		_image_transform(dst, &dclip, c, src, sw, sh, srect, &sclip);
 	}
 	// TODO filter
 	/* downscale or upscale the image */
 	else if (((srect->w != sw) || (srect->h != sh)))
 	{
-		printf("Scaling image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		//printf("Scaling image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
 		_image_scale(dst, &dclip, c, src, sw, sh, srect, &sclip);
 		return;
 	}
 	/* no scale */
 	else
 	{
-		printf("No scaling image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
+		//printf("No scaling image  %d %d - %d %d\n", sw, sh, srect->w, srect->h);
 		_image_noscale(dst, &dclip, c, src, srect, &sclip);
 	}
 }
