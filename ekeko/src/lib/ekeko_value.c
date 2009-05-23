@@ -93,6 +93,13 @@ void ekeko_value_pointer_double_to(Ekeko_Value *value, Ekeko_Value_Type type, vo
 			*changed = EINA_TRUE;
 		break;
 
+		/* FIXME check the real difference < minimal float difference */
+		case PROPERTY_FLOAT:
+		*((float *)ptr) = value->value.float_value;
+		if (*((float *)ptr) != *((float *)prev))
+			*changed = EINA_TRUE;
+		break;
+
 		case PROPERTY_STRING:
 		/* FIXME fix this mess */
 		*((char **)ptr) = strdup(value->value.string_value);
@@ -158,6 +165,10 @@ void ekeko_value_pointer_to(Ekeko_Value *value, Ekeko_Value_Type vtype, void *pt
 
 		case PROPERTY_INT:
 		*((int *)ptr) = value->value.int_value;
+		break;
+
+		case PROPERTY_FLOAT:
+		*((float *)ptr) = value->value.float_value;
 		break;
 
 		case PROPERTY_STRING:
@@ -291,6 +302,11 @@ void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 		case PROPERTY_INT:
 		v->type = PROPERTY_INT;
 		v->value.int_value = *(int *)ptr;
+		break;
+
+		case PROPERTY_FLOAT:
+		v->type = PROPERTY_FLOAT;
+		v->value.int_value = *(float *)ptr;
 		break;
 
 		case PROPERTY_RECTANGLE:

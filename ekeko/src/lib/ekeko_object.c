@@ -769,6 +769,7 @@ EAPI void ekeko_object_dump_printf(Ekeko_Object *o, int level)
 	for (i = 1; i <= level; i++)
 		printf("\t");
 	printf("> %s (%p) ", ekeko_object_type_name_get(o), o);
+	/** TODO foreach attribute, dump it */
 	/* some useful properties */
 	if (ekeko_type_instance_is_of(o, "Renderable"))
 	{

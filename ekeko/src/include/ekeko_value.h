@@ -74,6 +74,12 @@ static inline void ekeko_value_int_from(Ekeko_Value *v, int i)
 	v->value.int_value = i;
 }
 
+static inline void ekeko_value_float_from(Ekeko_Value *v, float f)
+{
+	v->type = PROPERTY_FLOAT;
+	v->value.float_value = f;
+}
+
 static inline void ekeko_value_str_from(Ekeko_Value *v, char *str)
 {
 	v->type = PROPERTY_STRING;
