@@ -151,7 +151,7 @@ static inline void _image_setup(Enesim_Surface *src, uint32_t **s,
 	*s = enesim_surface_data_get(src);
 	*sstride = enesim_surface_stride_get(src);
 
-        *d = enesim_surface_data_get(dst);
+	*d = enesim_surface_data_get(dst);
 	*dstride = enesim_surface_stride_get(dst);
 }
 
@@ -176,7 +176,7 @@ static void _image_scale(Enesim_Surface *dst, Eina_Rectangle *dclip,
 	_image_setup(src, &s, &sstride, dst, &d, &dstride);
 
 	cpus = enesim_cpu_get(&numcpus);
-	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	enesim_drawer_span_pixel_color_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
 	enesim_scaler_1d_op_get(&scaler, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
 
 	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
@@ -196,8 +196,8 @@ static void _image_scale(Enesim_Surface *dst, Eina_Rectangle *dclip,
 		sy = ((sclip->y + y) * sh) / sgeom->h;
 		rs = s + (sy * sstride);
 		enesim_operator_scaler_1d(&scaler, rs, sw, 0,
-                                        dclip->w, sgeom->w, tmp);
-		enesim_operator_drawer_span(&drawer, d, dclip->w, tmp, 0, NULL);
+				dclip->w, sgeom->w, tmp);
+		enesim_operator_drawer_span(&drawer, d, dclip->w, tmp, c->color, NULL);
 		/* increment the source by the scale factor */
 		d += dstride;
 		y++;
@@ -219,13 +219,13 @@ static void _image_noscale(Enesim_Surface *dst, Eina_Rectangle *dclip, Context *
 	_image_setup(src, &s, &sstride, dst, &d, &dstride);
 
 	cpus = enesim_cpu_get(&numcpus);
-	enesim_drawer_span_pixel_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	enesim_drawer_span_pixel_color_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
 
 	s = s + (sclip->y * sstride) + sclip->x;
 	d = d + (dclip->y * dstride) + dclip->x;
 	while (dclip->h--)
 	{
-		enesim_operator_drawer_span(&op, d, dclip->w, s, 0, NULL);
+		enesim_operator_drawer_span(&op, d, dclip->w, s, c->color, NULL);
 		s += sstride;
 		d += dstride;
 	}
@@ -245,16 +245,7 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 	int y;
 
 	cpus = enesim_cpu_get(&numcpus);
-	/* check the mul color */
-	if (c->color != 0xffffffff)
-	{
-		enesim_drawer_span_pixel_color_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
-	}
-	else
-	{
-		enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
-	}
-	enesim_drawer_span_pixel_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	enesim_drawer_span_pixel_color_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
 	enesim_transformer_1d_op_get(&tx, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_MATRIX_AFFINE,  ENESIM_FAST, ENESIM_FORMAT_ARGB8888);
 
 	//printf("[%f %f %f]\n", c->matrix.m.xx, c->matrix.m.xy, c->matrix.m.xz);
@@ -270,6 +261,7 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 		Context rc;
 
 		rc.rop = ENESIM_FILL;
+		rc.color = 0xffffffff;
 
 		tmp = enesim_surface_new(ENESIM_FORMAT_ARGB8888, sgeom->w, sgeom->h);
 		eina_rectangle_coords_from(&rclip, 0, 0, sgeom->w, sgeom->h);

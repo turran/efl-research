@@ -121,6 +121,7 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 	s = (Etk_Shape *)o;
 	prv = PRIVATE(s);
 	prv->context = func->context->create();
+	func->context->color_set(prv->context, prv->color);
 	/* TODO set the color, the rop, etc */
 }
 
@@ -132,6 +133,9 @@ static void _ctor(void *instance)
 	s = (Etk_Shape*) instance;
 	s->private = prv = ekeko_type_instance_private_get(etk_shape_type_get(), instance);
 	s->parent.render = _render;
+	/* the default color, useful for pixel_color operations */
+	prv->color = 0xffffffff;
+	printf("color = %08x\n", prv->color);
 	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, ETK_SHAPE_COLOR_CHANGED, _color_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, ETK_SHAPE_ROP_CHANGED, _rop_change, EINA_FALSE, NULL);
