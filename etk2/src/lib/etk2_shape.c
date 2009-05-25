@@ -19,6 +19,8 @@ struct _Etk_Shape_Private
 	Etk_Color color; /* FIXME the color should be double state? */
 	Etk_Filter *filter;
 	int rop;
+ 	/* TODO we'll only support clipping to a rect */
+	Eina_Rectangle *clip;
 };
 
 /* Render wrapper */

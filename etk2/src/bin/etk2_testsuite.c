@@ -237,6 +237,8 @@ void object_etk_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	{
 		Etk_Trigger t;
 
+		printf("DUMPING\n");
+		ekeko_object_dump((Ekeko_Object *)doc, ekeko_object_dump_printf);
 		/* FIXME the object can be referenced by #id :) */
 		/* #id.event */
 		if (*value == '#')
@@ -248,9 +250,10 @@ void object_etk_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 			token = strtok(tmp, ".");
 			printf("%s\n", token);
 			oid = etk_document_object_get_by_id(doc, token);
-			printf("%p\n", oid);
-			abort();
-			//t.obj = token;
+			/* FIXME warning */
+			if (!oid)
+				return;
+			t.obj = oid;
 			token = strtok(NULL, ".");
 			t.event = token;
 		}
@@ -493,21 +496,23 @@ void parse(EXML *exml, Ekeko_Object *parent)
 
 	if (!parent)
 		return;
-#if PARSER_DEBUG
-	printf("[PARSER] parsing %s\n", ekeko_object_type_name_get(parent));
-#endif
 	n = exml_get(exml);
+	if (!n)
+		return;
+#if !PARSER_DEBUG
+	printf("[PARSER] parsing tag %s with parent %s\n", n->tag, ekeko_object_type_name_get(parent));
+#endif
+	parent = tag_create(n->tag, exml, parent);
+	printf("going down\n");
 	tag = exml_down(exml);
 	while (tag)
 	{
-		Ekeko_Object *o;
-
-		o = tag_create(tag, exml, parent);
 		/* children */
-		parse(exml, o);
+		parse(exml, parent);
 		/* siblings */
-		tag = exml_next(exml);
+		tag = exml_next_nomove(exml);
 	}
+	printf("going up\n");
 	exml_goto_node(exml, n);
 }
 
@@ -531,6 +536,7 @@ int main(int argc, char **argv)
 	int option;
 	char c;
 	char *file = argv[argc - 1];
+	char *tag;
 
 	while ((c = getopt_long(argc, argv, short_options, long_options,
 			&option)) != -1)
@@ -578,7 +584,14 @@ int main(int argc, char **argv)
 	canvas = etk_document_canvas_get(doc);
 	ecore_hash_for_each_node(n->attributes, attributes_set, canvas);
 	/* parse the file */
-	parse(exml, (Ekeko_Object *)canvas);
+	tag = exml_down(exml);
+	while (tag)
+	{
+		/* children */
+		parse(exml, (Ekeko_Object *)canvas);
+		/* siblings */
+		tag = exml_next(exml);
+	}
 	ekeko_object_dump((Ekeko_Object *)doc, ekeko_object_dump_printf);
 	etk_loop();
 	etk_shutdown();

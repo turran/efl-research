@@ -112,7 +112,6 @@ static void _etch_start_cb(Etch_Animation *ea, void *data)
 	Etk_Event_Animation ev;
 
 	_event_set(&ev, (Ekeko_Object *)acc->a, ETK_ANIMATION_START, ETK_EVENT_ANIMATION_START);
-	printf("ANIMATION STARTED\n");
 }
 
 static void _etch_stop_cb(Etch_Animation *ea, void *data)
@@ -121,7 +120,6 @@ static void _etch_stop_cb(Etch_Animation *ea, void *data)
 	Etk_Event_Animation ev;
 
 	_event_set(&ev, (Ekeko_Object *)acc->a, ETK_ANIMATION_STOP, ETK_EVENT_ANIMATION_STOP);
-	printf("ANIMATION STOPPED\n");
 }
 
 static inline void _value_set(Etk_Animation *a, Ekeko_Value *v, Etch_Animation_Keyframe *k)
@@ -244,6 +242,7 @@ static void _trigger_cb(const Ekeko_Object *o, Event *e, void *data)
 		// get the current time
 		// get the first keyframe
 		// change every keyframe to curr offset
+		// etch_timer_get(etch, secs, usecs);
 		/* Enable the animation */
 		etch_animation_enable(prv->anim);
 	}
@@ -335,7 +334,6 @@ static void _begin_change(const Ekeko_Object *o, Event *e, void *data)
 	/* register an event listener to this event */
 	t = em->curr->value.pointer_value;
 	printf("[Etk_Animation] Begin changed %p %s\n", t->obj, t->event);
-	printf("%p\n", prv->end.obj);
 	if (!prv->end.obj)
 	{
 		printf("[Etk_Animation] event listener!!!!!\n");

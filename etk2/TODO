@@ -2,7 +2,8 @@ Short term
 ==========
 + Move etch into its own thread. Create a fifo to receive events from etch and then select() it on main thread. Then etk2 should
   set the attributes and only the final version should be displayed to avoid delayed rendering.
-+ Add rop to the xml
++ Do some research on changing from xml to another format, maybe using yacc/lex
+
 Mid term
 ========
 + Implement the basic widgetery

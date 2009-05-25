@@ -30,6 +30,7 @@ struct _Etk_Image_Private
 	} src;
 	Enesim_Matrix matrix;
 	Enesim_Matrix inverse;
+	/* TODO add l, t, r, b */
 };
 
 static void _loader_callback(Enesim_Surface *s, void *data, int error)
