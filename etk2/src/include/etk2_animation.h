@@ -10,6 +10,8 @@
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
+#define ETK_ANIMATION_START "start"
+#define ETK_ANIMATION_STOP "stop"
 #define ETK_ANIMATION_END_CHANGED "endChanged"
 #define ETK_ANIMATION_BEGIN_CHANGED "beginChanged"
 #define ETK_ANIMATION_PROPERTY_CHANGED "nameChanged"
@@ -18,6 +20,18 @@
 #define ETK_ANIMATION_FROM_CHANGED "fromChanged"
 #define ETK_ANIMATION_TO_CHANGED "toChanged"
 #define ETK_ANIMATION_CALC_CHANGED "calcChanged"
+
+typedef enum _Etk_Event_Animation_State
+{
+	ETK_EVENT_ANIMATION_START,
+	ETK_EVENT_ANIMATION_STOP,
+} Etk_Event_Animation_State;
+
+typedef struct _Etk_Event_Animation
+{
+        Event event;
+	Etk_Event_Animation_State state;	
+} Etk_Event_Animation;
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/

@@ -98,6 +98,32 @@ static void _etch_callback(const Etch_Data *curr, const Etch_Data *prev, void *d
 	acc->cb(a, prv->name, rel, curr, prev);
 }
 
+
+static void _event_set(Etk_Event_Animation *ev, const Ekeko_Object *o, const char *type, Etk_Event_Animation_State state)
+{
+	ekeko_event_init((Event *)ev, type, o, EINA_FALSE);
+	ev->state = state;
+	ekeko_event_dispatch((Event *)ev);
+}
+
+static void _etch_start_cb(Etch_Animation *ea, void *data)
+{
+	Etk_Animation_Callback_Container *acc = data;
+	Etk_Event_Animation ev;
+
+	_event_set(&ev, (Ekeko_Object *)acc->a, ETK_ANIMATION_START, ETK_EVENT_ANIMATION_START);
+	printf("ANIMATION STARTED\n");
+}
+
+static void _etch_stop_cb(Etch_Animation *ea, void *data)
+{
+	Etk_Animation_Callback_Container *acc = data;
+	Etk_Event_Animation ev;
+
+	_event_set(&ev, (Ekeko_Object *)acc->a, ETK_ANIMATION_STOP, ETK_EVENT_ANIMATION_STOP);
+	printf("ANIMATION STOPPED\n");
+}
+
 static inline void _value_set(Etk_Animation *a, Ekeko_Value *v, Etch_Animation_Keyframe *k)
 {
 	if (a->value_set)
@@ -191,7 +217,8 @@ static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
 	acc->a = a;
 	acc->cb = cb;
 	/* TODO check if the animation already has an anim */
-	prv->anim = etch_animation_add(etch, dtype, _etch_callback, acc);
+	prv->anim = etch_animation_add(etch, dtype, _etch_callback,
+			_etch_start_cb, _etch_stop_cb, acc);
 	atype = _calc_to_etch(prv->calc);
 	etch_animation_repeat_set(prv->anim, prv->repeat);
 
@@ -332,9 +359,9 @@ static void _end_change(const Ekeko_Object *o, Event *e, void *data)
 	if (!(parent = ekeko_object_parent_get(o)))
 		return;
 
-	printf("[Etk_Animation] End changed %p %s\n", t->obj, t->event);
 	/* register an event listener to this event */
 	t = em->curr->value.pointer_value;
+	printf("[Etk_Animation] End changed %p %s\n", t->obj, t->event);
 	if (!prv->begin.obj)
 	{
 		/* FIXME change that is not the same! */

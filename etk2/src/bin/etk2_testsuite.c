@@ -11,6 +11,8 @@
 #include "Etk2.h"
 #include "EXML.h"
 
+/* global for now until we have a way to get the document from every object */
+Etk_Document *doc;
 
 #define PARSER_DEBUG 0
 /*
@@ -235,9 +237,28 @@ void object_etk_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	{
 		Etk_Trigger t;
 
-		t.event = value;
 		/* FIXME the object can be referenced by #id :) */
-		t.obj = ekeko_object_parent_get(o);
+		/* #id.event */
+		if (*value == '#')
+		{
+			char *tmp = value + 1;
+			char *token;
+			Ekeko_Object *oid;
+
+			token = strtok(tmp, ".");
+			printf("%s\n", token);
+			oid = etk_document_object_get_by_id(doc, token);
+			printf("%p\n", oid);
+			abort();
+			//t.obj = token;
+			token = strtok(NULL, ".");
+			t.event = token;
+		}
+		else
+		{
+			t.obj = ekeko_object_parent_get(o);
+			t.event = value;
+		}
 		etk_value_trigger_from(&v, &t);
 		ekeko_object_property_value_set(o, attr, &v);
 	}
@@ -494,7 +515,6 @@ int main(int argc, char **argv)
 {
 	EXML *exml;
 	EXML_Node *n;
-	Etk_Document *doc;
 	Etk_Canvas *canvas;
 	int w = 320;
 	int h = 240;

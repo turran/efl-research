@@ -23,7 +23,14 @@ struct _Etk_Document_Private
 	Eina_Rectangle size;
 	Etk_Canvas *canvas;
 	Etch *etch;
+	Eina_Hash *ids;
 };
+
+/* Called whenever an object changes it's id */
+static void _id_change(const Ekeko_Object *o, Event *e, void *data)
+{
+	printf("Setting id\n");
+}
 
 static int _idler_cb(void *data)
 {
@@ -101,6 +108,7 @@ static void _ctor(void *instance)
 	ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
 	etch_timer_fps_set(prv->etch, 30);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
+	//ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_ID_CHANGED, _id_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
 
 }
@@ -198,3 +206,76 @@ EAPI void etk_document_resize(Etk_Document *d, int w, int h)
 	ekeko_value_rectangle_coords_from(&v, 0, 0, w, h);
 	ekeko_object_property_value_set((Ekeko_Object *)d, "size", &v);
 }
+
+static _id_get(Ekeko_Object *o, const char *id)
+{
+
+}
+
+static Ekeko_Object * _iterate(Ekeko_Object *o, const char *id, int level)
+{
+	Ekeko_Object *child;
+
+	child = ekeko_object_child_first_get(o);
+	if (!child)
+		return NULL;
+	do
+	{
+		char *cid;
+		Ekeko_Object *found;
+		int i;
+
+		cid = ekeko_object_id_get(child);
+		if (cid)
+		{
+			printf("%s\n", cid);
+		}
+		if (cid && (!strcmp(cid, id)))
+			return child;
+
+		found = _iterate(child, id, level + 1);
+		if (found) return found;
+
+		child = ekeko_object_next(child);
+		for (i = 0; i < level; i++)
+		{
+			printf("\t");
+		}
+		printf("child %p\n", child);
+	} while (child);
+	return NULL;
+#if 0
+	child = ekeko_object_child_first_get(o);
+	curr = child;
+
+	if (!child) return NULL;
+	while (child)
+	{
+		char *cid;
+
+		cid = ekeko_object_id_get(child);
+		if (cid)
+		{
+			printf("%s\n", cid);
+		}
+		if (cid && (!strcmp(cid, id)))
+			return child;
+		child = ekeko_object_next(child);
+		_iterate(curr, id);;
+	}
+	return child;
+#endif
+}
+
+
+EAPI Ekeko_Object * etk_document_object_get_by_id(Etk_Document *d, const char *id)
+{
+	Ekeko_Object *c;
+
+	/* FIXME the document should store every id on its hash */
+	/* for now we iterate through the childs */
+	printf("Looking for %s\n", id);
+	c = _iterate((Ekeko_Object *)d, id, 0);
+	return c;
+}
+
