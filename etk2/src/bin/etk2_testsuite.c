@@ -188,7 +188,8 @@ void clock_parse(Etk_Clock *c, char *v)
 		num = strtof(v, NULL);
 		dec = num - (int)num;
 		c->seconds = (int)num;
-		c->micro = dec * 100000;
+		c->micro = dec * 1000000;
+		printf("%ld %ld\n", c->seconds, c->micro);
 	}
 	else
 	{
