@@ -162,6 +162,7 @@ static inline void _duration_set(Etk_Animation *a)
 #if ETK_ANIMATION_DEBUG
 	printf("[Etk_Animation] Setting new clock to %d %d\n", clock->seconds, clock->micro);
 #endif
+#if 0
 	/* for each keyframe set the new time */
 	it = etch_animation_iterator_get(prv->anim);
 	while (eina_iterator_next(it, (void **)&k))
@@ -173,6 +174,10 @@ static inline void _duration_set(Etk_Animation *a)
 		i++;
 	}
 	eina_iterator_free(it);
+#endif
+	if (!prv->to.k)
+		return;
+	etch_animation_keyframe_time_set(prv->to.k, clock->seconds, clock->micro);
 }
 
 static inline void _property_animate(Etk_Animation *a, Ekeko_Object *parent)
@@ -237,12 +242,18 @@ static void _trigger_cb(const Ekeko_Object *o, Event *e, void *data)
 	printf("[Etk_Animation] Trigger callback\n");
 	if (!etch_animation_enabled(prv->anim))
 	{
+		Etch *e;
+		unsigned long secs, usecs;
+
 		printf("[Etk_Animation] Begin trigger callback called!\n");
-		//
-		// get the current time
-		// get the first keyframe
-		// change every keyframe to curr offset
-		// etch_timer_get(etch, secs, usecs);
+		/* change every keyframe to curr offset */
+		e = etch_animation_etch_get(prv->anim);
+		etch_timer_get(e, &secs, &usecs);
+		etch_animation_offset_add(prv->anim, secs, usecs);
+#if 0
+		etch_animation_keyframe_time_get(prv->to.k, &secs, &usecs);
+		printf("ANIM TIME STOP %ld %ld\n", secs, usecs);
+#endif
 		/* Enable the animation */
 		etch_animation_enable(prv->anim);
 	}
