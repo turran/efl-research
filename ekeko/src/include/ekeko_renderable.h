@@ -16,8 +16,8 @@
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-extern Property_Id EKEKO_RENDERABLE_GEOMETRY;
-extern Property_Id EKEKO_RENDERABLE_VISIBILITY;
+extern Ekeko_Property_Id EKEKO_RENDERABLE_GEOMETRY;
+extern Ekeko_Property_Id EKEKO_RENDERABLE_VISIBILITY;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/

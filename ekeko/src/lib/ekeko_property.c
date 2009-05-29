@@ -12,7 +12,7 @@
 /**
  * @brief
  */
-struct _Property
+struct _Ekeko_Property
 {
 	char *name;
 	Type_Property_Type prop_type;
@@ -21,22 +21,22 @@ struct _Property
 	ssize_t changed_offset;
 	Ekeko_Value_Type value_type;
 	Ekeko_Type *type;
-	Property_Id id;
+	Ekeko_Property_Id id;
 };
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Property * property_new(Ekeko_Type *type, char *prop_name, Type_Property_Type prop_type,
+Ekeko_Property * property_new(Ekeko_Type *type, char *prop_name, Type_Property_Type prop_type,
 		Ekeko_Value_Type value_type, ssize_t curr_offset, ssize_t prev_offset,
 		ssize_t changed_offset)
 {
-	Property *property;
-	static Property_Id id = 0;
+	Ekeko_Property *property;
+	static Ekeko_Property_Id id = 0;
 
 #ifdef EKEKO_DEBUG
 	printf("[Ekeko_Property] new %s property at offset %d with id %d\n", prop_name, curr_offset, id + 1);
 #endif
-	property = malloc(sizeof(Property));
+	property = malloc(sizeof(Ekeko_Property));
 	property->name = strdup(prop_name);
 	property->prop_type = prop_type;
 	property->value_type = value_type;
@@ -50,27 +50,27 @@ Property * property_new(Ekeko_Type *type, char *prop_name, Type_Property_Type pr
 }
 
 /* TODO make this getters inline on private.h */
-Ekeko_Type * property_type_get(Property *p)
+Ekeko_Type * property_type_get(Ekeko_Property *p)
 {
 	return p->type;
 }
-ssize_t property_curr_offset_get(Property *p)
+ssize_t property_curr_offset_get(Ekeko_Property *p)
 {
 	return p->curr_offset;
 }
 
-ssize_t property_prev_offset_get(Property *p)
+ssize_t property_prev_offset_get(Ekeko_Property *p)
 {
 	return p->prev_offset;
 }
 
-ssize_t property_changed_offset_get(Property *p)
+ssize_t property_changed_offset_get(Ekeko_Property *p)
 {
 	return p->changed_offset;
 }
 
 
-Type_Property_Type property_ptype_get(Property *p)
+Type_Property_Type property_ptype_get(Ekeko_Property *p)
 {
 	return p->prop_type;
 }
@@ -78,17 +78,17 @@ Type_Property_Type property_ptype_get(Property *p)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-EAPI Property_Id ekeko_property_id_get(const Property *p)
+EAPI Ekeko_Property_Id ekeko_property_id_get(const Ekeko_Property *p)
 {
 	return p->id;
 }
 
-EAPI const char * ekeko_property_name_get(const Property *p)
+EAPI const char * ekeko_property_name_get(const Ekeko_Property *p)
 {
 	return p->name;
 }
 
-EAPI Ekeko_Value_Type ekeko_property_value_type_get(Property *p)
+EAPI Ekeko_Value_Type ekeko_property_value_type_get(Ekeko_Property *p)
 {
 	return p->value_type;
 }

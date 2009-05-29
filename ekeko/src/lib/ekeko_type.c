@@ -45,7 +45,7 @@ static size_t type_size_get(Ekeko_Type *type)
 	return type->size + type->priv_size + parent_size;
 }
 
-static inline void * _instance_property_offset_get(Ekeko_Type *type, Property *prop,
+static inline void * _instance_property_offset_get(Ekeko_Type *type, Ekeko_Property *prop,
 		ssize_t poffset, void *instance)
 {
 	Ekeko_Type *pt = property_type_get(prop);
@@ -54,21 +54,21 @@ static inline void * _instance_property_offset_get(Ekeko_Type *type, Property *p
 	return (char *)instance + offset + poffset;
 }
 
-static inline void * _instance_property_curr_ptr_get(Ekeko_Type *type, Property *prop, void *instance)
+static inline void * _instance_property_curr_ptr_get(Ekeko_Type *type, Ekeko_Property *prop, void *instance)
 {
 	ssize_t poffset = property_curr_offset_get(prop);
 
 	return _instance_property_offset_get(type, prop, poffset, instance);
 }
 
-static inline void * _instance_property_prev_ptr_get(Ekeko_Type *type, Property *prop, void *instance)
+static inline void * _instance_property_prev_ptr_get(Ekeko_Type *type, Ekeko_Property *prop, void *instance)
 {
 	ssize_t poffset = property_prev_offset_get(prop);
 
 	return _instance_property_offset_get(type, prop, poffset, instance);
 }
 
-static inline void * _instance_property_changed_ptr_get(Ekeko_Type *type, Property *prop, void *instance)
+static inline void * _instance_property_changed_ptr_get(Ekeko_Type *type, Ekeko_Property *prop, void *instance)
 {
 	ssize_t poffset = property_changed_offset_get(prop);
 
@@ -93,9 +93,9 @@ static void type_destruct_internal(Ekeko_Type *type, void *object)
  * @param prop_name
  * @return
  */
-static Property *_property_get(Ekeko_Type *type, const char *prop_name)
+static Ekeko_Property *_property_get(Ekeko_Type *type, const char *prop_name)
 {
-	Property *property = NULL;
+	Ekeko_Property *property = NULL;
 
 	do
 	{
@@ -135,14 +135,14 @@ void * type_instance_private_get_internal(Ekeko_Type *final, Ekeko_Type *t, void
 	return (char *)instance + type_public_size_get(final) + type_private_size_get(t->parent);
 }
 
-Property * type_property_get(Ekeko_Type *t, const char *name)
+Ekeko_Property * type_property_get(Ekeko_Type *t, const char *name)
 {
 	return _property_get(t, name);
 }
 
 void type_instance_property_value_get(Ekeko_Type *type, void *instance, char *prop_name, Ekeko_Value *v)
 {
-	Property *property;
+	Ekeko_Property *property;
 	void *curr;
 
 	if (!type || !instance || !prop_name)
@@ -159,7 +159,7 @@ const char * type_name_get(Ekeko_Type *t)
 	return t->name;
 }
 
-void type_instance_property_pointers_get(Ekeko_Type *t, Property *prop, void *instance,
+void type_instance_property_pointers_get(Ekeko_Type *t, Ekeko_Property *prop, void *instance,
 		void **curr, void **prev, char **changed)
 {
 	Ekeko_Type *pt = property_type_get(prop);
@@ -188,7 +188,7 @@ Property_Iterator * type_property_iterator_new(Ekeko_Type *t)
 	return pit;
 }
 
-Eina_Bool type_property_iterator_next(Property_Iterator *pit, Property **prop)
+Eina_Bool type_property_iterator_next(Property_Iterator *pit, Ekeko_Property **prop)
 {
 	/* return false on no more properties */
 	if (!eina_iterator_next(pit->it, (void **)prop))
@@ -305,11 +305,11 @@ void ekeko_type_instance_delete(void *instance)
  * @param value_type
  * @param process_cb
  */
-Property_Id ekeko_type_property_new(Ekeko_Type *type, char *prop_name,
+Ekeko_Property_Id ekeko_type_property_new(Ekeko_Type *type, char *prop_name,
 		Type_Property_Type prop_type, Ekeko_Value_Type value_type,
 		ssize_t curr_offset, ssize_t prev_offset, ssize_t changed_offset)
 {
-	Property *property;
+	Ekeko_Property *property;
 
 	/* How to handle the changed thing?
 	 * usually you do foo_changed:1

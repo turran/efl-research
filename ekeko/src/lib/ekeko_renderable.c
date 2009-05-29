@@ -107,9 +107,9 @@ static Ekeko_Object * _prev_renderable_up(Ekeko_Object *o)
 }
 
 /* called whenever a double state property has changed */
-static void _visibility_change(const Ekeko_Object *o, Event *e, void *data)
+static void _visibility_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
 
 #ifdef EKEKO_DEBUG
@@ -127,9 +127,9 @@ static void _visibility_change(const Ekeko_Object *o, Event *e, void *data)
 	ekeko_canvas_damage_add(prv->canvas, &prv->geometry.prev);
 }
 
-static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
+static void _geometry_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv = PRIVATE(o);
 
 #ifdef EKEKO_DEBUG
@@ -146,9 +146,9 @@ static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
 	ekeko_canvas_damage_add(prv->canvas, &em->prev->value.rect);
 }
 
-static void _parent_set_cb(const Ekeko_Object *o, Event *e, void *data)
+static void _parent_set_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Renderable_Private *prv;
 	Ekeko_Object *p = (Ekeko_Object *)em->related;
 	Ekeko_Object *last;
@@ -261,8 +261,8 @@ Eina_Bool ekeko_renderable_intersect(Ekeko_Renderable *r, int x, int y)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Property_Id EKEKO_RENDERABLE_GEOMETRY;
-Property_Id EKEKO_RENDERABLE_VISIBILITY;
+Ekeko_Property_Id EKEKO_RENDERABLE_GEOMETRY;
+Ekeko_Property_Id EKEKO_RENDERABLE_VISIBILITY;
 
 Ekeko_Type *ekeko_renderable_type_get(void)
 {

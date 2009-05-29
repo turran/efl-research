@@ -26,19 +26,19 @@ struct _Ekeko_Canvas_Private
 	Eina_Inlist *inputs;
 };
 
-void _subcanvas_in(const Ekeko_Object *o, Event *e, void *data)
+void _subcanvas_in(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	printf("SUBCANVAS in\n");
 	/* TODO feed the mouse in into this canvas */
 }
 
-void _subcanvas_out(const Ekeko_Object *o, Event *e, void *data)
+void _subcanvas_out(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	printf("SUBCANVAS out\n");
 	/* TODO feed the mouse out into this canvas */
 }
 
-void _subcanvas_move(const Ekeko_Object *o, Event *e, void *data)
+void _subcanvas_move(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	printf("SUBCANVAS move\n");
 	/* TODO feed the mouse move into this canvas */
@@ -113,9 +113,9 @@ static inline void _renderable_append(Ekeko_Canvas *c, Ekeko_Renderable *r,
 	}
 }
 
-static void _child_geometry_change(const Ekeko_Object *o, Event *e, void *data)
+static void _child_geometry_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Canvas *c = (Ekeko_Canvas *)data;
 	Ekeko_Renderable *r = (Ekeko_Renderable *)o;
 	Eina_Rectangle cgeom;
@@ -135,9 +135,9 @@ static void _child_geometry_change(const Ekeko_Object *o, Event *e, void *data)
 
 }
 
-static void _child_visibility_change(const Ekeko_Object *o, Event *e, void *data)
+static void _child_visibility_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Canvas *c = (Ekeko_Canvas *)data;
 	Ekeko_Renderable *r = (Ekeko_Renderable *)o;
 	Eina_Rectangle rgeom, cgeom;
@@ -155,9 +155,9 @@ static void _child_visibility_change(const Ekeko_Object *o, Event *e, void *data
 	_renderable_append(c, r, &cgeom, &rgeom, em->curr->value.bool_value);
 }
 
-static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
+static void _geometry_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Canvas_Private *prv;
 	Eina_Tiler *tiler;
 
@@ -185,7 +185,7 @@ static void _geometry_change(const Ekeko_Object *o, Event *e, void *data)
 }
 
 /* Called whenever the process has finished on this element */
-static void _process_cb(const Ekeko_Object *o, Event *e, void *data)
+static void _process_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Ekeko_Canvas *c;
 	Ekeko_Canvas_Private *prv;
@@ -242,9 +242,9 @@ static void _process_cb(const Ekeko_Object *o, Event *e, void *data)
 	eina_tiler_clear(prv->tiler);
 }
 
-static void _redraw_change(const Ekeko_Object *o, Event *e, void *data)
+static void _redraw_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Canvas_Private *prv;
 
 	if (em->state != EVENT_MUTATION_STATE_POST)
@@ -253,9 +253,9 @@ static void _redraw_change(const Ekeko_Object *o, Event *e, void *data)
 	em->curr->value.bool_value = EINA_FALSE;
 }
 
-static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
+static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Event_Mutation *em = (Event_Mutation *)e;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Ekeko_Canvas_Private *prv;
 
 	/* TODO check if object is the same as the event.rel or
@@ -294,9 +294,9 @@ static void _child_append_cb(const Ekeko_Object *o, Event *e, void *data)
 #ifdef EKEKO_DEBUG
 		printf("[canvas] Child is a canvas too, registering UI events\n");
 #endif
-		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_IN, _subcanvas_in, EINA_FALSE, NULL);
-		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_OUT, _subcanvas_out, EINA_FALSE, NULL);
-		ekeko_event_listener_add((Ekeko_Object *)e->target, EVENT_UI_MOUSE_MOVE, _subcanvas_move, EINA_FALSE, NULL);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EKEKO_EVENT_UI_MOUSE_IN, _subcanvas_in, EINA_FALSE, NULL);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EKEKO_EVENT_UI_MOUSE_OUT, _subcanvas_out, EINA_FALSE, NULL);
+		ekeko_event_listener_add((Ekeko_Object *)e->target, EKEKO_EVENT_UI_MOUSE_MOVE, _subcanvas_move, EINA_FALSE, NULL);
 	}
 #ifdef EKEKO_DEBUG
 	printf("[canvas %s] child of type renderable %s\n", ekeko_object_type_name_get(o), ekeko_object_type_name_get(e->target));
@@ -325,7 +325,7 @@ static void _ctor(void *instance)
 	/* register the event where the size is changed */
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
 	/* TODO add the event listener when the object has finished the process() function */
-	ekeko_event_listener_add((Ekeko_Object *)canvas, EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)canvas, EKEKO_EVENT_OBJECT_PROCESS, _process_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)canvas, EKEKO_CANVAS_REDRAW_CHANGED, _redraw_change, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
 	printf("[Ekeko_Canvas] ctor %p %p, tiler = %p, canvas = %p\n", canvas, canvas->private, prv->tiler, ekeko_renderable_canvas_get((Ekeko_Renderable *)canvas));
@@ -345,7 +345,7 @@ static void _dtor(void *canvas)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Property_Id EKEKO_CANVAS_REDRAW;
+Ekeko_Property_Id EKEKO_CANVAS_REDRAW;
 
 Ekeko_Type *ekeko_canvas_type_get(void)
 {

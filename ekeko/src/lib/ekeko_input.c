@@ -77,10 +77,10 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, unsigned int x, unsigned i
 		/* send move */
 		if (r)
 		{
-			Event_Mouse em;
+			Ekeko_Event_Mouse em;
 
 			event_mouse_move_init(&em, (Ekeko_Object *)r, NULL, i, x, y);
-			ekeko_event_dispatch((Event *)&em);
+			ekeko_event_dispatch((Ekeko_Event *)&em);
 		}
 	}
 	else
@@ -88,18 +88,18 @@ EAPI void ekeko_input_feed_mouse_move(Ekeko_Input *i, unsigned int x, unsigned i
 		/* send out event on i->r */
 		if (i->pointer.r)
 		{
-			Event_Mouse em;
+			Ekeko_Event_Mouse em;
 
 			event_mouse_out_init(&em, (Ekeko_Object *)i->pointer.r, (Ekeko_Object *)r, i);
-			ekeko_event_dispatch((Event *)&em);
+			ekeko_event_dispatch((Ekeko_Event *)&em);
 		}
 		/* send in event on r */
 		if (r)
 		{
-			Event_Mouse em;
+			Ekeko_Event_Mouse em;
 
 			event_mouse_in_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
-			ekeko_event_dispatch((Event *)&em);
+			ekeko_event_dispatch((Ekeko_Event *)&em);
 
 		}
 	}
@@ -123,7 +123,7 @@ EAPI void ekeko_input_feed_mouse_out(Ekeko_Input *i)
 EAPI void ekeko_input_feed_mouse_down(Ekeko_Input *i)
 {
 	Ekeko_Renderable *r;
-	Event_Mouse em;
+	Ekeko_Event_Mouse em;
 
 	if (!i->pointer.inside)
 		return;
@@ -136,13 +136,13 @@ EAPI void ekeko_input_feed_mouse_down(Ekeko_Input *i)
 	i->pointer.downx = i->pointer.x;
 	i->pointer.downy = i->pointer.y;
 	event_mouse_down_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
-	ekeko_event_dispatch((Event *)&em);
+	ekeko_event_dispatch((Ekeko_Event *)&em);
 }
 
 EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i)
 {
 	Ekeko_Renderable *r;
-	Event_Mouse em;
+	Ekeko_Event_Mouse em;
 
 	if (!i->pointer.inside)
 		return;
@@ -150,13 +150,13 @@ EAPI void ekeko_input_feed_mouse_up(Ekeko_Input *i)
 	if (!r)
 		return;
 	event_mouse_up_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
-	ekeko_event_dispatch((Event *)&em);
+	ekeko_event_dispatch((Ekeko_Event *)&em);
 	/* in case the down coordinates are the same as the current coordinates
 	 * send a click event
 	 */
 	if ((i->pointer.downx == i->pointer.x) && (i->pointer.downy == i->pointer.y))
 	{
 		event_mouse_click_init(&em, (Ekeko_Object *)r, (Ekeko_Object *)i->pointer.r, i);
-		ekeko_event_dispatch((Event *)&em);
+		ekeko_event_dispatch((Ekeko_Event *)&em);
 	}
 }

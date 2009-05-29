@@ -67,7 +67,7 @@ static void _dtor(void *object)
 #endif
 }
 
-static void _event_dispatch(const Ekeko_Object *obj, Event *e, Eina_Bool bubble)
+static void _event_dispatch(const Ekeko_Object *obj, Ekeko_Event *e, Eina_Bool bubble)
 {
 	Eina_List *listeners;
 	Eina_Iterator *it;
@@ -186,7 +186,7 @@ void object_event_listener_remove(Ekeko_Object *obj, const char *type,
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Property_Id EKEKO_OBJECT_ID;
+Ekeko_Property_Id EKEKO_OBJECT_ID;
 
 Ekeko_Type *ekeko_object_type_get(void)
 {
@@ -247,9 +247,9 @@ EAPI const char *ekeko_object_id_get(Ekeko_Object *object)
 EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekeko_Value *value)
 {
 	Ekeko_Object_Private *prv;
-	Property *prop;
+	Ekeko_Property *prop;
 	Ekeko_Value prev_value;
-	Event_Mutation evt;
+	Ekeko_Event_Mutation evt;
 	Ekeko_Value_Type vtype;
 
 	void *curr, *prev;
@@ -314,9 +314,9 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 	printf("[Ekeko_Object] changed = %d\n", prv->changed);
 #endif
 	/* send the generic event */
-	event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop,
+	event_mutation_init(&evt, EKEKO_EVENT_PROP_MODIFY, o, o, prop,
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
-	ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+	ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 	/* send the specific event */
 	{
 		char evt_name[256];
@@ -325,7 +325,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 		strcat(evt_name, "Changed");
 		event_mutation_init(&evt, evt_name, o, o, prop,
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
-		ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+		ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 	}
 	if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
 		ekeko_value_free(&prev_value, vtype);
@@ -339,7 +339,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 EAPI void ekeko_object_property_value_get(Ekeko_Object *o, char *prop_name, Ekeko_Value *value)
 {
 	Ekeko_Object_Private *prv;
-	Property *prop;
+	Ekeko_Property *prop;
 	void *curr, *prev;
 	char *changed;
 	Ekeko_Value_Type vtype;
@@ -390,7 +390,7 @@ EAPI void * ekeko_object_user_data_get(Ekeko_Object *object, const char *name)
 	return eina_hash_find(prv->user, name);
 }
 
-EAPI void ekeko_object_event_dispatch(const Ekeko_Object *obj, Event *e)
+EAPI void ekeko_object_event_dispatch(const Ekeko_Object *obj, Ekeko_Event *e)
 {
 	Ekeko_Object_Private *prv;
 
@@ -437,7 +437,7 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 	if (type_appendable(t, p, o))
 	{
 		Ekeko_Object_Private *pprv, *oprv;
-		Event_Mutation evt;
+		Ekeko_Event_Mutation evt;
 
 		pprv = PRIVATE(p);
 		oprv = PRIVATE(o);
@@ -464,7 +464,7 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 		/* send the EVENT_OBJECT_APPEND event */
 		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Ekeko_Object *)o, (Ekeko_Object *)p, NULL, NULL, NULL,
 				EVENT_MUTATION_STATE_CURR);
-		ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+		ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 	}
 }
 
@@ -542,8 +542,8 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	Ekeko_Object_Private *in;
 	Eina_Iterator *it;
 	Property_Iterator *pit;
-	Property *prop;
-	Event_Mutation evt;
+	Ekeko_Property *prop;
+	Ekeko_Event_Mutation evt;
 
 	/* TODO check that the object is actually the top most parent
 	 * on the hierarchy?
@@ -560,7 +560,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	while (type_property_iterator_next(pit, &prop))
 	{
 		Ekeko_Value prev_value, curr_value;
-		Event_Mutation evt;
+		Ekeko_Event_Mutation evt;
 		void *curr, *prev;
 		char *changed;
 
@@ -582,9 +582,9 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		/* send the generic mutation event */
 		ekeko_value_pointer_from(&prev_value, ekeko_property_value_type_get(prop), prev);
 		ekeko_value_pointer_from(&curr_value, ekeko_property_value_type_get(prop), curr);
-		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
+		event_mutation_init(&evt, EKEKO_EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
-		ekeko_object_event_dispatch(o, (Event *)&evt);
+		ekeko_object_event_dispatch(o, (Ekeko_Event *)&evt);
 		/* send the specific event */
 		{
 			char evt_name[256];
@@ -593,7 +593,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 			strcat(evt_name, "Changed");
 			event_mutation_init(&evt, evt_name, o, o, prop,
 					&prev_value, &curr_value, EVENT_MUTATION_STATE_POST);
-			ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+			ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 		}
 		/* update prev */
 		ekeko_value_pointer_to(&curr_value, ekeko_property_value_type_get(prop), prev);
@@ -635,9 +635,9 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	}
 event:
 	/* send the event */
-	event_mutation_init(&evt, EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
+	event_mutation_init(&evt, EKEKO_EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
 			EVENT_MUTATION_STATE_POST);
-	ekeko_object_event_dispatch(o, (Event *)&evt);
+	ekeko_object_event_dispatch(o, (Ekeko_Event *)&evt);
 }
 #endif
 
@@ -652,8 +652,8 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	Ekeko_Object_Private *in;
 	Eina_Iterator *it;
 	Property_Iterator *pit;
-	Property *prop;
-	Event_Mutation evt;
+	Ekeko_Property *prop;
+	Ekeko_Event_Mutation evt;
 	int ch;
 	Ekeko_Object *parent;
 
@@ -688,7 +688,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	while (type_property_iterator_next(pit, &prop))
 	{
 		Ekeko_Value prev_value, curr_value;
-		Event_Mutation evt;
+		Ekeko_Event_Mutation evt;
 		void *curr, *prev;
 		char *changed;
 
@@ -710,9 +710,9 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		/* send the generic mutation event */
 		ekeko_value_pointer_from(&prev_value, ekeko_property_value_type_get(prop), prev);
 		ekeko_value_pointer_from(&curr_value, ekeko_property_value_type_get(prop), curr);
-		event_mutation_init(&evt, EVENT_PROP_MODIFY, o, o, prop, &prev_value,
+		event_mutation_init(&evt, EKEKO_EVENT_PROP_MODIFY, o, o, prop, &prev_value,
 				&curr_value, EVENT_MUTATION_STATE_POST);
-		ekeko_object_event_dispatch(o, (Event *)&evt);
+		ekeko_object_event_dispatch(o, (Ekeko_Event *)&evt);
 		/* send the specific event */
 		{
 			char evt_name[256];
@@ -721,7 +721,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 			strcat(evt_name, "Changed");
 			event_mutation_init(&evt, evt_name, o, o, prop,
 				&prev_value, &curr_value, EVENT_MUTATION_STATE_POST);
-			ekeko_object_event_dispatch((Ekeko_Object *)o, (Event *)&evt);
+			ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 		}
 		/* update prev */
 		ekeko_value_pointer_to(&curr_value, ekeko_property_value_type_get(prop), prev);
@@ -732,9 +732,9 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 	//type_property_iterator_free(pit);
 event:
 	/* send the event */
-	event_mutation_init(&evt, EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
+	event_mutation_init(&evt, EKEKO_EVENT_OBJECT_PROCESS, o, NULL, NULL, NULL, NULL,
 			EVENT_MUTATION_STATE_POST);
-	ekeko_object_event_dispatch(o, (Event *)&evt);
+	ekeko_object_event_dispatch(o, (Ekeko_Event *)&evt);
 
 #ifdef EKEKO_DEBUG
 	printf("[Ekeko_Object] 0] Object %p changed %d\n", o, prv->changed);
@@ -752,10 +752,10 @@ event:
 	}
 }
 
-EAPI Property * ekeko_object_property_get(Ekeko_Object *o, const char *prop_name)
+EAPI Ekeko_Property * ekeko_object_property_get(Ekeko_Object *o, const char *prop_name)
 {
 	Ekeko_Object_Private *prv;
-	Property *prop;
+	Ekeko_Property *prop;
 
 	prv = PRIVATE(o);
 	prop = type_property_get(prv->type, prop_name);
