@@ -1,11 +1,11 @@
 /*
- * etk2_canvas_sdl.c
+ * eon_canvas_sdl.c
  *
  *  Created on: 03-feb-2009
  *      Author: jl
  */
-#include "Etk2.h"
-#include "etk2_private.h"
+#include "Eon.h"
+#include "eon_private.h"
 #include "SDL.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -63,7 +63,7 @@ static void _blit(void *src, Eina_Rectangle *srect, void *context, void *dst, Ei
 	sdrect.w = drect->w;
 	sdrect.h = drect->h;
 
-#ifdef ETK2_DEBUG
+#ifdef EON_DEBUG
 	printf("[SDL] rendering into %p from %p (%d %d %d %d to %d %d %d %d)\n",
 			dst, src, srect->x, srect->y, srect->w, srect->h,
 			drect->x, drect->y, drect->w, drect->h);
@@ -75,7 +75,7 @@ static Eina_Bool _flush(void *src, Eina_Rectangle *srect)
 {
 	SDL_Surface *s = src;
 
-#ifdef ETK2_DEBUG
+#ifdef EON_DEBUG
 	printf("[SDL] Flushing surface %p\n", s);
 #endif
 #ifdef SINGLE_BUFFER
@@ -107,7 +107,7 @@ static void * _enesim_create(Eina_Bool root, int w, int h)
 
 static void _enesim_blit(void *s, void *context, void *src, Eina_Rectangle *srect)
 {
-	etk2_enesim_image(s, context, src, srect);
+	eon_enesim_image(s, context, src, srect);
 }
 
 static Eina_Bool _enesim_flush(void *src, Eina_Rectangle *srect)
@@ -186,7 +186,7 @@ static void _enesim_unlock(void *src)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Etk_Canvas_Engine etk_canvas_engine_sdl = {
+Eon_Canvas_Engine eon_canvas_engine_sdl = {
 	.create = _create,
 	.blit = _blit,
 	.flush = _flush,
@@ -194,7 +194,7 @@ Etk_Canvas_Engine etk_canvas_engine_sdl = {
 	.unlock = _unlock,
 };
 
-Etk_Canvas_Engine etk_canvas_engine_sdl_enesim = {
+Eon_Canvas_Engine eon_canvas_engine_sdl_enesim = {
 	.create = _enesim_create,
 	.blit = _enesim_blit,
 	.flush = _enesim_flush,

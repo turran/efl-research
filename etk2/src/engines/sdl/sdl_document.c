@@ -1,11 +1,11 @@
 /*
- * etk2_document_sdl.c
+ * eon_document_sdl.c
  *
  *  Created on: 03-feb-2009
  *      Author: jl
  */
-#include "Etk2.h"
-#include "etk2_private.h"
+#include "Eon.h"
+#include "eon_private.h"
 #include "Ecore_Input.h"
 #include "Ecore_Sdl.h"
 #include "SDL.h"
@@ -21,9 +21,9 @@ static int _sdl_event(void *data)
 static int _resize_cb(void *data, int type, void *event)
 {
 	Ecore_Sdl_Event_Video_Resize *e = event;
-	Etk_Document *doc = data;
+	Eon_Document *doc = data;
 
-	etk_document_resize(doc, e->w, e->h);
+	eon_document_resize(doc, e->w, e->h);
 
 	return 1;
 }
@@ -61,16 +61,16 @@ static int _out_cb(void *data, int type, void *event)
 	return 1;
 }
 
-static void * _create(Etk_Document *d)
+static void * _create(Eon_Document *d)
 {
 	Ekeko_Input *input;
-	Etk_Canvas *canvas;
+	Eon_Canvas *canvas;
 
 	printf("[SDL] Initializing SDL\n");
 	ecore_sdl_init(NULL);
 	SDL_Init(SDL_INIT_VIDEO);
 
-	canvas = etk_document_canvas_get(d);
+	canvas = eon_document_canvas_get(d);
 	/* add the input */
 	input = ekeko_canvas_input_new((Ekeko_Canvas *)canvas);
 	/* add the callbacks */
@@ -88,14 +88,14 @@ static void * _create(Etk_Document *d)
 	return NULL;
 }
 
-static void _delete(Etk_Document *d, void *data)
+static void _delete(Eon_Document *d, void *data)
 {
 	ecore_sdl_shutdown();
 }
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Etk_Document_Engine etk_document_engine_sdl = {
+Eon_Document_Engine eon_document_engine_sdl = {
 	.create = _create,
 	.delete = _delete,
 };

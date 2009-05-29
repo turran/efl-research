@@ -8,8 +8,8 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 config.guess \
 		config.h.in config.sub configure install-sh \
 		ltconfig ltmain.sh missing mkinstalldirs \
 		stamp-h.in build-stamp configure-stamp depcomp \
-		etk2_docs.tar.gz \
-		etk2.pc \
+		eon_docs.tar.gz \
+		eon.pc \
 		debian/changelog
 
 bin_SCRIPTS = 
@@ -21,7 +21,7 @@ gendoc \
 Doxyfile \
 README \
 ABOUT-NLS \
-etk2.pc.in 
+eon.pc.in 
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = etk2.pc
+pkgconfig_DATA = eon.pc

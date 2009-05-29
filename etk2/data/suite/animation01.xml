@@ -1,4 +1,4 @@
-<etk w="100%" h="100%" id="canvas01">
+<eon w="100%" h="100%" id="canvas01">
 	<rect x="0" y="0" w="100%" h="100%" color="white" id="rect01"/>
 	<image x="40%" y="25%" w="50%" h="50%" file="tiger.png" id="image01">
 		<animMatrix name="matrix" type="0" dur="3s" from="0" to="0.7" calc="0" begin="click" repeat="-1" id="anim01"/>
@@ -12,4 +12,4 @@
 		<anim id="myanim" name="x" dur="3s" from="10%" to="60%" calc="0" begin="click" repeat="1"/>
 		<anim id="anim04" name="color" dur="5s" from="red" to="0xaaaaaaaa" calc="0" begin="#myanim.stop" repeat="-1"/>
 	</rect>
-</etk>
+</eon>

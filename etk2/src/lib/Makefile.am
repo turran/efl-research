@@ -6,44 +6,44 @@ INCLUDES	= \
 -I. -I../.. -I$(top_srcdir)/src/include -Wall -g \
 @ETK_CFLAGS@
 
-lib_LTLIBRARIES = libetk2.la
+lib_LTLIBRARIES = libeon.la
 
 EXTRA_DIST = 
 
-libetk2_la_SOURCES = \
-etk2_value.c \
-etk2_coord.c \
-etk2_main.c \
-etk2_engine.c \
-etk2_document.c \
-etk2_canvas.c \
-etk2_shape.c \
-etk2_square.c \
-etk2_rect.c \
-etk2_polygon.c \
-etk2_image.c \
-etk2_animation.c \
-etk2_anim_basic.c \
-etk2_anim_matrix.c \
-etk2_filter.c \
-etk2_filter_effect.c
+libeon_la_SOURCES = \
+eon_value.c \
+eon_coord.c \
+eon_main.c \
+eon_engine.c \
+eon_document.c \
+eon_canvas.c \
+eon_shape.c \
+eon_square.c \
+eon_rect.c \
+eon_polygon.c \
+eon_image.c \
+eon_animation.c \
+eon_anim_basic.c \
+eon_anim_matrix.c \
+eon_filter.c \
+eon_filter_effect.c
 #
-#etk2_button.c
-#etk2_widget.c
-#etk2_label.c
+#eon_button.c
+#eon_widget.c
+#eon_label.c
 
-libetk2_la_LIBADD = @ETK_LIBS@ \
-$(top_builddir)/src/engines/enesim/libetk_engine_enesim.la
+libeon_la_LIBADD = @ETK_LIBS@ \
+$(top_builddir)/src/engines/enesim/libeon_engine_enesim.la
 
 if BUILD_ENGINE_SDL
-libetk2_la_LIBADD += $(top_builddir)/src/engines/sdl/libetk_engine_sdl.la
+libeon_la_LIBADD += $(top_builddir)/src/engines/sdl/libeon_engine_sdl.la
 endif
 
-libetk2_la_DEPENDENCIES = $(top_builddir)/src/engines/enesim/libetk_engine_enesim.la
+libeon_la_DEPENDENCIES = $(top_builddir)/src/engines/enesim/libeon_engine_enesim.la
 if BUILD_ENGINE_SDL
-libetk2_la_DEPENDENCIES += $(top_builddir)/src/engines/sdl/libetk_engine_sdl.la
+libeon_la_DEPENDENCIES += $(top_builddir)/src/engines/sdl/libeon_engine_sdl.la
 endif
  
 
-libetk2_la_LDFLAGS = -version-info 1:0:0
+libeon_la_LDFLAGS = -version-info 1:0:0
 

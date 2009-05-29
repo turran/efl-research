@@ -7,9 +7,9 @@ AM_CPPFLAGS = \
 -I$(top_srcdir)/src/include \
 @ECORE_SDL_CFLAGS@ @SDL_CFLAGS@ @ETK_CFLAGS@
 
-noinst_LTLIBRARIES = libetk_engine_sdl.la
+noinst_LTLIBRARIES = libeon_engine_sdl.la
 
-libetk_engine_sdl_la_SOURCES = \
+libeon_engine_sdl_la_SOURCES = \
 sdl_canvas.c \
 sdl_document.c \
 sdl_engine.c \

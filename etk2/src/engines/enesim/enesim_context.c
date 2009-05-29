@@ -4,8 +4,8 @@
  *  Created on: 04-feb-2009
  *      Author: jl
  */
-#include "Etk2.h"
-#include "etk2_private.h"
+#include "Eon.h"
+#include "eon_private.h"
 #include "enesim_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -75,7 +75,7 @@ static void _clip_clear(void *c)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Etk_Context_Engine etk_context_engine_enesim = {
+Eon_Context_Engine eon_context_engine_enesim = {
 	.create = _create,
 	.delete = _delete,
 	.color_set = _color_set,

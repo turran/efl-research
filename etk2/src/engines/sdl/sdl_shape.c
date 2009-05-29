@@ -4,8 +4,8 @@
  *  Created on: 05-feb-2009
  *      Author: jl
  */
-#include "Etk2.h"
-#include "etk2_private.h"
+#include "Eon.h"
+#include "eon_private.h"
 #include "SDL.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -16,7 +16,7 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	Enesim_Context *ctx = context;
 	uint32_t color;
 
-#ifdef ETK2_DEBUG
+#ifdef EON_DEBUG
 	printf("RENDERING A RECTANGLE at %d %d %d %d\n", x, y, w, h);
 #endif
 	rect.x = x;
@@ -29,7 +29,7 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Etk_Shape_Engine etk_shape_engine_sdl = {
+Eon_Shape_Engine eon_shape_engine_sdl = {
 	.rect = _rect,
 };
 /*============================================================================*

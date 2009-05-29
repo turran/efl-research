@@ -1,7 +1,7 @@
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
-AC_INIT(etk2, 0.1.0.0, hisham.mardambey@gmail.com)
+AC_INIT(eon, 0.1.0.0, jorgeluis.zapata@gmail.com)
 AC_PREREQ(2.52)
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CANONICAL_BUILD
@@ -106,53 +106,6 @@ PKG_CHECK_MODULES(EXML, [exml >= 0.1.1], [have_exml="yes"], [have_exml="no"])
 ## Needed to build the testsuite xml parser
 AM_CONDITIONAL(HAVE_EXML, test "x$have_exml" = "xyes")
 
-
-#####################################################################
-## Ecore_X
-PKG_CHECK_MODULES(ECORE_X, [ecore-x >= 0.9.9], [
-    have_ecore_x=yes
-    AC_DEFINE(HAVE_ECORE_X, 1, [Define to 1 if you have the Ecore_X headers and libraries])
-    requirements="$requirements ecore-x"
-  ], [
-    have_ecore_x=no
-    AC_DEFINE(HAVE_ECORE_X, 0, [Define to 1 if you have the Ecore_X headers and libraries])
-])
-
-AM_CONDITIONAL(BUILD_ENGINE_EE_S_X11, test "x$have_ecore_x" = "xyes")
-
-#####################################################################
-## Ecore_FB
-PKG_CHECK_MODULES(ECORE_FB, [ecore-fb >= 0.9.9], [
-    have_ecore_fb=yes
-    AC_DEFINE(HAVE_ECORE_FB, 1, [Define to 1 if you have the Ecore_FB headers and libraries])
-    requirements="$requirements ecore-fb"
-  ], [
-    have_ecore_fb=no
-    AC_DEFINE(HAVE_ECORE_FB, 0, [Define to 1 if you have the Ecore_FB headers and libraries])
-])
-
-AC_ARG_ENABLE(ecore-fb-x11-support,
-  AC_HELP_STRING(
-    [--enable-ecore-fb-x11-support],
-    [enable the ecore_fb engine X11 support. [[default=enabled]]]),
-  [ want_ecore_fb_x11_support=$enableval ],
-  [ want_ecore_fb_x11_support="yes" ])
-
-AC_MSG_CHECKING(whether engine ecore_fb with X11 support is to be built)
-AC_MSG_RESULT($want_ecore_fb_x11_support)
-
-if test "x$want_ecore_fb_x11_support" = "xyes"; then
-  if test "x$have_ecore_fb" = "xyes" -a "x$have_ecore_x" = "xyes"; then
-    have_ecore_fb_x11_support=yes
-    AC_DEFINE(ENGINE_E_FB_X11_SUPPORT, [1], [Build support for X11 on ecore_fb engine])
-  else
-    have_ecore_fb_x11_support=no
-    AC_MSG_WARN(Silly monkey: engine ecore_fb X11 support requires ecore_fb and ecore_x ... disabling ecore_fb X11 support)
-  fi
-fi
-
-AM_CONDITIONAL(BUILD_ENGINE_E_FB, test "x$have_ecore_fb" = "xyes")
-
 #####################################################################
 ## SDL engine
 
@@ -165,6 +118,12 @@ else
 	have_engine_sdl=no
 fi
 AM_CONDITIONAL(BUILD_ENGINE_SDL, test "x$have_engine_sdl" = "xyes")
+
+## Check for the possible engines
+if test x$have_engine_sdl = xno ; then
+  AC_MSG_ERROR(No engine to compile)
+fi
+
 #####################################################################
 ## Fill in flags
 AC_SUBST(requirements)
@@ -180,7 +139,7 @@ AC_SUBST(ETK_LIBS)
 
 AC_OUTPUT([
 Makefile
-etk2.pc
+eon.pc
 src/Makefile
 src/lib/Makefile
 src/include/Makefile
@@ -204,9 +163,6 @@ echo
 echo "Configuration Options Summary:"
 echo
 echo "  SDL Engine..................................: $have_engine_sdl"
-echo "  Ecore Evas Software X11 Engine..............: $have_ecore_x"
-echo "  Ecore FB Engine.............................: $have_ecore_fb"
-echo "  Ecore FB Engine X11 Support.................: $have_ecore_fb_x11_support"
 echo
 echo "Installation Path.........: $prefix"
 echo

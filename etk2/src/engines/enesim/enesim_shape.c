@@ -4,8 +4,8 @@
  *  Created on: 04-feb-2009
  *      Author: jl
  */
-#include "Etk2.h"
-#include "etk2_private.h"
+#include "Eon.h"
+#include "eon_private.h"
 #include "enesim_private.h"
 /*============================================================================*
  *                                  Local                                     *
@@ -29,8 +29,8 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	int fy;
 	Enesim_Surface *ftmp = NULL;
 
-#if ETK2_DEBUG
-	printf("[Etk_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
+#if EON_DEBUG
+	printf("[Eon_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
 #endif
 	cpus = enesim_cpu_get(&numcpus);
 #if 0
@@ -316,7 +316,7 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
  * srect: source rectangle (scaling??)
  * src: src image
  */
-void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Rectangle *srect)
+void eon_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Rectangle *srect)
 {
 	Enesim_Surface *dst = surface;
 	Context *c = context;
@@ -324,8 +324,8 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 	uint32_t sw, sh;
 	uint32_t dw, dh;
 
-#ifdef ETK2_DEBUG
-	printf("[Etk_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+#ifdef EON_DEBUG
+	printf("[Eon_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 #endif
 	enesim_surface_size_get(src, &sw, &sh);
 	enesim_surface_size_get(dst, &dw, &dh);
@@ -369,9 +369,9 @@ void etk2_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_R
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Etk_Shape_Engine etk_shape_engine_enesim = {
+Eon_Shape_Engine eon_shape_engine_enesim = {
 	.rect = _rect,
-	.image = etk2_enesim_image,
+	.image = eon_enesim_image,
 };
 /*============================================================================*
  *                                   API                                      *
