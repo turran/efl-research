@@ -130,6 +130,31 @@ void function_parse(char *v, int *num, ...)
 	va_end(ap);
 }
 
+void polygon_points_set(Eon_Polygon *p, const char *value)
+{
+	char *tmp = value;
+	char *end = tmp;
+	int x, y;
+	/* comma separated coordinates */
+	do
+	{
+		tmp = end;
+		x = strtod(tmp, &end);
+		if (*end == ',')
+		{
+			tmp = end + 1;
+			y = strtod(tmp, &end);
+		}
+		else
+		{
+			printf("breaking %c\n", *end);
+			break;
+		}
+		printf("adding point %d %d %p %p\n", x, y, tmp, end);
+		eon_polygon_point_add(p, x, y);
+	} while (tmp != end);
+}
+
 Eina_Bool matrix_parse(Enesim_Matrix *m, char *v)
 {
 	/* well known names */
@@ -514,8 +539,22 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	else if (!strcmp(tag, "image"))
 	{
 		o = (Ekeko_Object *)eon_image_new((Eon_Canvas *)parent);
-		eon_rect_show(o);
-		eon_rect_rop_set(o, ENESIM_BLEND);
+		eon_image_show(o);
+		eon_image_rop_set(o, ENESIM_BLEND);
+	}
+	else if (!strcmp(tag, "poly"))
+	{
+		char *value;
+
+		o = (Ekeko_Object *)eon_polygon_new((Eon_Canvas *)parent);
+		eon_shape_show(o);
+		eon_shape_rop_set(o, ENESIM_BLEND);
+		value = ecore_hash_get(n->attributes, "points");
+		if (!value)
+		{
+			return o;
+		}
+		polygon_points_set(o, value);
 	}
 	else if (!strcmp(tag, "anim") || !strcmp(tag, "animMatrix"))
 	{
@@ -561,7 +600,6 @@ void parse(EXML *exml, Ekeko_Object *parent)
 	printf("[PARSER] parsing tag %s with parent %s\n", n->tag, ekeko_object_type_name_get(parent));
 #endif
 	parent = tag_create(n->tag, exml, parent);
-	printf("going down\n");
 	tag = exml_down(exml);
 	while (tag)
 	{
@@ -570,7 +608,6 @@ void parse(EXML *exml, Ekeko_Object *parent)
 		/* siblings */
 		tag = exml_next_nomove(exml);
 	}
-	printf("going up\n");
 	exml_goto_node(exml, n);
 }
 

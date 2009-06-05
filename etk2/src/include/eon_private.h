@@ -25,6 +25,8 @@
 #define EON_TYPE_CANVAS "Eon_Canvas"
 #define EON_TYPE_RECT "Eon_Rect"
 #define EON_TYPE_IMAGE "Eon_Image"
+#define EON_TYPE_POLYGON "Eon_Polygon"
+
 
 #define EON_TYPE_ANIMATION "Eon_Animation"
 #define EON_TYPE_ANIMATION_BASIC "Eon_Animation_Basic"
@@ -71,6 +73,9 @@ typedef struct _Eon_Shape_Engine
 {
 	void (*rect)(void *surface, void *context, int x, int y, int w, int h);
 	void (*image)(void *surface, void *context, Enesim_Surface *s, Eina_Rectangle *srect);
+	void *(*polygon_new)(void);
+	void (*polygon_point_add)(void *polygon, int x, int y);
+	void (*polygon_render)(void *surface, void *context, void *polygon);
 } Eon_Shape_Engine;
 
 struct _Eon_Engine

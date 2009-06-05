@@ -3,35 +3,74 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
-#if 0
+#include <limits.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 #define PRIVATE(d) ((Eon_Polygon_Private *)((Eon_Polygon *)(d))->private)
 struct _Eon_Polygon_Private
 {
+	int xmin, xmax, ymin, ymax; /* bounding box */
+	/* our list of points, an engine might want to have its own */
+	Eina_List *points;
 	void *engine_data;
 };
 
-/* 
+typedef struct _Polygon_Coord
+{
+	int x, y;
+} Polygon_Coord;
+
+/*
+ * Called whenever a point has been added/removed/set???
+ * Re-calc the bounding box of the polygon
+ */
+//static void _point_appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+static void _update_geometry(Eon_Polygon *p)
+{
+	Eon_Polygon_Private *prv = PRIVATE(p);
+	Eina_Rectangle geom;
+
+	eina_rectangle_coords_from(&geom, prv->xmin, prv->xmax - prv->xmin, prv->ymin, prv->ymax - prv->ymin);
+	ekeko_renderable_geometry_set((Ekeko_Renderable *)p, &geom);
+}
+
+
+/*
  * When the polygon has been appended to a canvas get the engine
  * and call polygon_new(), if the polygon has points call
  * polygon_point_add()
  */
 static void _appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
+	Ekeko_Object *parent;
+	Eon_Polygon_Private *prv = PRIVATE(o);
 
+	if ((parent = ekeko_object_parent_get(o)))
+	{
+		Eon_Engine *func;
+		Eon_Document *d;
+
+		d = eon_canvas_document_get((Eon_Canvas *) parent);
+		if (!d)
+			return;
+		func = eon_document_engine_get(d);
+		prv->engine_data = func->shape->polygon_new();
+		/* iterate over the list of points and add them to the engine */
+		if (prv->points)
+		{
+			Eina_Iterator *it;
+			Polygon_Coord coord;
+
+			it = eina_list_iterator_new(prv->points);
+			while (eina_iterator_next(it, (void **)&coord))
+			{
+				func->shape->polygon_point_add(prv->engine_data, coord.x, coord.y);
+			}
+			return;
+		}
+	}
 }
-
-/*
- * Called whenever a point has been added/removed/set???
- * Re-calc the bounding box of the polygon
- */
-static void _point_appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
-{
-
-}
-
 /*
  * When the quality of the shape has changed, check if we have a polygon
  * if so, delete it, create a new one and re-append the points
@@ -43,32 +82,30 @@ static void _quality_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 
 static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Context *context)
 {
-	Eon_Polygon *r;
+	Eon_Polygon *p;
 	Eon_Polygon_Private *prv;
-	Eon_Coord x, y, w, h;
 
-	r = (Eon_Polygon *)s;
-	prv = PRIVATE(r);
+	p = (Eon_Polygon *)s;
+	prv = PRIVATE(p);
 
-	eon_square_coords_get((Eon_Square *)r, &x, &y, &w, &h);
 #ifdef EON_DEBUG
-	printf("[Eon_Polygon] Rendering polygonangle %p into canvas %p\n", r, c);
+	printf("[Eon_Polygon] Rendering polygon %p into canvas %p\n", r, c);
 #endif
-	func->shape->polygon(surface, context, x.final, y.final, w.final, h.final);
+	func->shape->polygon_render(surface, context, prv->engine_data);
 }
 
 static void _ctor(void *instance)
 {
-	Eon_Polygon *r;
+	Eon_Polygon *p;
 	Eon_Polygon_Private *prv;
 
-	r = (Eon_Polygon*) instance;
-	r->private = prv = ekeko_type_instance_private_get(eon_polygon_type_get(), instance);
-	r->parent.parent.render = _render;
-	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_X_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_Y_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_W_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_H_CHANGED, _geometry_calc, EINA_FALSE, NULL);
+	p = (Eon_Polygon*) instance;
+	p->private = prv = ekeko_type_instance_private_get(eon_polygon_type_get(), instance);
+	p->parent.render = _render;
+	/* setup the limits */
+	prv->xmin = prv->ymin = INT_MAX;
+	prv->xmax = prv->ymax = INT_MIN;
+	ekeko_event_listener_add((Ekeko_Object *)p, EVENT_OBJECT_APPEND, _appended_cb, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *polygon)
@@ -112,16 +149,46 @@ EAPI Eon_Polygon * eon_polygon_new(Eon_Canvas *c)
 	p = ekeko_type_instance_new(eon_polygon_type_get());
 	ekeko_object_child_append((Ekeko_Object *)c, (Ekeko_Object *)p);
 
-	return r;
+	return p;
 }
 
-EAPI void eon_polygon_point_add(Eon_Polygon *p, Eon_Coord c)
+EAPI void eon_polygon_point_add(Eon_Polygon *p, int x, int y)
 {
-	Eon_Polygon_Private *pp;
+	Eon_Polygon_Private *prv;
+	Polygon_Coord *point;
+	Ekeko_Object *parent;
 
-	pp = PRIVATE(p);
-	/* call the engine polygon_new */
-	/* call the engine polygon_point_add */
+	prv = PRIVATE(p);
+	point = malloc(sizeof(Polygon_Coord));
+	point->x = x;
+	point->y = y;
+
+	if (x < prv->xmin)
+		prv->xmin = x;
+	else if (x > prv->xmax)
+		prv->xmax = x;
+	if (y < prv->ymin)
+		prv->xmin = y;
+	else if (y > prv->ymax)
+		prv->ymax = y;
+
+	prv->points = eina_list_append(prv->points, point);
+	if ((parent = ekeko_object_parent_get(p)))
+	{
+		Eon_Document *d;
+		Eon_Engine *func;
+
+		d = eon_canvas_document_get((Eon_Canvas *) parent);
+		if (!d)
+			return;
+		func = eon_document_engine_get(d);
+		func->shape->polygon_point_add(prv->engine_data, x, y);
+
+		_update_geometry(p);
+	}
 }
 
-#endif
+EAPI void eon_polygon_clear(Eon_Polygon *p)
+{
+	/* TODO */
+}

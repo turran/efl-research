@@ -7,6 +7,7 @@
 #include "Eon.h"
 #include "eon_private.h"
 #include "enesim_private.h"
+#include <limits.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -125,18 +126,75 @@ else {
 #endif
 
 
-static void _polygon_point_add(Enesim_Surface *dst, void *context, void *polygon)
+typedef struct _Enesim_Polygon
 {
-	/* create a rasterizer */
-	/* check the quality to create a kiia or a cpsc rasterizer */
-	/* add a vertex to it */
+	Enesim_Rasterizer *r;
+} Enesim_Polygon;
+
+typedef struct _Enesim_Polygon_Data
+{
+	Enesim_Surface *dst;
+	Enesim_Operator op;
+	Context *c;
+} Enesim_Polygon_Data;
+
+static void * _polygon_new(void)
+{
+	Enesim_Polygon *p = calloc(1, sizeof(Enesim_Polygon));
+
+	return p;
 }
 
-static void _polygon_draw(Enesim_Surface *dst, void *context)
+void _polygon_point_add(void *polygon, int x, int y)
 {
-	/* rasterize the polygon */
-	/* render it */
+	Enesim_Polygon *p = polygon;
+
+	/* create a rasterizer */
+	/* TODO check the quality to create a kiia or a cpsc rasterizer */
+	if (!p->r)
+	{
+		Eina_Rectangle r;
+
+		eina_rectangle_coords_from(&r, 0, 0, INT_MAX, INT_MAX);
+		p->r = enesim_rasterizer_cpsc_new(r);
+	}
+	/* add a vertex to it */
+	enesim_rasterizer_vertex_add(p->r, x, y);
 }
+
+void _rasterizer_cb(void *sl, int type, void *data)
+{
+	Enesim_Polygon_Data *pdata = data;
+	Enesim_Scanline_Alias *asl = sl;
+	uint32_t *dst;
+
+	dst = enesim_surface_data_get(pdata->dst);
+	dst += asl->y * (enesim_surface_stride_get(pdata->dst)) + asl->x;
+	//printf("rendering the polygon into %p!!!\n", data);
+	enesim_operator_drawer_span(&pdata->op, dst, asl->w, NULL, pdata->c->color, NULL);
+}
+
+void _polygon_draw(void *surface, void *context, void *polygon)
+{
+	Enesim_Polygon *p = polygon;
+	Enesim_Cpu **cpus;
+	Context *c = context;
+	Enesim_Operator op;
+	Enesim_Polygon_Data data;
+	int numcpus;
+
+	/* create the rendering pipeline */
+	cpus = enesim_cpu_get(&numcpus);
+	/* the context has the clipping rect relative to the canvas */
+	/* TODO enesim should support the bounding box not only at creation time */
+	/* TODO the pipeline can be whatever, not only color */
+	enesim_drawer_span_color_op_get(cpus[0], &data.op, c->rop, ENESIM_FORMAT_ARGB8888, c->color);
+	/* rasterize the polygon */
+	data.dst = surface;
+	data.c = context;
+	enesim_rasterizer_generate(p->r, _rasterizer_cb, &data);
+}
+
 /* Function used to draw a pattern whenever the rendering of an object isnt ready yet
  * like when an image isnt loaded yet
  */
@@ -372,6 +430,9 @@ void eon_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Re
 Eon_Shape_Engine eon_shape_engine_enesim = {
 	.rect = _rect,
 	.image = eon_enesim_image,
+	.polygon_new = _polygon_new,
+	.polygon_point_add = _polygon_point_add,
+	.polygon_render = _polygon_draw,
 };
 /*============================================================================*
  *                                   API                                      *

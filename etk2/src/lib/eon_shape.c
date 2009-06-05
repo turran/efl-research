@@ -137,7 +137,6 @@ static void _ctor(void *instance)
 	s->parent.render = _render;
 	/* the default color, useful for pixel_color operations */
 	prv->color = 0xffffffff;
-	printf("color = %08x\n", prv->color);
 	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_COLOR_CHANGED, _color_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_ROP_CHANGED, _rop_change, EINA_FALSE, NULL);

@@ -103,7 +103,7 @@ static void _matrix_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	/* update the geometry */
 	_geometry_calc(o, e, data);
 	/* store the matrix */
- 	if (parent = ekeko_object_parent_get(o))
+ 	if ((parent = ekeko_object_parent_get(o)))
 	{
 		Eon_Engine *func;
 		Eon_Document *d;
