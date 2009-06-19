@@ -1,5 +1,8 @@
 Short term
 ==========
++ Remove the engine thing and use only canvas engines and a way to retrieve
+  an enesim_surface from the particular surface implementation. That's it.
+  Or it will be very difficult to handle filters pipelines correctly per engine 
 + Move etch into its own thread. Create a fifo to receive events from etch and then select() it on main thread. Then etk2 should
   set the attributes and only the final version should be displayed to avoid delayed rendering.
 + Do some research on changing from xml to another format, maybe using yacc/lex

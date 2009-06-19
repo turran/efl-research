@@ -13,10 +13,10 @@
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-Ekeko_Property_Id EON_FILTER_EFFECT_X;
-Ekeko_Property_Id EON_FILTER_EFFECT_Y;
-Ekeko_Property_Id EON_FILTER_EFFECT_W;
-Ekeko_Property_Id EON_FILTER_EFFECT_H;
+extern Ekeko_Property_Id EON_FILTER_X;
+extern Ekeko_Property_Id EON_FILTER_Y;
+extern Ekeko_Property_Id EON_FILTER_W;
+extern Ekeko_Property_Id EON_FILTER_H;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
@@ -25,11 +25,11 @@ struct _Eon_Filter
 {
 	Ekeko_Object parent;
 	Eon_Filter_Private *private;
+	Eina_Bool (*get_scanline)(uint32_t *data, unsigned int len, int x, int y);
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
 EAPI Ekeko_Type *eon_filter_type_get(void);
-EAPI Eon_Filter * eon_filter_new(Eon_Canvas *c);
 
 #endif

@@ -61,6 +61,12 @@ static void _add_callback(callback cb, char *value, char *attr, void *data)
 	parsed_cb = eina_list_append(parsed_cb, pc);
 }
 
+
+static void _object_id_get(char *value, char *attr, void *data)
+{
+	printf("called\n");
+}
+
 static void _anim_id_get(char *value, char *attr, void *data)
 {
 	Ekeko_Object *anim = data;
@@ -460,7 +466,35 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 		case PROPERTY_LONG:
 		case PROPERTY_RECTANGLE:
 		case PROPERTY_POINTER:
+		return;
+
 		case PROPERTY_OBJECT:
+		{
+			Ekeko_Object *oid;
+			char *tmp = strdup(name);
+
+			if (*tmp == '#')
+			{
+				char *token;
+				char *ttmp = tmp + 1;
+				Ekeko_Object * oid;
+
+				token = strtok(ttmp, ".");
+				oid = eon_document_object_get_by_id(doc, token);
+				if (!oid)
+				{
+					/* queue this once the document has been completely parsed */
+					_add_callback(_object_id_get, name, attr, o);
+					return;
+				}
+				else
+				{
+					//ekeko_value_object_from(&v, oid)
+					//ekeko_object_property_value_set(o, attr, &v);
+
+				}
+			}
+		}
 		return;
 
 		case PROPERTY_STRING:

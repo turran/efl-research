@@ -26,8 +26,7 @@ eon_animation.c \
 eon_anim_basic.c \
 eon_anim_matrix.c \
 eon_filter.c \
-eon_filter_effect.c
-#
+eon_fe_displace.c
 #eon_button.c
 #eon_widget.c
 #eon_label.c

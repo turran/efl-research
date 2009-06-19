@@ -18,7 +18,6 @@ typedef struct _Eon_Rect Eon_Rect;
 typedef struct _Eon_Image Eon_Image;
 typedef struct _Eon_Polygon Eon_Polygon;
 typedef struct _Eon_Filter Eon_Filter;
-typedef struct _Eon_Filter_Effect Eon_Filter_Effect;
 /* filter effects */
 typedef struct _Eon_Fe_Displace Eon_Fe_Displace;
 
@@ -48,7 +47,6 @@ EAPI int eon_shutdown(void);
 #include "eon_anim_matrix.h"
 
 #include "eon_filter.h"
-#include "eon_filter_effect.h"
 #include "eon_fe_displace.h"
 
 #include "eon_widget.h"

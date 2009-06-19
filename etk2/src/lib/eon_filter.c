@@ -13,7 +13,10 @@
 #define PRIVATE(d) ((Eon_Filter_Private *)((Eon_Filter *)(d))->private)
 struct _Eon_Filter_Private
 {
-	Eina_List *shapes;
+	Eon_Coord x;
+	Eon_Coord y;
+	Eon_Coord w;
+	Eon_Coord h;
 };
 
 static void _ctor(void *instance)
@@ -29,15 +32,6 @@ static void _dtor(void *filter)
 {
 
 }
-
-static Eina_Bool _appendable(void *instance, void *child)
-{
-	if (!ekeko_type_instance_is_of(child, EON_TYPE_FILTER_EFFECT))
-	{
-		return EINA_FALSE;
-	}
-	return EINA_TRUE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -45,6 +39,11 @@ static Eina_Bool _appendable(void *instance, void *child)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Ekeko_Property_Id EON_FILTER_X;
+Ekeko_Property_Id EON_FILTER_Y;
+Ekeko_Property_Id EON_FILTER_W;
+Ekeko_Property_Id EON_FILTER_H;
+
 EAPI Ekeko_Type *eon_filter_type_get(void)
 {
 	static Ekeko_Type *type = NULL;
@@ -53,18 +52,12 @@ EAPI Ekeko_Type *eon_filter_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_FILTER, sizeof(Eon_Filter),
 				sizeof(Eon_Filter_Private), ekeko_object_type_get(),
-				_ctor, _dtor, _appendable);
+				_ctor, _dtor, NULL);
+		EON_FILTER_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, x));
+		EON_FILTER_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, y));
+		EON_FILTER_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, w));
+		EON_FILTER_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, h));
 	}
 
 	return type;
-}
-
-EAPI Eon_Filter * eon_filter_new(Eon_Canvas *c)
-{
-	Eon_Filter *f;
-
-	f = ekeko_type_instance_new(eon_filter_type_get());
-	ekeko_object_child_append((Ekeko_Object *)c, (Ekeko_Object *)f);
-
-	return f;
 }
