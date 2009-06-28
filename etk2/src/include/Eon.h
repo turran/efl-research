@@ -41,6 +41,7 @@ EAPI int eon_shutdown(void);
 #include "eon_rect.h"
 #include "eon_image.h"
 #include "eon_polygon.h"
+#include "eon_circle.h"
 
 #include "eon_animation.h"
 #include "eon_anim_basic.h"
