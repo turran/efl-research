@@ -127,7 +127,7 @@ static void _w_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 			EON_CANVAS_W_CHANGED, _w_inform);
 }
 
-/* Called whenever the w property changes */
+/* Called whenever the h property changes */
 static void _h_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;

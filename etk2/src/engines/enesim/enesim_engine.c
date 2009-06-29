@@ -565,9 +565,20 @@ static void * circle_create(Eon_Circle *ec)
 	return c;
 }
 
-static void circle_render(void *ec, void *c, Eina_Rectangle *clip)
+/* TODO instead of reseting the rasterizer and add the vertex every time
+ * just add a callback for radius, x and y change and reset there
+ */
+static void circle_render(void *ec, void *cd, Eina_Rectangle *clip)
 {
-	printf("rendering a Circle!!!\n");
+	Eon_Coord x;
+	Eon_Coord y;
+	int radius;
+	Circle *c = ec;
+
+	eon_circle_x_get(c->c, &x);
+	eon_circle_y_get(c->c, &y);
+	radius = eon_circle_radius_get(c->c);
+	printf("rendering a Circle %d %d %d!!!\n", x.final, y.final, radius);
 }
 
 static void circle_delete(void *ec)

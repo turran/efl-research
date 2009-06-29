@@ -12,7 +12,7 @@
  *============================================================================*/
 #define EON_CIRCLE_X_CHANGED "xChanged"
 #define EON_CIRCLE_Y_CHANGED "yChanged"
-#define EON_CIRCLE_W_CHANGED "radiusChanged"
+#define EON_CIRCLE_RADIUS_CHANGED "radiusChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
