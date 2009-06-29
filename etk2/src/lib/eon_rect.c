@@ -31,20 +31,12 @@ static void _geometry_calc(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	ekeko_renderable_geometry_set((Ekeko_Renderable *)r, &geom);
 }
 
-static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Context *context)
+static void _render(Eon_Shape *s, Eon_Engine *eng, void *engine_data, void *canvas_data, Eina_Rectangle *clip)
 {
-	Eon_Rect *r;
-	Eon_Rect_Private *prv;
-	Eon_Coord x, y, w, h;
-
-	r = (Eon_Rect *)s;
-	prv = PRIVATE(r);
-
-	eon_square_coords_get((Eon_Square *)r, &x, &y, &w, &h);
 #ifdef EON_DEBUG
-	printf("[Eon_Rect] Rendering rectangle %p into canvas %p\n", r, c);
+	printf("[Eon_Rect] Rendering rectangle %p into canvas\n", r);
 #endif
-	func->shape->rect(surface, context, x.final, y.final, w.final, h.final);
+	eon_engine_rect_render(eng, engine_data, canvas_data, clip); 
 }
 
 static void _ctor(void *instance)
@@ -55,7 +47,8 @@ static void _ctor(void *instance)
 	r = (Eon_Rect*) instance;
 	r->private = prv = ekeko_type_instance_private_get(eon_rect_type_get(), instance);
 	r->parent.parent.render = _render;
-	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_X_CHANGED, _geometry_calc, EINA_FALSE, NULL);
+	r->parent.parent.create = eon_engine_rect_create;
+ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_X_CHANGED, _geometry_calc, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_Y_CHANGED, _geometry_calc, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_W_CHANGED, _geometry_calc, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)r, EON_SQUARE_H_CHANGED, _geometry_calc, EINA_FALSE, NULL);

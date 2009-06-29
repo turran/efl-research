@@ -105,12 +105,14 @@ static void _matrix_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	/* store the matrix */
  	if ((parent = ekeko_object_parent_get(o)))
 	{
+#if 0
 		Eon_Engine *func;
 		Eon_Document *d;
 
 		d = eon_canvas_document_get((Eon_Canvas *)parent);
 		func = eon_document_engine_get(d);
 		func->context->matrix_set(eon_shape_context_get((Eon_Shape *)o), &prv->inverse);
+#endif
 	}
 }
 
@@ -127,7 +129,7 @@ static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	emage_load_async(em->curr->value.string_value, &prv->src.img, _loader_callback, i, NULL);
 }
 
-static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Context *context)
+static void _render(Eon_Shape *s, Eon_Engine *eng, Eon_Surface *surface, Eon_Context *context)
 {
 	Eon_Image *i = (Eon_Image *)s;
 	Eon_Image_Private *prv = PRIVATE(i);
@@ -146,7 +148,7 @@ static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Co
 	else
 	{
 		/* TODO pass the image size */
-		func->shape->image(surface, context, prv->src.img, &srect);
+		//func->shape->image(surface, context, prv->src.img, &srect);
 	}
 }
 

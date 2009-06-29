@@ -20,26 +20,26 @@ struct _Eon_Circle_Private
 	void *engine_data;
 };
 
-
 static void _update_geometry(Eon_Circle *p)
 {
 	Eon_Circle_Private *prv = PRIVATE(p);
 	Eina_Rectangle geom;
 
+	eina_rectangle_coords_from(&geom, prv->x.final - prv->radius.final, prv ->y.final - prv->radius.final, prv->radius.final << 1, prv->radius.final << 1);
 	ekeko_renderable_geometry_set((Ekeko_Renderable *)p, &geom);
 }
 
-static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Context *context)
+static void _render(Eon_Shape *s, Eon_Engine *eng, void *engine_data, void *canvas_data, Eina_Rectangle *clip)
 {
 	Eon_Circle *p;
 	Eon_Circle_Private *prv;
 
 	p = (Eon_Circle *)s;
-	prv = PRIVATE(p);
 
 #ifdef EON_DEBUG
 	printf("[Eon_Circle] Rendering polygon %p into canvas %p\n", r, c);
 #endif
+	eon_engine_circle_render(eng, engine_data, canvas_data, clip);
 }
 
 static void _ctor(void *instance)
@@ -50,8 +50,7 @@ static void _ctor(void *instance)
 	p = (Eon_Circle*) instance;
 	p->private = prv = ekeko_type_instance_private_get(eon_polygon_type_get(), instance);
 	p->parent.render = _render;
-	/* setup the limits */
-	ekeko_event_listener_add((Ekeko_Object *)p, EVENT_OBJECT_APPEND, _appended_cb, EINA_FALSE, NULL);
+	p->parent.create = eon_engine_circle_create;
 }
 
 static void _dtor(void *polygon)
@@ -73,9 +72,9 @@ static Eina_Bool _appendable(void *instance, void *child)
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Ekeko_Property_Id EON_SQUARE_CIRCLE_X;
-Ekeko_Property_Id EON_SQUARE_CIRCLE_Y;
-Ekeko_Property_Id EON_SQUARE_CIRCLE_RADIUS;
+Ekeko_Property_Id EON_CIRCLE_X;
+Ekeko_Property_Id EON_CIRCLE_Y;
+Ekeko_Property_Id EON_CIRCLE_RADIUS;
 
 EAPI Ekeko_Type *eon_circle_type_get(void)
 {
@@ -98,33 +97,35 @@ EAPI Eon_Circle * eon_circle_new(Eon_Canvas *c)
 {
 	Eon_Circle *p;
 
-	p = ekeko_type_instance_new(eon_polygon_type_get());
+	p = ekeko_type_instance_new(eon_circle_type_get());
 	ekeko_object_child_append((Ekeko_Object *)c, (Ekeko_Object *)p);
 
 	return p;
 }
 
-EAPI void eon_circle_x_rel_set(Eon_Square *r, int x);
+EAPI void eon_circle_x_rel_set(Eon_Circle *c, int x)
+{
+
+
+}
+
+EAPI void eon_circle_x_set(Eon_Circle *c, int x)
 {
 
 }
-EAPI void eon_circle_x_set(Eon_Square *r, int x)
+EAPI void eon_circle_y_set(Eon_Circle *c, int y)
 {
 
 }
-EAPI void eon_circle_y_set(Eon_Square *r, int y)
+EAPI void eon_circle_y_rel_set(Eon_Circle *c, int y)
 {
 
 }
-EAPI void eon_circle_y_rel_set(Eon_Square *r, int y)
+EAPI void eon_circle_radius_set(Eon_Circle *c, int radius)
 {
 
 }
-EAPI void eon_circle_radius_set(Eon_Square *r, int r)
-{
-
-}
-EAPI void eon_circle_radius_rel_set(Eon_Square *r, int r)
+EAPI void eon_circle_radius_rel_set(Eon_Circle *c, int radius)
 {
 
 }

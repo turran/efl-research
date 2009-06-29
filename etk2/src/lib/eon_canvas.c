@@ -23,12 +23,11 @@ struct _Eon_Canvas_Private
 	/* track parent canvas, if parent canvas == NULL then this is the
 	 * main canvas and we should treat it differently
 	 */
-	Eon_Surface *s;
-	Eon_Context *context;
 	Eina_Bool root;
 	/* TODO overflow property */
 	/* FIXME change this later */
 	Eon_Document *doc;
+	void *engine_data;
 };
 
 /* in case the subcanvas has another canvas as parent it will blt to the
@@ -39,24 +38,23 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	Eina_Rectangle sgeom, srect;
 	Eon_Canvas *c;
 	Eon_Canvas_Private *sprv, *cprv;
-	Eon_Engine *func;
+	Eon_Engine *eng;
 
 	sprv = PRIVATE(r);
 	c = (Eon_Canvas *)ekeko_renderable_canvas_get(r);
 	cprv = PRIVATE(c);
 
-	func = eon_document_engine_get(sprv->doc);
+	eng = eon_document_engine_get(sprv->doc);
 #if BOUNDING_DEBUG
 	{
-		Eon_Context *ctx;
-
-		ctx = func->context->create();
+#if 0
 		func->context->color_set(ctx, 0xffaaaaaa);
 		func->context->rop_set(ctx, ENESIM_FILL);
 		func->canvas->lock(cprv->s);
 		func->shape->rect(cprv->s, ctx, rect->x, rect->y, rect->w, rect->h);
 		func->canvas->unlock(cprv->s);
 		func->context->delete(ctx);
+#endif
 	}
 #endif
 	{
@@ -73,9 +71,7 @@ static void _subcanvas_render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 #ifdef EON_DEBUG
 	printf("[Eon_Canvas] Subcanvas render %d %d %d %d (%d %d %d %d)\n", srect.x, srect.y, srect.w, srect.h, rect->x, rect->y, rect->w, rect->h);
 #endif
-	func->context->clip_set(sprv->context, rect);
-	func->canvas->blit(cprv->s, sprv->context, sprv->s, &srect);
-	func->context->clip_clear(sprv->context);
+	eon_engine_canvas_blit(eng, sprv->engine_data, rect, cprv->engine_data, &srect);
 }
 
 static Eina_Bool _subcanvas_is_inside(Ekeko_Canvas *c, int x, int y)
@@ -109,24 +105,16 @@ static Eina_Bool _flush(Ekeko_Canvas *c, Eina_Rectangle *r)
 	Eon_Canvas_Private *prv;
 
 	prv = PRIVATE(c);
-	if (!prv->s)
-	{
-#ifdef EON_DEBUG
-		printf("[Eon_Canvas] the canvas doesnt have a surface\n");
-#endif
-		return EINA_TRUE;
-	}
 	/* if root flip */
 	if (prv->root)
 	{
-		Eon_Engine *func;
+		Eon_Engine *eng;
 
 #ifdef EON_DEBUG
 		printf("[Eon_Canvas] flipping root surface\n");
 #endif
-		/* TODO flip */
-		func = eon_document_engine_get(prv->doc);
-		return func->canvas->flush(prv->s, r);
+		eng = eon_document_engine_get(prv->doc);
+		return eon_engine_canvas_flush(eng, prv->engine_data, r);
 	}
 	/* otherwise blt */
 	else
@@ -137,22 +125,22 @@ static Eina_Bool _flush(Ekeko_Canvas *c, Eina_Rectangle *r)
 
 static void _document_surface_create(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Eon_Engine *func;
+	Eon_Engine *eng;
 	Eon_Canvas *c;
 	Eon_Canvas_Private *prv;
 	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 
-	func = eon_document_engine_get((Eon_Document *)o);
+	eng = eon_document_engine_get((Eon_Document *)o);
 	c = data;
 	prv = PRIVATE(c);
-	prv->s = func->canvas->create(prv->root, em->curr->value.rect.w, em->curr->value.rect.h);
+	prv->engine_data = eon_engine_canvas_create(eng, c, prv->root, em->curr->value.rect.w, em->curr->value.rect.h);
 }
 
 static void _geometry_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
 	Eon_Canvas_Private *prv = PRIVATE(o);
-	Eon_Engine *func;
+	Eon_Engine *eng;
 	int w, h;
 
 	/* check if the change is the rectangle */
@@ -174,13 +162,16 @@ static void _geometry_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	 */
 	w = prv->w.final;
 	h = prv->h.final;
-	func = eon_document_engine_get(prv->doc);
+	eng = eon_document_engine_get(prv->doc);
+	/* TODO add a callback whenever the matrix is set and put the above code */
+#if 0
 	if (!prv->context)
 	{
 		prv->context = func->context->create();
 		func->context->matrix_set(prv->context, &prv->inverse);
 	}
-	prv->s = func->canvas->create(prv->root, w, h);
+#endif
+	prv->engine_data = eon_engine_canvas_create(eng, (Eon_Canvas *)o, prv->root, w, h);
 }
 
 /* Once the matrix or the coordinates have changed, update the renderable
@@ -656,12 +647,14 @@ EAPI void eon_canvas_h_get(Eon_Canvas *c, Eon_Coord *h)
 	*h = prv->h;
 }
 
+/* FIXME
+ * do we really need this? */
 EAPI void * eon_canvas_surface_get(Eon_Canvas *c)
 {
 	Eon_Canvas_Private *prv;
 
 	prv = PRIVATE(c);
-	return prv->s;
+	return prv->engine_data;
 }
 
 EAPI void eon_canvas_matrix_set(Eon_Canvas *c, Enesim_Matrix *m)

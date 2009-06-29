@@ -1,5 +1,6 @@
 <eon w="100%" h="100%">
 	<rect x="0" y="0" w="100%" h="100%" color="white"/>
 	<rect x="0" y="0" w="80%" h="80%" color="red" rop="fill"/>
+	<circle radius="20%" y="50%" x="50%" color="blue"/>
 	<rect x="50%" y="50%" w="50%" h="50%" color="0xaa0000aa" rop="fill"/>
 </eon>

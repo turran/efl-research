@@ -1,16 +1,107 @@
-/*
- * enesim_shape.c
- *
- *  Created on: 04-feb-2009
- *      Author: jl
- */
 #include "Eon.h"
 #include "eon_private.h"
-#include "enesim_private.h"
+
+#include "Eon_Enesim.h"
+
 #include <limits.h>
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+struct _Eon_Engine_Enesim_Private
+{
+
+};
+
+typedef struct _Context
+{
+	uint32_t color;
+	Enesim_Rop rop;
+	struct {
+		Eina_Rectangle rect;
+		Eina_Bool used;
+	} clip;
+	struct {
+		Enesim_Matrix m;
+		Eina_Bool used;
+	} matrix;
+
+} Context;
+
+typedef struct _Enesim_Polygon
+{
+	Enesim_Rasterizer *r;
+} Enesim_Polygon;
+
+typedef struct _Enesim_Polygon_Data
+{
+	Enesim_Surface *dst;
+	Enesim_Operator op;
+	Context *c;
+} Enesim_Polygon_Data;
+
+
+static void * _create(void)
+{
+	return calloc(1, sizeof(Context));
+	//return enesim_context_new();
+}
+
+static void _delete(void *c)
+{
+	free(c);
+	//enesim_context_delete(c);
+}
+
+static void _color_set(void *c, int color)
+{
+	Context *ctx = c;
+	uint32_t cmul;
+	uint8_t a = color >> 24;
+	if (a != 256)
+	{
+		cmul = (color & 0xff000000) + (((((color) >> 8) & 0xff) * a) & 0xff00) +
+			(((((color) & 0x00ff00ff) * a) >> 8) & 0x00ff00ff);
+	}
+	else
+		color = cmul;
+	ctx->color = color;
+	//enesim_context_color_set(c, cmul);
+}
+
+static void _rop_set(void *c, int rop)
+{
+	Context *ctx = c;
+
+	ctx->rop = rop;
+	//enesim_context_rop_set(c, rop);
+}
+
+static void _matrix_set(void *c, Enesim_Matrix *m)
+{
+	Context *ctx = c;
+
+	ctx->matrix.used = EINA_TRUE;
+	ctx->matrix.m = *m;
+	//enesim_context_matrix_set(c, m);
+}
+
+static void _clip_set(void *c, Eina_Rectangle *r)
+{
+	Context *ctx = c;
+
+	//printf("0 setting clip to %d %d %d %d\n", r->x, r->y, r->w, r->h);
+	ctx->clip.rect = *r;
+	ctx->clip.used = EINA_TRUE;
+	//enesim_context_clip_set(c, r);
+}
+
+static void _clip_clear(void *c)
+{
+	Context *ctx = c;
+
+	ctx->clip.used = EINA_FALSE;
+	//printf("1 unsetting clip\n");
+}
 #define RADDIST 1
 static void _rect(void *surface, void *context, int x, int y, int w, int h)
 {
@@ -31,7 +122,7 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	Enesim_Surface *ftmp = NULL;
 
 #if EON_DEBUG
-	printf("[Eon_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
+	printf("[Eon_Eon_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
 #endif
 	cpus = enesim_cpu_get(&numcpus);
 #if 0
@@ -126,18 +217,6 @@ else {
 #endif
 
 
-typedef struct _Enesim_Polygon
-{
-	Enesim_Rasterizer *r;
-} Enesim_Polygon;
-
-typedef struct _Enesim_Polygon_Data
-{
-	Enesim_Surface *dst;
-	Enesim_Operator op;
-	Context *c;
-} Enesim_Polygon_Data;
-
 static void * _polygon_new(void)
 {
 	Enesim_Polygon *p = calloc(1, sizeof(Enesim_Polygon));
@@ -153,25 +232,21 @@ void _polygon_point_add(void *polygon, int x, int y)
 	/* TODO check the quality to create a kiia or a cpsc rasterizer */
 	if (!p->r)
 	{
-		Eina_Rectangle r;
-
-		eina_rectangle_coords_from(&r, 0, 0, INT_MAX, INT_MAX);
-		p->r = enesim_rasterizer_cpsc_new(r);
+		p->r = enesim_rasterizer_cpsc_new();
 	}
 	/* add a vertex to it */
 	enesim_rasterizer_vertex_add(p->r, x, y);
 }
 
-void _rasterizer_cb(void *sl, int type, void *data)
+void _rasterizer_cb(Enesim_Scanline *sl, void *data)
 {
 	Enesim_Polygon_Data *pdata = data;
-	Enesim_Scanline_Alias *asl = sl;
 	uint32_t *dst;
 
 	dst = enesim_surface_data_get(pdata->dst);
-	dst += asl->y * (enesim_surface_stride_get(pdata->dst)) + asl->x;
+	dst += sl->data.alias.y * (enesim_surface_stride_get(pdata->dst)) + sl->data.alias.x;
 	//printf("rendering the polygon into %p!!!\n", data);
-	enesim_operator_drawer_span(&pdata->op, dst, asl->w, NULL, pdata->c->color, NULL);
+	enesim_operator_drawer_span(&pdata->op, dst, sl->data.alias.w, NULL, pdata->c->color, NULL);
 }
 
 void _polygon_draw(void *surface, void *context, void *polygon)
@@ -192,7 +267,7 @@ void _polygon_draw(void *surface, void *context, void *polygon)
 	/* rasterize the polygon */
 	data.dst = surface;
 	data.c = context;
-	enesim_rasterizer_generate(p->r, _rasterizer_cb, &data);
+	enesim_rasterizer_generate(p->r, &c->clip.rect, _rasterizer_cb, &data);
 }
 
 /* Function used to draw a pattern whenever the rendering of an object isnt ready yet
@@ -383,7 +458,7 @@ void eon_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Re
 	uint32_t dw, dh;
 
 #ifdef EON_DEBUG
-	printf("[Eon_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
+	printf("[Eon_Eon_Engine_Enesim] RENDERING AN IMAGE %d %d %d %d\n", srect->x, srect->y, srect->w, srect->h);
 #endif
 	enesim_surface_size_get(src, &sw, &sh);
 	enesim_surface_size_get(dst, &dw, &dh);
@@ -424,17 +499,120 @@ void eon_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Re
 		_image_noscale(dst, &dclip, c, src, srect, &sclip);
 	}
 }
+
+/*============================================================================*
+ *                                   Rect                                     *
+ *============================================================================*/
+static void * rect_create(Eon_Rect *r)
+{
+	return r;
+}
+
+static void rect_render(void *er, void *c, Eina_Rectangle *clip)
+{
+	Eon_Rect *r = er;
+	Enesim_Surface *s = c;
+	Enesim_Operator op;
+	Enesim_Operator f;
+	Enesim_Cpu **cpus;
+	int numcpus;
+	uint32_t *src;
+	uint32_t *src2;
+	uint32_t sw, sh, fw, fh;
+	uint32_t stride, fstride;
+	uint32_t *span;
+	uint32_t *fsrc;
+	int fy;
+	Enesim_Surface *ftmp = NULL;
+	Eon_Color color;
+	Enesim_Rop rop;
+
+#if EON_DEBUG
+	printf("[Eon_Eon_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", clip.x, clip.y, clip.w, clip.h, s);
+#endif
+	cpus = enesim_cpu_get(&numcpus);
+	color = eon_rect_color_get(r);
+	rop = eon_rect_rop_get(r);
+	enesim_drawer_span_color_op_get(cpus[0], &op, rop, ENESIM_FORMAT_ARGB8888, color);
+
+	stride = enesim_surface_stride_get(s);
+	src = ((uint32_t *)enesim_surface_data_get(s)) + (clip->y * stride) + clip->x;
+	while (clip->h--)
+	{
+		enesim_operator_drawer_span(&op, src, clip->w, NULL, color, NULL);
+		src += stride;
+	}
+
+}
+/*============================================================================*
+ *                                 Circle                                     *
+ *============================================================================*/
+typedef struct Circle
+{
+	Eon_Circle *c;
+	Enesim_Rasterizer *r;
+} Circle;
+
+static void * circle_create(Eon_Circle *ec)
+{
+	Circle *c;
+
+	c = malloc(sizeof(Circle));
+	c->c = ec;
+	c->r = enesim_rasterizer_circle_new();
+	enesim_rasterizer_circle_fill_policy_set(c->r, ENESIM_RASTERIZER_FILL_POLICY_FILL);
+
+	return c;
+}
+
+static void circle_render(void *ec, void *c, Eina_Rectangle *clip)
+{
+	printf("rendering a Circle!!!\n");
+}
+
+static void circle_delete(void *ec)
+{
+	Circle *c = ec;
+
+	enesim_rasterizer_delete(c->r);
+	free(ec);
+}
+
+static void _ctor(void *instance)
+{
+	Eon_Engine_Enesim *e;
+	Eon_Engine_Enesim_Private *prv;
+
+	e = (Eon_Engine_Enesim *) instance;
+	e->prv = prv = ekeko_type_instance_private_get(eon_engine_enesim_type_get(), instance);
+	e->parent.rect_create = rect_create;
+	e->parent.rect_render = rect_render;
+	e->parent.circle_create = circle_create;
+	e->parent.circle_render = circle_render;
+}
+
+static void _dtor(void *instance)
+{
+
+}
+
+
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eon_Shape_Engine eon_shape_engine_enesim = {
-	.rect = _rect,
-	.image = eon_enesim_image,
-	.polygon_new = _polygon_new,
-	.polygon_point_add = _polygon_point_add,
-	.polygon_render = _polygon_draw,
-};
+Ekeko_Type * eon_engine_enesim_type_get(void)
+{
+	static Ekeko_Type *type = NULL;
+
+	if (!type)
+	{
+		type = ekeko_type_new(EON_TYPE_ENGINE_ENESIM, sizeof(Eon_Engine_Enesim),
+				sizeof(Eon_Engine_Enesim_Private), eon_engine_type_get(),
+				_ctor, _dtor, NULL);
+	}
+
+	return type;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-

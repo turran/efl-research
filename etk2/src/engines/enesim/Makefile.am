@@ -8,5 +8,4 @@ AM_CPPFLAGS = \
 noinst_LTLIBRARIES = libeon_engine_enesim.la
 
 libeon_engine_enesim_la_SOURCES = \
-enesim_context.c \
-enesim_shape.c
+enesim_engine.c

@@ -16,6 +16,7 @@ typedef struct _Eon_Animation_Matrix Eon_Animation_Matrix;
 typedef struct _Eon_Square Eon_Square;
 typedef struct _Eon_Rect Eon_Rect;
 typedef struct _Eon_Image Eon_Image;
+typedef struct _Eon_Circle Eon_Circle;
 typedef struct _Eon_Polygon Eon_Polygon;
 typedef struct _Eon_Filter Eon_Filter;
 /* filter effects */
@@ -24,12 +25,15 @@ typedef struct _Eon_Fe_Displace Eon_Fe_Displace;
 
 /* TODO use this generic names */
 typedef struct _Eon_Engine Eon_Engine;
+/* TODO remove this */
 typedef void Eon_Context;
 typedef void Eon_Surface;
 
 EAPI int eon_init(void);
 EAPI void eon_loop(void);
 EAPI int eon_shutdown(void);
+
+#include "eon_engine.h"
 
 #include "eon_coord.h"
 #include "eon_color.h"
@@ -53,5 +57,6 @@ EAPI int eon_shutdown(void);
 #include "eon_widget.h"
 #include "eon_button.h"
 #include "eon_label.h"
+
 
 #endif

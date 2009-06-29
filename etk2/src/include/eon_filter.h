@@ -25,7 +25,8 @@ struct _Eon_Filter
 {
 	Ekeko_Object parent;
 	Eon_Filter_Private *private;
-	Eina_Bool (*get_scanline)(uint32_t *data, unsigned int len, int x, int y);
+	Eina_Bool (*get_pixel)(Eon_Filter *f, Eon_Shape *shape, uint32_t *data, int x, int y);
+	Eina_Bool (*get_scanline)(Eon_Filter *f, Eon_Shape *shape, uint32_t *data, unsigned int len, int x, int y);
 };
 /*============================================================================*
  *                                Functions                                   *

@@ -33,7 +33,9 @@ EAPI Eon_Rect * eon_rect_new(Eon_Canvas *c);
 #define eon_rect_h_set(r, h) eon_square_h_set((Eon_Square *)(r), h)
 /* shape wrappers */
 #define eon_rect_color_set(r, c) eon_shape_color_set((Eon_Shape *)(r), c)
+#define eon_rect_color_get(r) eon_shape_color_get((Eon_Shape *)(r))
 #define eon_rect_rop_set(r, o) eon_shape_rop_set((Eon_Shape *)(r), o)
+#define eon_rect_rop_get(r) eon_shape_rop_get((Eon_Shape *)(r))
 /* renderable wrappers */
 #define eon_rect_show(r) ekeko_renderable_show(EKEKO_RENDERABLE((r)))
 #define eon_rect_hide(r) ekeko_renderable_hide(EKEKO_RENDERABLE((r)))

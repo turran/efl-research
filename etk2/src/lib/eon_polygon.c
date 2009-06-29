@@ -45,7 +45,7 @@ static void _appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Ekeko_Object *parent;
 	Eon_Polygon_Private *prv = PRIVATE(o);
-
+#if 0
 	if ((parent = ekeko_object_parent_get(o)))
 	{
 		Eon_Engine *func;
@@ -70,6 +70,7 @@ static void _appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 			return;
 		}
 	}
+#endif
 }
 /*
  * When the quality of the shape has changed, check if we have a polygon
@@ -91,7 +92,9 @@ static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Co
 #ifdef EON_DEBUG
 	printf("[Eon_Polygon] Rendering polygon %p into canvas %p\n", r, c);
 #endif
+#if 0
 	func->shape->polygon_render(surface, context, prv->engine_data);
+#endif
 }
 
 static void _ctor(void *instance)
@@ -154,6 +157,7 @@ EAPI Eon_Polygon * eon_polygon_new(Eon_Canvas *c)
 
 EAPI void eon_polygon_point_add(Eon_Polygon *p, int x, int y)
 {
+#if 0
 	Eon_Polygon_Private *prv;
 	Polygon_Coord *point;
 	Ekeko_Object *parent;
@@ -186,6 +190,7 @@ EAPI void eon_polygon_point_add(Eon_Polygon *p, int x, int y)
 
 		_update_geometry(p);
 	}
+#endif
 }
 
 EAPI void eon_polygon_clear(Eon_Polygon *p)

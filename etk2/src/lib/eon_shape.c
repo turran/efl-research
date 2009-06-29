@@ -11,7 +11,6 @@
  *============================================================================*/
 #define BOUNDING_DEBUG 0
 #define PRIVATE(d) ((Eon_Shape_Private *)((Eon_Shape *)(d))->private)
-#define TYPE_NAME "Eon_Shape"
 
 struct _Eon_Shape_Private
 {
@@ -22,7 +21,26 @@ struct _Eon_Shape_Private
  	/* TODO we'll only support clipping to a rect */
 	Eina_Rectangle *clip;
 	/* TODO add the engine data here instead of on every shape subclass */
+	void *engine_data;
 };
+
+static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
+	Eon_Shape *s;
+	Eon_Shape_Private *prv;
+	Eon_Document *d;
+	Eon_Engine *eng;
+
+	/* when this shape is appended to a canvas, try to setup the context */
+	d = eon_canvas_document_get((Eon_Canvas *)em->related);
+	/* FIXME in case the canvas doesnt have a document */
+	eng = eon_document_engine_get(d);
+	s = (Eon_Shape *)o;
+	prv = PRIVATE(s);
+	prv->engine_data = s->create(eng, s); 
+}
+
 
 /* Render wrapper */
 static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
@@ -31,18 +49,18 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	Eon_Shape_Private *prv;
 	Eon_Document *d;
 	Eon_Canvas *c;
-	Eon_Engine *func;
+	Eon_Engine *eng;
 	Eon_Surface *surface;
 
 	s = (Eon_Shape *)r;
 	prv = PRIVATE(s);
 	c = (Eon_Canvas *)ekeko_renderable_canvas_get(r);
 	d = eon_canvas_document_get(c);
-	func = eon_document_engine_get(d);
+	eng = eon_document_engine_get(d);
 	surface = eon_canvas_surface_get(c);
-
 #if BOUNDING_DEBUG
 	{
+#if 0
 		Eon_Context *ctx;
 
 		ctx = func->context->create();
@@ -52,80 +70,28 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 		func->shape->rect(surface, ctx, rect->x, rect->y, rect->w, rect->h);
 		func->canvas->unlock(surface);
 		func->context->delete(ctx);
+#endif
 	}
 #endif
-	/* TODO context clip set */
-	func->context->clip_set(prv->context, rect);
-	//printf("Rendering %s\n", ekeko_object_type_name_get((Ekeko_Object *)s));
-	func->canvas->lock(surface);
 	/* Call the shape's render function */
-	s->render(s, func, surface, prv->context);
-	func->context->clip_clear(prv->context);
-	func->canvas->unlock(surface);
-	/* TODO context clear ? */
+	s->render(s, eng, prv->engine_data, surface, rect);
 }
 
 static void _rop_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Eon_Engine *func;
-	Ekeko_Object *parent;
-	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
-	Eon_Shape *s = (Eon_Shape *)o;
-	Eon_Document *d;
-	Eon_Shape_Private *prv;
-
-	if (!(parent = ekeko_object_parent_get(o)))
-		return;
-
-	d = eon_canvas_document_get((Eon_Canvas *)parent);
-	func = eon_document_engine_get(d);
-	prv = PRIVATE(s);
-	func->context->rop_set(prv->context, em->curr->value.int_value);
 	/* before adding the damage check that the rop has changed */
-	eon_shape_change(s);
+	eon_shape_change((Eon_Shape *)o);
 }
 
 static void _color_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Eon_Engine *func;
-	Ekeko_Object *parent;
-	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
-	Eon_Shape *s = (Eon_Shape *)o;
-	Eon_Document *d;
-	Eon_Shape_Private *prv;
-
-	if (!(parent = ekeko_object_parent_get(o)))
-		return;
-
-	d = eon_canvas_document_get((Eon_Canvas *)parent);
-	func = eon_document_engine_get(d);
-	prv = PRIVATE(s);
-	func->context->color_set(prv->context, em->curr->value.int_value);
-	eon_shape_change(s);
+	/* before adding the damage check that the clor has changed */
+	eon_shape_change((Eon_Shape *)o);
 }
 
 static void _filter_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	printf("CALLEEEEEEEEEEEEE\n");
-}
-
-static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
-{
-	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
-	Eon_Shape *s;
-	Eon_Shape_Private *prv;
-	Eon_Document *d;
-	Eon_Engine *func;
-
-	/* when this shape is appended to a canvas, try to setup the context */
-	d = eon_canvas_document_get((Eon_Canvas *)em->related);
-	/* FIXME in case the canvas doesnt have a document */
-	func = eon_document_engine_get(d);
-	s = (Eon_Shape *)o;
-	prv = PRIVATE(s);
-	prv->context = func->context->create();
-	func->context->color_set(prv->context, prv->color);
-	/* TODO set the color, the rop, etc */
 }
 
 static void _ctor(void *instance)
@@ -151,13 +117,22 @@ static void _dtor(void *shape)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-void * eon_shape_context_get(Eon_Shape *s)
+void * eon_shape_engine_data_get(Eon_Shape *s)
 {
 	Eon_Shape_Private *prv;
 
 	prv = PRIVATE(s);
-	return prv->context;
+	return prv->engine_data;
 }
+
+void eon_shape_engine_data_set(Eon_Shape *s, void *engine_data)
+{
+	Eon_Shape_Private *prv;
+
+	prv = PRIVATE(s);
+	prv->engine_data = engine_data;
+}
+
 Eon_Canvas * eon_shape_canvas_get(Eon_Shape *s)
 {
 	return (Eon_Canvas *)ekeko_renderable_canvas_get((Ekeko_Renderable *)s);
@@ -188,7 +163,7 @@ EAPI Ekeko_Type *eon_shape_type_get(void)
 
 	if (!type)
 	{
-		type = ekeko_type_new(TYPE_NAME, sizeof(Eon_Shape),
+		type = ekeko_type_new(EON_TYPE_SHAPE, sizeof(Eon_Shape),
 				sizeof(Eon_Shape_Private), ekeko_renderable_type_get(),
 				_ctor, _dtor, NULL);
 		EON_SHAPE_COLOR = TYPE_PROP_SINGLE_ADD(type, "color", EON_PROPERTY_COLOR, OFFSET(Eon_Shape_Private, color));
@@ -207,6 +182,14 @@ EAPI void eon_shape_color_set(Eon_Shape *s, Eon_Color color)
 	ekeko_object_property_value_set((Ekeko_Object *)s, "color", &v);
 }
 
+EAPI Eon_Color eon_shape_color_get(Eon_Shape *s)
+{
+	Eon_Shape_Private *prv;
+
+	prv = PRIVATE(s);
+	return prv->color;
+}
+
 EAPI void eon_shape_rop_set(Eon_Shape *s, Enesim_Rop rop)
 {
 	Ekeko_Value v;
@@ -215,10 +198,26 @@ EAPI void eon_shape_rop_set(Eon_Shape *s, Enesim_Rop rop)
 	ekeko_object_property_value_set((Ekeko_Object *)s, "rop", &v);
 }
 
+EAPI Enesim_Rop eon_shape_rop_get(Eon_Shape *s)
+{
+	Eon_Shape_Private *prv;
+
+	prv = PRIVATE(s);
+	return prv->rop;
+}
+
 EAPI void eon_shape_filter_set(Eon_Shape *s, Eon_Filter *filter)
 {
 	Ekeko_Value v;
 
 	ekeko_value_object_from(&v, (Ekeko_Object *)filter);
 	ekeko_object_property_value_set((Ekeko_Object *)s, "filter", &v);
+}
+
+EAPI Eon_Filter * eon_shape_filter_get(Eon_Shape *s)
+{
+	Eon_Shape_Private *prv;
+
+	prv = PRIVATE(s);
+	return prv->filter;
 }

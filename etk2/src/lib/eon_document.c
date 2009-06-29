@@ -18,7 +18,7 @@ struct _Eon_Document_Private
 {
 	struct {
 		char *name;
-		Eon_Engine *func;
+		Eon_Engine *backend;
 	} engine;
 	Eina_Rectangle size;
 	Eon_Canvas *canvas;
@@ -66,7 +66,7 @@ static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	if (!prv->canvas)
 	{
 		prv->canvas = (Eon_Canvas *)e->target;
-		prv->engine.func->doc->create(d);
+		eon_engine_document_create(prv->engine.backend, d);
 	}
 	/* TODO set the engine automatically */
 	/* TODO what happens if the user doesnt set the engine and then appends
@@ -81,12 +81,10 @@ static void _prop_modify_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	Eon_Document_Private *prv = PRIVATE(d);
 
 	/* When the engine property changes set it up */
-	if (!strcmp(em->prop, "engine"))
+	if (!strcmp(em->prop, "engine") && !prv->engine.backend)
 	{
-		/* TODO how to handle this case: we dont want the engine to
-		 * be set more than once!
-		 */
-		prv->engine.func = eon_engine_get(em->curr->value.string_value);
+		prv->engine.backend = eon_engine_get(em->curr->value.string_value);
+		eon_engine_ref(prv->engine.backend, d);
 	}
 }
 
@@ -136,7 +134,7 @@ Eon_Engine * eon_document_engine_get(Eon_Document *d)
 	Eon_Document_Private *prv;
 
 	prv = PRIVATE(d);
-	return prv->engine.func;
+	return prv->engine.backend;
 }
 Etch * eon_document_etch_get(Eon_Document *d)
 {
@@ -159,7 +157,7 @@ Ekeko_Type *eon_document_type_get(void)
 		type = ekeko_type_new(EON_TYPE_DOCUMENT, sizeof(Eon_Document),
 				sizeof(Eon_Document_Private), ekeko_object_type_get(), _ctor,
 				_dtor, _appendable);
-		TYPE_PROP_SINGLE_ADD(type, "engine", PROPERTY_STRING, OFFSET(Eon_Document_Private, engine.func));
+		TYPE_PROP_SINGLE_ADD(type, "engine", PROPERTY_STRING, OFFSET(Eon_Document_Private, engine.name));
 		EON_DOCUMENT_SIZE = TYPE_PROP_SINGLE_ADD(type, "size", PROPERTY_RECTANGLE, OFFSET(Eon_Document_Private, size));
 	}
 
@@ -174,6 +172,7 @@ EAPI Eon_Document * eon_document_new(const char *engine, int w, int h)
 	d = ekeko_type_instance_new(eon_document_type_get());
 	ekeko_value_str_from(&v, engine);
 	ekeko_object_property_value_set((Ekeko_Object *)d, "engine", &v);
+	/* the main canvas */
 	c = ekeko_type_instance_new(eon_canvas_type_get());
 	ekeko_object_child_append((Ekeko_Object *)d, (Ekeko_Object *)c);
 	_documents = eina_list_append(_documents, d);
@@ -205,11 +204,6 @@ EAPI void eon_document_resize(Eon_Document *d, int w, int h)
 
 	ekeko_value_rectangle_coords_from(&v, 0, 0, w, h);
 	ekeko_object_property_value_set((Ekeko_Object *)d, "size", &v);
-}
-
-static _id_get(Ekeko_Object *o, const char *id)
-{
-
 }
 
 static void _dump(char *id, int level)

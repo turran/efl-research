@@ -26,6 +26,9 @@
 #define EON_TYPE_RECT "Eon_Rect"
 #define EON_TYPE_IMAGE "Eon_Image"
 #define EON_TYPE_POLYGON "Eon_Polygon"
+#define EON_TYPE_CIRCLE "Eon_Circle"
+#define EON_TYPE_ENGINE "Eon_Engine"
+#define EON_TYPE_SHAPE "Eon_Shape"
 
 
 #define EON_TYPE_ANIMATION "Eon_Animation"
@@ -37,63 +40,13 @@
 
 /* Engine! */
 typedef void * Eon_Engine_Surface;
-
-typedef struct _Eon_Document_Engine
-{
-	void * (*create)(Eon_Document *);
-	void (*delete)(Eon_Document *, void *);
-} Eon_Document_Engine;
-
-typedef struct _Eon_Canvas_Engine
-{
-	void (*lock)(void *s);
-	void (*unlock)(void *s);
-	void * (*create)(Eina_Bool root, int w, int h);
-	void (*blit)(void *s, void *context, void *src, Eina_Rectangle *srect);
-	Eina_Bool (*flush)(void *s, Eina_Rectangle *srect);
-} Eon_Canvas_Engine;
-
-typedef struct _Eon_Context_Engine
-{
-	/* basic operations */
-	void * (*create)(void);
-	void (*delete)(void *context);
-	/* shape properties */
-	void (*color_set)(void *context, int color); /* FIXME change this int */
-	void (*rop_set)(void *context, int rop); /* FIXME change this int */
-	/* transformations */
-	void (*matrix_set)(void *c, Enesim_Matrix *m);
-	/* clipping */
-	void (*clip_set)(void *c, Eina_Rectangle *r);
-	void (*clip_clear)(void *c);
-	/* filters */
-} Eon_Context_Engine;
-
-typedef struct _Eon_Shape_Engine
-{
-	void (*rect)(void *surface, void *context, int x, int y, int w, int h);
-	void (*image)(void *surface, void *context, Enesim_Surface *s, Eina_Rectangle *srect);
-	void *(*polygon_new)(void);
-	void (*polygon_point_add)(void *polygon, int x, int y);
-	void (*polygon_render)(void *surface, void *context, void *polygon);
-} Eon_Shape_Engine;
-
-struct _Eon_Engine
-{
-	Eon_Document_Engine *doc;
-	Eon_Canvas_Engine *canvas;
-	Eon_Context_Engine *context;
-	Eon_Shape_Engine *shape;
-};
-
 void eon_engine_init(void);
 void eon_engine_shutdown(void);
-void eon_engine_register(Eon_Engine *engine, const char *name);
+void eon_engine_register(const char *name, Eon_Engine_New n);
 Eon_Engine * eon_engine_get(const char *name);
 
 /* Enesim engine */
-extern Eon_Context_Engine eon_context_engine_enesim;
-extern Eon_Shape_Engine eon_shape_engine_enesim;
+Ekeko_Type * eon_engine_enesim_type_get(void);
 
 /* SDL engine */
 void engine_sdl_init(void);
@@ -111,7 +64,8 @@ Eon_Document * eon_canvas_document_get(Eon_Canvas *c);
 
 /* Shape */
 Eon_Canvas * eon_shape_canvas_get(Eon_Shape *s);
-void * eon_shape_context_get(Eon_Shape *s);
+void * eon_shape_engine_data_get(Eon_Shape *s);
+void eon_shape_engine_data_set(Eon_Shape *s, void *engine_data);
 void eon_shape_change(Eon_Shape *s);
 
 /* Coord */

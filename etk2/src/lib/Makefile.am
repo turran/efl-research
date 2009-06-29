@@ -20,6 +20,7 @@ eon_canvas.c \
 eon_shape.c \
 eon_square.c \
 eon_rect.c \
+eon_circle.c \
 eon_polygon.c \
 eon_image.c \
 eon_animation.c \

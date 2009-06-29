@@ -570,6 +570,12 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 		eon_rect_show(o);
 		eon_rect_rop_set(o, ENESIM_BLEND);
 	}
+	if (!strcmp(tag, "circle"))
+	{
+		o = (Ekeko_Object *)eon_circle_new((Eon_Canvas *)parent);
+		eon_circle_show(o);
+		eon_circle_rop_set(o, ENESIM_BLEND);
+	}
 	else if (!strcmp(tag, "image"))
 	{
 		o = (Ekeko_Object *)eon_image_new((Eon_Canvas *)parent);
