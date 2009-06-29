@@ -21,11 +21,6 @@ struct _Eon_Circle_Private
 };
 
 
-/*
- * Called whenever a point has been added/removed/set???
- * Re-calc the bounding box of the polygon
- */
-//static void _point_appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 static void _update_geometry(Eon_Circle *p)
 {
 	Eon_Circle_Private *prv = PRIVATE(p);
@@ -33,12 +28,6 @@ static void _update_geometry(Eon_Circle *p)
 
 	ekeko_renderable_geometry_set((Ekeko_Renderable *)p, &geom);
 }
-
-/*
- * When the polygon has been appended to a canvas get the engine
- * and call polygon_new(), if the polygon has points call
- * polygon_point_add()
- */
 
 static void _render(Eon_Shape *s, Eon_Engine *func, Eon_Surface *surface, Eon_Context *context)
 {
@@ -81,10 +70,13 @@ static Eina_Bool _appendable(void *instance, void *child)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
+Ekeko_Property_Id EON_SQUARE_CIRCLE_X;
+Ekeko_Property_Id EON_SQUARE_CIRCLE_Y;
+Ekeko_Property_Id EON_SQUARE_CIRCLE_RADIUS;
+
 EAPI Ekeko_Type *eon_circle_type_get(void)
 {
 	static Ekeko_Type *type = NULL;
@@ -94,6 +86,9 @@ EAPI Ekeko_Type *eon_circle_type_get(void)
 		type = ekeko_type_new(EON_TYPE_CIRCLE, sizeof(Eon_Circle),
 				sizeof(Eon_Circle_Private), eon_shape_type_get(),
 				_ctor, _dtor, _appendable);
+		EON_CIRCLE_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Circle_Private, x));
+		EON_CIRCLE_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Circle_Private, y));
+		EON_CIRCLE_RADIUS = TYPE_PROP_SINGLE_ADD(type, "radius", EON_PROPERTY_COORD, OFFSET(Eon_Circle_Private, radius));
 	}
 
 	return type;

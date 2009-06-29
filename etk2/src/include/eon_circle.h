@@ -8,6 +8,18 @@
 #define EON_CIRCLE_H_
 
 /*============================================================================*
+ *                                 Events                                     *
+ *============================================================================*/
+#define EON_CIRCLE_X_CHANGED "xChanged"
+#define EON_CIRCLE_Y_CHANGED "yChanged"
+#define EON_CIRCLE_W_CHANGED "radiusChanged"
+/*============================================================================*
+ *                               Properties                                   *
+ *============================================================================*/
+extern Ekeko_Property_Id EON_SQUARE_CIRCLE_X;
+extern Ekeko_Property_Id EON_SQUARE_CIRCLE_Y;
+extern Ekeko_Property_Id EON_SQUARE_CIRCLE_RADIUS;
+/*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
 typedef struct _Eon_Circle_Private Eon_Circle_Private;

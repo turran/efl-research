@@ -21,6 +21,7 @@ struct _Eon_Shape_Private
 	int rop;
  	/* TODO we'll only support clipping to a rect */
 	Eina_Rectangle *clip;
+	/* TODO add the engine data here instead of on every shape subclass */
 };
 
 /* Render wrapper */
