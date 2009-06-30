@@ -5,6 +5,4 @@
 	<rect x="75%" y="75%" w="25" h="25" color="0xAA55AA55"/>
 	<!-- relative image -->
 	<image x="10%" y="10%" w="80%" h="80%" file="tiger.png"/>
-	<!-- polygons -->
-	<poly points="0,0 128,10 10,200 30,0" color="0xaaaaaa00"/>
 </eon>

@@ -174,3 +174,18 @@ EAPI void eon_engine_circle_render(Eon_Engine *e, void *r, void *c, Eina_Rectang
 
 }
 
+EAPI void * eon_engine_polygon_create(Eon_Engine *e, Eon_Polygon *p)
+{
+	return e->polygon_create(p);
+}
+
+EAPI void eon_engine_polygon_point_add(Eon_Engine *e, void *pd, int x, int y)
+{
+	e->polygon_point_add(pd, x, y);
+}
+
+EAPI void eon_engine_polygon_render(Eon_Engine *e, void *p, void *c, Eina_Rectangle *clip)
+{
+	e->polygon_render(p, c, clip);
+}
+

@@ -27,19 +27,6 @@ typedef struct _Context
 
 } Context;
 
-typedef struct _Enesim_Polygon
-{
-	Enesim_Rasterizer *r;
-} Enesim_Polygon;
-
-typedef struct _Enesim_Polygon_Data
-{
-	Enesim_Surface *dst;
-	Enesim_Operator op;
-	Context *c;
-} Enesim_Polygon_Data;
-
-
 static void * _create(void)
 {
 	return calloc(1, sizeof(Context));
@@ -217,58 +204,7 @@ else {
 #endif
 
 
-static void * _polygon_new(void)
-{
-	Enesim_Polygon *p = calloc(1, sizeof(Enesim_Polygon));
 
-	return p;
-}
-
-void _polygon_point_add(void *polygon, int x, int y)
-{
-	Enesim_Polygon *p = polygon;
-
-	/* create a rasterizer */
-	/* TODO check the quality to create a kiia or a cpsc rasterizer */
-	if (!p->r)
-	{
-		p->r = enesim_rasterizer_cpsc_new();
-	}
-	/* add a vertex to it */
-	enesim_rasterizer_vertex_add(p->r, x, y);
-}
-
-void _rasterizer_cb(Enesim_Scanline *sl, void *data)
-{
-	Enesim_Polygon_Data *pdata = data;
-	uint32_t *dst;
-
-	dst = enesim_surface_data_get(pdata->dst);
-	dst += sl->data.alias.y * (enesim_surface_stride_get(pdata->dst)) + sl->data.alias.x;
-	//printf("rendering the polygon into %p!!!\n", data);
-	enesim_operator_drawer_span(&pdata->op, dst, sl->data.alias.w, NULL, pdata->c->color, NULL);
-}
-
-void _polygon_draw(void *surface, void *context, void *polygon)
-{
-	Enesim_Polygon *p = polygon;
-	Enesim_Cpu **cpus;
-	Context *c = context;
-	Enesim_Operator op;
-	Enesim_Polygon_Data data;
-	int numcpus;
-
-	/* create the rendering pipeline */
-	cpus = enesim_cpu_get(&numcpus);
-	/* the context has the clipping rect relative to the canvas */
-	/* TODO enesim should support the bounding box not only at creation time */
-	/* TODO the pipeline can be whatever, not only color */
-	enesim_drawer_span_color_op_get(cpus[0], &data.op, c->rop, ENESIM_FORMAT_ARGB8888, c->color);
-	/* rasterize the polygon */
-	data.dst = surface;
-	data.c = context;
-	enesim_rasterizer_generate(p->r, &c->clip.rect, _rasterizer_cb, &data);
-}
 
 /* Function used to draw a pattern whenever the rendering of an object isnt ready yet
  * like when an image isnt loaded yet
@@ -277,6 +213,9 @@ static void _pattern_draw(Enesim_Surface *dst, void *context, Eina_Rectangle *da
 {
 }
 
+/*============================================================================*
+ *                                   Image                                    *
+ *============================================================================*/
 static inline void _image_setup(Enesim_Surface *src, uint32_t **s,
 		uint32_t *sstride, Enesim_Surface *dst, uint32_t **d,
 	 	uint32_t *dstride)
@@ -501,6 +440,87 @@ void eon_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Re
 }
 
 /*============================================================================*
+ *                                  Common                                    *
+ *============================================================================*/
+/* TODO add all the possible compositor parameters */
+typedef struct Shape_Drawer_Data
+{
+	Enesim_Surface *dst;
+	Enesim_Operator op;
+	Eon_Color color;
+} Shape_Drawer_Data;
+
+static void shape_setup(Eon_Shape *s, Shape_Drawer_Data *d, Enesim_Surface *dst)
+{
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Rop rop;
+
+	cpus = enesim_cpu_get(&numcpus);
+	rop = eon_shape_rop_get(s);
+	d->color = eon_shape_color_get(s);
+	enesim_drawer_span_color_op_get(cpus[0], &d->op, rop, ENESIM_FORMAT_ARGB8888, d->color);
+	d->dst = dst;
+}
+
+void aliased_color_cb(Enesim_Scanline *sl, void *data)
+{
+	Shape_Drawer_Data *sdd = data;
+	uint32_t *ddata;
+        uint32_t stride;
+
+        ddata = enesim_surface_data_get(sdd->dst);
+        stride = enesim_surface_stride_get(sdd->dst);
+        ddata = ddata + (sl->data.alias.y * stride) + sl->data.alias.x;
+        enesim_operator_drawer_span(&sdd->op, ddata, sl->data.alias.w, NULL, sdd->color, NULL);
+}
+
+/*============================================================================*
+ *                                  Polygon                                   *
+ *============================================================================*/
+typedef struct Polygon
+{
+	Eon_Polygon *p;
+	Enesim_Rasterizer *r;
+} Polygon;
+
+static void * polygon_create(Eon_Polygon *ep)
+{
+	Polygon *p = calloc(1, sizeof(Polygon));
+	p->p = ep;
+	/* FIXME alias by now */
+	p->r = enesim_rasterizer_cpsc_new();
+
+	return p;
+}
+
+void polygon_point_add(void *pd, int x, int y)
+{
+	Polygon *p = pd;
+
+	/* create a rasterizer */
+	/* TODO check the quality to create a kiia or a cpsc rasterizer */
+	/* add a vertex to it */
+	enesim_rasterizer_vertex_add(p->r, x, y);
+}
+
+void polygon_render(void *pd, void *cd, Eina_Rectangle *clip)
+{
+	Polygon *p = pd;
+	Shape_Drawer_Data sdd;
+
+	shape_setup((Eon_Shape *)p->p, &sdd, cd); 
+	enesim_rasterizer_generate(p->r, clip, aliased_color_cb, &sdd);
+}
+
+static void polygon_delete(void *ep)
+{
+	Polygon *p = ep;
+
+	enesim_rasterizer_delete(p->r);
+	free(p);
+}
+/*============================================================================*
  *                                   Rect                                     *
  *============================================================================*/
 static void * rect_create(Eon_Rect *r)
@@ -508,41 +528,22 @@ static void * rect_create(Eon_Rect *r)
 	return r;
 }
 
-static void rect_render(void *er, void *c, Eina_Rectangle *clip)
+/* TODO This can use the same functions as the other rasterizers */
+static void rect_render(void *er, void *cd, Eina_Rectangle *clip)
 {
 	Eon_Rect *r = er;
-	Enesim_Surface *s = c;
-	Enesim_Operator op;
-	Enesim_Operator f;
-	Enesim_Cpu **cpus;
-	int numcpus;
-	uint32_t *src;
-	uint32_t *src2;
-	uint32_t sw, sh, fw, fh;
-	uint32_t stride, fstride;
-	uint32_t *span;
-	uint32_t *fsrc;
-	int fy;
-	Enesim_Surface *ftmp = NULL;
-	Eon_Color color;
-	Enesim_Rop rop;
+	Shape_Drawer_Data sdd;
+	uint32_t *dst;
+	uint32_t stride;
 
-#if EON_DEBUG
-	printf("[Eon_Eon_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", clip.x, clip.y, clip.w, clip.h, s);
-#endif
-	cpus = enesim_cpu_get(&numcpus);
-	color = eon_rect_color_get(r);
-	rop = eon_rect_rop_get(r);
-	enesim_drawer_span_color_op_get(cpus[0], &op, rop, ENESIM_FORMAT_ARGB8888, color);
-
-	stride = enesim_surface_stride_get(s);
-	src = ((uint32_t *)enesim_surface_data_get(s)) + (clip->y * stride) + clip->x;
+	shape_setup((Eon_Shape *)r, &sdd, cd);
+	stride = enesim_surface_stride_get(sdd.dst);
+	dst = ((uint32_t *)enesim_surface_data_get(sdd.dst)) + (clip->y * stride) + clip->x;
 	while (clip->h--)
 	{
-		enesim_operator_drawer_span(&op, src, clip->w, NULL, color, NULL);
-		src += stride;
+		enesim_operator_drawer_span(&sdd.op, dst, clip->w, NULL, sdd.color, NULL);
+		dst += stride;
 	}
-
 }
 /*============================================================================*
  *                                 Circle                                     *
@@ -570,15 +571,19 @@ static void * circle_create(Eon_Circle *ec)
  */
 static void circle_render(void *ec, void *cd, Eina_Rectangle *clip)
 {
+	Circle *c = ec;
 	Eon_Coord x;
 	Eon_Coord y;
 	int radius;
-	Circle *c = ec;
-
+	Shape_Drawer_Data sdd;
+	
 	eon_circle_x_get(c->c, &x);
 	eon_circle_y_get(c->c, &y);
 	radius = eon_circle_radius_get(c->c);
-	printf("rendering a Circle %d %d %d!!!\n", x.final, y.final, radius);
+	enesim_rasterizer_circle_radius_set(c->r, radius);
+        enesim_rasterizer_vertex_add(c->r, x.final, y.final);
+	shape_setup((Eon_Shape *)c->c, &sdd, cd); 
+	enesim_rasterizer_generate(c->r, clip, aliased_color_cb, &sdd);
 }
 
 static void circle_delete(void *ec)
@@ -600,6 +605,9 @@ static void _ctor(void *instance)
 	e->parent.rect_render = rect_render;
 	e->parent.circle_create = circle_create;
 	e->parent.circle_render = circle_render;
+	e->parent.polygon_create = polygon_create;
+	e->parent.polygon_point_add = polygon_point_add;
+	e->parent.polygon_render = polygon_render;
 }
 
 static void _dtor(void *instance)

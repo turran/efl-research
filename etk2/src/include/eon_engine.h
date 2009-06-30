@@ -75,9 +75,17 @@ struct _Eon_Engine
 	/* rect callbacks */
 	void * (*rect_create)(Eon_Rect *r);
 	void (*rect_render)(void *r, void *c, Eina_Rectangle *clip);
+	void (*rect_delete)(void *r);
 	/* circle callbacks */
 	void * (*circle_create)(Eon_Circle *r);
 	void (*circle_render)(void *r, void *c, Eina_Rectangle *clip);
+	void (*circle_delete)(void *c);
+	/* polygon callbacks */
+	void * (*polygon_create)(Eon_Polygon *p);
+	void (*polygon_point_add)(void *pd, int x, int y);
+	void (*polygon_render)(void *p, void *c, Eina_Rectangle *clip);
+	void (*polygon_reset)(void *p);
+	void (*polygon_delete)(void *p);
 };
 /*============================================================================*
  *                                Functions                                   *
@@ -96,5 +104,9 @@ EAPI void eon_engine_rect_render(Eon_Engine *e, void *r, void *c, Eina_Rectangle
 
 EAPI void * eon_engine_circle_create(Eon_Engine *e, Eon_Circle *c);
 EAPI void eon_engine_circle_render(Eon_Engine *e, void *r, void *c, Eina_Rectangle *clip);
+	
+EAPI void * eon_engine_polygon_create(Eon_Engine *e, Eon_Polygon *p);
+EAPI void eon_engine_polygon_point_add(Eon_Engine *e, void *pd, int x, int y);
+EAPI void eon_polygon_render(Eon_Engine *e, void *p, void *c, Eina_Rectangle *clip);
 
 #endif /* EON_ENGINE_H_ */
