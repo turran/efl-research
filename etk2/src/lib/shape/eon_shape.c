@@ -16,6 +16,7 @@ struct _Eon_Shape_Private
 {
 	void *context;
 	Eon_Color color; /* FIXME the color should be double state? */
+	Eon_Paint *fill;
 	Eon_Filter *filter;
 	int rop;
  	/* TODO we'll only support clipping to a rect */
@@ -155,6 +156,7 @@ void eon_shape_change(Eon_Shape *s)
  *============================================================================*/
 Ekeko_Property_Id EON_SHAPE_COLOR;
 Ekeko_Property_Id EON_SHAPE_ROP;
+Ekeko_Property_Id EON_SHAPE_FILL;
 Ekeko_Property_Id EON_SHAPE_FILTER;
 
 EAPI Ekeko_Type *eon_shape_type_get(void)
@@ -169,6 +171,7 @@ EAPI Ekeko_Type *eon_shape_type_get(void)
 		EON_SHAPE_COLOR = TYPE_PROP_SINGLE_ADD(type, "color", EON_PROPERTY_COLOR, OFFSET(Eon_Shape_Private, color));
 		EON_SHAPE_ROP = TYPE_PROP_SINGLE_ADD(type, "rop", PROPERTY_INT, OFFSET(Eon_Shape_Private, rop));
 		EON_SHAPE_FILTER = TYPE_PROP_SINGLE_ADD(type, "filter", PROPERTY_OBJECT, OFFSET(Eon_Shape_Private, filter));
+		EON_SHAPE_FILL = TYPE_PROP_SINGLE_ADD(type, "fill", PROPERTY_OBJECT, OFFSET(Eon_Shape_Private, fill));
 	}
 
 	return type;
@@ -221,3 +224,20 @@ EAPI Eon_Filter * eon_shape_filter_get(Eon_Shape *s)
 	prv = PRIVATE(s);
 	return prv->filter;
 }
+
+EAPI void eon_shape_fill_set(Eon_Shape *s, Eon_Paint *paint)
+{
+	Ekeko_Value v;
+
+	ekeko_value_object_from(&v, (Ekeko_Object *)paint);
+	ekeko_object_property_value_set((Ekeko_Object *)s, "fill", &v);
+}
+
+EAPI Eon_Paint * eon_shape_fill_get(Eon_Shape *s)
+{
+	Eon_Shape_Private *prv;
+
+	prv = PRIVATE(s);
+	return prv->fill;
+}
+

@@ -20,7 +20,7 @@ typedef struct _Eon_Circle Eon_Circle;
 typedef struct _Eon_Polygon Eon_Polygon;
 typedef struct _Eon_Filter Eon_Filter;
 /* filter effects */
-typedef struct _Eon_Fe_Displace Eon_Fe_Displace;
+typedef struct _Eon_Displace Eon_Displace;
 
 
 /* TODO use this generic names */
@@ -52,7 +52,7 @@ EAPI int eon_shutdown(void);
 #include "eon_anim_matrix.h"
 
 #include "eon_filter.h"
-#include "eon_fe_displace.h"
+#include "eon_displace.h"
 
 #include "eon_widget.h"
 #include "eon_button.h"

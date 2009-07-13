@@ -142,6 +142,11 @@ Makefile
 eon.pc
 src/Makefile
 src/lib/Makefile
+src/lib/core/Makefile
+src/lib/parser/Makefile
+src/lib/paint/Makefile
+src/lib/shape/Makefile
+src/lib/widget/Makefile
 src/include/Makefile
 src/engines/Makefile
 src/engines/sdl/Makefile

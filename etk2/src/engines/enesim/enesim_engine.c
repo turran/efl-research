@@ -212,7 +212,9 @@ else {
 static void _pattern_draw(Enesim_Surface *dst, void *context, Eina_Rectangle *darea)
 {
 }
-
+/* TODO
+ * + implement the paint objects, should be just enesim's renderables
+ */
 /*============================================================================*
  *                                   Image                                    *
  *============================================================================*/

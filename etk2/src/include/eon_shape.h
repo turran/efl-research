@@ -32,12 +32,18 @@ struct _Eon_Shape
 };
 
 EAPI Ekeko_Type *eon_shape_type_get(void);
+
 EAPI void eon_shape_color_set(Eon_Shape *s, Eon_Color color);
 EAPI Eon_Color eon_shape_color_get(Eon_Shape *s);
+
 EAPI void eon_shape_rop_set(Eon_Shape *s, Enesim_Rop rop);
 EAPI Enesim_Rop eon_shape_rop_get(Eon_Shape *s);
+
 EAPI void eon_shape_filter_set(Eon_Shape *s, Eon_Filter *filter);
 EAPI Eon_Filter * eon_shape_filter_get(Eon_Shape *s);
+
+EAPI void eon_shape_fill_set(Eon_Shape *s, Eon_Paint *paint);
+EAPI Eon_Paint * eon_shape_fill_get(Eon_Shape *s);
 
 #define eon_shape_show(s) ekeko_renderable_show(EKEKO_RENDERABLE((s)))
 #define eon_shape_hide(s) ekeko_renderable_hide(EKEKO_RENDERABLE((s)))

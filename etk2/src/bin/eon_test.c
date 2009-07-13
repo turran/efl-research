@@ -56,10 +56,10 @@ static void _coord_animation(Ekeko_Object *o, const char *prop,
 static Eon_Filter * _filter_add(Eon_Canvas *c)
 {
 	Eon_Filter *f;
-	Eon_Fe_Displace *disp;
+	Eon_Displace *disp;
 
 	f = eon_filter_new(c);
-	//disp = eon_fe_displace_new(f);
+	//disp = eon_displace_new(f);
 	return f;
 }
 
