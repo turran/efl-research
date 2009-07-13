@@ -212,12 +212,188 @@ else {
 static void _pattern_draw(Enesim_Surface *dst, void *context, Eina_Rectangle *darea)
 {
 }
-/* TODO
- * + implement the paint objects, should be just enesim's renderables
- */
+/*============================================================================*
+ *                                  Paint                                    *
+ *============================================================================*/
+/* FIXME this should be the new renderer interface on enesim */
+typedef struct Renderer
+{
+	void (*get_pixel)(void *data, void *pixel, int x, int y);
+	void (*get_span)(void *data, void *span, int x, int y, unsigned int len);
+} Renderer;
+
+typedef struct Paint
+{
+	Renderer r;
+	Eon_Paint *p;
+	void *data;
+} Paint;
 /*============================================================================*
  *                                   Image                                    *
  *============================================================================*/
+typedef struct _Image
+{
+	Enesim_Surface *src;
+	Eina_Rectangle srect;
+	Eina_Rectangle drect;
+} Image;
+
+/* FIXME do a real pattern! */
+void _image_pattern_span(void *data, void *span, int x, int y, unsigned int len)
+{
+	uint32_t *dst = span;
+	uint32_t color[2];
+	const int size = 10;
+
+	if ((y / size) % 2)
+	{
+		color[0] = 0xff555555;
+		color[1] = 0x00000000;
+	}
+	else
+	{
+		color[1] = 0xff555555;
+		color[0] = 0x00000000;
+	}
+	while (len--)
+	{
+		*dst = color[(x / size) % 2];
+		dst++;
+		x++;
+	}
+}
+
+/*
+ * TODO we should use the SCALER2D
+ * TODO use another scale qualities
+ * render an image just scaling it
+ * + THIS IS WRONG! :)
+ */
+static void _image_get_span_scale(void *data, void *dst, int x, int y, unsigned int len)
+{
+	Image *im = data;
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Operator scaler;
+	uint32_t sstride;
+	uint32_t *s;
+	int sy;
+	Eina_Rectangle r;
+
+	eina_rectangle_coords_from(&r, x, y, len, 1);
+	if (!eina_rectangle_intersection(&r, &im->drect))
+		return;
+
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_scaler_1d_op_get(&scaler, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+
+	s = enesim_surface_data_get(im->src);
+	sstride = enesim_surface_stride_get(im->src);
+
+	printf("SRECT = %d %d %d %d\n", im->srect.x, im->srect.y, im->srect.w, im->srect.h);
+	printf("DRECT = %d %d %d %d\n", im->drect.x, im->drect.y, im->drect.w, im->drect.h);
+	printf("%d %d %d\n", r.x, r.y, r.w);
+	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
+	//printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
+	//printf("ENDING\n");
+
+	/* offset the source in x */
+	s = s + (((r.x - im->drect.x) * im->srect.w) / im->drect.w);
+	/* pick the to-scaled line */
+	sy = (((r.y - im->drect.y) * im->srect.h) / im->drect.h);
+	s = s + (sy * sstride);
+	enesim_operator_scaler_1d(&scaler, s, im->srect.w, 0, r.w, im->drect.w, dst);
+	/* increment the source by the scale factor */
+}
+
+static void _image_get_span_noscale(void *data, void *dst, int x, int y, unsigned int len)
+{
+	Image *im = data;
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Operator op;
+	uint32_t *s, *d;
+	Eina_Rectangle r;
+
+	eina_rectangle_coords_from(&r, x, y, len, 1);
+	eina_rectangle_intersection(&r, &im->drect);
+
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_drawer_span_pixel_op_get(cpus[0], &op, ENESIM_FILL, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
+	s = enesim_surface_data_get(im->src);
+	s += (enesim_surface_stride_get(im->src) * r.y) + r.x;
+	d = dst;
+
+	printf("drawing %d %d %d\n", r.x, r.y, r.w);
+	enesim_operator_drawer_span(&op, d, r.w, s, 0, NULL);
+}
+
+void * image_create(Eon_Image *i)
+{
+	Paint *p;
+	Image *im;
+
+	p = calloc(1, sizeof(Paint));
+	im = calloc(1, sizeof(Image));
+	p->p = (Eon_Paint *)i;
+	p->data = im;
+
+	return p;
+}
+
+void image_setup(void *data, Eon_Shape *s)
+{
+	Paint *p = data;
+	Image *im = p->data;
+	Eon_Image *i = (Eon_Image *)p->p;
+	Eon_Coord px, py, pw, ph;
+	Eina_Rectangle geom;
+
+	if (!eon_image_loaded(i))
+	{
+		p->r.get_span = _image_pattern_span;
+		return;
+	}
+	/* setup the renderer correctly */
+	ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
+	eon_paint_coords_get(p->p, &px, &py, &pw, &ph);
+	if (px.type == EON_COORD_RELATIVE)
+	{
+		im->drect.x = geom.x + ((px.value * geom.w) / 100);
+	}
+	if (py.type == EON_COORD_RELATIVE)
+	{
+		im->drect.y = geom.y + ((py.value * geom.h) / 100);
+	}
+	if (pw.type == EON_COORD_RELATIVE)
+	{
+		im->drect.w = pw.value * geom.w / 100;
+	}
+	if (ph.type == EON_COORD_RELATIVE)
+	{
+		im->drect.h = ph.value * geom.h / 100;
+	}
+	im->src = eon_image_surface_get(i);
+	/* check the scaling */
+	im->srect.x = 0;
+	im->srect.y = 0;
+	eon_image_size_get(i, &im->srect.w, &im->srect.h);
+	if (im->drect.w == im->srect.w && im->drect.h == im->srect.h)
+		p->r.get_span = _image_get_span_noscale;
+	else
+		p->r.get_span = _image_get_span_scale;
+	/* TODO port the transform one */
+}
+
+static void image_delete(void *i)
+{
+	Paint *p = i;
+
+	free(p->data);
+	free(p);
+}
+
+#if 0
 static inline void _image_setup(Enesim_Surface *src, uint32_t **s,
 		uint32_t *sstride, Enesim_Surface *dst, uint32_t **d,
 	 	uint32_t *dstride)
@@ -227,82 +403,6 @@ static inline void _image_setup(Enesim_Surface *src, uint32_t **s,
 
 	*d = enesim_surface_data_get(dst);
 	*dstride = enesim_surface_stride_get(dst);
-}
-
-/*
- * TODO we should use the SCALER2D
- * TODO use another scale qualities
- * render an image just scaling it
- * FIXME in case the rop is fill dont call the operator
- */
-static void _image_scale(Enesim_Surface *dst, Eina_Rectangle *dclip,
-		Context *c, Enesim_Surface *src, uint32_t sw, uint32_t sh,
-		Eina_Rectangle *sgeom, Eina_Rectangle *sclip)
-{
-	Enesim_Cpu **cpus;
-	int numcpus;
-	Enesim_Operator drawer, scaler;
-	uint32_t sstride, dstride;
-	uint32_t *s, *d, *tmp;
-	int y;
-
-	//printf("Scaling image from %d %d to %d %d\n", sw, sh, sgeom->w, sgeom->h);
-	_image_setup(src, &s, &sstride, dst, &d, &dstride);
-
-	cpus = enesim_cpu_get(&numcpus);
-	enesim_drawer_span_pixel_color_op_get(cpus[0], &drawer, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
-	enesim_scaler_1d_op_get(&scaler, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
-
-	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
-	//printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
-	//printf("ENDING\n");
-	d = d + (dclip->y * dstride) + dclip->x;
-	/* offset the source in x */
-	s = s + ((sclip->x * sw) / sgeom->w);
-	y = 0;
-	tmp = malloc(sizeof(uint32_t) * dclip->w);
-	while (y < dclip->h)
-	{
-		uint32_t sy;
-		uint32_t *rs;
-
-		/* pick the to-scaled line */
-		sy = ((sclip->y + y) * sh) / sgeom->h;
-		rs = s + (sy * sstride);
-		enesim_operator_scaler_1d(&scaler, rs, sw, 0,
-				dclip->w, sgeom->w, tmp);
-		enesim_operator_drawer_span(&drawer, d, dclip->w, tmp, c->color, NULL);
-		/* increment the source by the scale factor */
-		d += dstride;
-		y++;
-	}
-	free(tmp);
-}
-
-
-static void _image_noscale(Enesim_Surface *dst, Eina_Rectangle *dclip, Context *c, Enesim_Surface *src, Eina_Rectangle *sgeom, Eina_Rectangle *sclip)
-{
-	Enesim_Cpu **cpus;
-	int numcpus;
-	Enesim_Operator op;
-	uint32_t sstride, dstride;
-	uint32_t *s, *d;
-	int y;
-	/* TODO get the quality */
-
-	_image_setup(src, &s, &sstride, dst, &d, &dstride);
-
-	cpus = enesim_cpu_get(&numcpus);
-	enesim_drawer_span_pixel_color_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, c->color);
-
-	s = s + (sclip->y * sstride) + sclip->x;
-	d = d + (dclip->y * dstride) + dclip->x;
-	while (dclip->h--)
-	{
-		enesim_operator_drawer_span(&op, d, dclip->w, s, c->color, NULL);
-		s += sstride;
-		d += dstride;
-	}
 }
 
 /* As enesim doesnt support prescaling on the fly while doing transformations
@@ -382,8 +482,6 @@ static void _image_transform(Enesim_Surface *dst, Eina_Rectangle *dclip, Context
 	}
 }
 
-
-
 /*
  * surface: destintation surface
  * context: destination clipping?
@@ -440,6 +538,7 @@ void eon_enesim_image(void *surface, void *context, Enesim_Surface *src, Eina_Re
 		_image_noscale(dst, &dclip, c, src, srect, &sclip);
 	}
 }
+#endif
 
 /*============================================================================*
  *                                  Common                                    *
@@ -450,31 +549,74 @@ typedef struct Shape_Drawer_Data
 	Enesim_Surface *dst;
 	Enesim_Operator op;
 	Eon_Color color;
+	/* the callback */
+	Enesim_Scanline_Callback cb;
+	/* paint engine data */
+	Paint *paint;
 } Shape_Drawer_Data;
+
+
+void aliased_color_cb(Enesim_Scanline *sl, void *data)
+{
+	Shape_Drawer_Data *sdd = data;
+	uint32_t *ddata;
+	uint32_t stride;
+
+	ddata = enesim_surface_data_get(sdd->dst);
+	stride = enesim_surface_stride_get(sdd->dst);
+	ddata = ddata + (sl->data.alias.y * stride) + sl->data.alias.x;
+	enesim_operator_drawer_span(&sdd->op, ddata, sl->data.alias.w, NULL, sdd->color, NULL);
+}
+
+void aliased_fill_cb(Enesim_Scanline *sl, void *data)
+{
+	Shape_Drawer_Data *sdd = data;
+	uint32_t *ddata;
+	uint32_t stride;
+	uint32_t *fdata;
+
+	ddata = enesim_surface_data_get(sdd->dst);
+	stride = enesim_surface_stride_get(sdd->dst);
+	ddata = ddata + (sl->data.alias.y * stride) + sl->data.alias.x;
+
+	/* fill the new span */
+	fdata = calloc(sl->data.alias.w, sizeof(uint32_t));
+	/* TODO match the coordinates */
+	/* clip the paint coordinates to the shape's ones, only pass those */
+	sdd->paint->r.get_span(sdd->paint->data, fdata, sl->data.alias.x, sl->data.alias.y, sl->data.alias.w);
+
+
+	/* compose the filled and the destination spans */
+	enesim_operator_drawer_span(&sdd->op, ddata, sl->data.alias.w, fdata, sdd->color, NULL);
+	free(fdata);
+}
 
 static void shape_setup(Eon_Shape *s, Shape_Drawer_Data *d, Enesim_Surface *dst)
 {
 	Enesim_Cpu **cpus;
 	int numcpus;
 	Enesim_Rop rop;
+	Eon_Paint *p;
 
 	cpus = enesim_cpu_get(&numcpus);
 	rop = eon_shape_rop_get(s);
 	d->color = eon_shape_color_get(s);
-	enesim_drawer_span_color_op_get(cpus[0], &d->op, rop, ENESIM_FORMAT_ARGB8888, d->color);
 	d->dst = dst;
-}
-
-void aliased_color_cb(Enesim_Scanline *sl, void *data)
-{
-	Shape_Drawer_Data *sdd = data;
-	uint32_t *ddata;
-        uint32_t stride;
-
-        ddata = enesim_surface_data_get(sdd->dst);
-        stride = enesim_surface_stride_get(sdd->dst);
-        ddata = ddata + (sl->data.alias.y * stride) + sl->data.alias.x;
-        enesim_operator_drawer_span(&sdd->op, ddata, sl->data.alias.w, NULL, sdd->color, NULL);
+	p = eon_shape_fill_get(s);
+	/* color based */
+	if (!p)
+	{
+		enesim_drawer_span_color_op_get(cpus[0], &d->op, rop, ENESIM_FORMAT_ARGB8888, d->color);
+		d->cb = aliased_color_cb;
+	}
+	/* paint based */
+	else
+	{
+		/* TODO paint + color */
+		d->paint = eon_paint_engine_data_get(p);
+		enesim_drawer_span_pixel_color_op_get(cpus[0], &d->op, rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, d->color);
+		d->cb = aliased_fill_cb;
+	}
 }
 
 /*============================================================================*
@@ -511,8 +653,8 @@ void polygon_render(void *pd, void *cd, Eina_Rectangle *clip)
 	Polygon *p = pd;
 	Shape_Drawer_Data sdd;
 
-	shape_setup((Eon_Shape *)p->p, &sdd, cd); 
-	enesim_rasterizer_generate(p->r, clip, aliased_color_cb, &sdd);
+	shape_setup((Eon_Shape *)p->p, &sdd, cd);
+	enesim_rasterizer_generate(p->r, clip, sdd.cb, &sdd);
 }
 
 static void polygon_delete(void *ep)
@@ -530,9 +672,10 @@ static void * rect_create(Eon_Rect *r)
 	return r;
 }
 
-/* TODO This can use the same functions as the other rasterizers */
 static void rect_render(void *er, void *cd, Eina_Rectangle *clip)
 {
+
+	Enesim_Scanline sl;
 	Eon_Rect *r = er;
 	Shape_Drawer_Data sdd;
 	uint32_t *dst;
@@ -540,11 +683,18 @@ static void rect_render(void *er, void *cd, Eina_Rectangle *clip)
 
 	shape_setup((Eon_Shape *)r, &sdd, cd);
 	stride = enesim_surface_stride_get(sdd.dst);
-	dst = ((uint32_t *)enesim_surface_data_get(sdd.dst)) + (clip->y * stride) + clip->x;
+	sl.type = ENESIM_SCANLINE_ALIAS;
+	sl.data.alias.x = clip->x;
+	sl.data.alias.y = clip->y;
+	sl.data.alias.w = clip->w;
+
+	/* we are using the same functions as the other rasterizers
+	 * but the surface pointer calculations has to be done on every callback
+	 */
 	while (clip->h--)
 	{
-		enesim_operator_drawer_span(&sdd.op, dst, clip->w, NULL, sdd.color, NULL);
-		dst += stride;
+		sdd.cb(&sl, &sdd);
+		sl.data.alias.y++;
 	}
 }
 /*============================================================================*
@@ -578,14 +728,14 @@ static void circle_render(void *ec, void *cd, Eina_Rectangle *clip)
 	Eon_Coord y;
 	int radius;
 	Shape_Drawer_Data sdd;
-	
+
 	eon_circle_x_get(c->c, &x);
 	eon_circle_y_get(c->c, &y);
 	radius = eon_circle_radius_get(c->c);
 	enesim_rasterizer_circle_radius_set(c->r, radius);
         enesim_rasterizer_vertex_add(c->r, x.final, y.final);
-	shape_setup((Eon_Shape *)c->c, &sdd, cd); 
-	enesim_rasterizer_generate(c->r, clip, aliased_color_cb, &sdd);
+	shape_setup((Eon_Shape *)c->c, &sdd, cd);
+	enesim_rasterizer_generate(c->r, clip, sdd.cb, &sdd);
 }
 
 static void circle_delete(void *ec)
@@ -610,6 +760,9 @@ static void _ctor(void *instance)
 	e->parent.polygon_create = polygon_create;
 	e->parent.polygon_point_add = polygon_point_add;
 	e->parent.polygon_render = polygon_render;
+	e->parent.image_create = image_create;
+	e->parent.image_delete = image_delete;
+	e->parent.image_setup = image_setup;
 }
 
 static void _dtor(void *instance)

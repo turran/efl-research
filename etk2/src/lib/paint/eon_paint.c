@@ -5,12 +5,12 @@
  *      Author: jl
  */
 #include "Eon.h"
-#include "Emage.h"
 #include "eon_private.h"
+
 #define EON_PAINT_DEBUG 0
 /* TODO
- * + create a temporary paint when the size has changed of size of the paint itself
- * with some pattern in to inform that the paint is loading on the background
+ * + add coordinate space flag, object space or canvas space for relative and
+ * absolute coordinates
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -18,76 +18,27 @@
 #define PRIVATE(d) ((Eon_Paint_Private *)((Eon_Paint *)(d))->private)
 struct _Eon_Paint_Private
 {
-	struct
-	{
-		char *curr;
-		char *prev;
-		int changed;
-	} file;
-	struct {
-		Enesim_Surface *img;
-		Eina_Bool loaded;
-	} src;
+	Eon_Coord x, y, w, h;
 	Enesim_Matrix matrix;
 	Enesim_Matrix inverse;
-	/* TODO add l, t, r, b */
+	void *engine_data;
 };
 
-static void _loader_callback(Enesim_Surface *s, void *data, int error)
+static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	Eon_Canvas *c;
-	Eon_Paint *i = (Eon_Paint *)data;
-	Eon_Paint_Private *prv = PRIVATE(i);
-	Eina_Rectangle r;
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
+	Eon_Paint *p;
+	Eon_Paint_Private *prv;
+	Eon_Document *d;
+	Eon_Engine *eng;
 
-	/* TODO check for error */
-	if (error)
-	{
-		printf("[Eon_Paint] Error %d %s\n", error, eina_error_msg_get(error));
-	}
-	else
-	{
-		c = eon_shape_canvas_get((Eon_Shape *)i);
-		ekeko_renderable_geometry_get((Ekeko_Renderable *)i, &r);
-#if EON_DEBUG
-		printf("[Eon_Paint] Paint file %s loaded and will be displayed in %p %d %d %d %d!!\n", prv->file.curr, c, r.x, r.y, r.w, r.h);
-#endif
-		/* add a damage to the canvas to force a redraw of the paint */
-		ekeko_canvas_damage_add((Ekeko_Canvas *)c, &r);
-		prv->src.loaded = EINA_TRUE;
-	}
-}
-
-static void _geometry_calc(const Ekeko_Object *o, Ekeko_Event *e, void *data)
-{
-	Eon_Paint *i = (Eon_Paint *)o;
-	Eon_Paint_Private *prv = PRIVATE(i);
-	Eina_Rectangle r;
-	Eon_Coord x, y, w, h;
-	Enesim_Quad q;
-	float x1, y1, x2, y2, x3, y3, x4, y4;
-
-	/* TODO matrix operation should be:
-	 * - multiply w,h * matrix
-	 * - translate the result to x, y
-	 */
-	/* TODO check that the matrix is not identity */
-	/* compute the final geometry multiplying by the context matrix */
-	eon_square_coords_get((Eon_Square *)i, &x, &y, &w, &h);
-	eina_rectangle_coords_from(&r, 0, 0, w.final,
-			h.final);
-	/* get the largest rectangle that fits on the matrix */
-	enesim_matrix_rect_transform(&prv->matrix, &r, &q);
-	enesim_quad_coords_get(&q, &x1, &y1, &x2, &y2, &x3, &y3, &x4, &y4);
-	enesim_quad_rectangle_to(&q, &r);
-	r.x = x.final;
-	r.y = y.final;
-
-#if EON_DEBUG
-	printf("[Eon_Paint] Setting geometry of size %d %d %d %d\n",
-			r.x, r.y, r.w, r.h);
-#endif
-	ekeko_renderable_geometry_set((Ekeko_Renderable *)i, &r);
+	/* when this shape is appended to a canvas, try to setup the context */
+	d = eon_canvas_document_get((Eon_Canvas *)em->related);
+	/* FIXME in case the canvas doesnt have a document */
+	eng = eon_document_engine_get(d);
+	p = (Eon_Paint *)o;
+	prv = PRIVATE(p);
+	prv->engine_data = p->create(eng, p);
 }
 
 static void _matrix_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
@@ -100,73 +51,19 @@ static void _matrix_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 
 	m = em->curr->value.pointer_value;
 	enesim_matrix_inverse(m, &prv->inverse);
-	/* update the geometry */
-	_geometry_calc(o, e, data);
-	/* store the matrix */
- 	if ((parent = ekeko_object_parent_get(o)))
-	{
-#if 0
-		Eon_Engine *func;
-		Eon_Document *d;
-
-		d = eon_canvas_document_get((Eon_Canvas *)parent);
-		func = eon_document_engine_get(d);
-		func->context->matrix_set(eon_shape_context_get((Eon_Shape *)o), &prv->inverse);
-#endif
-	}
-}
-
-static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
-{
-	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
-	Eon_Paint *i = (Eon_Paint *)o;
-	Eon_Paint_Private *prv = PRIVATE(o);
-
-	if (em->state != EVENT_MUTATION_STATE_POST)
-		return;
-	/* call emage to load an paint */
-	emage_load_async(em->curr->value.string_value, &prv->src.img, _loader_callback, i, NULL);
-}
-
-static void _render(Eon_Shape *s, Eon_Engine *eng, Eon_Surface *surface, Eon_Context *context)
-{
-	Eon_Paint *i = (Eon_Paint *)s;
-	Eon_Paint_Private *prv = PRIVATE(i);
-	Eon_Coord x, y, w, h;
-	Eina_Rectangle srect;
-
-	eon_square_coords_get((Eon_Square *)i, &x, &y, &w, &h);
-	eina_rectangle_coords_from(&srect, x.final, y.final, w.final, h.final);
-#if EON_PAINT_DEBUG
-	printf("[Eon_Paint] Trying to render the paint at %d %d %d %d\n", srect.x, srect.y, srect.w, srect.h);
-#endif
-	if (!prv->src.loaded)
-	{
-		/* in case the paint hasnt been loaded yet, send a pattern */
-	}
-	else
-	{
-		/* TODO pass the paint size */
-		//func->shape->paint(surface, context, prv->src.img, &srect);
-	}
 }
 
 static void _ctor(void *instance)
 {
-	Eon_Paint *i;
+	Eon_Paint *p;
 	Eon_Paint_Private *prv;
 
-	i = (Eon_Paint*) instance;
-	i->private = prv = ekeko_type_instance_private_get(eon_paint_type_get(), instance);
-	i->parent.parent.render = _render;
+	p = (Eon_Paint*) instance;
+	p->private = prv = ekeko_type_instance_private_get(eon_paint_type_get(), instance);
 	enesim_matrix_identity(&prv->matrix);
 	enesim_matrix_inverse(&prv->matrix, &prv->inverse);
-	ekeko_event_listener_add((Ekeko_Object *)i, EON_SQUARE_X_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)i, EON_SQUARE_Y_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)i, EON_SQUARE_W_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)i, EON_SQUARE_H_CHANGED, _geometry_calc, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)i, EON_PAINT_FILE_CHANGED, _file_change, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)i, EON_PAINT_MATRIX_CHANGED, _matrix_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)p, EON_PAINT_MATRIX_CHANGED, _matrix_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)p, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *paint)
@@ -185,12 +82,19 @@ static Eina_Bool _appendable(void *instance, void *child)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-
+void * eon_paint_engine_data_get(Eon_Paint *p)
+{
+	Eon_Paint_Private *prv = PRIVATE(p);
+	return prv->engine_data;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
-Ekeko_Property_Id EON_PAINT_FILE;
 Ekeko_Property_Id EON_PAINT_MATRIX;
+Ekeko_Property_Id EON_PAINT_X;
+Ekeko_Property_Id EON_PAINT_Y;
+Ekeko_Property_Id EON_PAINT_W;
+Ekeko_Property_Id EON_PAINT_H;
 
 EAPI Ekeko_Type *eon_paint_type_get(void)
 {
@@ -199,12 +103,13 @@ EAPI Ekeko_Type *eon_paint_type_get(void)
 	if (!type)
 	{
 		type = ekeko_type_new(EON_TYPE_PAINT, sizeof(Eon_Paint),
-				sizeof(Eon_Paint_Private), eon_square_type_get(),
+				sizeof(Eon_Paint_Private), ekeko_object_type_get(),
 				_ctor, _dtor, _appendable);
-		EON_PAINT_FILE = TYPE_PROP_DOUBLE_ADD(type, "file", PROPERTY_STRING,
-				OFFSET(Eon_Paint_Private, file.curr), OFFSET(Eon_Paint_Private, file.prev),
-				OFFSET(Eon_Paint_Private, file.changed));
 		EON_PAINT_MATRIX = TYPE_PROP_SINGLE_ADD(type, "matrix", EON_PROPERTY_MATRIX, OFFSET(Eon_Paint_Private, matrix));
+		EON_PAINT_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, x));
+		EON_PAINT_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, y));
+		EON_PAINT_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, w));
+		EON_PAINT_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, h));
 	}
 
 	return type;
@@ -220,26 +125,20 @@ EAPI Eon_Paint * eon_paint_new(Eon_Canvas *c)
 	return r;
 }
 
-EAPI void eon_paint_file_set(Eon_Paint *i, const char *file)
-{
-	Ekeko_Value v;
-
-	ekeko_value_str_from(&v, file);
-	ekeko_object_property_value_set((Ekeko_Object *)i, "file", &v);
-}
-
-EAPI const char * eon_paint_file_get(Eon_Paint *i)
-{
-	Eon_Paint_Private *prv;
-
-	prv = PRIVATE(i);
-	return prv->file.curr;
-}
-
 EAPI void eon_paint_matrix_set(Eon_Paint *i, Enesim_Matrix *m)
 {
 	Ekeko_Value v;
 
 	eon_value_matrix_from(&v, m);
 	ekeko_object_property_value_set((Ekeko_Object *)i, "matrix", &v);
+}
+
+EAPI void eon_paint_coords_get(Eon_Paint *p, Eon_Coord *x, Eon_Coord *y, Eon_Coord *w, Eon_Coord *h)
+{
+	Eon_Paint_Private *prv = PRIVATE(p);
+
+	*x = prv->x;
+	*y = prv->y;
+	*w = prv->w;
+	*h = prv->h;
 }

@@ -23,20 +23,22 @@
 /* Type names */
 #define EON_TYPE_DOCUMENT "Eon_Document"
 #define EON_TYPE_CANVAS "Eon_Canvas"
-#define EON_TYPE_RECT "Eon_Rect"
-#define EON_TYPE_IMAGE "Eon_Image"
-#define EON_TYPE_POLYGON "Eon_Polygon"
-#define EON_TYPE_CIRCLE "Eon_Circle"
-#define EON_TYPE_ENGINE "Eon_Engine"
-#define EON_TYPE_SHAPE "Eon_Shape"
-
-
 #define EON_TYPE_ANIMATION "Eon_Animation"
 #define EON_TYPE_ANIMATION_BASIC "Eon_Animation_Basic"
 #define EON_TYPE_ANIMATION_MATRIX "Eon_Animation_Matrix"
 
+#define EON_TYPE_SHAPE "Eon_Shape"
+#define EON_TYPE_RECT "Eon_Rect"
+#define EON_TYPE_POLYGON "Eon_Polygon"
+#define EON_TYPE_CIRCLE "Eon_Circle"
+
+#define EON_TYPE_PAINT "Eon_Paint"
+#define EON_TYPE_IMAGE "Eon_Image"
+
 #define EON_TYPE_FILTER "Eon_Filter"
 #define EON_TYPE_FILTER_EFFECT "Eon_Filter_Effect"
+
+#define EON_TYPE_ENGINE "Eon_Engine"
 
 /* Engine! */
 typedef void * Eon_Engine_Surface;
@@ -75,4 +77,13 @@ void eon_coord_change(const Ekeko_Object *o, Eon_Coord *dst, Eon_Coord *curr,
 void eon_coord_length_change(const Ekeko_Object *o, Eon_Coord *dst, Eon_Coord *curr,
 		Eon_Coord *prev, int length, Ekeko_Object *parent,
 		const char *levent, Event_Listener el);
+
+/* Paint */
+void * eon_paint_engine_data_get(Eon_Paint *p);
+
+/* Image */
+Eina_Bool eon_image_loaded(Eon_Image *i);
+Eina_Bool eon_image_size_get(Eon_Image *i, int *w, int *h);
+Enesim_Surface * eon_image_surface_get(Eon_Image *i);
+
 #endif

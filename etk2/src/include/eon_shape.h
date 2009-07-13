@@ -13,6 +13,7 @@
 #define EON_SHAPE_COLOR_CHANGED "colorChanged"
 #define EON_SHAPE_ROP_CHANGED "ropChanged"
 #define EON_SHAPE_FILTER_CHANGED "filterChanged"
+#define EON_SHAPE_FILL_CHANGED "fillChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/

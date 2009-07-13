@@ -9,15 +9,19 @@
 
 typedef struct _Eon_Document Eon_Document;
 typedef struct _Eon_Canvas Eon_Canvas;
-typedef struct _Eon_Shape Eon_Shape;
 typedef struct _Eon_Animation Eon_Animation;
 typedef struct _Eon_Animation_Basic Eon_Animation_Basic;
 typedef struct _Eon_Animation_Matrix Eon_Animation_Matrix;
+
+typedef struct _Eon_Shape Eon_Shape;
 typedef struct _Eon_Square Eon_Square;
 typedef struct _Eon_Rect Eon_Rect;
-typedef struct _Eon_Image Eon_Image;
 typedef struct _Eon_Circle Eon_Circle;
 typedef struct _Eon_Polygon Eon_Polygon;
+/* paint objects */
+typedef struct _Eon_Paint Eon_Paint;
+typedef struct _Eon_Image Eon_Image;
+
 typedef struct _Eon_Filter Eon_Filter;
 /* filter effects */
 typedef struct _Eon_Displace Eon_Displace;
@@ -40,16 +44,18 @@ EAPI int eon_shutdown(void);
 #include "eon_value.h"
 #include "eon_document.h"
 #include "eon_canvas.h"
-#include "eon_shape.h"
-#include "eon_square.h"
-#include "eon_rect.h"
-#include "eon_image.h"
-#include "eon_polygon.h"
-#include "eon_circle.h"
-
 #include "eon_animation.h"
 #include "eon_anim_basic.h"
 #include "eon_anim_matrix.h"
+
+#include "eon_shape.h"
+#include "eon_square.h"
+#include "eon_rect.h"
+#include "eon_polygon.h"
+#include "eon_circle.h"
+
+#include "eon_paint.h"
+#include "eon_image.h"
 
 #include "eon_filter.h"
 #include "eon_displace.h"

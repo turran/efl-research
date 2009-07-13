@@ -97,8 +97,6 @@ void eon_engine_unref(Eon_Engine *e, Eon_Document *d)
 	/* unregister every callback */
 }
 
-
-
 static void _ctor(void *instance)
 {
 	Eon_Engine *e;
@@ -189,3 +187,17 @@ EAPI void eon_engine_polygon_render(Eon_Engine *e, void *p, void *c, Eina_Rectan
 	e->polygon_render(p, c, clip);
 }
 
+EAPI void * eon_engine_image_create(Eon_Engine *e, Eon_Paint *p)
+{
+	return e->image_create((Eon_Image *)p);
+}
+
+EAPI void eon_engine_image_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s)
+{
+	e->image_setup(engine_data, s);
+}
+
+EAPI void eon_engine_image_delete(Eon_Engine *e, void *engine_data)
+{
+	e->image_delete(engine_data);
+}

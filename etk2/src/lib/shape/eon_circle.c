@@ -192,7 +192,7 @@ EAPI void eon_circle_radius_set(Eon_Circle *c, int radius)
 	ekeko_object_property_value_set((Ekeko_Object *)c, "radius", &v);
 }
 
-EAPI int eon_circle_radius_get(Eon_Circle *c, int radius)
+EAPI int eon_circle_radius_get(Eon_Circle *c)
 {
 	Eon_Circle_Private *prv;
 

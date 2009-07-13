@@ -39,9 +39,8 @@ static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	eng = eon_document_engine_get(d);
 	s = (Eon_Shape *)o;
 	prv = PRIVATE(s);
-	prv->engine_data = s->create(eng, s); 
+	prv->engine_data = s->create(eng, s);
 }
-
 
 /* Render wrapper */
 static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
@@ -74,8 +73,17 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 #endif
 	}
 #endif
+	/* Setup the paint in case it has one */
+	if (prv->fill)
+		prv->fill->setup(eng, eon_paint_engine_data_get(prv->fill), s);
 	/* Call the shape's render function */
 	s->render(s, eng, prv->engine_data, surface, rect);
+}
+
+static void _paint_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	/* mark this shape a changed */
+	eon_shape_change((Eon_Shape *)data);
 }
 
 static void _rop_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
@@ -95,6 +103,30 @@ static void _filter_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	printf("CALLEEEEEEEEEEEEE\n");
 }
 
+static void _fill_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
+	Eon_Shape *s = (Eon_Shape *)o;
+	Ekeko_Object *prev, *curr;
+
+	/* in case the paint reference has changed, unregister all the callbacks
+	 * from the previous one and register the callbacks for the new one
+	 */
+	prev = em->prev->value.object;
+	curr = em->curr->value.object;
+	if (prev)
+	{
+		ekeko_event_listener_remove(prev, EKEKO_EVENT_PROP_MODIFY, _paint_change, EINA_FALSE, o);
+		/* TODO check that the prev paint doesnt have any other reference, if so
+		 * delete it
+		 */
+	}
+	if (curr)
+		ekeko_event_listener_add(curr, EKEKO_EVENT_PROP_MODIFY, _paint_change, EINA_FALSE, o);
+
+	eon_shape_change(s);
+}
+
 static void _ctor(void *instance)
 {
 	Eon_Shape *s;
@@ -109,6 +141,7 @@ static void _ctor(void *instance)
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_COLOR_CHANGED, _color_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_ROP_CHANGED, _rop_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_FILTER_CHANGED, _filter_change, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_FILL_CHANGED, _fill_change, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *shape)
@@ -241,3 +274,37 @@ EAPI Eon_Paint * eon_shape_fill_get(Eon_Shape *s)
 	return prv->fill;
 }
 
+#if 0
+/* Code taken from the old image object */
+static void _geometry_calc(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	Eon_Image *i = (Eon_Image *)o;
+	Eon_Image_Private *prv = PRIVATE(i);
+	Eina_Rectangle r;
+	Eon_Coord x, y, w, h;
+	Enesim_Quad q;
+	float x1, y1, x2, y2, x3, y3, x4, y4;
+
+	/* TODO matrix operation should be:
+	 * - multiply w,h * matrix
+	 * - translate the result to x, y
+	 */
+	/* TODO check that the matrix is not identity */
+	/* compute the final geometry multiplying by the context matrix */
+	eon_square_coords_get((Eon_Square *)i, &x, &y, &w, &h);
+	eina_rectangle_coords_from(&r, 0, 0, w.final,
+			h.final);
+	/* get the largest rectangle that fits on the matrix */
+	enesim_matrix_rect_transform(&prv->matrix, &r, &q);
+	enesim_quad_coords_get(&q, &x1, &y1, &x2, &y2, &x3, &y3, &x4, &y4);
+	enesim_quad_rectangle_to(&q, &r);
+	r.x = x.final;
+	r.y = y.final;
+
+#if EON_DEBUG
+	printf("[Eon_Image] Setting geometry of size %d %d %d %d\n",
+			r.x, r.y, r.w, r.h);
+#endif
+	ekeko_renderable_geometry_set((Ekeko_Renderable *)i, &r);
+}
+#endif

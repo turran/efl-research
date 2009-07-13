@@ -119,7 +119,6 @@ void function_parse(char *v, int *num, ...)
 			break;
 		if (*end)
 		{
-			printf("end = %c\n", *end);
 			tmp = end + 1;
 		}
 		else
@@ -475,23 +474,21 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 
 			if (*tmp == '#')
 			{
-				char *token;
 				char *ttmp = tmp + 1;
 				Ekeko_Object * oid;
 
-				token = strtok(ttmp, ".");
-				oid = eon_document_object_get_by_id(doc, token);
+				oid = eon_document_object_get_by_id(doc, ttmp);
 				if (!oid)
 				{
 					/* queue this once the document has been completely parsed */
-					_add_callback(_object_id_get, name, attr, o);
+					_add_callback(_object_id_get, tmp, attr, o);
 					return;
 				}
 				else
 				{
-					//ekeko_value_object_from(&v, oid)
-					//ekeko_object_property_value_set(o, attr, &v);
-
+					ekeko_value_object_from(&v, oid);
+					ekeko_object_property_value_set(o, attr, &v);
+					free(tmp);
 				}
 			}
 		}
@@ -579,8 +576,6 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	else if (!strcmp(tag, "image"))
 	{
 		o = (Ekeko_Object *)eon_image_new((Eon_Canvas *)parent);
-		eon_image_show(o);
-		eon_image_rop_set(o, ENESIM_BLEND);
 	}
 	else if (!strcmp(tag, "poly"))
 	{

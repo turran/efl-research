@@ -8,23 +8,23 @@ INCLUDES = \
 -I. -I../.. -I$(top_srcdir)/src/include -Wall -g \
 @ETK_CFLAGS@
 
-bin_PROGRAMS = eon_test
+bin_PROGRAMS =
 if HAVE_EXML
 bin_PROGRAMS += eon_testsuite
 endif
 
-eon_test_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
+#eon_test_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
 
-eon_test_SOURCES = \
-eon_test.h \
-eon_test.c
+#eon_test_SOURCES = \
+#eon_test.h \
+#eon_test.c
 
-eon_test_LDADD = $(top_builddir)/src/lib/libeon.la \
-@ETK_LIBS@
+#eon_test_LDADD = $(top_builddir)/src/lib/libeon.la \
+#@ETK_LIBS@
 
-if BUILD_ENGINE_SDL
-eon_test_LDADD += @ECORE_SDL_LIBS@ @SDL_LIBS@
-endif
+#if BUILD_ENGINE_SDL
+#eon_test_LDADD += @ECORE_SDL_LIBS@ @SDL_LIBS@
+#endif
 
 ## Testsuite
 eon_testsuite_DEPENDENCIES = $(top_builddir)/src/lib/libeon.la
