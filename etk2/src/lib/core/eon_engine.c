@@ -201,3 +201,9 @@ EAPI void eon_engine_image_delete(Eon_Engine *e, void *engine_data)
 {
 	e->image_delete(engine_data);
 }
+
+EAPI void eon_engine_debug_rect(Eon_Engine *e, void *c, uint32_t color, int x,  int y, int w, int h)
+{
+	e->debug_rect(c, color, x, y, w, h);
+}
+

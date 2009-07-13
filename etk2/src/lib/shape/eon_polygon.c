@@ -31,7 +31,7 @@ static void _update_geometry(Eon_Polygon *p)
 	Eon_Polygon_Private *prv = PRIVATE(p);
 	Eina_Rectangle geom;
 
-	eina_rectangle_coords_from(&geom, prv->xmin, prv->xmax - prv->xmin, prv->ymin, prv->ymax - prv->ymin);
+	eina_rectangle_coords_from(&geom, prv->xmin, prv->ymin, prv->xmax - prv->xmin,  prv->ymax - prv->ymin);
 	ekeko_renderable_geometry_set((Ekeko_Renderable *)p, &geom);
 }
 
@@ -45,7 +45,7 @@ static void _appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Ekeko_Object *parent;
 	Eon_Polygon_Private *prv = PRIVATE(o);
-		
+
 	if (!prv->points)
 		return;
 
@@ -167,7 +167,7 @@ EAPI void eon_polygon_point_add(Eon_Polygon *p, int x, int y)
 	else if (x > prv->xmax)
 		prv->xmax = x;
 	if (y < prv->ymin)
-		prv->xmin = y;
+		prv->ymin = y;
 	else if (y > prv->ymax)
 		prv->ymax = y;
 

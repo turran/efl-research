@@ -290,9 +290,9 @@ static void _image_get_span_scale(void *data, void *dst, int x, int y, unsigned 
 	s = enesim_surface_data_get(im->src);
 	sstride = enesim_surface_stride_get(im->src);
 
-	printf("SRECT = %d %d %d %d\n", im->srect.x, im->srect.y, im->srect.w, im->srect.h);
-	printf("DRECT = %d %d %d %d\n", im->drect.x, im->drect.y, im->drect.w, im->drect.h);
-	printf("%d %d %d\n", r.x, r.y, r.w);
+	//printf("SRECT = %d %d %d %d\n", im->srect.x, im->srect.y, im->srect.w, im->srect.h);
+	//printf("DRECT = %d %d %d %d\n", im->drect.x, im->drect.y, im->drect.w, im->drect.h);
+	//printf("%d %d %d\n", r.x, r.y, r.w);
 	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
 	//printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
 	//printf("ENDING\n");
@@ -745,6 +745,31 @@ static void circle_delete(void *ec)
 	enesim_rasterizer_delete(c->r);
 	free(ec);
 }
+/*============================================================================*
+ *                                  Debug                                     *
+ *============================================================================*/
+static void debug_rect(void *cd, uint32_t color, int x, int y, int w, int h)
+{
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Surface *s = cd;
+	uint32_t *dst;
+	uint32_t stride;
+	Enesim_Operator op;
+
+	cpus = enesim_cpu_get(&numcpus);
+	enesim_drawer_span_color_op_get(cpus[0], &op, ENESIM_FILL, ENESIM_FORMAT_ARGB8888, color);
+
+	dst = enesim_surface_data_get(s);
+	stride = enesim_surface_stride_get(s);
+	dst = dst + (y * stride) + x;
+
+	while (h--)
+	{
+		enesim_operator_drawer_span(&op, dst, w, NULL, color, NULL);
+		dst += stride;
+	}
+}
 
 static void _ctor(void *instance)
 {
@@ -763,6 +788,7 @@ static void _ctor(void *instance)
 	e->parent.image_create = image_create;
 	e->parent.image_delete = image_delete;
 	e->parent.image_setup = image_setup;
+	e->parent.debug_rect = debug_rect;
 }
 
 static void _dtor(void *instance)

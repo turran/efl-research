@@ -59,19 +59,8 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	eng = eon_document_engine_get(d);
 	surface = eon_canvas_surface_get(c);
 #if BOUNDING_DEBUG
-	{
-#if 0
-		Eon_Context *ctx;
-
-		ctx = func->context->create();
-		func->context->color_set(ctx, 0xffaaaaaa);
-		func->context->rop_set(ctx, ENESIM_FILL);
-		func->canvas->lock(surface);
-		func->shape->rect(surface, ctx, rect->x, rect->y, rect->w, rect->h);
-		func->canvas->unlock(surface);
-		func->context->delete(ctx);
-#endif
-	}
+	printf("RENDERING %s\n", ekeko_object_type_name_get(r));
+	eon_engine_debug_rect(eng, surface, 0xffaaaaaa, rect->x, rect->y, rect->w, rect->h);
 #endif
 	/* Setup the paint in case it has one */
 	if (prv->fill)

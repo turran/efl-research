@@ -151,11 +151,7 @@ void polygon_points_set(Eon_Polygon *p, const char *value)
 			y = strtod(tmp, &end);
 		}
 		else
-		{
-			printf("breaking %c\n", *end);
 			break;
-		}
-		printf("adding point %d %d %p %p\n", x, y, tmp, end);
 		eon_polygon_point_add(p, x, y);
 	} while (tmp != end);
 }

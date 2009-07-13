@@ -90,6 +90,8 @@ struct _Eon_Engine
 	void * (*image_create)(Eon_Image *i);
 	void (*image_setup)(void *i, Eon_Shape *s);
 	void (*image_delete)(void *i);
+	/* debug */
+	void (*debug_rect)(void *c, uint32_t color, int x, int y, int w, int h);
 };
 /*============================================================================*
  *                                Functions                                   *
@@ -116,5 +118,7 @@ EAPI void eon_polygon_render(Eon_Engine *e, void *p, void *c, Eina_Rectangle *cl
 EAPI void * eon_engine_image_create(Eon_Engine *e, Eon_Paint *p);
 EAPI void eon_engine_image_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
 EAPI void eon_engine_image_delete(Eon_Engine *e, void *engine_data);
+
+EAPI void eon_engine_debug_rect(Eon_Engine *e, void *c, uint32_t color, int x, int y, int w, int h);
 
 #endif /* EON_ENGINE_H_ */
