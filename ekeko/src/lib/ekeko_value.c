@@ -59,6 +59,7 @@ void ekeko_value_create(Ekeko_Value *value, Ekeko_Value_Type type)
 		case PROPERTY_LONG:
 		case PROPERTY_RECTANGLE:
 		case PROPERTY_STRING:
+		case PROPERTY_OBJECT:
 		break;
 
 		case PROPERTY_VALUE:
@@ -183,6 +184,10 @@ void ekeko_value_pointer_to(Ekeko_Value *value, Ekeko_Value_Type vtype, void *pt
 		*((Eina_Bool *)ptr) = value->value.bool_value;
 		break;
 
+		case PROPERTY_OBJECT:
+		*((Ekeko_Object **)ptr) = value->value.object;
+		break;
+
 		case PROPERTY_VALUE:
 		{
 			Ekeko_Value *v = ptr;
@@ -274,6 +279,10 @@ void ekeko_value_free(Ekeko_Value *v, Ekeko_Value_Type vtype)
 		ekeko_value_free(v, v->type);
 		break;
 
+		case PROPERTY_OBJECT:
+		/* FIXME just unref the object */
+		break;
+
 		default:
 		{
 			Ekeko_Value_Impl *impl;
@@ -306,7 +315,7 @@ void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 
 		case PROPERTY_FLOAT:
 		v->type = PROPERTY_FLOAT;
-		v->value.int_value = *(float *)ptr;
+		v->value.float_value = *(float *)ptr;
 		break;
 
 		case PROPERTY_RECTANGLE:
@@ -317,6 +326,11 @@ void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 		case PROPERTY_BOOL:
 		v->type = PROPERTY_BOOL;
 		v->value.bool_value = *(Eina_Bool *)ptr;
+		break;
+		
+		case PROPERTY_OBJECT:
+		v->type = PROPERTY_OBJECT;
+		v->value.object = *(Ekeko_Object **)ptr;
 		break;
 
 		case PROPERTY_VALUE:
