@@ -12,6 +12,7 @@
 #define PRIVATE(d) ((Eon_Document_Private *)((Eon_Document *)(d))->private)
 
 static Ecore_Idle_Enterer *_idler = NULL;
+static Ecore_Timer *_anim = NULL;
 static Eina_List *_documents = NULL;
 
 struct _Eon_Document_Private
@@ -24,6 +25,7 @@ struct _Eon_Document_Private
 	Eon_Canvas *canvas;
 	Etch *etch;
 	Eina_Hash *ids;
+	Eina_Bool paused;
 };
 
 /* Called whenever an object changes it's id */
@@ -103,7 +105,7 @@ static void _ctor(void *instance)
 	dc->private = prv = ekeko_type_instance_private_get(eon_document_type_get(), instance);
 	/* setup the animation system */
 	prv->etch = etch_new();
-	ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
+	_anim = ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
 	etch_timer_fps_set(prv->etch, 30);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	//ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_ID_CHANGED, _id_change, EINA_FALSE, NULL);
@@ -125,6 +127,43 @@ static Eina_Bool _appendable(void *parent, void *child)
 	if (!ekeko_type_instance_is_of(child, EON_TYPE_CANVAS))
 		return EINA_FALSE;
 	return EINA_TRUE;
+}
+
+static void _dump(char *id, int level)
+{
+	int i;
+
+	for (i = 0; i < level; i++)
+	{
+		printf("\t");
+	}
+	printf("%s\n", id);
+}
+
+static Ekeko_Object * _iterate(Ekeko_Object *o, const char *id, int level)
+{
+	Ekeko_Object *child;
+	char *cid;
+
+	cid = ekeko_object_id_get(o);
+	if (cid)
+		_dump(cid, level);
+
+	child = ekeko_object_child_first_get(o);
+	while (child)
+	{
+		Ekeko_Object *found;
+
+		cid = ekeko_object_id_get(child);
+		if (cid && (!strcmp(cid, id)))
+		{
+			return child;
+		}
+		found = _iterate(child, id, level + 1);
+		if (found) return found;
+		child = ekeko_object_next(child);
+	}
+	return NULL;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -206,44 +245,6 @@ EAPI void eon_document_resize(Eon_Document *d, int w, int h)
 	ekeko_object_property_value_set((Ekeko_Object *)d, "size", &v);
 }
 
-static void _dump(char *id, int level)
-{
-	int i;
-
-	for (i = 0; i < level; i++)
-	{
-		printf("\t");
-	}
-	printf("%s\n", id);
-}
-
-static Ekeko_Object * _iterate(Ekeko_Object *o, const char *id, int level)
-{
-	Ekeko_Object *child;
-	char *cid;
-
-	cid = ekeko_object_id_get(o);
-	if (cid)
-		_dump(cid, level);
-
-	child = ekeko_object_child_first_get(o);
-	while (child)
-	{
-		Ekeko_Object *found;
-
-		cid = ekeko_object_id_get(child);
-		if (cid && (!strcmp(cid, id)))
-		{
-			return child;
-		}
-		found = _iterate(child, id, level + 1);
-		if (found) return found;
-		child = ekeko_object_next(child);
-	}
-	return NULL;
-}
-
-
 EAPI Ekeko_Object * eon_document_object_get_by_id(Eon_Document *d, const char *id)
 {
 	Ekeko_Object *c;
@@ -255,3 +256,19 @@ EAPI Ekeko_Object * eon_document_object_get_by_id(Eon_Document *d, const char *i
 	return c;
 }
 
+EAPI void eon_document_pause(Eon_Document *d)
+{
+	if (!_anim)
+		return;
+
+	ecore_timer_del(_anim);
+	_anim = NULL;
+}
+
+EAPI void eon_document_play(Eon_Document *d)
+{
+	if (_anim)
+		return;
+
+	_anim = ecore_timer_add(1.0f/30.0f, _animation_cb, d);
+}

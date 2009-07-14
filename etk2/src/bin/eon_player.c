@@ -28,6 +28,47 @@ void help(void)
 	printf("FILE Eon XML file\n");
 }
 
+static void _pause_click_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	Eon_Document *doc;
+	Eon_Canvas *c = data;
+
+	doc = eon_canvas_document_get(c);
+	eon_document_pause(doc);
+}
+
+static void _play_click_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	Eon_Document *doc;
+	Eon_Canvas *c = data;
+
+	doc = eon_canvas_document_get(c);
+	eon_document_play(doc);
+}
+
+void ui_setup(Eon_Canvas *c)
+{
+	Eon_Rect *r;
+
+	r = eon_rect_new(c);
+	eon_rect_x_set(r, 0);
+	eon_rect_y_set(r, 0);
+	eon_rect_w_rel_set(r, 100);
+	eon_rect_h_rel_set(r, 5);
+	eon_rect_color_set(r, 0xff000000);
+	eon_rect_show(r);
+	ekeko_event_listener_add((Ekeko_Object *)r, EKEKO_EVENT_UI_MOUSE_DOWN, _pause_click_cb, EINA_FALSE, c);
+
+	r = eon_rect_new(c);
+	eon_rect_x_set(r, 0);
+	eon_rect_y_rel_set(r, 95);
+	eon_rect_w_rel_set(r, 100);
+	eon_rect_h_rel_set(r, 5);
+	eon_rect_color_set(r, 0xff000000);
+	eon_rect_show(r);
+	ekeko_event_listener_add((Ekeko_Object *)r, EKEKO_EVENT_UI_MOUSE_DOWN, _play_click_cb, EINA_FALSE, c);
+}
+
 int main(int argc, char **argv)
 {
 	Eon_Document *doc;
@@ -84,6 +125,8 @@ int main(int argc, char **argv)
 	/* create the external object */
 	ext = eon_external_new(canvas);
 	eon_external_file_set(ext, file);
+	/* create the ui */
+	ui_setup(canvas);
 	eon_loop();
 	eon_shutdown();
 

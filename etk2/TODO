@@ -7,6 +7,7 @@ Bin
 ===
 + Implement a way to play/stop/pause the animations on the player (ST)
 + Create an Eon builder (LT)
++ Add engine specific options to the command line (ST)
 
 Core
 ====
@@ -29,3 +30,6 @@ Widgets
 + Implement fancy types, like a graphviz type (LT)
 + Implement a console widget (LT)
 
+Enignes
+=======
++ Make the resize flag configurable

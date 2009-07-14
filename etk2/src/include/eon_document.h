@@ -32,4 +32,7 @@ EAPI Eon_Document * eon_document_new(const char *name, int w, int h);
 EAPI Eon_Canvas * eon_document_canvas_get(Eon_Document *d);
 EAPI void eon_document_size_get(Eon_Document *d, int *w, int *h);
 EAPI void eon_document_resize(Eon_Document *d, int w, int h);
+EAPI void eon_document_pause(Eon_Document *d);
+EAPI void eon_document_play(Eon_Document *d);
+
 #endif /* EON_DOCUMENT_H_ */
