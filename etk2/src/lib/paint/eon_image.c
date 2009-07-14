@@ -11,9 +11,7 @@
 /* TODO
  * + create a temporary image when the size has changed of size of the image itself
  * with some pattern in to inform that the image is loading on the background
- * + whenever a shape references this paint object we should add a notifier
- * to inform that the image was succesfully async loaded so the shape can
- * show the image instead of the pattern
+ * + This paint should be a child of a buffer paint
  */
 /*============================================================================*
  *                                  Local                                     *
@@ -44,11 +42,15 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 	{
 		printf("[Eon_Image] Error %d %s\n", error, eina_error_msg_get(error));
 	}
+	/* Right now when the image is succesfully loaded we change a flag
+	 * and an event is triggered. So a shape that references this paint object
+	 * should register to this signal and mark itself as dirty whenever the
+	 * signal is emitted.
+	 */
 	else
 	{
 		Ekeko_Value v;
 
-		printf("Image loaded, setting the flag!\n");
 		ekeko_value_bool_from(&v, EINA_TRUE);
 		ekeko_object_property_value_set((Ekeko_Object *)i, "loaded", &v);
 	}

@@ -1,17 +1,31 @@
-Short term
-==========
-+ Remove the engine thing and use only canvas engines and a way to retrieve
-  an enesim_surface from the particular surface implementation. That's it.
-  Or it will be very difficult to handle filters pipelines correctly per engine 
-+ Move etch into its own thread. Create a fifo to receive events from etch and then select() it on main thread. Then etk2 should
-  set the attributes and only the final version should be displayed to avoid delayed rendering.
-+ Do some research on changing from xml to another format, maybe using yacc/lex
-+ Move the parser testsuite into its own subdir under lib
-Mid term
-========
-+ Implement the basic widgetery
+Legend:
+ST = Short Term
+MT = Mid Term
+LT = Long Term
 
-Long term
-=========
-+ Implement fancy types, like a graphviz type
-+ Implement a console widget
+Bin
+===
++ Implement a way to play/stop/pause the animations on the player (ST)
++ Create an Eon builder (LT)
+
+Core
+====
++ Move etch into its own thread. Create a fifo to receive events from etch and then select() it on main thread. Then etk2 should
+  set the attributes and only the final version should be displayed to avoid delayed rendering. (MT)
++ Do some research on changing from xml to another format, maybe using yacc/lex (LT)
+
+Shapes
+======
++ Add an Ellipse shape (ST)
+
+Parser
+======
++ Clean the exml parser (ST)
++ Remove the exml parser in favor of the expat parser (MT)
+
+Widgets
+=======
++ Implement the basic widgetery (MT)
++ Implement fancy types, like a graphviz type (LT)
++ Implement a console widget (LT)
+

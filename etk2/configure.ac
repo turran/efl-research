@@ -102,11 +102,30 @@ PKG_CHECK_MODULES(ECORE, [ecore >= 0.9.9])
 PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
 PKG_CHECK_MODULES(EMAGE, [emage >= 0.0.1])
 PKG_CHECK_MODULES(ETCH, [etch >= 0.0.1])
-PKG_CHECK_MODULES(EXML, [exml >= 0.1.1], [have_exml="yes"], [have_exml="no"])
-## Needed to build the testsuite xml parser
-AM_CONDITIONAL(HAVE_EXML, test "x$have_exml" = "xyes")
+################################################################################
+##                                Parsers                                     ##
+################################################################################
+## Expat
+EXPAT_LIBS=
+AC_CHECK_LIB(expat, XML_ParserCreate_MM,
+             [ AC_CHECK_HEADERS(expat.h, have_expat="yes", have_expat="no") ],
+             have_expat="yes")
+if test "x$have_expat" = "xyes"; then
+	EXPAT_LIBS=-lexpat
+	AC_DEFINE(BUILD_PARSER_EXPAT, [1], [Build support for Expat parser])
+fi
+AM_CONDITIONAL(BUILD_PARSER_EXPAT, test "x$have_expat" = "xyes")
 
-#####################################################################
+## EXML
+PKG_CHECK_MODULES(EXML, [exml >= 0.1.1], [have_exml="yes"], [have_exml="no"])
+if test "x$have_exml" = "xyes"; then
+	AC_DEFINE(BUILD_PARSER_EXML, [1], [Build support for EXML parser])
+fi
+AM_CONDITIONAL(BUILD_PARSER_EXML, test "x$have_exml" = "xyes")
+
+################################################################################
+##                                Engines                                     ##
+################################################################################
 ## SDL engine
 
 PKG_CHECK_MODULES(ECORE_SDL, [ecore-sdl >= 0.9.9], [have_ecore_sdl=yes], [have_ecore_sdl=no])
@@ -143,10 +162,13 @@ eon.pc
 src/Makefile
 src/lib/Makefile
 src/lib/core/Makefile
-src/lib/parser/Makefile
 src/lib/paint/Makefile
 src/lib/shape/Makefile
 src/lib/widget/Makefile
+src/lib/parser/Makefile
+src/lib/parser/exml/Makefile
+src/lib/parser/expat/Makefile
+src/lib/parser/common/Makefile
 src/include/Makefile
 src/engines/Makefile
 src/engines/sdl/Makefile
@@ -166,10 +188,14 @@ echo "------------------------------------------------------------------------"
 echo
 echo
 echo "Configuration Options Summary:"
+echo "Installation Path.........: $prefix"
 echo
+echo "Engines:"
 echo "  SDL Engine..................................: $have_engine_sdl"
 echo
-echo "Installation Path.........: $prefix"
+echo "Parsers:"
+echo "  Expat Parser................................: $have_expat"
+echo "  EXML Parser.................................: $have_exml"
 echo
 echo "Now type 'make' ('gmake' on some systems) to compile $PACKAGE,"
 echo "and then afterwards as root (or the user who will install this), type"

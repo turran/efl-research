@@ -1,12 +1,10 @@
-//#define _XOPEN_SOURCE 600
-//#define _ISOC99_SOURCE
-
+/*
+ * exml_main.c
+ *
+ *  Created on: 14-jul-2009
+ *      Author: jl
+ */
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <stdlib.h>
-#include <getopt.h>
-#include <stdarg.h>
 
 #include "Eon.h"
 #include "EXML.h"
@@ -27,17 +25,6 @@ char *engine = "sdl";
 char *image_dir = "./";
 
 void parse(EXML *exml, Ekeko_Object *doc);
-
-void help(void)
-{
-	printf("eon_testsuite [OPTIONS] FILE\n");
-	printf("-h This help\n");
-	printf("-e Engine\n");
-	printf("-W Width\n");
-	printf("-H Height\n");
-	printf("-I Image directory\n");
-	printf("FILE Eon XML file\n");
-}
 
 typedef void (*callback)(char *value, char *attr, void *data);
 
@@ -642,74 +629,27 @@ void parse(EXML *exml, Ekeko_Object *parent)
 	exml_goto_node(exml, n);
 }
 
-int main(int argc, char **argv)
+static Eina_Bool file_load(Eon_Canvas *canvas, const char *file)
 {
 	EXML *exml;
 	EXML_Node *n;
-	Eon_Canvas *canvas;
 	Eina_Iterator *it;
 	Parser_Callback *pc;
-	int w = 320;
-	int h = 240;
-
-	char *short_options = "I:e:hW:H:";
-	struct option long_options[] = {
-		{"image", 1, 0, 'I'},
-		{"engine", 1, 0, 'e'},
-		{"help", 0, 0, 'h'},
-		{"width", 1, 0, 'W'},
-		{"height", 1, 0, 'H'},
-		{0, 0, 0, 0}
-	};
-	int option;
-	char c;
-	char *file = argv[argc - 1];
 	char *tag;
 
-	while ((c = getopt_long(argc, argv, short_options, long_options,
-			&option)) != -1)
-	{
-		switch (c)
-		{
-			case 'h':
-			help();
-			return 0;
-
-			case 'W':
-			w = atoi(optarg);
-			break;
-
-			case 'I':
-			image_dir = strdup(optarg);
-			break;
-
-			case 'H':
-			h = atoi(optarg);
-			break;
-
-			default:
-			help();
-			return 0;
-			break;
-		}
-	}
 	exml = exml_new();
 	if (!exml_file_read(exml, file))
 	{
 		printf("no file\n");
-		return -1;
+		return EINA_FALSE;
 	}
 	n = exml_get(exml);
 	if (!n || strcmp(n->tag, "eon"))
 	{
 		printf("no eon file\n");
-		return -2;
+		return EINA_FALSE;
 	}
-	/* create the context */
-	eon_init();
-	doc = eon_document_new(engine, w, h);
-	/* create the canvas */
-	canvas = eon_document_canvas_get(doc);
+	doc = eon_canvas_document_get(canvas);
 	ecore_hash_for_each_node(n->attributes, attributes_set, canvas);
 	/* parse the file */
 	tag = exml_down(exml);
@@ -720,7 +660,6 @@ int main(int argc, char **argv)
 		/* siblings */
 		tag = exml_next(exml);
 	}
-	ekeko_object_dump((Ekeko_Object *)doc, ekeko_object_dump_printf);
 	/* call the after callbacks */
 	it = eina_list_iterator_new(parsed_cb);
 	while (eina_iterator_next(it, &pc))
@@ -728,9 +667,16 @@ int main(int argc, char **argv)
 		pc->cb(pc->value, pc->attr, pc->data);
 	}
 	eina_iterator_free(it);
-	eon_loop();
-	eon_shutdown();
 	exml_destroy(exml);
+	return EINA_TRUE;
+}
 
-	return 0;
+Eon_Parser p = {
+		.file_load = file_load,
+};
+
+void parser_exml_init(void)
+{
+	printf("exml init\n");
+	eon_parser_register("exml", &p);
 }

@@ -26,6 +26,7 @@
 #define EON_TYPE_ANIMATION "Eon_Animation"
 #define EON_TYPE_ANIMATION_BASIC "Eon_Animation_Basic"
 #define EON_TYPE_ANIMATION_MATRIX "Eon_Animation_Matrix"
+#define EON_TYPE_EXTERNAL "Eon_External"
 
 #define EON_TYPE_SHAPE "Eon_Shape"
 #define EON_TYPE_RECT "Eon_Rect"
@@ -40,11 +41,18 @@
 
 #define EON_TYPE_ENGINE "Eon_Engine"
 
-/* Engine! */
+typedef Ekeko_Type * (*Eon_Type_Constructor)(void);
+
+/* Parser */
+void eon_parser_init(void);
+void eon_parser_shutdown(void);
+void eon_parser_register(const char *name, Eon_Parser *p);
+
+/* Engine */
 typedef void * Eon_Engine_Surface;
 void eon_engine_init(void);
 void eon_engine_shutdown(void);
-void eon_engine_register(const char *name, Eon_Engine_New n);
+void eon_engine_register(const char *name, Eon_Type_Constructor n);
 Eon_Engine * eon_engine_get(const char *name);
 
 /* Enesim engine */

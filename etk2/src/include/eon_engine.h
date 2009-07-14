@@ -7,55 +7,6 @@
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-#if 0
-typedef struct _Eon_Document_Engine
-{
-	void * (*create)(Eon_Document *);
-	void (*delete)(Eon_Document *, void *);
-} Eon_Document_Engine;
-
-typedef struct _Eon_Canvas_Engine
-{
-	void (*lock)(void *s);
-	void (*unlock)(void *s);
-	void * (*create)(Eina_Bool root, int w, int h);
-	void (*blit)(void *s, void *context, void *src, Eina_Rectangle *srect);
-	Eina_Bool (*flush)(void *s, Eina_Rectangle *srect);
-} Eon_Canvas_Engine;
-
-typedef struct _Eon_Context_Engine
-{
-	/* basic operations */
-	void * (*create)(void);
-	void (*delete)(void *context);
-	/* shape properties */
-	void (*color_set)(void *context, int color); /* FIXME change this int */
-	void (*rop_set)(void *context, int rop); /* FIXME change this int */
-	/* transformations */
-	void (*matrix_set)(void *c, Enesim_Matrix *m);
-	/* clipping */
-	void (*clip_set)(void *c, Eina_Rectangle *r);
-	void (*clip_clear)(void *c);
-	/* filters */
-} Eon_Context_Engine;
-
-typedef struct _Eon_Shape_Engine
-{
-	void (*rect)(void *surface, void *context, int x, int y, int w, int h);
-	void (*image)(void *surface, void *context, Enesim_Surface *s, Eina_Rectangle *srect);
-	void *(*polygon_new)(void);
-	void (*polygon_point_add)(void *polygon, int x, int y);
-	void (*polygon_render)(void *surface, void *context, void *polygon);
-} Eon_Shape_Engine;
-
-struct _Eon_Engine
-{
-	Eon_Document_Engine *doc;
-	Eon_Canvas_Engine *canvas;
-	Eon_Context_Engine *context;
-	Eon_Shape_Engine *shape;
-};
-#endif
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
@@ -96,7 +47,6 @@ struct _Eon_Engine
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
-typedef Ekeko_Type * (*Eon_Engine_New)(void);
 EAPI Ekeko_Type *eon_engine_type_get(void);
 
 EAPI void * eon_engine_document_create(Eon_Engine *e, Eon_Document *d);

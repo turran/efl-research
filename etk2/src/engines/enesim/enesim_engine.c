@@ -12,36 +12,9 @@ struct _Eon_Engine_Enesim_Private
 
 };
 
-typedef struct _Context
-{
-	uint32_t color;
-	Enesim_Rop rop;
-	struct {
-		Eina_Rectangle rect;
-		Eina_Bool used;
-	} clip;
-	struct {
-		Enesim_Matrix m;
-		Eina_Bool used;
-	} matrix;
-
-} Context;
-
-static void * _create(void)
-{
-	return calloc(1, sizeof(Context));
-	//return enesim_context_new();
-}
-
-static void _delete(void *c)
-{
-	free(c);
-	//enesim_context_delete(c);
-}
 
 static void _color_set(void *c, int color)
 {
-	Context *ctx = c;
 	uint32_t cmul;
 	uint8_t a = color >> 24;
 	if (a != 256)
@@ -51,166 +24,6 @@ static void _color_set(void *c, int color)
 	}
 	else
 		color = cmul;
-	ctx->color = color;
-	//enesim_context_color_set(c, cmul);
-}
-
-static void _rop_set(void *c, int rop)
-{
-	Context *ctx = c;
-
-	ctx->rop = rop;
-	//enesim_context_rop_set(c, rop);
-}
-
-static void _matrix_set(void *c, Enesim_Matrix *m)
-{
-	Context *ctx = c;
-
-	ctx->matrix.used = EINA_TRUE;
-	ctx->matrix.m = *m;
-	//enesim_context_matrix_set(c, m);
-}
-
-static void _clip_set(void *c, Eina_Rectangle *r)
-{
-	Context *ctx = c;
-
-	//printf("0 setting clip to %d %d %d %d\n", r->x, r->y, r->w, r->h);
-	ctx->clip.rect = *r;
-	ctx->clip.used = EINA_TRUE;
-	//enesim_context_clip_set(c, r);
-}
-
-static void _clip_clear(void *c)
-{
-	Context *ctx = c;
-
-	ctx->clip.used = EINA_FALSE;
-	//printf("1 unsetting clip\n");
-}
-#define RADDIST 1
-static void _rect(void *surface, void *context, int x, int y, int w, int h)
-{
-	Enesim_Surface *s = surface;
-	Context *c = context;
-	Enesim_Operator op;
-	Enesim_Operator f;
-	Enesim_Cpu **cpus;
-	int numcpus;
-	uint32_t *src;
-	uint32_t *src2;
-	uint32_t sw, sh, fw, fh;
-	Eina_Rectangle rectclip;
-	uint32_t stride, fstride;
-	uint32_t *span;
-	uint32_t *fsrc;
-	int fy;
-	Enesim_Surface *ftmp = NULL;
-
-#if EON_DEBUG
-	printf("[Eon_Eon_Engine_Enesim] RENDERING A RECTANGLE at %d %d %d %d to %p\n", x, y, w, h, s);
-#endif
-	cpus = enesim_cpu_get(&numcpus);
-#if 0
-if (c->color == 0xffffffff)
-{
-#endif
-	/* the context has the clipping rect relative to the canvas */
-	enesim_drawer_span_color_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, c->color);
-	//printf("Trying to render a rectangle at %d %d %d %d\n", x, y, w, h);
-	if (c->clip.used)
-	{
-		//printf("using clip at %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
-		//eina_rectangle_rescale_in(&rarea, &c->clip.rect, &rectclip);
-		//printf("rescaled to %d %d %d %d\n", rectclip.x, rectclip.y, rectclip.w, rectclip.h);
-		rectclip = c->clip.rect;
-	}
-	else
-	{
-		eina_rectangle_coords_from(&rectclip, x, y, w, h);
-	}
-	stride = enesim_surface_stride_get(s);
-	src = ((uint32_t *)enesim_surface_data_get(s)) + (rectclip.y * stride) + rectclip.x;
-	while (rectclip.h--)
-	{
-		enesim_operator_drawer_span(&op, src, rectclip.w, NULL, c->color, NULL);
-		src += stride;
-	}
-}
-#if 0
-else {
-	enesim_drawer_span_pixel_op_get(cpus[0], &op, c->rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
-#if RADDIST
-	enesim_raddist_1d_op_get(&f, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FAST, ENESIM_FORMAT_ARGB8888);
-#else
-	enesim_dispmap_1d_op_get(&f, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FAST, ENESIM_FORMAT_ARGB8888);
-	{
-		emage_load("/home/jl/sphere.png", &ftmp, NULL);
-		if (!ftmp)
-			return;
-		fsrc = enesim_surface_data_get(ftmp);
-		fstride = enesim_surface_stride_get(ftmp);
-		enesim_surface_size_get(ftmp, &fw, &fh);
-		printf("SHERE %d %d %d\n", fw, fh, fstride);
-	}
-#endif
-	if (c->clip.used)
-	{
-		//printf("using clip at %d %d %d %d\n", c->clip.rect.x, c->clip.rect.y, c->clip.rect.w, c->clip.rect.h);
-		//eina_rectangle_rescale_in(&rarea, &c->clip.rect, &rectclip);
-		//printf("rescaled to %d %d %d %d\n", rectclip.x, rectclip.y, rectclip.w, rectclip.h);
-		rectclip = c->clip.rect;
-	}
-	else
-	{
-		eina_rectangle_coords_from(&rectclip, x, y, w, h);
-	}
-	stride = enesim_surface_stride_get(s);
-	src = src2 = enesim_surface_data_get(s);
-	enesim_surface_size_get(s, &sw, &sh);
-	src += (rectclip.y * stride) + rectclip.x;
-	span = malloc(sizeof(uint32_t) * rectclip.w);
-#if RADDIST
-	fy = y;
-#else
-	fy = 0;
-#endif
-	while (rectclip.h--)
-	{
-#if RADDIST
-		enesim_operator_raddist_1d(&f, src2, stride, sw, sh,
-				x + (w / 2), y + (h / 2), hypot(w, h), 0,
-				0, fy, rectclip.w, span);
-		enesim_operator_drawer_span(&op, src, rectclip.w, span, c->color, NULL);
-#else
-		enesim_operator_dispmap_1d(&f, src2, stride, sw, sh,
-				1, fsrc,
-				0, fy, rectclip.w < fw ? rectclip.w : fw, span);
-		enesim_operator_drawer_span(&op, src, rectclip.w < fw ? rectclip.w : fw, span, c->color, NULL);
-#endif
-		fy++;
-		src += stride;
-#if !RADDIST
-		fsrc += fstride;
-#endif
-	}
-	free(span);
-#if !RADDIST
-	if (ftmp)
-		enesim_surface_delete(ftmp);
-#endif
-}
-#endif
-
-
-
-
-/* Function used to draw a pattern whenever the rendering of an object isnt ready yet
- * like when an image isnt loaded yet
- */
-static void _pattern_draw(Enesim_Surface *dst, void *context, Eina_Rectangle *darea)
-{
 }
 /*============================================================================*
  *                                  Paint                                    *
@@ -267,7 +80,6 @@ void _image_pattern_span(void *data, void *span, int x, int y, unsigned int len)
  * TODO we should use the SCALER2D
  * TODO use another scale qualities
  * render an image just scaling it
- * + THIS IS WRONG! :)
  */
 static void _image_get_span_scale(void *data, void *dst, int x, int y, unsigned int len)
 {

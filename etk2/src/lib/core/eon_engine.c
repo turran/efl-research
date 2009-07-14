@@ -39,6 +39,20 @@ static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 		printf("%s appended to the document\n", ekeko_object_type_name_get(e->target));
 	}
 }
+
+static void _ctor(void *instance)
+{
+	Eon_Engine *e;
+	Eon_Engine_Private *prv;
+
+	e = (Eon_Engine*) instance;
+	e->private = prv = ekeko_type_instance_private_get(eon_engine_type_get(), instance);
+}
+
+static void _dtor(void *instance)
+{
+
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -59,7 +73,7 @@ void eon_engine_shutdown(void)
 	/* TODO remove the hash */
 }
 
-void eon_engine_register(const char *name, Eon_Engine_New n)
+void eon_engine_register(const char *name, Eon_Type_Constructor n)
 {
 	eina_hash_add(_engines, name, n);
 }
@@ -68,7 +82,7 @@ Eon_Engine * eon_engine_get(const char *name)
 {
 	Ekeko_Object *o;
 	Ekeko_Type *t;
-	Eon_Engine_New n;
+	Eon_Type_Constructor n;
 
 	n = eina_hash_find(_engines, name);
 	if (!n)
@@ -96,21 +110,6 @@ void eon_engine_unref(Eon_Engine *e, Eon_Document *d)
 {
 	/* unregister every callback */
 }
-
-static void _ctor(void *instance)
-{
-	Eon_Engine *e;
-	Eon_Engine_Private *prv;
-
-	e = (Eon_Engine*) instance;
-	e->private = prv = ekeko_type_instance_private_get(eon_engine_type_get(), instance);
-}
-
-static void _dtor(void *instance)
-{
-
-}
-
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/

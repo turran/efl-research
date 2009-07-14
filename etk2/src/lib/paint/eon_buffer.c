@@ -4,7 +4,9 @@
  *  Created on: 09-feb-2009
  *      Author: jl
  */
-
+/* TODO copy the code from the image pain here
+ * this object should be the image's super class
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
