@@ -1,17 +1,25 @@
-#ifndef _BUTTON_H
-#define _BUTTON_H
-
-typedef struct _Button Button;
-typedef struct _Button_Private Button_Private;
-
-struct _Button
+#ifndef EON_BUTTON_H_
+#define EON_BUTTON_H_
+/*============================================================================*
+ *                                 Events                                     *
+ *============================================================================*/
+#define EON_BUTTON_LABEL_CHANGED "labelChanged"
+/*============================================================================*
+ *                               Properties                                   *
+ *============================================================================*/
+extern Ekeko_Property_Id EON_BUTTON_LABEL;
+/*============================================================================*
+ *                                 Class                                      *
+ *============================================================================*/
+typedef struct _Eon_Button_Private Eon_Button_Private;
+struct _Eon_Button
 {
-	Widget widget;
-	Button_Private *private;
+	Ekeko_Object parent;
+	Eon_Button_Private *private;
 };
+/*============================================================================*
+ *                                Functions                                   *
+ *============================================================================*/
+EAPI Ekeko_Type *eon_button_type_get(void);
 
-Button     *button_new(void);
-void        button_label_set(Button *button, const char *label);
-const char *button_label_get(Button *button);
-Ekeko_Type       *button_type_get(void);
-#endif
+#endif /* EON_BUTTON_H_ */

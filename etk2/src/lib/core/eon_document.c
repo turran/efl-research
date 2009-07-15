@@ -6,13 +6,15 @@
  */
 #include "Eon.h"
 #include "eon_private.h"
+/*
+ * TODO remove the engine from the list of attributes
+ */
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 #define PRIVATE(d) ((Eon_Document_Private *)((Eon_Document *)(d))->private)
 
 static Ecore_Idle_Enterer *_idler = NULL;
-static Ecore_Timer *_anim = NULL;
 static Eina_List *_documents = NULL;
 
 struct _Eon_Document_Private
@@ -23,15 +25,18 @@ struct _Eon_Document_Private
 	} engine;
 	Eina_Rectangle size;
 	Eon_Canvas *canvas;
-	Etch *etch;
 	Eina_Hash *ids;
-	Eina_Bool paused;
+	Etch *etch;
+	Ecore_Timer *anim_cb;
 };
 
 /* Called whenever an object changes it's id */
 static void _id_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	printf("Setting id\n");
+	Ekeko_Event_Mutation *em = (Ekeko_Event_Mutation *)e;
+	Eon_Document_Private *prv = PRIVATE(data);
+
+	eina_hash_add(prv->ids, em->curr->value.string_value, o);
 }
 
 static int _idler_cb(void *data)
@@ -61,6 +66,7 @@ static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	Eon_Document *d = (Eon_Document *)o;
 	Eon_Document_Private *prv = PRIVATE(d);
 
+	ekeko_event_listener_add(e->target, EKEKO_OBJECT_ID_CHANGED, _id_change, EINA_FALSE, d);
 	/* check that the child is of type target */
 	if (!ekeko_type_instance_is_of(e->target, EON_TYPE_CANVAS))
 		return;
@@ -105,12 +111,13 @@ static void _ctor(void *instance)
 	dc->private = prv = ekeko_type_instance_private_get(eon_document_type_get(), instance);
 	/* setup the animation system */
 	prv->etch = etch_new();
-	_anim = ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
 	etch_timer_fps_set(prv->etch, 30);
+	prv->anim_cb = ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
+	/* the id system */
+	prv->ids = 	eina_hash_string_superfast_new(NULL);
+	/* the event listeners */
 	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
-	//ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_ID_CHANGED, _id_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EKEKO_EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
-
 }
 
 static void _dtor(void *canvas)
@@ -127,43 +134,6 @@ static Eina_Bool _appendable(void *parent, void *child)
 	if (!ekeko_type_instance_is_of(child, EON_TYPE_CANVAS))
 		return EINA_FALSE;
 	return EINA_TRUE;
-}
-
-static void _dump(char *id, int level)
-{
-	int i;
-
-	for (i = 0; i < level; i++)
-	{
-		printf("\t");
-	}
-	printf("%s\n", id);
-}
-
-static Ekeko_Object * _iterate(Ekeko_Object *o, const char *id, int level)
-{
-	Ekeko_Object *child;
-	char *cid;
-
-	cid = ekeko_object_id_get(o);
-	if (cid)
-		_dump(cid, level);
-
-	child = ekeko_object_child_first_get(o);
-	while (child)
-	{
-		Ekeko_Object *found;
-
-		cid = ekeko_object_id_get(child);
-		if (cid && (!strcmp(cid, id)))
-		{
-			return child;
-		}
-		found = _iterate(child, id, level + 1);
-		if (found) return found;
-		child = ekeko_object_next(child);
-	}
-	return NULL;
 }
 /*============================================================================*
  *                                 Global                                     *
@@ -202,7 +172,8 @@ Ekeko_Type *eon_document_type_get(void)
 
 	return type;
 }
-EAPI Eon_Document * eon_document_new(const char *engine, int w, int h)
+
+EAPI Eon_Document * eon_document_new(const char *engine, int w, int h, const char *options)
 {
 	Eon_Document *d;
 	Eon_Canvas *c;
@@ -247,28 +218,26 @@ EAPI void eon_document_resize(Eon_Document *d, int w, int h)
 
 EAPI Ekeko_Object * eon_document_object_get_by_id(Eon_Document *d, const char *id)
 {
-	Ekeko_Object *c;
+	Eon_Document_Private *prv = PRIVATE(d);
 
-	/* FIXME the document should store every id on its hash */
-	/* for now we iterate through the childs */
-	printf("Looking for %s\n", id);
-	c = _iterate((Ekeko_Object *)d, id, 0);
-	return c;
+	return eina_hash_find(prv->ids, id);
 }
 
 EAPI void eon_document_pause(Eon_Document *d)
 {
-	if (!_anim)
+	Eon_Document_Private *prv = PRIVATE(d);
+	if (!prv->anim_cb)
 		return;
 
-	ecore_timer_del(_anim);
-	_anim = NULL;
+	ecore_timer_del(prv->anim_cb);
+	prv->anim_cb = NULL;
 }
 
 EAPI void eon_document_play(Eon_Document *d)
 {
-	if (_anim)
+	Eon_Document_Private *prv = PRIVATE(d);
+	if (prv->anim_cb)
 		return;
 
-	_anim = ecore_timer_add(1.0f/30.0f, _animation_cb, d);
+	prv->anim_cb = ecore_timer_add(1.0f/30.0f, _animation_cb, d);
 }

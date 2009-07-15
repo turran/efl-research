@@ -206,7 +206,7 @@ Ekeko_Type *ekeko_object_type_get(void)
  *
  * @return
  */
-EAPI Ekeko_Object *ekeko_object_new(void)
+EAPI Ekeko_Object * ekeko_object_new(void)
 {
 	Ekeko_Object *object;
 
@@ -214,6 +214,7 @@ EAPI Ekeko_Object *ekeko_object_new(void)
 
 	return object;
 }
+
 /**
  *
  * @param object
@@ -427,7 +428,7 @@ EAPI const char * ekeko_object_type_name_get(const Ekeko_Object *obj)
  * @param p
  * @param o
  */
-EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
+EAPI Eina_Bool ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 {
 	Ekeko_Object_Private *prv;
 	Ekeko_Type *t;
@@ -465,7 +466,10 @@ EAPI void ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Ekeko_Object *)o, (Ekeko_Object *)p, NULL, NULL, NULL,
 				EVENT_MUTATION_STATE_CURR);
 		ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
+		return EINA_TRUE;
 	}
+	else
+		return EINA_FALSE;
 }
 
 /**

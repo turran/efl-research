@@ -232,7 +232,7 @@ Eina_Bool type_appendable(Ekeko_Type *t, void *instance, void *child)
  * @param dtor the type's destructor.
  * @return the newly created type.
  */
-Ekeko_Type *ekeko_type_new(char *name, size_t size, size_t priv_size, Ekeko_Type *parent,
+Ekeko_Type * ekeko_type_new(char *name, size_t size, size_t priv_size, Ekeko_Type *parent,
 		Ekeko_Type_Constructor ctor, Ekeko_Type_Destructor dtor, Ekeko_Type_Appendable append)
 {
 	Ekeko_Type *type;
@@ -262,7 +262,7 @@ Ekeko_Type *ekeko_type_new(char *name, size_t size, size_t priv_size, Ekeko_Type
  * @param type the Ekeko_Type to instantiate.
  * @return the instantiated type.
  */
-void *ekeko_type_instance_new(Ekeko_Type *type)
+void * ekeko_type_instance_new(Ekeko_Type *type)
 {
 	void *instance;
 
@@ -289,6 +289,7 @@ void * ekeko_type_instance_new_name_from(const char *name)
 void ekeko_type_instance_delete(void *instance)
 {
 	Ekeko_Type *type;
+
 	if (!instance)
 		return;
 	type = object_private_type_get(instance);

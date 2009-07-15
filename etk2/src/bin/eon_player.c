@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 	}
 	/* create the context */
 	eon_init();
-	doc = eon_document_new(engine, w, h);
+	doc = eon_document_new(engine, w, h, NULL);
 	/* create the canvas */
 	canvas = eon_document_canvas_get(doc);
 	/* create the external object */

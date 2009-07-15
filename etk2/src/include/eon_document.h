@@ -28,7 +28,7 @@ struct _Eon_Document
  *                                Functions                                   *
  *============================================================================*/
 EAPI Ekeko_Type *eon_document_type_get(void);
-EAPI Eon_Document * eon_document_new(const char *name, int w, int h);
+EAPI Eon_Document * eon_document_new(const char *name, int w, int h, const char *options);
 EAPI Eon_Canvas * eon_document_canvas_get(Eon_Document *d);
 EAPI void eon_document_size_get(Eon_Document *d, int *w, int *h);
 EAPI void eon_document_resize(Eon_Document *d, int w, int h);

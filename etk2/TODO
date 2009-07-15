@@ -32,4 +32,8 @@ Widgets
 
 Enignes
 =======
-+ Make the resize flag configurable
++ Make the resize flag configurable (ST)
+
+Scripting
+=========
++ Add scripting support (LT)

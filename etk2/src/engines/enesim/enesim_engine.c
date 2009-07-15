@@ -167,7 +167,17 @@ void image_setup(void *data, Eon_Shape *s)
 		return;
 	}
 	/* setup the renderer correctly */
-	ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
+	if (eon_paint_coordspace_get(p->p) == EON_COORDSPACE_OBJECT)
+	{
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
+	}
+	else
+	{
+		/* FIXME we should get the topmost canvas uints not the parent
+		 * canvas
+		 */
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)eon_shape_canvas_topmost_get(s), &geom);
+	}
 	eon_paint_coords_get(p->p, &px, &py, &pw, &ph);
 	if (px.type == EON_COORD_RELATIVE)
 	{

@@ -94,4 +94,10 @@ Eina_Bool eon_image_loaded(Eon_Image *i);
 Eina_Bool eon_image_size_get(Eon_Image *i, int *w, int *h);
 Enesim_Surface * eon_image_surface_get(Eon_Image *i);
 
+/* Parser */
+Eina_Bool eon_parser_coord_str_from(Eon_Coord *c, char *v);
+Eina_Bool eon_parser_matrix_str_from(Enesim_Matrix *m, char *v);
+Eina_Bool eon_parser_clock_str_from(Eon_Clock *c, char *v);
+
+
 #endif

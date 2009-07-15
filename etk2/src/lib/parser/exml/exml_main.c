@@ -143,128 +143,6 @@ void polygon_points_set(Eon_Polygon *p, const char *value)
 	} while (tmp != end);
 }
 
-Eina_Bool matrix_parse(Enesim_Matrix *m, char *v)
-{
-	/* well known names */
-	/* rotate(degrees) */
-	if (!strncmp(v, "rotate", strlen("rotate")))
-	{
-		float grad;
-		int num;
-
-		function_parse(v + strlen("rotate"), &num, &grad);
-		if (num != 1)
-		{
-			/* TODO put some warnings */
-			return EINA_FALSE;
-		}
-		enesim_matrix_rotate(m, grad);
-		return EINA_TRUE;
-	}
-	/* move(x, y) */
-	else if (!strncmp(v, "move", strlen("move")))
-	{
-		float tx, ty;
-		int num;
-
-		function_parse(v + strlen("move"), &num, &tx, &ty);
-		if (num != 2)
-		{
-			/* TODO put some warnings */
-			return EINA_FALSE;
-		}
-		enesim_matrix_translate(m, tx, ty);
-		return EINA_TRUE;
-
-	}
-	/* scale(s) scale(sx, sy) */
-	else if (!strncmp(v, "scale", strlen("scale")))
-	{
-		float sx, sy;
-		int num;
-
-		function_parse(v + strlen("scale"), &num, &sx, &sy);
-		if ((num < 1) || (num > 2))
-		{
-			/* TODO put some warnings */
-			return EINA_FALSE;
-		}
-		if (num == 1)
-			sy = sx;
-		enesim_matrix_scale(m, sx, sy);
-		return EINA_TRUE;
-	}
-	/* matrix="xx xy xz yx yy yz zx zy zz */
-	else
-	{
-		float matrix[9];
-		int i;
-		char *tmp, *end;
-
-		tmp = v;
-		for (i = 0; i < 9; i++)
-		{
-			/* get the value */
-			matrix[i] = strtof(tmp, &end);
-			if (end == tmp)
-				break;
-			if (*end)
-			{
-				tmp = end + 1;
-			}
-			else
-				break;
-		}
-		if (i < 8)
-			return EINA_FALSE;
-		enesim_matrix_values_set(m, matrix[0], matrix[1], matrix[2],
-				matrix[3], matrix[4], matrix[5], matrix[6],
-				matrix[7], matrix[8]);
-		return EINA_TRUE;
-	}
-	return EINA_FALSE;
-}
-
-void clock_parse(Eon_Clock *c, char *v)
-{
-	float num = 0;
-	char *units;
-	float dec;
-
-	units = v + strlen(v) - 1;
-
-	/* minutes */
-	if (*units == 'm')
-	{
-		float secs;
-
-		*units = '\0';
-		num = atof(v);
-		secs = num * 60;
-
-		dec = secs - (int)secs;
-		c->seconds = (int)secs;
-		c->micro = dec * 100000;
-	}
-	/* seconds  | no units */
-	else if (*units == 's')
-	{
-
-		*units = '\0';
-		num = strtof(v, NULL);
-		dec = num - (int)num;
-		c->seconds = (int)num;
-		c->micro = dec * 1000000;
-		printf("%ld %ld\n", c->seconds, c->micro);
-	}
-	else
-	{
-		num = atof(v);
-		dec = num - (int)num;
-		c->seconds = (int)num;
-		c->micro = dec * 100000;
-	}
-}
 
 /* parsing of the different attributes */
 void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, char *value)
@@ -274,20 +152,13 @@ void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	if (type == EON_PROPERTY_COORD)
 	{
 		Eon_Coord c;
-		Eon_Coord_Type ctype = EON_COORD_ABSOLUTE;
-		int i;
-		char *rel;
+		char *tmp;
 
-		rel = strchr(value, '%');
-		if (rel)
-		{
-			rel = '\0';
-			ctype = EON_COORD_RELATIVE;
-		}
-		i = strtol(value, NULL, 10);
-		eon_coord_set(&c, i, ctype);
+		tmp = strdup(value);
+		eon_parser_coord_str_from(&c, tmp);
 		eon_value_coord_from(&v, &c);
 		ekeko_object_property_value_set(o, attr, &v);
+		free(tmp);
 	}
 	else if (type == EON_PROPERTY_CLOCK)
 	{
@@ -295,7 +166,7 @@ void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 		char *tmp;
 
 		tmp = strdup(value);
-		clock_parse(&c, tmp);
+		eon_parser_clock_str_from(&c, tmp);
 		eon_value_clock_from(&v, &c);
 		ekeko_object_property_value_set(o, attr, &v);
 		free(tmp);
@@ -340,7 +211,7 @@ void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	{
 		Enesim_Matrix m;
 
-		if (matrix_parse(&m, value))
+		if (eon_parser_matrix_str_from(&m, value))
 		{
 			eon_value_matrix_from(&v, &m);
 			ekeko_object_property_value_set(o, attr, &v);
@@ -350,17 +221,7 @@ void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 	{
 		Eon_Color c = 0;
 
-		if (!strcmp(value, "white"))
-			eon_color_set(&c, 0xff, 0xff, 0xff, 0xff);
-		else if (!strcmp(value, "red"))
-			eon_color_set(&c, 0xff, 0xff, 0x00, 0x00);
-		else if (!strcmp(value, "blue"))
-			eon_color_set(&c, 0xff, 0x00, 0x00, 0xff);
-		else
-		{
-			/* hex | dec */
-			c = strtoul(value, NULL, 0);
-		}
+		eon_parser_color_str_from(&c, value);
 		eon_value_color_from(&v, c);
 		ekeko_object_property_value_set(o, attr, &v);
 	}
@@ -380,13 +241,7 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 	/* rop */
 	if (!strcmp(attr, "rop"))
 	{
-		Enesim_Rop rop = ENESIM_BLEND;
-
-		if (!strcmp(name, "blend"))
-			rop = ENESIM_BLEND;
-		else if (!strcmp(name, "fill"))
-			rop = ENESIM_FILL;
-		ekeko_value_int_from(&v, rop);
+		eon_parser_rop_str_from(&v, name);
 		ekeko_object_property_value_set(o, attr, &v);
 		return;
 	}
@@ -542,19 +397,16 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	{
 		o = (Ekeko_Object *)eon_canvas_new((Eon_Canvas *)parent);
 		eon_rect_show(o);
-		eon_rect_rop_set(o, ENESIM_BLEND);
 	}
 	if (!strcmp(tag, "rect"))
 	{
 		o = (Ekeko_Object *)eon_rect_new((Eon_Canvas *)parent);
 		eon_rect_show(o);
-		eon_rect_rop_set(o, ENESIM_BLEND);
 	}
 	if (!strcmp(tag, "circle"))
 	{
 		o = (Ekeko_Object *)eon_circle_new((Eon_Canvas *)parent);
 		eon_circle_show(o);
-		eon_circle_rop_set(o, ENESIM_BLEND);
 	}
 	else if (!strcmp(tag, "image"))
 	{
@@ -671,8 +523,58 @@ static Eina_Bool file_load(Eon_Canvas *canvas, const char *file)
 	return EINA_TRUE;
 }
 
+
+Eina_Bool tree_get(Eon_External *e, const char *file)
+{
+	return EINA_TRUE;
+}
+
+Eina_Bool subtree_get(Eon_External *e, const char *file)
+{
+	EXML *exml;
+	EXML_Node *n;
+	Eina_Iterator *it;
+	Parser_Callback *pc;
+	char *tag;
+
+	exml = exml_new();
+	if (!exml_file_read(exml, file))
+	{
+		printf("no file\n");
+		return EINA_FALSE;
+	}
+	n = exml_get(exml);
+	if (!n || strcmp(n->tag, "eon"))
+	{
+		printf("no eon file\n");
+		return EINA_FALSE;
+	}
+	/*
+	doc = eon_canvas_document_get(canvas);*/
+	/* parse the file */
+	tag = exml_down(exml);
+	while (tag)
+	{
+		/* children */
+		parse(exml, (Ekeko_Object *)e);
+		/* siblings */
+		tag = exml_next(exml);
+	}
+	/* call the after callbacks */
+	it = eina_list_iterator_new(parsed_cb);
+	while (eina_iterator_next(it, &pc))
+	{
+		pc->cb(pc->value, pc->attr, pc->data);
+	}
+	eina_iterator_free(it);
+	exml_destroy(exml);
+	return EINA_TRUE;
+}
+
 Eon_Parser p = {
 		.file_load = file_load,
+		.tree_get = tree_get,
+		.subtree_get = subtree_get,
 };
 
 void parser_exml_init(void)

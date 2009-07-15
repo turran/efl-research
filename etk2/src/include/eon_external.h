@@ -29,6 +29,8 @@ struct _Eon_External
 typedef struct _Eon_Parser
 {
 	Eina_Bool (*file_load)(Eon_Canvas *c, const char *file);
+	Eina_Bool (*tree_get)(Eon_External *e, const char *file);
+	Eina_Bool (*subtree_get)(Eon_External *e, const char *file);
 } Eon_Parser;
 /*============================================================================*
  *                                Functions                                   *

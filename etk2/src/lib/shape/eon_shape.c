@@ -18,7 +18,7 @@ struct _Eon_Shape_Private
 	Eon_Color color; /* FIXME the color should be double state? */
 	Eon_Paint *fill;
 	Eon_Filter *filter;
-	int rop;
+	Enesim_Rop rop;
  	/* TODO we'll only support clipping to a rect */
 	Eina_Rectangle *clip;
 	/* TODO add the engine data here instead of on every shape subclass */
@@ -124,6 +124,7 @@ static void _ctor(void *instance)
 	s = (Eon_Shape*) instance;
 	s->private = prv = ekeko_type_instance_private_get(eon_shape_type_get(), instance);
 	s->parent.render = _render;
+	prv->rop = ENESIM_BLEND;
 	/* the default color, useful for pixel_color operations */
 	prv->color = 0xffffffff;
 	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
@@ -159,6 +160,19 @@ void eon_shape_engine_data_set(Eon_Shape *s, void *engine_data)
 Eon_Canvas * eon_shape_canvas_get(Eon_Shape *s)
 {
 	return (Eon_Canvas *)ekeko_renderable_canvas_get((Ekeko_Renderable *)s);
+}
+
+Eon_Canvas * eon_shape_canvas_topmost_get(Eon_Shape *s)
+{
+	Eon_Canvas *c, *last;
+
+	c = last = ekeko_renderable_canvas_get((Ekeko_Renderable *)s);
+	while (c)
+	{
+		last = c;
+		c = ekeko_renderable_canvas_get((Ekeko_Renderable *)last);
+	}
+	return last;
 }
 
 void eon_shape_change(Eon_Shape *s)

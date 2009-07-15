@@ -37,9 +37,11 @@ static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	if (em->state == EVENT_MUTATION_STATE_POST)
 		return;
 
-	printf("FILE CHANGED!!!!\n");
 	if (!_parsers)
 		return;
+	/* FIXME the parent of every object created should be the external itself
+	 * not the canvas
+	 */
 	c = ekeko_object_parent_get(o);
 	/**
 	 * Load the needed file and return the topmost object
@@ -50,7 +52,6 @@ static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	{
 		if (p->file_load(c, em->curr->value.string_value))
 		{
-			printf("FILE loaded correctly\n");
 			break;
 		}
 	}

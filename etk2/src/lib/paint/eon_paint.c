@@ -21,6 +21,7 @@ struct _Eon_Paint_Private
 	Eon_Coord x, y, w, h;
 	Enesim_Matrix matrix;
 	Enesim_Matrix inverse;
+	Eon_Paint_Coordspace coordspace;
 	void *engine_data;
 };
 
@@ -95,6 +96,7 @@ Ekeko_Property_Id EON_PAINT_X;
 Ekeko_Property_Id EON_PAINT_Y;
 Ekeko_Property_Id EON_PAINT_W;
 Ekeko_Property_Id EON_PAINT_H;
+Ekeko_Property_Id EON_PAINT_COORDSPACE;
 
 EAPI Ekeko_Type *eon_paint_type_get(void)
 {
@@ -110,6 +112,7 @@ EAPI Ekeko_Type *eon_paint_type_get(void)
 		EON_PAINT_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, y));
 		EON_PAINT_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, w));
 		EON_PAINT_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, h));
+		EON_PAINT_COORDSPACE = TYPE_PROP_SINGLE_ADD(type, "coordspace", PROPERTY_INT, OFFSET(Eon_Paint_Private, coordspace));
 	}
 
 	return type;
@@ -141,4 +144,11 @@ EAPI void eon_paint_coords_get(Eon_Paint *p, Eon_Coord *x, Eon_Coord *y, Eon_Coo
 	*y = prv->y;
 	*w = prv->w;
 	*h = prv->h;
+}
+
+EAPI Eon_Paint_Coordspace eon_paint_coordspace_get(Eon_Paint *p)
+{
+	Eon_Paint_Private *prv = PRIVATE(p);
+
+	return prv->coordspace;
 }

@@ -133,6 +133,10 @@ EAPI void * eon_engine_document_create(Eon_Engine *e, Eon_Document *d)
 	return e->document_create(d);
 }
 
+EAPI void * eon_engine_canvas_create(Eon_Engine *e, Eon_Canvas *c, Eina_Bool root, uint32_t w, uint32_t h)
+{
+	return e->canvas_create(c, root, w, h);
+}
 
 EAPI Eina_Bool eon_engine_canvas_blit(Eon_Engine *e, void *sc, Eina_Rectangle *sr, void *c, Eina_Rectangle *r)
 {
@@ -142,11 +146,6 @@ EAPI Eina_Bool eon_engine_canvas_blit(Eon_Engine *e, void *sc, Eina_Rectangle *s
 EAPI Eina_Bool eon_engine_canvas_flush(Eon_Engine *e, void *c, Eina_Rectangle *r)
 {
 	return e->canvas_flush(c, r);
-}
-
-EAPI void * eon_engine_canvas_create(Eon_Engine *e, Eon_Canvas *c, Eina_Bool root, uint32_t w, uint32_t h)
-{
-	return e->canvas_create(c, root, w, h);
 }
 
 EAPI void * eon_engine_rect_create(Eon_Engine *e, Eon_Rect *r)
