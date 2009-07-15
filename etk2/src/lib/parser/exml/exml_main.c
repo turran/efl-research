@@ -84,66 +84,6 @@ out:
 	free(tmp);
 }
 
-void function_parse(char *v, int *num, ...)
-{
-	va_list ap;
-	char *tmp;
-	char *end;
-
-	*num = 0;
-	tmp = v;
-	if (*tmp == '(')
-		tmp++;
-	va_start(ap, num);
-	do
-	{
-		float *f;
-		float ftmp;
-
-		/* get the value */
-		ftmp = strtof(tmp, &end);
-		if (end == tmp)
-			break;
-		if (*end)
-		{
-			tmp = end + 1;
-		}
-		else
-			break;
-		f = va_arg(ap, float *);
-		if (!f)
-		{
-			va_end(ap);
-			return;
-		}
-		*f = ftmp;
-		(*num)++;
-	} while (tmp);
-	va_end(ap);
-}
-
-void polygon_points_set(Eon_Polygon *p, const char *value)
-{
-	char *tmp = value;
-	char *end = tmp;
-	int x, y;
-	/* comma separated coordinates */
-	do
-	{
-		tmp = end;
-		x = strtod(tmp, &end);
-		if (*end == ',')
-		{
-			tmp = end + 1;
-			y = strtod(tmp, &end);
-		}
-		else
-			break;
-		eon_polygon_point_add(p, x, y);
-	} while (tmp != end);
-}
-
-
 /* parsing of the different attributes */
 void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, char *value)
 {
@@ -176,8 +116,6 @@ void object_eon_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr
 		Eon_Trigger t;
 		char *tmp = strdup(value);
 
-		printf("DUMPING\n");
-		ekeko_object_dump((Ekeko_Object *)doc, ekeko_object_dump_printf);
 		/* FIXME the object can be referenced by #id :) */
 		/* #id.event */
 		if (*value == '#')
@@ -396,17 +334,14 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	if (!strcmp(tag, "eon"))
 	{
 		o = (Ekeko_Object *)eon_canvas_new((Eon_Canvas *)parent);
-		eon_rect_show(o);
 	}
 	if (!strcmp(tag, "rect"))
 	{
-		o = (Ekeko_Object *)eon_rect_new((Eon_Canvas *)parent);
-		eon_rect_show(o);
+		o = eon_parser_rect_new(parent);
 	}
 	if (!strcmp(tag, "circle"))
 	{
-		o = (Ekeko_Object *)eon_circle_new((Eon_Canvas *)parent);
-		eon_circle_show(o);
+		o = eon_parser_circle_new(parent);
 	}
 	else if (!strcmp(tag, "image"))
 	{
@@ -416,15 +351,13 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	{
 		char *value;
 
-		o = (Ekeko_Object *)eon_polygon_new((Eon_Canvas *)parent);
-		eon_shape_show(o);
-		eon_shape_rop_set(o, ENESIM_BLEND);
+		o = eon_parser_polygon_new(parent);
 		value = ecore_hash_get(n->attributes, "points");
 		if (!value)
 		{
 			return o;
 		}
-		polygon_points_set(o, value);
+		eon_parser_polygon_points_str_from(o, value);
 	}
 	else if (!strcmp(tag, "anim") || !strcmp(tag, "animMatrix"))
 	{
