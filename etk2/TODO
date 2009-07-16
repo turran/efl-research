@@ -9,6 +9,10 @@ Bin
 + Create an Eon builder (LT)
 + Add engine specific options to the command line (ST)
 
+Paint
+=====
++ Add a shm loader. Use ESHM for that and the new enesim_surface_new_allocator_from (ST)
+
 Core
 ====
 + Move etch into its own thread. Create a fifo to receive events from etch and then select() it on main thread. Then etk2 should

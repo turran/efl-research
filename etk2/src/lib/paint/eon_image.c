@@ -66,7 +66,7 @@ static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 		return;
 	prv->src.loaded = EINA_FALSE;
 	/* call emage to load an image */
-	emage_load_async(em->curr->value.string_value, &prv->src.img, _loader_callback, i, NULL);
+	emage_load_async(em->curr->value.string_value, &prv->src.img, ENESIM_FORMAT_ARGB8888, NULL, _loader_callback, i, NULL);
 }
 
 static void _ctor(void *instance)
