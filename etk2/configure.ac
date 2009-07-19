@@ -122,7 +122,14 @@ if test "x$have_exml" = "xyes"; then
 	AC_DEFINE(BUILD_PARSER_EXML, [1], [Build support for EXML parser])
 fi
 AM_CONDITIONAL(BUILD_PARSER_EXML, test "x$have_exml" = "xyes")
-
+################################################################################
+##                                 Cache                                      ##
+################################################################################
+PKG_CHECK_MODULES(ESHM, [eshm], [have_eshm=yes], [have_eshm=no])
+if test "x$have_eshm" = "xyes"; then
+	AC_DEFINE(BUILD_CACHE_ESHM, [1], [Build support for shared memory based cache])
+fi
+AM_CONDITIONAL(BUILD_CACHE_EHSM, test "x$have_eshm" = "xyes")
 ################################################################################
 ##                                Engines                                     ##
 ################################################################################
@@ -148,8 +155,8 @@ fi
 AC_SUBST(requirements)
 AC_SUBST(packagesrcdir)
 
-ETK_CFLAGS="$EINA_CFLAGS $EKEKO_CFLAGS $ECORE_CFLAGS $ENESIM_CFLAGS $ETCH_CFLAGS $EMAGE_CFLAGS"
-ETK_LIBS="$EINA_LIBS $EKEKO_LIBS $ECORE_LIBS $ENESIM_LIBS $ETCH_LIBS $EMAGE_LIBS"
+ETK_CFLAGS="$EINA_CFLAGS $EKEKO_CFLAGS $ECORE_CFLAGS $ENESIM_CFLAGS $ETCH_CFLAGS $EMAGE_CFLAGS $ESHM_CFLAGS"
+ETK_LIBS="$EINA_LIBS $EKEKO_LIBS $ECORE_LIBS $ENESIM_LIBS $ETCH_LIBS $EMAGE_LIBS $ESHM_LIBS"
 AC_SUBST(ETK_CFLAGS)
 AC_SUBST(ETK_LIBS)
 

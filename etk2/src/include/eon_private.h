@@ -15,6 +15,8 @@
 #include "config.h"
 //#define EON_DEBUG
 
+#include "Emage.h"
+
 #define RETURN_IF(expr) if ((expr)) return
 #define RETURN_NULL_IF(expr) if ((expr)) return NULL
 
@@ -98,6 +100,11 @@ Enesim_Surface * eon_image_surface_get(Eon_Image *i);
 Eina_Bool eon_parser_coord_str_from(Eon_Coord *c, char *v);
 Eina_Bool eon_parser_matrix_str_from(Enesim_Matrix *m, char *v);
 Eina_Bool eon_parser_clock_str_from(Eon_Clock *c, char *v);
+
+/* Cache */
+void eon_cache_image_load(const char *file, Enesim_Surface **s,
+		Enesim_Format f, Emage_Load_Callback cb, void *data,
+		const char *options);
 
 
 #endif

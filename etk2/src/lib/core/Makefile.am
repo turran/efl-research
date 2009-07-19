@@ -19,4 +19,5 @@ eon_coord.c \
 eon_external.c \
 eon_engine.c \
 eon_main.c \
-eon_value.c
+eon_value.c \
+eon_cache.c

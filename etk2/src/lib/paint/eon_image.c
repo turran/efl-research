@@ -65,8 +65,10 @@ static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
 	prv->src.loaded = EINA_FALSE;
+	if (prv->src.img)
+		enesim_surface_delete(prv->src.img);
 	/* call emage to load an image */
-	emage_load_async(em->curr->value.string_value, &prv->src.img, ENESIM_FORMAT_ARGB8888, NULL, _loader_callback, i, NULL);
+	eon_cache_image_load(em->curr->value.string_value, &prv->src.img, ENESIM_FORMAT_ARGB8888, _loader_callback, i, NULL);
 }
 
 static void _ctor(void *instance)
