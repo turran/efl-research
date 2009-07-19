@@ -185,3 +185,10 @@ EAPI void * eshm_segment_data_get(Eshm_Segment *s)
 		return NULL;
 	return s->data;
 }
+/**
+ * 
+ */
+EAPI Eina_Bool eshm_segment_all_get(void (*callback)(Eshm_Segment *s))
+{
+	
+}

@@ -87,7 +87,7 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	s->shmid = rsn->shmid;
 	s->ref++;
 	s->owner = c;
-	_eshmd.hash = eina_hash_add(_eshmd.hash, sn->id, s);
+	eina_hash_add(_eshmd.hash, sn->id, s);
 	
 	EINA_ERROR_PINFO("New Segment created with id number %d\n", rsn->shmid);
 	
@@ -271,17 +271,19 @@ shift:
 
 int main(int argc, char **argv)
 {
-	char *short_options = "bd";
+	char *short_options = "bdl:";
 	struct option long_options[] = {
 		{"background", 0, 0, 'b'},
 		{"debug", 0, 0, 'd'},
+		{"log", 0, 0, 'l'},
 		{0, 0, 0, 0}
 	};
 	int option;
 	char c;
 	int background = 0;
 	int debug = 0;
-	
+	FILE *f;
+
 	/* handle the parameters */
 	while ((c = getopt_long(argc, argv, short_options, long_options,
 	                                &option)) != -1)
@@ -294,13 +296,20 @@ int main(int argc, char **argv)
 			case 'd':
 				debug = 1;
 				break;
-			
 		}
 	}
-	
+	eina_init();
 	ecore_init();
 	ecore_con_init();
 
+	if (!debug)
+	{
+		/* create a logging file */
+		f = fopen("eshmd.log", "w");
+		if (!f)
+			goto err_log;
+		eina_error_print_cb_set(eina_error_print_cb_file, f);
+	}
 	_eshmd.buffer = NULL;
 	_eshmd.srv = ecore_con_server_add(ECORE_CON_LOCAL_USER, ESHMD_NAME, ESHMD_PORT, NULL);
 	if (!_eshmd.srv)
@@ -308,6 +317,7 @@ int main(int argc, char **argv)
 		EINA_ERROR_PERR("Can't create the server\n");
 		goto err_server;
 	}
+	_eshmd.hash = eina_hash_string_superfast_new(NULL);
 	ecore_event_handler_add(ECORE_CON_EVENT_CLIENT_ADD, _client_add, NULL);
 	ecore_event_handler_add(ECORE_CON_EVENT_CLIENT_DEL, _client_del, NULL);
 	ecore_event_handler_add(ECORE_CON_EVENT_CLIENT_DATA, _client_data, NULL);
@@ -315,10 +325,14 @@ int main(int argc, char **argv)
 	eshm_message_init();
 	ecore_main_loop_begin();
 	eshm_message_shutdown();
+
 err_server:
+	if (!debug)
+		fclose(f);
+err_log:
 	ecore_con_shutdown();
 	ecore_shutdown();
-
+	eina_shutdown();
 	return 0;
 }
 

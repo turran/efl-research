@@ -3,7 +3,7 @@ rm -f config.cache
 
 AC_INIT(eshm, 0.0.1, enlightenment-devel@lists.sourceforge.net)
 AC_PREREQ(2.52)
-AC_CONFIG_SRCDIR(configure.in)
+AC_CONFIG_SRCDIR(configure.ac)
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
@@ -41,7 +41,7 @@ PKG_CHECK_MODULES(ESHM, [
 ecore
 ecore-con
 eet
-eina
+eina-0
 ])
 
 build_example="yes"
@@ -54,8 +54,6 @@ eshm.pc
 examples/Makefile
 src/Makefile
 src/bin/Makefile
-src/bin/daemon/Makefile 
-src/bin/test/Makefile
 src/include/Makefile
 src/lib/Makefile
 data/Makefile

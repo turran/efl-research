@@ -27,7 +27,7 @@ static int _server_data(void *data, int type, void *event)
 	Ecore_Con_Event_Server_Data *e = event;
 	Eshm_Message_Name rname;
 	unsigned int m_length;
-	
+
 	if (!_eshm.msg)
 	{
 		EINA_ERROR_PERR("How do we receive a reply with no msg first??\n");
@@ -48,12 +48,12 @@ static int _server_data(void *data, int type, void *event)
 	}
 	if (_eshm.length < sizeof(Eshm_Reply))
 		return 0;
-	
+
 	_eshm.reply = (Eshm_Reply *)_eshm.buffer;
 	m_length = sizeof(Eshm_Reply) + _eshm.reply->size;
 	if (_eshm.length < m_length)
 		return 0;
-	
+
 	/* ok we have a full message */
 	if (_eshm.reply->size)
 	{
@@ -68,10 +68,10 @@ static int _server_data(void *data, int type, void *event)
 	{
 		unsigned char *tmp;
 		unsigned int n_length;
-			
+
 		tmp = _eshm.buffer;
 		n_length = _eshm.length - m_length;
-			
+
 		_eshm.buffer = malloc(n_length);
 		memcpy(_eshm.buffer, tmp + m_length, n_length);
 		free(tmp);
@@ -113,16 +113,16 @@ Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **
 	Eshm_Error error;
 	Ecore_Timer *timer;
 	int ret;
-	
+
 	_eshm.msg = m;
-	
+
 	EINA_ERROR_PDBG("Sending message of type %d and id %d\n", m->type, m->id);
 	ret = ecore_con_server_send(_eshm.svr, m, sizeof(Eshm_Message));
 	ret = ecore_con_server_send(_eshm.svr, data, m->size);
-	
+
 	if (eshm_message_reply_has(m->type) == EINA_FALSE)
 		return ESHM_ERR_NONE;
-	
+
 	/* TODO register a timeout callback */
 	if (timeout)
 		timer = ecore_timer_add(timeout, _timeout_cb, NULL);
@@ -135,20 +135,20 @@ Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **
 		ecore_timer_del(timer);
 
 	EINA_ERROR_PDBG("Finished lock reply of type %d\n", _eshm.reply->id);
-	
+
 	error = _eshm.reply->error;
-	
+
 	if (rdata)
 		*rdata = _eshm.rbody;
 	free(_eshm.reply);
 	free(_eshm.msg);
 	_eshm.msg = NULL;
 	_eshm.reply = NULL;
-	
+
 	return error;
 }
 void eshm_common_init(void)
-{	
+{
 	ecore_init();
 	ecore_con_init();
 	eshm_message_init();
@@ -173,8 +173,8 @@ int ESHM_ERROR_TIMEOUT;
 EAPI int eshm_init(void)
 {
 	if (!_init)
-	{	
-		eina_error_init();
+	{
+		eina_init();
 		ecore_init();
 		ecore_con_init();
 		eshm_message_init();
@@ -190,14 +190,14 @@ EAPI int eshm_init(void)
 			return 0;
 		}
 		ecore_event_handler_add(ECORE_CON_EVENT_SERVER_DATA, _server_data, NULL);
-		ESHM_ERROR_ACCESS = eina_error_register("Not enough permission for the request");
-		ESHM_ERROR_EXIST = eina_error_register("Segment already exists");
-		ESHM_ERROR_NEXIST = eina_error_register("Segment does not exist");
-		ESHM_ERROR_CODEC = eina_error_register("Encoding / Decoding failed");
-		ESHM_ERROR_TIMEOUT = eina_error_register("Timeout waiting for response");
+		ESHM_ERROR_ACCESS = eina_error_msg_register("Not enough permission for the request");
+		ESHM_ERROR_EXIST = eina_error_msg_register("Segment already exists");
+		ESHM_ERROR_NEXIST = eina_error_msg_register("Segment does not exist");
+		ESHM_ERROR_CODEC = eina_error_msg_register("Encoding / Decoding failed");
+		ESHM_ERROR_TIMEOUT = eina_error_msg_register("Timeout waiting for response");
 	}
 	return ++_init;
-	
+
 }
 /**
  * Shutdowns the library
@@ -209,6 +209,7 @@ EAPI int eshm_shutdown(void)
 		eshm_message_shutdown();
 		ecore_con_shutdown();
 		ecore_shutdown();
+		eina_shutdown();
 	}
 	return _init;
 }
