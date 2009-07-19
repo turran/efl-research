@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 #include "Eshm.h"
 
 #define S_4M (4 * 1024 * 1024)
