@@ -35,7 +35,6 @@ typedef struct _Engine_SDL
 static void _rect(void *surface, void *context, int x, int y, int w, int h)
 {
 	SDL_Rect rect;
-	Enesim_Context *ctx = context;
 	uint32_t color;
 
 #ifdef EON_DEBUG
@@ -45,7 +44,7 @@ static void _rect(void *surface, void *context, int x, int y, int w, int h)
 	rect.y = y;
 	rect.w = w;
 	rect.h = h;
-	//color = enesim_context_color_get(ctx)
+
 	SDL_FillRect(surface, &rect, color);
 }
 

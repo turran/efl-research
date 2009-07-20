@@ -63,8 +63,12 @@ static void _render(Ekeko_Renderable *r, Eina_Rectangle *rect)
 	eon_engine_debug_rect(eng, surface, 0xffaaaaaa, rect->x, rect->y, rect->w, rect->h);
 #endif
 	/* Setup the paint in case it has one */
-	if (prv->fill)
-		prv->fill->setup(eng, eon_paint_engine_data_get(prv->fill), s);
+	/* FIXME by now we are avoding the case where the image isnt loaded yet, we should
+	 * find a good way to handle that
+	 */
+	if (prv->fill && !prv->fill->setup(eng, eon_paint_engine_data_get(prv->fill), s))
+		return;
+
 	/* Call the shape's render function */
 	s->render(s, eng, prv->engine_data, surface, rect);
 }

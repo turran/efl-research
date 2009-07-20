@@ -39,8 +39,12 @@ struct _Eon_Engine
 	void (*polygon_delete)(void *p);
 	/* image callbacks */
 	void * (*image_create)(Eon_Image *i);
-	void (*image_setup)(void *i, Eon_Shape *s);
+	Eina_Bool (*image_setup)(void *i, Eon_Shape *s);
 	void (*image_delete)(void *i);
+	/* hswitch callbacks */
+	void * (*hswitch_create)(Eon_Hswitch *i);
+	Eina_Bool (*hswitch_setup)(void *i, Eon_Shape *s);
+	void (*hswitch_delete)(void *i);
 	/* debug */
 	void (*debug_rect)(void *c, uint32_t color, int x, int y, int w, int h);
 };
@@ -66,7 +70,7 @@ EAPI void eon_engine_polygon_point_add(Eon_Engine *e, void *pd, int x, int y);
 EAPI void eon_polygon_render(Eon_Engine *e, void *p, void *c, Eina_Rectangle *clip);
 
 EAPI void * eon_engine_image_create(Eon_Engine *e, Eon_Paint *p);
-EAPI void eon_engine_image_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
+EAPI Eina_Bool eon_engine_image_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
 EAPI void eon_engine_image_delete(Eon_Engine *e, void *engine_data);
 
 EAPI void eon_engine_debug_rect(Eon_Engine *e, void *c, uint32_t color, int x, int y, int w, int h);

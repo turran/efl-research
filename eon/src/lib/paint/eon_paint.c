@@ -18,6 +18,7 @@
 #define PRIVATE(d) ((Eon_Paint_Private *)((Eon_Paint *)(d))->private)
 struct _Eon_Paint_Private
 {
+	/* TODO move x, y, w, h and coordspace to the image object */
 	Eon_Coord x, y, w, h;
 	Enesim_Matrix matrix;
 	Enesim_Matrix inverse;

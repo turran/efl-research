@@ -10,4 +10,5 @@ noinst_LTLIBRARIES = libeon_paint.la
 
 libeon_paint_la_SOURCES = \
 eon_paint.c \
-eon_image.c
+eon_image.c \
+eon_hswitch.c

@@ -44,7 +44,7 @@ struct _Eon_Paint
 	void *(*create)(Eon_Engine *e, Eon_Paint *p);
 	/* Called whenever a shape needs to be rendered and has a paint object as
 	 * the fill property */
-	void (*setup)(Eon_Engine *e, void *engine_data, Eon_Shape *s);
+	Eina_Bool (*setup)(Eon_Engine *e, void *engine_data, Eon_Shape *s);
 	/* Called whenever the last shape object unreferences this paint object */
 	void (*delete)(Eon_Engine *e, void *engine_data);
 };
