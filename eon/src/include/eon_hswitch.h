@@ -10,13 +10,15 @@
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
-#define EON_HSWITCH_FILE_CHANGED "fileChanged"
-#define EON_HSWITCH_LOADED_CHANGED "loadedChanged"
+#define EON_HSWITCH_LFILE_CHANGED "lfileChanged"
+#define EON_HSWITCH_RFILE_CHANGED "rfileChanged"
+#define EON_HSWITCH_STEP_CHANGED "stepChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-extern Ekeko_Property_Id EON_HSWITCH_FILE;
-extern Ekeko_Property_Id EON_HSWITCH_LOADED;
+extern Ekeko_Property_Id EON_HSWITCH_LFILE;
+extern Ekeko_Property_Id EON_HSWITCH_RFILE;
+extern Ekeko_Property_Id EON_HSWITCH_STEP;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/

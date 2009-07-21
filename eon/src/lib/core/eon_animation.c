@@ -206,7 +206,7 @@ static inline void _property_animate(Eon_Animation *a, Ekeko_Object *parent)
 
 	etch = eon_document_etch_get(doc);
 	vtype = ekeko_property_value_type_get(p);
-#if EON_ANIMATION_DEBUG
+#ifndef EON_ANIMATION_DEBUG
 	printf("[Eon_Animation] Trying to animate property %s of type %d\n", prv->name, vtype);
 #endif
 
@@ -239,7 +239,8 @@ static void _trigger_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Eon_Animation_Private *prv = PRIVATE(data);
 
-	printf("[Eon_Animation] Trigger callback\n");
+	printf("[Eon_Animation] Trigger callback %p\n", prv->anim);
+
 	if (!etch_animation_enabled(prv->anim))
 	{
 		Etch *e;

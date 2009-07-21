@@ -347,6 +347,10 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	{
 		o = (Ekeko_Object *)eon_image_new((Eon_Canvas *)parent);
 	}
+	else if (!strcmp(tag, "hswitch"))
+	{
+		o = (Ekeko_Object *)eon_hswitch_new((Eon_Canvas *)parent);
+	}
 	else if (!strcmp(tag, "poly"))
 	{
 		char *value;

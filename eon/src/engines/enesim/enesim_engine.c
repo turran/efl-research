@@ -35,10 +35,65 @@ typedef struct Paint
 	Eon_Paint *p;
 	void *data;
 } Paint;
+
+static inline void length_calculate(Eon_Coord *sl, int plength, int *l)
+{
+	if (!l)
+		return;
+	if (sl->type == EON_COORD_RELATIVE)
+	{
+		*l = sl->value * plength / 100;
+	}
+	else
+	{
+		*l = sl->value;
+	}
+}
+static inline void coord_calculate(Eon_Coord *sc, int pc, int plength, int *c)
+{
+	if (!c)
+		return;
+	if (sc->type == EON_COORD_RELATIVE)
+	{
+		*c = pc + ((sc->value * plength) / 100);
+	}
+	else
+	{
+		*c = sc->value;
+	}
+}
+
+static void paint_coords_get(Eon_Paint *p, Eon_Shape *s, int *x, int *y, int *w,
+		int *h)
+{
+	Eon_Coord px, py, pw, ph;
+	Eina_Rectangle geom;
+
+	/* setup the renderer correctly */
+	if (eon_paint_coordspace_get(p) == EON_COORDSPACE_OBJECT)
+	{
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
+	}
+	else
+	{
+		/* FIXME we should get the topmost canvas uints not the parent
+		 * canvas
+		 */
+		ekeko_renderable_geometry_get((Ekeko_Renderable *)eon_shape_canvas_topmost_get(s), &geom);
+	}
+	eon_paint_coords_get(p, &px, &py, &pw, &ph);
+	coord_calculate(&px, geom.x, geom.w, x);
+	coord_calculate(&py, geom.y, geom.h, y);
+	length_calculate(&pw, geom.w, w);
+	length_calculate(&ph, geom.h, h);
+#if 0
+	printf("CSPACE = %d [%d %d %d %d] -> %d %d %d %d\n", eon_paint_coordspace_get(p), geom.x, geom.y, geom.w, geom.h, x ? *x : -1, y ? *y : -1, w ? *w : -1, h ? *h : -1);
+#endif
+}
 /*============================================================================*
  *                                 Horswitch                                  *
  *============================================================================*/
-void * horswitch_create(Eon_Hswitch *hs)
+void * hswitch_create(Eon_Hswitch *hs)
 {
 	Paint *p;
 
@@ -49,11 +104,32 @@ void * horswitch_create(Eon_Hswitch *hs)
 	return p;
 }
 
-Eina_Bool horswitch_setup(void *data, Eon_Shape *s)
+Eina_Bool hswitch_setup(void *data, Eon_Shape *s)
 {
+	Paint *p = data;
+	Eon_Hswitch *hs = (Eon_Hswitch *)p->p;
+	int dw, dh;
 
+	if (!eon_hswitch_left_loaded(hs) || !eon_hswitch_right_loaded(hs))
+	{
+		return EINA_FALSE;
+	}
+	paint_coords_get(p->p, s, NULL, NULL, &dw, &dh);
+	enesim_renderer_hswitch_left_set(p->r, eon_hswitch_left_get(hs));
+	enesim_renderer_hswitch_right_set(p->r, eon_hswitch_right_get(hs));
+	enesim_renderer_hswitch_w_set(p->r, dw);
+	enesim_renderer_hswitch_h_set(p->r, dh);
+	enesim_renderer_hswitch_step_set(p->r, eon_hswitch_step_get(hs));
+	return EINA_TRUE;
 }
 
+static void hswitch_delete(void *data)
+{
+	Paint *p = data;
+
+	enesim_renderer_delete(p->r);
+	free(p);
+}
 /*============================================================================*
  *                                   Image                                    *
  *============================================================================*/
@@ -82,70 +158,6 @@ void _image_pattern_span(void *data, void *span, int x, int y, unsigned int len)
 		x++;
 	}
 }
-#if 0
-/*
- * TODO we should use the SCALER2D
- * TODO use another scale qualities
- * render an image just scaling it
- */
-static void _image_get_span_scale(void *data, void *dst, int x, int y, unsigned int len)
-{
-	Image *im = data;
-	Enesim_Cpu **cpus;
-	int numcpus;
-	Enesim_Operator scaler;
-	uint32_t sstride;
-	uint32_t *s;
-	int sy;
-	Eina_Rectangle r;
-
-	eina_rectangle_coords_from(&r, x, y, len, 1);
-	if (!eina_rectangle_intersection(&r, &im->drect))
-		return;
-
-	cpus = enesim_cpu_get(&numcpus);
-	enesim_scaler_1d_op_get(&scaler, cpus[0], ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
-
-	s = enesim_surface_data_get(im->src);
-	sstride = enesim_surface_stride_get(im->src);
-
-	//printf("SRECT = %d %d %d %d\n", im->srect.x, im->srect.y, im->srect.w, im->srect.h);
-	//printf("DRECT = %d %d %d %d\n", im->drect.x, im->drect.y, im->drect.w, im->drect.h);
-	//printf("%d %d %d\n", r.x, r.y, r.w);
-	//printf("SGEOM %d %d %d %d\n", sgeom->x, sgeom->y, sgeom->w, sgeom->h);
-	//printf("SCLIP %d %d %d %d\n", sclip.x, sclip.y, sclip.w, sclip.h);
-	//printf("ENDING\n");
-
-	/* offset the source in x */
-	s = s + (((r.x - im->drect.x) * im->srect.w) / im->drect.w);
-	/* pick the to-scaled line */
-	sy = (((r.y - im->drect.y) * im->srect.h) / im->drect.h);
-	s = s + (sy * sstride);
-	enesim_operator_scaler_1d(&scaler, s, im->srect.w, 0, r.w, im->drect.w, dst);
-	/* increment the source by the scale factor */
-}
-static void _image_get_span_noscale(void *data, void *dst, int x, int y, unsigned int len)
-{
-	Image *im = data;
-	Enesim_Cpu **cpus;
-	int numcpus;
-	Enesim_Operator op;
-	uint32_t *s, *d;
-	Eina_Rectangle r;
-
-	eina_rectangle_coords_from(&r, x, y, len, 1);
-	eina_rectangle_intersection(&r, &im->drect);
-
-	cpus = enesim_cpu_get(&numcpus);
-	enesim_drawer_span_pixel_op_get(cpus[0], &op, ENESIM_FILL, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888);
-	s = enesim_surface_data_get(im->src);
-	s += (enesim_surface_stride_get(im->src) * r.y) + r.x;
-	d = dst;
-
-	printf("drawing %d %d %d\n", r.x, r.y, r.w);
-	enesim_operator_drawer_span(&op, d, r.w, s, 0, NULL);
-}
-#endif
 
 void * image_create(Eon_Image *i)
 {
@@ -162,66 +174,25 @@ Eina_Bool image_setup(void *data, Eon_Shape *s)
 {
 	Paint *p = data;
 	Eon_Image *i = (Eon_Image *)p->p;
-	Eon_Coord px, py, pw, ph;
-	Eina_Rectangle geom;
-	int dx, dy, dw, dh;
+	int dw, dh;
 
 	if (!eon_image_loaded(i))
 	{
 		return EINA_FALSE;
 	}
-	/* setup the renderer correctly */
-	if (eon_paint_coordspace_get(p->p) == EON_COORDSPACE_OBJECT)
-	{
-		ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
-	}
-	else
-	{
-		/* FIXME we should get the topmost canvas uints not the parent
-		 * canvas
-		 */
-		ekeko_renderable_geometry_get((Ekeko_Renderable *)eon_shape_canvas_topmost_get(s), &geom);
-	}
-	eon_paint_coords_get(p->p, &px, &py, &pw, &ph);
-	if (px.type == EON_COORD_RELATIVE)
-	{
-		dx = geom.x + ((px.value * geom.w) / 100);
-	}
-	if (py.type == EON_COORD_RELATIVE)
-	{
-		dy = geom.y + ((py.value * geom.h) / 100);
-	}
-	if (pw.type == EON_COORD_RELATIVE)
-	{
-		dw = pw.value * geom.w / 100;
-	}
-	if (ph.type == EON_COORD_RELATIVE)
-	{
-		dh = ph.value * geom.h / 100;
-	}
+	paint_coords_get(p->p, s, NULL, NULL, &dw, &dh);
 	enesim_renderer_surface_w_set(p->r, dw);
 	enesim_renderer_surface_h_set(p->r, dh);
 	enesim_renderer_surface_src_set(p->r, eon_image_surface_get(i));
 	return EINA_TRUE;
-#if 0
-	im->src = eon_image_surface_get(i);
-	/* check the scaling */
-	im->srect.x = 0;
-	im->srect.y = 0;
-	eon_image_size_get(i, &im->srect.w, &im->srect.h);
-	if (im->drect.w == im->srect.w && im->drect.h == im->srect.h)
-		p->r.get_span = _image_get_span_noscale;
-	else
-		p->r.get_span = _image_get_span_scale;
-	/* TODO port the transform one */
-#endif
 }
 
 static void image_delete(void *i)
 {
 	Paint *p = i;
 
-	free(p->data);
+	enesim_renderer_delete(p->r);
+	//free(p->data);
 	free(p);
 }
 
@@ -370,6 +341,8 @@ typedef struct Shape_Drawer_Data
 	Enesim_Surface *dst;
 	Enesim_Operator op;
 	Eon_Color color;
+	/* the sape information */
+	Eon_Shape *shape;
 	/* the callback */
 	Enesim_Scanline_Callback cb;
 	/* paint engine data */
@@ -392,6 +365,7 @@ void aliased_color_cb(Enesim_Scanline *sl, void *data)
 void aliased_fill_cb(Enesim_Scanline *sl, void *data)
 {
 	Shape_Drawer_Data *sdd = data;
+	int px, py;
 	uint32_t *ddata;
 	uint32_t stride;
 	uint32_t *fdata;
@@ -402,9 +376,10 @@ void aliased_fill_cb(Enesim_Scanline *sl, void *data)
 
 	/* fill the new span */
 	fdata = calloc(sl->data.alias.w, sizeof(uint32_t));
-	/* TODO match the coordinates */
+	/* match the coordinates */
+	paint_coords_get(sdd->paint->p, sdd->shape, &px, &py, NULL, NULL);
 	/* clip the paint coordinates to the shape's ones, only pass those */
-	enesim_renderer_span_fill(sdd->paint->r, sl->data.alias.x, sl->data.alias.y, sl->data.alias.w, fdata);
+	enesim_renderer_span_fill(sdd->paint->r, sl->data.alias.x - px, sl->data.alias.y - py, sl->data.alias.w, fdata);
 
 	/* compose the filled and the destination spans */
 	enesim_operator_drawer_span(&sdd->op, ddata, sl->data.alias.w, fdata, sdd->color, NULL);
@@ -422,6 +397,7 @@ static void shape_setup(Eon_Shape *s, Shape_Drawer_Data *d, Enesim_Surface *dst)
 	rop = eon_shape_rop_get(s);
 	d->color = eon_shape_color_get(s);
 	d->dst = dst;
+	d->shape = s;
 	p = eon_shape_fill_get(s);
 	/* color based */
 	if (!p)
@@ -608,6 +584,9 @@ static void _ctor(void *instance)
 	e->parent.image_create = image_create;
 	e->parent.image_delete = image_delete;
 	e->parent.image_setup = image_setup;
+	e->parent.hswitch_create = hswitch_create;
+	e->parent.hswitch_delete = hswitch_delete;
+	e->parent.hswitch_setup = hswitch_setup;
 	e->parent.debug_rect = debug_rect;
 }
 

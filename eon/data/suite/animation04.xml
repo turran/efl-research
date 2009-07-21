@@ -1,0 +1,8 @@
+<eon w="100%" h="100%">
+	<hswitch id="hs01" x="50%" y="0%" w="50%" h="100%" lfile="tiger.png" rfile="im1.png" step="0.5" coordspace="0">
+		<anim id="anim01" name="step" dur="3s" from="1" to="0" calc="0" begin="#r01.click" repeat="-1"/>
+	</hswitch>
+	<rect x="0%" y="0%" w="100%" h="100%" color="white"/>
+	<!-- rectangles -->
+	<rect id="r01" x="10%" y="10%" w="80%" h="80%" color="0xaa0000aa" fill="#hs01"/>
+</eon>

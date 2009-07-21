@@ -37,6 +37,7 @@
 
 #define EON_TYPE_PAINT "Eon_Paint"
 #define EON_TYPE_IMAGE "Eon_Image"
+#define EON_TYPE_HSWITCH "Eon_Hswitch"
 
 #define EON_TYPE_FILTER "Eon_Filter"
 #define EON_TYPE_FILTER_EFFECT "Eon_Filter_Effect"
@@ -95,6 +96,10 @@ void * eon_paint_engine_data_get(Eon_Paint *p);
 Eina_Bool eon_image_loaded(Eon_Image *i);
 Eina_Bool eon_image_size_get(Eon_Image *i, int *w, int *h);
 Enesim_Surface * eon_image_surface_get(Eon_Image *i);
+
+/* Hswitch */
+float eon_hswitch_step_get(Eon_Hswitch *hs);
+
 
 /* Parser */
 Eina_Bool eon_parser_coord_str_from(Eon_Coord *c, char *v);

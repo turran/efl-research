@@ -10,6 +10,24 @@ struct _Eon_Animation_Basic_Private
 
 };
 
+static void _animation_float_callback(Eon_Animation *a, const char *prop,
+		Ekeko_Object *o, const Etch_Data *curr, const Etch_Data *prev)
+{
+	Ekeko_Value v;
+
+	ekeko_value_float_from(&v, curr->data.f);
+	ekeko_object_property_value_set(o, prop, &v);
+}
+
+static void _animation_int32_callback(Eon_Animation *a, const char *prop,
+		Ekeko_Object *o, const Etch_Data *curr, const Etch_Data *prev)
+{
+	Ekeko_Value v;
+
+	ekeko_value_int_from(&v, curr->data.i32);
+	ekeko_object_property_value_set(o, prop, &v);
+}
+
 static void _animation_coord_callback(Eon_Animation *a, const char *prop,
 		Ekeko_Object *o, const Etch_Data *curr, const Etch_Data *prev)
 {
@@ -38,21 +56,40 @@ static void _animation_color_callback(Eon_Animation *a, const char *prop,
 
 static void _value_set(Ekeko_Value *v, Etch_Animation_Keyframe *k)
 {
-	if (v->type == EON_PROPERTY_COORD)
+	switch (v->type)
 	{
-		Eon_Coord *c = v->value.pointer_value;
+		/* basic types */
+		case PROPERTY_INT:
+		etch_animation_keyframe_value_set(k, v->value.int_value);
+		break;
 
-		etch_animation_keyframe_value_set(k, c->value);
-#if !EON_ANIMATION_DEBUG
-		printf("[Eon_Animation] Setting coord to %d\n", c->value);
+		case PROPERTY_FLOAT:
+		etch_animation_keyframe_value_set(k, v->value.float_value);
+		break;
+
+		default:
+		if (v->type == EON_PROPERTY_COORD)
+		{
+			Eon_Coord *c = v->value.pointer_value;
+
+			etch_animation_keyframe_value_set(k, c->value);
+#if EON_ANIMATION_DEBUG
+			printf("[Eon_Animation] Setting coord to %d\n", c->value);
 #endif
-	}
-	else if (v->type == EON_PROPERTY_COLOR)
-	{
-		Eon_Color c = v->value.int_value;
+		}
+		else if (v->type == EON_PROPERTY_COLOR)
+		{
+			Eon_Color c = v->value.int_value;
 
-		etch_animation_keyframe_value_set(k, c);
-		printf("[Eon_Animation] Setting color to %08x\n", c);
+			etch_animation_keyframe_value_set(k, c);
+#if EON_ANIMATION_DEBUG
+			printf("[Eon_Animation] Setting color to %08x\n", c);
+#endif
+		}
+		else
+		{
+			printf("[Eon_Animation] Unsupported type on the animation %d\n", v->type);
+		}
 	}
 }
 
@@ -63,6 +100,12 @@ static void _callback_set(Ekeko_Value_Type vtype, Etch_Data_Type *dtype, Eon_Ani
 		/* basic types */
 		case PROPERTY_INT:
 		*dtype = ETCH_INT32;
+		*cb = _animation_int32_callback;
+		break;
+
+		case PROPERTY_FLOAT:
+		*dtype = ETCH_FLOAT;
+		*cb = _animation_float_callback;
 		break;
 
 		default:
@@ -76,6 +119,10 @@ static void _callback_set(Ekeko_Value_Type vtype, Etch_Data_Type *dtype, Eon_Ani
 
 			*dtype = ETCH_ARGB;
 			*cb = _animation_color_callback;
+		}
+		else
+		{
+			printf("[Eon_Animation] Unsupported type on the animation %d\n", vtype);
 		}
 		break;
 	}

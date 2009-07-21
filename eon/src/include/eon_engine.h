@@ -73,6 +73,10 @@ EAPI void * eon_engine_image_create(Eon_Engine *e, Eon_Paint *p);
 EAPI Eina_Bool eon_engine_image_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
 EAPI void eon_engine_image_delete(Eon_Engine *e, void *engine_data);
 
+EAPI void * eon_engine_hswitch_create(Eon_Engine *e, Eon_Paint *p);
+EAPI Eina_Bool eon_engine_hswitch_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
+EAPI void eon_engine_hswitch_delete(Eon_Engine *e, void *engine_data);
+
 EAPI void eon_engine_debug_rect(Eon_Engine *e, void *c, uint32_t color, int x, int y, int w, int h);
 
 #endif /* EON_ENGINE_H_ */
