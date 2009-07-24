@@ -1,3 +1,20 @@
+/* EKEKO - Object System
+ * Copyright (C) 2007-2009 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -270,7 +287,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 	vtype = ekeko_property_value_type_get(prop);
 	if (vtype != PROPERTY_VALUE && vtype != value->type)
 	{
-		printf("ERROR values dont match %s %d %d!!\n", ekeko_object_type_name_get(o), vtype, value->type);
+		printf("[Ekeko_Object] ERROR values dont match %s.%s %d %d!!\n", ekeko_object_type_name_get(o), prop_name, vtype, value->type);
 		exit(1);
 	}
 	/* Initialize the type in case the property value type is PROPERTY_VALUE */
@@ -482,6 +499,31 @@ EAPI void ekeko_object_child_remove(Ekeko_Object *p, Ekeko_Object *o)
 
 }
 
+/**
+ *
+ */
+EAPI int ekeko_object_child_count(Ekeko_Object *o)
+{
+	Ekeko_Object_Private *prv = PRIVATE(o);
+
+	return eina_inlist_count(prv->children);
+}
+
+EAPI Ekeko_Object * ekeko_object_child_get_at(Ekeko_Object *o, unsigned int index)
+{
+	Eina_Accessor *a;
+	Ekeko_Object_Private *prv = PRIVATE(o);
+	Ekeko_Object *child;
+
+	a = eina_inlist_accessor_new(prv->children);
+	eina_accessor_data_get(a, index, &child);
+
+	return child;
+}
+
+/**
+ *
+ */
 EAPI Ekeko_Object * ekeko_object_child_last_get(Ekeko_Object *o)
 {
 	Ekeko_Object_Private *prv;

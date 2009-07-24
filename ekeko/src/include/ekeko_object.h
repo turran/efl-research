@@ -33,6 +33,8 @@ EAPI void ekeko_object_property_value_get(Ekeko_Object *object, char *prop_name,
 
 EAPI Eina_Bool ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o);
 EAPI void ekeko_object_child_remove(Ekeko_Object *p, Ekeko_Object *o);
+EAPI int ekeko_object_child_count(Ekeko_Object *o);
+EAPI Ekeko_Object * ekeko_object_child_get_at(Ekeko_Object *o, unsigned int index);
 EAPI Ekeko_Object * ekeko_object_child_first_get(Ekeko_Object *o);
 EAPI Ekeko_Object * ekeko_object_child_last_get(Ekeko_Object *o);
 EAPI Ekeko_Object * ekeko_object_next(Ekeko_Object *o);
