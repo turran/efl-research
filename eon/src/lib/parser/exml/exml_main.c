@@ -5,6 +5,7 @@
  *      Author: jl
  */
 #include <stdio.h>
+#include <string.h>
 
 #include "Eon.h"
 #include "EXML.h"
@@ -64,7 +65,6 @@ static void _anim_id_get(char *value, char *attr, void *data)
 	char *ttmp;
 	char *token;
 
-	printf("entering %s\n", value);
 	if (!value)
 		return;
 	tmp = strdup(value);
@@ -175,6 +175,7 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 {
 	Ekeko_Value v;
 
+	v.type = 0;
 	/* properties with special values */
 	/* rop */
 	if (!strcmp(attr, "rop"))
@@ -345,11 +346,18 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	}
 	else if (!strcmp(tag, "image"))
 	{
-		o = (Ekeko_Object *)eon_image_new((Eon_Canvas *)parent);
+		o = (Ekeko_Object *)eon_image_new();
+		ekeko_object_child_append(parent, o);
 	}
 	else if (!strcmp(tag, "hswitch"))
 	{
-		o = (Ekeko_Object *)eon_hswitch_new((Eon_Canvas *)parent);
+		o = (Ekeko_Object *)eon_hswitch_new();
+		ekeko_object_child_append(parent, o);
+	}
+	else if (!strcmp(tag, "sqpattern"))
+	{
+		o = (Ekeko_Object *)eon_sqpattern_new();
+		ekeko_object_child_append(parent, o);
 	}
 	else if (!strcmp(tag, "poly"))
 	{

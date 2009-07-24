@@ -1,39 +1,35 @@
 /*
- * eon_document.h
+ * eon_sqpattern.h
  *
- *  Created on: 03-feb-2009
+ *  Created on: 22-jul-2009
  *      Author: jl
  */
 
-#ifndef EON_DOCUMENT_H_
-#define EON_DOCUMENT_H_
+#ifndef EON_SQPATTERN_H_
+#define EON_SQPATTERN_H_
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
-#define EON_DOCUMENT_SIZE_CHANGED "sizeChanged"
+#define EON_SQPATTERN_SW_CHANGED "swChanged"
+#define EON_SQPATTERN_SH_CHANGED "shChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-extern Ekeko_Property_Id EON_DOCUMENT_SIZE;
+extern Ekeko_Property_Id EON_SQPATTERN_SW;
+extern Ekeko_Property_Id EON_SQPATTERN_SH;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
-typedef struct _Eon_Document_Private Eon_Document_Private;
-struct _Eon_Document
+typedef struct _Eon_Sqpattern_Private Eon_Sqpattern_Private;
+struct _Eon_Sqpattern
 {
-	Ekeko_Object parent;
-	Eon_Document_Private *private;
+	Eon_Paint parent;
+	Eon_Sqpattern_Private *private;
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
-EAPI Ekeko_Type *eon_document_type_get(void);
-EAPI Eon_Document * eon_document_new(const char *name, int w, int h, const char *options);
-EAPI Eon_Canvas * eon_document_canvas_get(Eon_Document *d);
-EAPI Ekeko_Object * eon_document_object_get_by_id(Eon_Document *d, const char *id);
-EAPI void eon_document_size_get(Eon_Document *d, int *w, int *h);
-EAPI void eon_document_resize(Eon_Document *d, int w, int h);
-EAPI void eon_document_pause(Eon_Document *d);
-EAPI void eon_document_play(Eon_Document *d);
+EAPI Ekeko_Type *eon_sqpattern_type_get(void);
+EAPI Eon_Sqpattern * eon_sqpattern_new(void);
 
-#endif /* EON_DOCUMENT_H_ */
+#endif /* EON_SQPATTERN_H_ */

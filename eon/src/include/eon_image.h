@@ -30,7 +30,7 @@ struct _Eon_Image
  *                                Functions                                   *
  *============================================================================*/
 EAPI Ekeko_Type *eon_image_type_get(void);
-EAPI Eon_Image * eon_image_new(Eon_Canvas *c);
+EAPI Eon_Image * eon_image_new(void);
 
 EAPI void eon_image_file_set(Eon_Image *i, const char *file);
 EAPI const char * eon_image_file_get(Eon_Image *i);

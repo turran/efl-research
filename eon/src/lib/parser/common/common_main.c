@@ -220,7 +220,12 @@ Eina_Bool eon_parser_rop_str_from(Ekeko_Value *ev, char *v)
 		rop = ENESIM_BLEND;
 	else if (!strcmp(v, "fill"))
 		rop = ENESIM_FILL;
-	ekeko_value_int_from(&ev, rop);
+	else
+	{
+		printf("undefined rop type? %s\n", v);
+		return EINA_FALSE;
+	}
+	ekeko_value_int_from(ev, rop);
 
 	return EINA_TRUE;
 }
@@ -304,7 +309,7 @@ Ekeko_Object * eon_parser_object_new(Ekeko_Object *p, Eon_Type_Constructor ctr)
 	Ekeko_Object *o;
 
 	o = ekeko_type_instance_new(ctr());
-	
+
 	if (!p)
 		return o;
 

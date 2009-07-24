@@ -107,23 +107,67 @@ void * hswitch_create(Eon_Hswitch *hs)
 Eina_Bool hswitch_setup(void *data, Eon_Shape *s)
 {
 	Paint *p = data;
+	Paint *tmp;
 	Eon_Hswitch *hs = (Eon_Hswitch *)p->p;
+	Eon_Paint *p1, *p2;
+	float step;
 	int dw, dh;
 
-	if (!eon_hswitch_left_loaded(hs) || !eon_hswitch_right_loaded(hs))
-	{
+	if (!eon_transition_get((Eon_Transition *)hs, &p1, &p2, &step))
 		return EINA_FALSE;
-	}
+	if (!eon_paint_setup(p1, s))
+		return EINA_FALSE;
+	if (!eon_paint_setup(p2, s))
+		return EINA_FALSE;
+
 	paint_coords_get(p->p, s, NULL, NULL, &dw, &dh);
-	enesim_renderer_hswitch_left_set(p->r, eon_hswitch_left_get(hs));
-	enesim_renderer_hswitch_right_set(p->r, eon_hswitch_right_get(hs));
+	tmp = eon_paint_engine_data_get(p1);
+	enesim_renderer_hswitch_left_set(p->r, tmp->r);
+	tmp = eon_paint_engine_data_get(p2);
+	enesim_renderer_hswitch_right_set(p->r, tmp->r);
 	enesim_renderer_hswitch_w_set(p->r, dw);
 	enesim_renderer_hswitch_h_set(p->r, dh);
-	enesim_renderer_hswitch_step_set(p->r, eon_hswitch_step_get(hs));
+	enesim_renderer_hswitch_step_set(p->r, eon_transition_step_get((Eon_Transition *)hs));
 	return EINA_TRUE;
 }
 
 static void hswitch_delete(void *data)
+{
+	Paint *p = data;
+
+	enesim_renderer_delete(p->r);
+	free(p);
+}
+/*============================================================================*
+ *                                 Sqpattern                                  *
+ *============================================================================*/
+void * sqpattern_create(Eon_Sqpattern *sq)
+{
+	Paint *p;
+
+	p = calloc(1, sizeof(Paint));
+	p->p = (Eon_Paint *)sq;
+	p->r = enesim_renderer_sqpattern_new();
+
+	return p;
+}
+
+Eina_Bool sqpattern_setup(void *data, Eon_Shape *s)
+{
+	Paint *p = data;
+	Eon_Sqpattern *sq = (Eon_Sqpattern *)p->p;
+	int dx, dy;
+
+	paint_coords_get(p->p, s, &dx, &dy, NULL, NULL);
+
+	enesim_renderer_origin_set(p->r, dx, dy);
+	enesim_renderer_sqpattern_color1_set(p->r, eon_sqpattern_color1_get(sq));
+	enesim_renderer_sqpattern_color2_set(p->r, eon_sqpattern_color2_get(sq));
+	enesim_renderer_sqpattern_size_set(p->r, 20, 20);
+	return EINA_TRUE;
+}
+
+static void sqpattern_delete(void *data)
 {
 	Paint *p = data;
 
@@ -175,14 +219,16 @@ Eina_Bool image_setup(void *data, Eon_Shape *s)
 	Paint *p = data;
 	Eon_Image *i = (Eon_Image *)p->p;
 	int dw, dh;
+	int dx, dy;
 
 	if (!eon_image_loaded(i))
 	{
 		return EINA_FALSE;
 	}
-	paint_coords_get(p->p, s, NULL, NULL, &dw, &dh);
+	paint_coords_get(p->p, s, &dx, &dy, &dw, &dh);
 	enesim_renderer_surface_w_set(p->r, dw);
 	enesim_renderer_surface_h_set(p->r, dh);
+	enesim_renderer_origin_set(p->r, dx, dy);
 	enesim_renderer_surface_src_set(p->r, eon_image_surface_get(i));
 	return EINA_TRUE;
 }
@@ -379,7 +425,8 @@ void aliased_fill_cb(Enesim_Scanline *sl, void *data)
 	/* match the coordinates */
 	paint_coords_get(sdd->paint->p, sdd->shape, &px, &py, NULL, NULL);
 	/* clip the paint coordinates to the shape's ones, only pass those */
-	enesim_renderer_span_fill(sdd->paint->r, sl->data.alias.x - px, sl->data.alias.y - py, sl->data.alias.w, fdata);
+	enesim_renderer_span_fill(sdd->paint->r, sl->data.alias.x, sl->data.alias.y, sl->data.alias.w, fdata);
+	//enesim_renderer_span_fill(sdd->paint->r, sl->data.alias.x - px, sl->data.alias.y - py, sl->data.alias.w, fdata);
 
 	/* compose the filled and the destination spans */
 	enesim_operator_drawer_span(&sdd->op, ddata, sl->data.alias.w, fdata, sdd->color, NULL);
@@ -496,10 +543,50 @@ static void rect_render(void *er, void *cd, Eina_Rectangle *clip)
 /*============================================================================*
  *                                 Circle                                     *
  *============================================================================*/
+static void shape_renderer_draw(Eon_Shape *s, Enesim_Surface *dst,  Enesim_Renderer *r, Eina_Rectangle *clip)
+{
+	Enesim_Cpu **cpus;
+	int numcpus;
+	Enesim_Rop rop;
+	Enesim_Operator op;
+	Eon_Color color;
+	int dh, dy;
+	uint32_t *ddata;
+	uint32_t *fdata;
+	int stride;
+
+	ddata = enesim_surface_data_get(dst);
+	stride = enesim_surface_stride_get(dst);
+	ddata = ddata + (clip->y * stride) + clip->x;
+
+	cpus = enesim_cpu_get(&numcpus);
+	rop = eon_shape_rop_get(s);
+	color = eon_shape_color_get(s);
+	enesim_drawer_span_pixel_color_op_get(cpus[0], &op, rop, ENESIM_FORMAT_ARGB8888, ENESIM_FORMAT_ARGB8888, color);
+
+	dh = clip->h;
+	dy = clip->y;
+	/* fill the new span */
+	while (dh--)
+	{
+		fdata = calloc(clip->w, sizeof(uint32_t));
+		enesim_renderer_span_fill(r, clip->x, dy, clip->w, fdata);
+		/* compose the filled and the destination spans */
+		enesim_operator_drawer_span(&op, ddata, clip->w, fdata, color, NULL);
+		dy++;
+		ddata += stride;
+		free(fdata);
+	}
+}
+
 typedef struct Circle
 {
 	Eon_Circle *c;
+#if RASTERIZER
 	Enesim_Rasterizer *r;
+#else
+	Enesim_Renderer *r;
+#endif
 } Circle;
 
 static void * circle_create(Eon_Circle *ec)
@@ -508,9 +595,13 @@ static void * circle_create(Eon_Circle *ec)
 
 	c = malloc(sizeof(Circle));
 	c->c = ec;
+#if RASTERIZER
 	c->r = enesim_rasterizer_circle_new();
 	enesim_rasterizer_circle_fill_policy_set(c->r, ENESIM_RASTERIZER_FILL_POLICY_FILL);
-
+#else
+	c->r = enesim_renderer_circle_new();
+	//c->r = enesim_renderer_rectangle_new();
+#endif
 	return c;
 }
 
@@ -524,14 +615,50 @@ static void circle_render(void *ec, void *cd, Eina_Rectangle *clip)
 	Eon_Coord y;
 	int radius;
 	Shape_Drawer_Data sdd;
+	int dh, dy;
+	Eon_Paint *p;
+	Paint *pa;
 
 	eon_circle_x_get(c->c, &x);
 	eon_circle_y_get(c->c, &y);
 	radius = eon_circle_radius_get(c->c);
+#if RASTERIZER
 	enesim_rasterizer_circle_radius_set(c->r, radius);
         enesim_rasterizer_vertex_add(c->r, x.final, y.final);
 	shape_setup((Eon_Shape *)c->c, &sdd, cd);
 	enesim_rasterizer_generate(c->r, clip, sdd.cb, &sdd);
+#else
+
+	enesim_renderer_circle_center_set(c->r, x.final, y.final);
+	enesim_renderer_circle_radius_set(c->r, radius);
+	//enesim_renderer_rectangle_size_set(c->r, clip->w, clip->h);
+	p = eon_shape_fill_get((Eon_Shape *)c->c);
+	if (!p)
+	{
+		printf("The circle doesnt have a fill paint\n");
+		return;
+	}
+	pa = eon_paint_engine_data_get(p);
+	enesim_renderer_circle_fill_renderer_set(c->r, pa->r);
+	//enesim_renderer_rectangle_fill_paint_set(c->r, pa->r);
+#if 0
+	{
+		Enesim_Renderer *patt;
+
+		patt = enesim_renderer_sqpattern_new();
+		enesim_renderer_sqpattern_color1_set(patt, 0xff555555);
+		enesim_renderer_sqpattern_color2_set(patt, 0xaa888888);
+		enesim_renderer_sqpattern_size_set(patt, 10, 10);
+		enesim_renderer_circle_fill_renderer_set(c->r, patt);
+	}
+#endif
+	//enesim_renderer_rectangle_draw_mode_set(c->r, ENESIM_RENDERER_DRAW_MODE_FILL);
+	enesim_renderer_circle_draw_mode_set(c->r, ENESIM_RENDERER_DRAW_MODE_FILL);
+	//enesim_renderer_circle_fill_color_set(c->r, 0xaa555555);
+	enesim_renderer_circle_outline_weight_set(c->r, 2.0);
+	enesim_renderer_state_setup(c->r);
+	shape_renderer_draw((Eon_Shape *)c->c, cd, c->r, clip);
+#endif
 }
 
 static void circle_delete(void *ec)
@@ -587,6 +714,9 @@ static void _ctor(void *instance)
 	e->parent.hswitch_create = hswitch_create;
 	e->parent.hswitch_delete = hswitch_delete;
 	e->parent.hswitch_setup = hswitch_setup;
+	e->parent.sqpattern_create = sqpattern_create;
+	e->parent.sqpattern_delete = sqpattern_delete;
+	e->parent.sqpattern_setup = sqpattern_setup;
 	e->parent.debug_rect = debug_rect;
 }
 

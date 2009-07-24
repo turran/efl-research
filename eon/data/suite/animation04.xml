@@ -1,6 +1,9 @@
 <eon w="100%" h="100%">
-	<hswitch id="hs01" x="50%" y="0%" w="50%" h="100%" lfile="tiger.png" rfile="im1.png" step="0.5" coordspace="0">
+	<hswitch id="hs01" x="0%" y="0%" w="100%" h="100%" step="0.5">
 		<anim id="anim01" name="step" dur="3s" from="1" to="0" calc="0" begin="#r01.click" repeat="-1"/>
+		<image file="tiger.png" x="0%" y="0%" w="100%" h="100%" coordspace="0"/>
+		<image file="eon.png" x="0%" y="0%" w="100%" h="100%" coordpsace="1"/>
+		<sqpattern x="0%" y="0%" color1="white" color2="red" id="sq01" coordspace="1"/>
 	</hswitch>
 	<rect x="0%" y="0%" w="100%" h="100%" color="white"/>
 	<!-- rectangles -->

@@ -22,7 +22,9 @@ typedef struct _Eon_Polygon Eon_Polygon;
 /* paint objects */
 typedef struct _Eon_Paint Eon_Paint;
 typedef struct _Eon_Image Eon_Image;
+typedef struct _Eon_Transition Eon_Transition;
 typedef struct _Eon_Hswitch Eon_Hswitch;
+typedef struct _Eon_Sqpattern Eon_Sqpattern;
 
 typedef struct _Eon_Filter Eon_Filter;
 /* filter effects */
@@ -59,7 +61,9 @@ EAPI int eon_shutdown(void);
 
 #include "eon_paint.h"
 #include "eon_image.h"
+#include "eon_transition.h"
 #include "eon_hswitch.h"
+#include "eon_sqpattern.h"
 
 #include "eon_filter.h"
 #include "eon_displace.h"

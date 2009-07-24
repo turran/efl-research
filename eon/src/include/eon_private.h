@@ -37,7 +37,9 @@
 
 #define EON_TYPE_PAINT "Eon_Paint"
 #define EON_TYPE_IMAGE "Eon_Image"
+#define EON_TYPE_TRANSITION "Eon_Transition"
 #define EON_TYPE_HSWITCH "Eon_Hswitch"
+#define EON_TYPE_SQPATTERN "Eon_Sqpattern"
 
 #define EON_TYPE_FILTER "Eon_Filter"
 #define EON_TYPE_FILTER_EFFECT "Eon_Filter_Effect"
@@ -91,6 +93,7 @@ void eon_coord_length_change(const Ekeko_Object *o, Eon_Coord *dst, Eon_Coord *c
 
 /* Paint */
 void * eon_paint_engine_data_get(Eon_Paint *p);
+Eon_Canvas * eon_paint_canvas_get(Eon_Paint *p);
 
 /* Image */
 Eina_Bool eon_image_loaded(Eon_Image *i);

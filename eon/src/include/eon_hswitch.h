@@ -10,32 +10,23 @@
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
-#define EON_HSWITCH_LFILE_CHANGED "lfileChanged"
-#define EON_HSWITCH_RFILE_CHANGED "rfileChanged"
-#define EON_HSWITCH_STEP_CHANGED "stepChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-extern Ekeko_Property_Id EON_HSWITCH_LFILE;
-extern Ekeko_Property_Id EON_HSWITCH_RFILE;
-extern Ekeko_Property_Id EON_HSWITCH_STEP;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
 typedef struct _Eon_Hswitch_Private Eon_Hswitch_Private;
 struct _Eon_Hswitch
 {
-	Eon_Paint parent;
+	Eon_Transition parent;
 	Eon_Hswitch_Private *private;
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
 EAPI Ekeko_Type *eon_hswitch_type_get(void);
-EAPI Eon_Hswitch * eon_hswitch_new(Eon_Canvas *c);
-
-EAPI void eon_hswitch_left_set(Eon_Hswitch *i, const char *file);
-EAPI void eon_hswitch_right_set(Eon_Hswitch *i, const char *file);
+EAPI Eon_Hswitch * eon_hswitch_new(void);
 
 /* paint wrappers */
 #define eon_hswitch_matrix_set(i, m) eon_paint_matrix_set((Eon_Paint *)(i), m)

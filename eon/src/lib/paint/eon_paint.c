@@ -33,9 +33,13 @@ static void _child_append_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	Eon_Paint_Private *prv;
 	Eon_Document *d;
 	Eon_Engine *eng;
+	Eon_Canvas *c;
 
+	c = eon_paint_canvas_get((Eon_Paint *)o);
+	if (!c)
+		return;
 	/* when this shape is appended to a canvas, try to setup the context */
-	d = eon_canvas_document_get((Eon_Canvas *)em->related);
+	d = eon_canvas_document_get(c);
 	/* FIXME in case the canvas doesnt have a document */
 	eng = eon_document_engine_get(d);
 	p = (Eon_Paint *)o;
@@ -72,15 +76,6 @@ static void _dtor(void *paint)
 {
 
 }
-
-static Eina_Bool _appendable(void *instance, void *child)
-{
-	if (!ekeko_type_instance_is_of(child, EON_TYPE_ANIMATION))
-	{
-		return EINA_FALSE;
-	}
-	return EINA_TRUE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -88,6 +83,50 @@ void * eon_paint_engine_data_get(Eon_Paint *p)
 {
 	Eon_Paint_Private *prv = PRIVATE(p);
 	return prv->engine_data;
+}
+
+/*
+ * There are paints which might have other paints as childs, so we should
+ * handle a recursive canvas finding
+ */
+Eon_Canvas * eon_paint_canvas_get(Eon_Paint *p)
+{
+	Ekeko_Object *o;
+
+	o = ekeko_object_parent_get((Ekeko_Object *)p);
+	while (!ekeko_type_instance_is_of(o, EON_TYPE_CANVAS))
+	{
+		o = ekeko_object_parent_get(o);
+	}
+	return (Eon_Canvas *)o;
+}
+
+void eon_paint_create(Eon_Paint *p)
+{
+	Eon_Paint_Private *prv = PRIVATE(p);
+	Eon_Canvas *c;
+	Eon_Document *d;
+	Eon_Engine *eng;
+
+	c = eon_paint_canvas_get(p);
+	d = eon_canvas_document_get(c);
+	/* FIXME in case the canvas doesnt have a document */
+	eng = eon_document_engine_get(d);
+	prv->engine_data = p->create(eng, p);
+}
+
+Eina_Bool eon_paint_setup(Eon_Paint *p, Eon_Shape *s)
+{
+	Eon_Paint_Private *prv = PRIVATE(p);
+	Eon_Canvas *c;
+	Eon_Document *d;
+	Eon_Engine *eng;
+
+	c = eon_paint_canvas_get(p);
+	d = eon_canvas_document_get(c);
+	/* FIXME in case the canvas doesnt have a document */
+	eng = eon_document_engine_get(d);
+	return p->setup(eng, prv->engine_data, s);
 }
 /*============================================================================*
  *                                   API                                      *
@@ -107,7 +146,7 @@ EAPI Ekeko_Type *eon_paint_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_PAINT, sizeof(Eon_Paint),
 				sizeof(Eon_Paint_Private), ekeko_object_type_get(),
-				_ctor, _dtor, _appendable);
+				_ctor, _dtor, NULL);
 		EON_PAINT_MATRIX = TYPE_PROP_SINGLE_ADD(type, "matrix", EON_PROPERTY_MATRIX, OFFSET(Eon_Paint_Private, matrix));
 		EON_PAINT_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, x));
 		EON_PAINT_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, y));

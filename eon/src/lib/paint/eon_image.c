@@ -62,6 +62,7 @@ static void _file_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	Eon_Image *i = (Eon_Image *)o;
 	Eon_Image_Private *prv = PRIVATE(o);
 
+	printf("FILE CHANGED!!\n");
 	if (em->state != EVENT_MUTATION_STATE_POST)
 		return;
 	prv->src.loaded = EINA_FALSE;
@@ -149,12 +150,11 @@ EAPI Ekeko_Type *eon_image_type_get(void)
 	return type;
 }
 
-EAPI Eon_Image * eon_image_new(Eon_Canvas *c)
+EAPI Eon_Image * eon_image_new(void)
 {
 	Eon_Image *i;
 
 	i = ekeko_type_instance_new(eon_image_type_get());
-	ekeko_object_child_append((Ekeko_Object *)c, (Ekeko_Object *)i);
 
 	return i;
 }

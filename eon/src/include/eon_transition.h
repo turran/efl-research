@@ -1,39 +1,35 @@
 /*
- * eon_document.h
+ * eon_transition.h
  *
- *  Created on: 03-feb-2009
+ *  Created on: 24-jul-2009
  *      Author: jl
  */
 
-#ifndef EON_DOCUMENT_H_
-#define EON_DOCUMENT_H_
+#ifndef EON_TRANSITION_H_
+#define EON_TRANSITION_H_
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
-#define EON_DOCUMENT_SIZE_CHANGED "sizeChanged"
+#define EON_TRANSITION_STEP_CHANGED "stepChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-extern Ekeko_Property_Id EON_DOCUMENT_SIZE;
+extern Ekeko_Property_Id EON_TRANSITION_STEP;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
-typedef struct _Eon_Document_Private Eon_Document_Private;
-struct _Eon_Document
+typedef struct _Eon_Transition_Private Eon_Transition_Private;
+struct _Eon_Transition
 {
-	Ekeko_Object parent;
-	Eon_Document_Private *private;
+	Eon_Paint parent;
+	Eon_Transition_Private *private;
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
-EAPI Ekeko_Type *eon_document_type_get(void);
-EAPI Eon_Document * eon_document_new(const char *name, int w, int h, const char *options);
-EAPI Eon_Canvas * eon_document_canvas_get(Eon_Document *d);
-EAPI Ekeko_Object * eon_document_object_get_by_id(Eon_Document *d, const char *id);
-EAPI void eon_document_size_get(Eon_Document *d, int *w, int *h);
-EAPI void eon_document_resize(Eon_Document *d, int w, int h);
-EAPI void eon_document_pause(Eon_Document *d);
-EAPI void eon_document_play(Eon_Document *d);
+EAPI Ekeko_Type *eon_transition_type_get(void);
 
-#endif /* EON_DOCUMENT_H_ */
+EAPI void eon_transition_step_set(Eon_Transition *t, float step);
+EAPI float eon_transition_step_get(Eon_Transition *t);
+
+#endif /* EON_TRANSITION_H_ */

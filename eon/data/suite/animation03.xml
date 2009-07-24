@@ -1,5 +1,5 @@
 <eon w="100%" h="100%">
-	<image id="im01" x="0%" y="0%" w="100%" h="100%" file="tiger.png" coordspace="1"/>
+	<image id="im01" x="0%" y="0%" w="100%" h="100%" file="tiger.png" coordspace="0"/>
 	<image id="im02" x="0%" y="0%" w="100%" h="100%" file="tiger.png" coordspace="1"/>
 	<rect x="0%" y="0%" w="100%" h="100%" color="white"/>
 	<!-- rectangles -->
