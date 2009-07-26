@@ -146,6 +146,13 @@ static void _dtor(void *rect)
 
 }
 
+static Eina_Bool _appendable(void *instance, void *child)
+{
+	if (!strcmp(ekeko_object_type_name_get(child), EON_TYPE_ANIMATION_KEY))
+		return EINA_TRUE;
+	else
+		return EINA_FALSE;
+}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -160,7 +167,7 @@ EAPI Ekeko_Type * eon_animation_basic_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_ANIMATION_BASIC, sizeof(Eon_Animation_Basic),
 				sizeof(Eon_Animation_Basic_Private), eon_animation_type_get(),
-				_ctor, _dtor, NULL);
+				_ctor, _dtor, _appendable);
 	}
 
 	return type;

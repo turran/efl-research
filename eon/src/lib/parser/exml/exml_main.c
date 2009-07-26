@@ -195,6 +195,16 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 
 		case PROPERTY_VALUE:
 		{
+			if (ekeko_type_instance_is_of(o, "Eon_Animation_Key"))
+			{
+				Ekeko_Object *p;
+				Ekeko_Value_Type vtype;
+
+				p = ekeko_object_parent_get(o);
+				vtype = eon_animation_prop_type_get(p);
+				object_attribute_set(o, vtype, attr, name);
+			}
+#if 0
 			/* FIXME remove "Eon_Animation" */
 			if (ekeko_type_instance_is_of(o, "Eon_Animation"))
 			{
@@ -227,6 +237,7 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 				}
 				object_attribute_set(o, vtype, attr, name);
 			}
+#endif
 		}
 		return;
 
@@ -354,6 +365,11 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 		o = (Ekeko_Object *)eon_hswitch_new();
 		ekeko_object_child_append(parent, o);
 	}
+	else if (!strcmp(tag, "fade"))
+	{
+		o = (Ekeko_Object *)eon_fade_new();
+		ekeko_object_child_append(parent, o);
+	}
 	else if (!strcmp(tag, "sqpattern"))
 	{
 		o = (Ekeko_Object *)eon_sqpattern_new();
@@ -392,6 +408,10 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 			return NULL;
 		}
 		object_attribute_set(o, PROPERTY_STRING, "name", value);
+	}
+	else if (!strcmp(tag, "key"))
+	{
+		o = (Ekeko_Object *)eon_animation_key_new(parent);
 	}
 	if (!o)
 		return NULL;

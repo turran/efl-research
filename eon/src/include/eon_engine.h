@@ -45,6 +45,10 @@ struct _Eon_Engine
 	void * (*hswitch_create)(Eon_Hswitch *i);
 	Eina_Bool (*hswitch_setup)(void *i, Eon_Shape *s);
 	void (*hswitch_delete)(void *i);
+	/* hswitch callbacks */
+	void * (*fade_create)(Eon_Hswitch *i);
+	Eina_Bool (*fade_setup)(void *i, Eon_Shape *s);
+	void (*fade_delete)(void *i);
 	/* sqpattern callbacks */
 	void * (*sqpattern_create)(Eon_Sqpattern *i);
 	Eina_Bool (*sqpattern_setup)(void *i, Eon_Shape *s);
@@ -80,6 +84,10 @@ EAPI void eon_engine_image_delete(Eon_Engine *e, void *engine_data);
 EAPI void * eon_engine_hswitch_create(Eon_Engine *e, Eon_Paint *p);
 EAPI Eina_Bool eon_engine_hswitch_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
 EAPI void eon_engine_hswitch_delete(Eon_Engine *e, void *engine_data);
+
+EAPI void * eon_engine_fade_create(Eon_Engine *e, Eon_Paint *p);
+EAPI Eina_Bool eon_engine_fade_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);
+EAPI void eon_engine_fade_delete(Eon_Engine *e, void *engine_data);
 
 EAPI void * eon_engine_sqpattern_create(Eon_Engine *e, Eon_Paint *p);
 EAPI Eina_Bool eon_engine_sqpattern_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s);

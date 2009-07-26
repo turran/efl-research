@@ -20,7 +20,7 @@ struct _Eon_Transition_Private
 /* in case some paint child has changed we should trigger the change too */
 static void _paint_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
-	printf("some childs's property changed!!\n");
+	//printf("some childs's property changed!!\n");
 }
 
 static void _child_appended_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
@@ -69,6 +69,7 @@ Eina_Bool eon_transition_get(Eon_Transition *t, Eon_Paint **p1, Eon_Paint **p2, 
 	*step = ((float)(prv->step * (num - 1))) - pos;
 	*p1 = eina_list_nth(prv->paints, pos);
 	*p2 = eina_list_nth(prv->paints, pos + 1);
+	//printf("step = %g (%g) pos = %d %d\n", *step, prv->step, pos, pos + 1);
 
 	return EINA_TRUE;
 }

@@ -127,11 +127,57 @@ Eina_Bool hswitch_setup(void *data, Eon_Shape *s)
 	enesim_renderer_hswitch_right_set(p->r, tmp->r);
 	enesim_renderer_hswitch_w_set(p->r, dw);
 	enesim_renderer_hswitch_h_set(p->r, dh);
-	enesim_renderer_hswitch_step_set(p->r, eon_transition_step_get((Eon_Transition *)hs));
+	enesim_renderer_hswitch_step_set(p->r, step);
 	return EINA_TRUE;
 }
 
 static void hswitch_delete(void *data)
+{
+	Paint *p = data;
+
+	enesim_renderer_delete(p->r);
+	free(p);
+}
+/*============================================================================*
+ *                                   Fade                                     *
+ *============================================================================*/
+static void * fade_create(Eon_Fade *f)
+{
+	Paint *p;
+
+	p = calloc(1, sizeof(Paint));
+	p->p = (Eon_Paint *)f;
+	p->r = enesim_renderer_transition_new();
+
+	return p;
+}
+
+static Eina_Bool fade_setup(void *data, Eon_Shape *s)
+{
+	Paint *p = data;
+	Paint *tmp;
+	Eon_Fade *f = (Eon_Fade *)p->p;
+	Eon_Paint *p1, *p2;
+	float step;
+	int dw, dh;
+
+	if (!eon_transition_get((Eon_Transition *)f, &p1, &p2, &step))
+		return EINA_FALSE;
+	if (!eon_paint_setup(p1, s))
+		return EINA_FALSE;
+	if (!eon_paint_setup(p2, s))
+		return EINA_FALSE;
+
+	paint_coords_get(p->p, s, NULL, NULL, &dw, &dh);
+	tmp = eon_paint_engine_data_get(p1);
+	enesim_renderer_transition_source_set(p->r, tmp->r);
+	tmp = eon_paint_engine_data_get(p2);
+	enesim_renderer_transition_target_set(p->r, tmp->r);
+	enesim_renderer_transition_value_set(p->r, step);
+	return EINA_TRUE;
+}
+
+static void fade_delete(void *data)
 {
 	Paint *p = data;
 
@@ -711,6 +757,9 @@ static void _ctor(void *instance)
 	e->parent.image_create = image_create;
 	e->parent.image_delete = image_delete;
 	e->parent.image_setup = image_setup;
+	e->parent.fade_create = fade_create;
+	e->parent.fade_delete = fade_delete;
+	e->parent.fade_setup = fade_setup;
 	e->parent.hswitch_create = hswitch_create;
 	e->parent.hswitch_delete = hswitch_delete;
 	e->parent.hswitch_setup = hswitch_setup;

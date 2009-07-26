@@ -10,6 +10,7 @@ noinst_LTLIBRARIES = libeon_core.la
 
 libeon_core_la_SOURCES = \
 eon_animation.c \
+eon_anim_key.c \
 eon_anim_basic.c \
 eon_anim_matrix.c \
 eon_document.c \

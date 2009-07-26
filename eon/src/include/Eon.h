@@ -10,6 +10,7 @@
 typedef struct _Eon_Document Eon_Document;
 typedef struct _Eon_Canvas Eon_Canvas;
 typedef struct _Eon_Animation Eon_Animation;
+typedef struct _Eon_Animation_Key Eon_Animation_Key;
 typedef struct _Eon_Animation_Basic Eon_Animation_Basic;
 typedef struct _Eon_Animation_Matrix Eon_Animation_Matrix;
 typedef struct _Eon_External Eon_External;
@@ -24,6 +25,7 @@ typedef struct _Eon_Paint Eon_Paint;
 typedef struct _Eon_Image Eon_Image;
 typedef struct _Eon_Transition Eon_Transition;
 typedef struct _Eon_Hswitch Eon_Hswitch;
+typedef struct _Eon_Fade Eon_Fade;
 typedef struct _Eon_Sqpattern Eon_Sqpattern;
 
 typedef struct _Eon_Filter Eon_Filter;
@@ -49,6 +51,7 @@ EAPI int eon_shutdown(void);
 #include "eon_document.h"
 #include "eon_canvas.h"
 #include "eon_animation.h"
+#include "eon_anim_key.h"
 #include "eon_anim_basic.h"
 #include "eon_anim_matrix.h"
 #include "eon_external.h"
@@ -63,6 +66,7 @@ EAPI int eon_shutdown(void);
 #include "eon_image.h"
 #include "eon_transition.h"
 #include "eon_hswitch.h"
+#include "eon_fade.h"
 #include "eon_sqpattern.h"
 
 #include "eon_filter.h"

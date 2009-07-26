@@ -1,17 +1,41 @@
 <eon w="100%" h="100%" id="canvas01">
 	<rect x="0" y="0" w="100%" h="100%" color="white"/>
 	<rect x="20%" y="50%" w="20%" h="20%" color="0xaaaa0000">
-		<anim name="y" dur="1s" from="50%" to="0%" calc="0" begin="#anim01.start" repeat="-1"/>
-		<anim name="w" dur="0.4s" from="20%" to="50%" calc="0" begin="#anim01.start" repeat="-1"/>
-		<anim name="h" dur="0.4s" from="20%" to="50%" calc="0" begin="#anim01.start" repeat="-1"/>
-		<anim name="x" dur="0.4s" from="20%" to="5%" calc="0" begin="#anim01.start" repeat="-1"/>
-		<anim name="color" dur="0.4s" from="0xaaaa0000" to="0x00000000" calc="0" begin="#anim01.start" repeat="-1"/>
+		<anim name="y" begin="#anim01.start" repeat="-1">
+			<key value="50%" start="0" calc="0"/>
+			<key value="0%" start="1s" calc="0"/>
+		</anim>
+		<anim name="w" begin="#anim01.start" repeat="-1">
+			<key value="20%" start="0" calc="0"/>
+			<key value="50%" start="0.4s" calc="0"/>
+		</anim>
+		<anim name="h" dur="0.4s" begin="#anim01.start" repeat="-1">
+			<key value="20%" start="0" calc="0"/>
+			<key value="50%" start="0.4s" calc="0"/>
+		</anim>
+		<anim name="x" begin="#anim01.start" repeat="-1">
+			<key value="20%" start="0" calc="0"/>
+			<key value="5%" start="0.4s" calc="0"/>
+		</anim>
+		<anim name="color" begin="#anim01.start" repeat="-1">
+			<key value="0xaaaa0000" start="0" calc="0"/>
+			<key value="0x00000000" start="0.4s" calc="0"/>
+		</anim>
 	</rect>
 	<rect x="20%" y="50%" w="20%" h="20%" color="red">
-		<anim id="anim01" name="y" dur="1s" from="50%" to="0%" calc="0" begin="click" repeat="-1"/>
+		<anim id="anim01" name="y" begin="click" repeat="-1">
+			<key value="50%" start="0" calc="0"/>
+			<key value="0%" start="1s" calc="0"/>
+		</anim>
 	</rect>
 	<rect x="60%" y="50%" w="20%" h="20%" color="red">
-		<anim id="anim05" name="y" dur="1s" from="50%" to="0%" calc="0" begin="click" repeat="1"/>
-		<anim id="anim06" name="color" dur="5s" from="red" to="0xaaaaaaaa" calc="0" begin="#anim05.start" repeat="-1"/>
+		<anim id="anim05" name="y" begin="click" repeat="1">
+			<key value="50%" start="0" calc="0"/>
+			<key value="0%" start="1s" calc="0"/>
+		</anim>
+		<anim id="anim06" name="color" begin="#anim05.start" repeat="-1">
+			<key value="red" start="0" calc="0"/>
+			<key value="0xaaaaaaaa" start="5s" calc="0"/>
+		</anim>
 	</rect>
 </eon>

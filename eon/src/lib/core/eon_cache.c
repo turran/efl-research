@@ -101,7 +101,7 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 {
 	Eon_Cache_Image_Load *l = data;
 
-	printf("Callback called\n");
+	//printf("Callback called\n");
 	/* store the image metadata in case everything went ok */
 	if (!error)
 	{
@@ -109,7 +109,7 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 		Eon_Cache *c;
 
 		c = eon_cache_image_get();
-		printf("Storing image with key %s on the cache\n", l->key);
+		//printf("Storing image with key %s on the cache\n", l->key);
 #ifdef BUILD_CACHE_ESHM
 #else
 		Eon_Cache_Image *cim;
@@ -122,7 +122,7 @@ static void _loader_callback(Enesim_Surface *s, void *data, int error)
 		eina_hash_add(c->elements, l->key, cim);
 #endif
 	}
-	printf("OUTSIDE %p %p %p\n", l, l->data, l->cb);
+	//printf("OUTSIDE %p %p %p\n", l, l->data, l->cb);
 	/* TODO call the real callback registered */
 	l->cb(s, l->data, error);
 	free(l);

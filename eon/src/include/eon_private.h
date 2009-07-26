@@ -26,6 +26,7 @@
 #define EON_TYPE_DOCUMENT "Eon_Document"
 #define EON_TYPE_CANVAS "Eon_Canvas"
 #define EON_TYPE_ANIMATION "Eon_Animation"
+#define EON_TYPE_ANIMATION_KEY "Eon_Animation_Key"
 #define EON_TYPE_ANIMATION_BASIC "Eon_Animation_Basic"
 #define EON_TYPE_ANIMATION_MATRIX "Eon_Animation_Matrix"
 #define EON_TYPE_EXTERNAL "Eon_External"
@@ -39,6 +40,7 @@
 #define EON_TYPE_IMAGE "Eon_Image"
 #define EON_TYPE_TRANSITION "Eon_Transition"
 #define EON_TYPE_HSWITCH "Eon_Hswitch"
+#define EON_TYPE_FADE "Eon_Fade"
 #define EON_TYPE_SQPATTERN "Eon_Sqpattern"
 
 #define EON_TYPE_FILTER "Eon_Filter"
