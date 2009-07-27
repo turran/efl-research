@@ -23,6 +23,7 @@ typedef struct _Ekeko_Event
 	const char *type;
 	const Ekeko_Object *target;
 	Eina_Bool bubbles;
+	Eina_Bool stop;
 } Ekeko_Event;
 
 #define EKEKO_EVENT_PROP_MODIFY "PropModify"
@@ -92,6 +93,7 @@ typedef void (*Event_Listener)(const Ekeko_Object *, Ekeko_Event *, void * data)
 EAPI void ekeko_event_listener_add(Ekeko_Object *o, const char *type, Event_Listener el, Eina_Bool bubble, void *data);
 EAPI void ekeko_event_listener_remove(Ekeko_Object *o, const char *type, Event_Listener el, Eina_Bool bubble, void *data);
 EAPI void ekeko_event_dispatch(Ekeko_Event *e);
+EAPI void ekeko_event_stop(Ekeko_Event *e);
 EAPI void ekeko_event_init(Ekeko_Event *e, const char *type, const Ekeko_Object *o, Eina_Bool bubbles);
 
 

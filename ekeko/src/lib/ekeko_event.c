@@ -113,4 +113,10 @@ EAPI void ekeko_event_init(Ekeko_Event *e, const char *type, const Ekeko_Object 
 	e->target = o;
 	e->type = type;
 	e->bubbles = bubbles;
+	e->stop = EINA_FALSE;
+}
+
+EAPI void ekeko_event_stop(Ekeko_Event *e)
+{
+	e->stop = EINA_TRUE;
 }

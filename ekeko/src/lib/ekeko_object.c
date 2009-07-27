@@ -1,4 +1,4 @@
-/* EKEKO - Object System
+/* EKEKO - Object and property system
  * Copyright (C) 2007-2009 Jorge Luis Zapata
  *
  * This library is free software; you can redistribute it and/or
@@ -102,6 +102,8 @@ static void _event_dispatch(const Ekeko_Object *obj, Ekeko_Event *e, Eina_Bool b
 	{
 		if (oe->bubble == bubble)
 			oe->el(obj, e, oe->data);
+		if (e->stop)
+			break;
 	}
 	eina_iterator_free(it);
 }
