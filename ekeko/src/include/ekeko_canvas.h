@@ -1,8 +1,19 @@
-/*
- * etk2_canvas.h
+/* EKEKO - Object and property system
+ * Copyright (C) 2007-2009 Jorge Luis Zapata
  *
- *  Created on: 12-ene-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef EKEKO_CANVAS_H_
 #define EKEKO_CANVAS_H_
@@ -38,4 +49,4 @@ EAPI void ekeko_canvas_obscure_add(Ekeko_Canvas *c, Eina_Rectangle *r);
 EAPI Ekeko_Input * ekeko_canvas_input_new(Ekeko_Canvas *c);
 EAPI Ekeko_Renderable * ekeko_canvas_renderable_get_at_coord(Ekeko_Canvas *c, unsigned int x, unsigned int y);
 
-#endif /* ETK2_CANVAS_H_ */
+#endif /* EKEKO_CANVAS_H_ */

@@ -1,8 +1,19 @@
-/*
- * etk2_renderable.c
+/* EKEKO - Object and property system
+ * Copyright (C) 2007-2009 Jorge Luis Zapata
  *
- *  Created on: 10-ene-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ekeko.h"
 #include "ekeko_private.h"
@@ -209,7 +220,7 @@ static void _ctor(void *instance)
 	/* register to an event where this child is appended to a canvas parent */
 	ekeko_event_listener_add(EKEKO_OBJECT(rend), EKEKO_RENDERABLE_VISIBILITY_CHANGED, _visibility_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add(EKEKO_OBJECT(rend), EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
-	ekeko_event_listener_add(EKEKO_OBJECT(rend), EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add(EKEKO_OBJECT(rend), EKEKO_EVENT_OBJECT_APPEND, _parent_set_cb, EINA_FALSE, NULL);
 #ifdef EKEKO_DEBUG
 	printf("[Ekeko_Renderable] ctor canvas = %p\n", prv->canvas);
 #endif
@@ -274,10 +285,10 @@ Ekeko_Type *ekeko_renderable_type_get(void)
 				sizeof(Ekeko_Renderable_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
 		/* the properties */
-		EKEKO_RENDERABLE_GEOMETRY = TYPE_PROP_DOUBLE_ADD(renderable_type, "geometry", PROPERTY_RECTANGLE,
+		EKEKO_RENDERABLE_GEOMETRY = EKEKO_TYPE_PROP_DOUBLE_ADD(renderable_type, "geometry", EKEKO_PROPERTY_RECTANGLE,
 				OFFSET(Ekeko_Renderable_Private, geometry.curr), OFFSET(Ekeko_Renderable_Private, geometry.prev),
 				OFFSET(Ekeko_Renderable_Private, geometry.changed));
-		EKEKO_RENDERABLE_VISIBILITY = TYPE_PROP_DOUBLE_ADD(renderable_type, "visibility", PROPERTY_BOOL,
+		EKEKO_RENDERABLE_VISIBILITY = EKEKO_TYPE_PROP_DOUBLE_ADD(renderable_type, "visibility", EKEKO_PROPERTY_BOOL,
 				OFFSET(Ekeko_Renderable_Private, visibility.curr), OFFSET(Ekeko_Renderable_Private, visibility.prev),
 				OFFSET(Ekeko_Renderable_Private, visibility.changed));
 	}

@@ -1,8 +1,19 @@
-/*
- * etk2_value.c
+/* EKEKO - Object and property system
+ * Copyright (C) 2007-2009 Jorge Luis Zapata
  *
- *  Created on: 05-ene-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Ekeko.h"
 #include "ekeko_private.h"
@@ -44,25 +55,25 @@ void ekeko_value_create(Ekeko_Value *value, Ekeko_Value_Type type)
 {
 	switch (type)
 	{
-		case PROPERTY_UNDEFINED:
+		case EKEKO_PROPERTY_UNDEFINED:
 		printf("[Ekeko_Value] creating an undefined value?\n");
 		//exit(1);
 		break;
 
 		/* there's no need to allocate anything for this property types */
-		case PROPERTY_INT:
-		case PROPERTY_BOOL:
-		case PROPERTY_CHAR:
-		case PROPERTY_FLOAT:
-		case PROPERTY_DOUBLE:
-		case PROPERTY_SHORT:
-		case PROPERTY_LONG:
-		case PROPERTY_RECTANGLE:
-		case PROPERTY_STRING:
-		case PROPERTY_OBJECT:
+		case EKEKO_PROPERTY_INT:
+		case EKEKO_PROPERTY_BOOL:
+		case EKEKO_PROPERTY_CHAR:
+		case EKEKO_PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_DOUBLE:
+		case EKEKO_PROPERTY_SHORT:
+		case EKEKO_PROPERTY_LONG:
+		case EKEKO_PROPERTY_RECTANGLE:
+		case EKEKO_PROPERTY_STRING:
+		case EKEKO_PROPERTY_OBJECT:
 		break;
 
-		case PROPERTY_VALUE:
+		case EKEKO_PROPERTY_VALUE:
 #ifndef EKEKO_DEBUG
 		printf("[Ekeko_Value] value create %d %d\n", type, value->type);
 #endif
@@ -88,20 +99,20 @@ void ekeko_value_pointer_double_to(Ekeko_Value *value, Ekeko_Value_Type type, vo
 	*changed = EINA_FALSE;
 	switch (type)
 	{
-		case PROPERTY_INT:
+		case EKEKO_PROPERTY_INT:
 		*((int *)ptr) = value->value.int_value;
 		if (*((int *)ptr) != *((int *)prev))
 			*changed = EINA_TRUE;
 		break;
 
 		/* FIXME check the real difference < minimal float difference */
-		case PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_FLOAT:
 		*((float *)ptr) = value->value.float_value;
 		if (*((float *)ptr) != *((float *)prev))
 			*changed = EINA_TRUE;
 		break;
 
-		case PROPERTY_STRING:
+		case EKEKO_PROPERTY_STRING:
 		/* FIXME fix this mess */
 		*((char **)ptr) = strdup(value->value.string_value);
 		if (!*((char **)prev))
@@ -110,7 +121,7 @@ void ekeko_value_pointer_double_to(Ekeko_Value *value, Ekeko_Value_Type type, vo
 			*changed = EINA_TRUE;
 		break;
 
-		case PROPERTY_RECTANGLE:
+		case EKEKO_PROPERTY_RECTANGLE:
 
 		{
 			Eina_Rectangle *c = (Eina_Rectangle *)ptr;
@@ -123,13 +134,13 @@ void ekeko_value_pointer_double_to(Ekeko_Value *value, Ekeko_Value_Type type, vo
 		}
 		break;
 
-		case PROPERTY_BOOL:
+		case EKEKO_PROPERTY_BOOL:
 		*((Eina_Bool *)ptr) = value->value.bool_value;
 		if (*((Eina_Bool *)ptr) != *((Eina_Bool *)prev))
 			*changed = EINA_TRUE;
 		break;
 
-		case PROPERTY_VALUE:
+		case EKEKO_PROPERTY_VALUE:
 #ifndef EKEKO_DEBUG
 		printf("[Ekeko_Value] Pointer double property value set %d %d\n", type, value->type);
 #endif
@@ -160,35 +171,35 @@ void ekeko_value_pointer_to(Ekeko_Value *value, Ekeko_Value_Type vtype, void *pt
 {
 	switch (vtype)
 	{
-		case PROPERTY_UNDEFINED:
+		case EKEKO_PROPERTY_UNDEFINED:
 		printf("[Ekeko_Value] pointer to undefined value?\n");
 		break;
 
-		case PROPERTY_INT:
+		case EKEKO_PROPERTY_INT:
 		*((int *)ptr) = value->value.int_value;
 		break;
 
-		case PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_FLOAT:
 		*((float *)ptr) = value->value.float_value;
 		break;
 
-		case PROPERTY_STRING:
+		case EKEKO_PROPERTY_STRING:
 		*((char **)ptr) = strdup(value->value.string_value);
 		break;
 
-		case PROPERTY_RECTANGLE:
+		case EKEKO_PROPERTY_RECTANGLE:
 		*((Eina_Rectangle *)ptr) = value->value.rect;
 		break;
 
-		case PROPERTY_BOOL:
+		case EKEKO_PROPERTY_BOOL:
 		*((Eina_Bool *)ptr) = value->value.bool_value;
 		break;
 
-		case PROPERTY_OBJECT:
+		case EKEKO_PROPERTY_OBJECT:
 		*((Ekeko_Object **)ptr) = value->value.object;
 		break;
 
-		case PROPERTY_VALUE:
+		case EKEKO_PROPERTY_VALUE:
 		{
 			Ekeko_Value *v = ptr;
 
@@ -237,7 +248,7 @@ int ekeko_value_register(const char *name, Ekeko_Value_Create create,
 		Ekeko_Value_Pointer_From pointer_from,
 		Ekeko_Value_Pointer_To pointer_to)
 {
-	static int _curr = PROPERTY_LAST; // the last internal property
+	static int _curr = EKEKO_PROPERTY_LAST; // the last internal property
 	Ekeko_Value_Impl *impl;
 
 	impl = malloc(sizeof(Ekeko_Value_Impl));
@@ -257,29 +268,29 @@ void ekeko_value_free(Ekeko_Value *v, Ekeko_Value_Type vtype)
 {
 	switch (vtype)
 	{
-		case PROPERTY_UNDEFINED:
+		case EKEKO_PROPERTY_UNDEFINED:
 		printf("[Ekeko_Value] freeing an undefined value?\n");
 		break;
 
-		case PROPERTY_INT:
-		case PROPERTY_BOOL:
-		case PROPERTY_CHAR:
-		case PROPERTY_FLOAT:
-		case PROPERTY_DOUBLE:
-		case PROPERTY_SHORT:
-		case PROPERTY_LONG:
-		case PROPERTY_RECTANGLE:
+		case EKEKO_PROPERTY_INT:
+		case EKEKO_PROPERTY_BOOL:
+		case EKEKO_PROPERTY_CHAR:
+		case EKEKO_PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_DOUBLE:
+		case EKEKO_PROPERTY_SHORT:
+		case EKEKO_PROPERTY_LONG:
+		case EKEKO_PROPERTY_RECTANGLE:
 		break;
 
-		case PROPERTY_STRING:
+		case EKEKO_PROPERTY_STRING:
 		free(v->value.string_value);
 		break;
 
-		case PROPERTY_VALUE:
+		case EKEKO_PROPERTY_VALUE:
 		ekeko_value_free(v, v->type);
 		break;
 
-		case PROPERTY_OBJECT:
+		case EKEKO_PROPERTY_OBJECT:
 		/* FIXME just unref the object */
 		break;
 
@@ -298,42 +309,42 @@ void ekeko_value_pointer_from(Ekeko_Value *v, Ekeko_Value_Type vtype, void *ptr)
 {
 	switch (vtype)
 	{
-		case PROPERTY_UNDEFINED:
-		v->type = PROPERTY_UNDEFINED;
+		case EKEKO_PROPERTY_UNDEFINED:
+		v->type = EKEKO_PROPERTY_UNDEFINED;
 		printf("[Ekeko_Value] pointer from undefined value?\n");
 		break;
 
-		case PROPERTY_STRING:
-		v->type = PROPERTY_STRING;
+		case EKEKO_PROPERTY_STRING:
+		v->type = EKEKO_PROPERTY_STRING;
 		v->value.string_value = *(char **)ptr;
 		break;
 
-		case PROPERTY_INT:
-		v->type = PROPERTY_INT;
+		case EKEKO_PROPERTY_INT:
+		v->type = EKEKO_PROPERTY_INT;
 		v->value.int_value = *(int *)ptr;
 		break;
 
-		case PROPERTY_FLOAT:
-		v->type = PROPERTY_FLOAT;
+		case EKEKO_PROPERTY_FLOAT:
+		v->type = EKEKO_PROPERTY_FLOAT;
 		v->value.float_value = *(float *)ptr;
 		break;
 
-		case PROPERTY_RECTANGLE:
-		v->type = PROPERTY_RECTANGLE;
+		case EKEKO_PROPERTY_RECTANGLE:
+		v->type = EKEKO_PROPERTY_RECTANGLE;
 		v->value.rect = *(Eina_Rectangle *)ptr;
 		break;
 
-		case PROPERTY_BOOL:
-		v->type = PROPERTY_BOOL;
+		case EKEKO_PROPERTY_BOOL:
+		v->type = EKEKO_PROPERTY_BOOL;
 		v->value.bool_value = *(Eina_Bool *)ptr;
 		break;
-		
-		case PROPERTY_OBJECT:
-		v->type = PROPERTY_OBJECT;
+
+		case EKEKO_PROPERTY_OBJECT:
+		v->type = EKEKO_PROPERTY_OBJECT;
 		v->value.object = *(Ekeko_Object **)ptr;
 		break;
 
-		case PROPERTY_VALUE:
+		case EKEKO_PROPERTY_VALUE:
 		{
 			Ekeko_Value *val = ptr;
 #ifndef EKEKO_DEBUG

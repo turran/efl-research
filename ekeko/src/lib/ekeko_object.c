@@ -213,7 +213,7 @@ Ekeko_Type *ekeko_object_type_get(void)
 	{
 		object_type = ekeko_type_new(TYPE_NAME, sizeof(Ekeko_Object),
 				sizeof(Ekeko_Object_Private), NULL, _ctor, _dtor, NULL);
-		EKEKO_OBJECT_ID = TYPE_PROP_SINGLE_ADD(object_type, "id", PROPERTY_STRING, OFFSET(Ekeko_Object_Private, id));
+		EKEKO_OBJECT_ID = EKEKO_TYPE_PROP_SINGLE_ADD(object_type, "id", EKEKO_PROPERTY_STRING, OFFSET(Ekeko_Object_Private, id));
 		// TODO register the type's event, with type_event_new
 	}
 
@@ -285,7 +285,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 		return;
 
 	vtype = ekeko_property_value_type_get(prop);
-	if (vtype != PROPERTY_VALUE && vtype != value->type)
+	if (vtype != EKEKO_PROPERTY_VALUE && vtype != value->type)
 	{
 		printf("[Ekeko_Object] ERROR values dont match %s.%s %d %d!!\n", ekeko_object_type_name_get(o), prop_name, vtype, value->type);
 		exit(1);
@@ -296,7 +296,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 #ifdef EKEKO_DEBUG
 	printf("[Ekeko_Object] pointers %p %p %p\n", curr, prev, changed);
 #endif
-	if (property_ptype_get(prop) == PROPERTY_VALUE_DUAL_STATE)
+	if (property_ptype_get(prop) == EKEKO_PROPERTY_VALUE_DUAL_STATE)
 	{
 		Eina_Bool changed_bef, changed_now;
 
@@ -345,7 +345,7 @@ EAPI void ekeko_object_property_value_set(Ekeko_Object *o, char *prop_name, Ekek
 			&prev_value, value, EVENT_MUTATION_STATE_CURR);
 		ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 	}
-	if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
+	if (property_ptype_get(prop) != EKEKO_PROPERTY_VALUE_DUAL_STATE)
 		ekeko_value_free(&prev_value, vtype);
 }
 /**
@@ -480,7 +480,7 @@ EAPI Eina_Bool ekeko_object_child_append(Ekeko_Object *p, Ekeko_Object *o)
 #endif
 		/* TODO send the EVENT_PARENT_SET event */
 		/* send the EVENT_OBJECT_APPEND event */
-		event_mutation_init(&evt, EVENT_OBJECT_APPEND, (Ekeko_Object *)o, (Ekeko_Object *)p, NULL, NULL, NULL,
+		event_mutation_init(&evt, EKEKO_EVENT_OBJECT_APPEND, (Ekeko_Object *)o, (Ekeko_Object *)p, NULL, NULL, NULL,
 				EVENT_MUTATION_STATE_CURR);
 		ekeko_object_event_dispatch((Ekeko_Object *)o, (Ekeko_Event *)&evt);
 		return EINA_TRUE;
@@ -610,7 +610,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		void *curr, *prev;
 		char *changed;
 
-		if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
+		if (property_ptype_get(prop) != EKEKO_PROPERTY_VALUE_DUAL_STATE)
 		continue;
 		type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
 #ifdef EKEKO_DEBUG
@@ -738,7 +738,7 @@ EAPI void ekeko_object_process(Ekeko_Object *o)
 		void *curr, *prev;
 		char *changed;
 
-		if (property_ptype_get(prop) != PROPERTY_VALUE_DUAL_STATE)
+		if (property_ptype_get(prop) != EKEKO_PROPERTY_VALUE_DUAL_STATE)
 			continue;
 		type_instance_property_pointers_get(prv->type, prop, o, &curr, &prev, &changed);
 #ifdef EKEKO_DEBUG

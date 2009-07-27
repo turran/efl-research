@@ -11,20 +11,20 @@
 /**
  * @brief Possible types of a property.
  */
-#define PROPERTY_UNDEFINED 0
-#define PROPERTY_INT 1 /**< The value of the property is an integer */          //!< PROPERTY_INT
-#define PROPERTY_BOOL 2 /**< The value of the property is a boolean (Bool) */    //!< PROPERTY_BOOL
-#define PROPERTY_CHAR 3 /**< The value of the property is a char */              //!< PROPERTY_CHAR
-#define PROPERTY_FLOAT 4 /**< The value of the property is a float */             //!< PROPERTY_FLOAT
-#define PROPERTY_DOUBLE 5 /**< The value of the property is a double */            //!< PROPERTY_DOUBLE
-#define PROPERTY_SHORT 6 /**< The value of the property is a short */             //!< PROPERTY_SHORT
-#define PROPERTY_LONG 7 /**< The value of the property is a long */              //!< PROPERTY_LONG
-#define PROPERTY_RECTANGLE 8 /**< The value of the property is a rectangle */         //!< PROPERTY_RECTANGLE
-#define PROPERTY_POINTER 9 /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
-#define PROPERTY_VALUE 10 /**< The value of the property is value */  //!< PROPERTY_VALUE
-#define PROPERTY_STRING 11 /**< The value of the property is a string (char *) */ //!< PROPERTY_STRING
-#define PROPERTY_OBJECT 12 /**< The value of the property is an Object */ //!< PROPERTY_OBJECT
-#define PROPERTY_LAST PROPERTY_OBJECT
+#define EKEKO_PROPERTY_UNDEFINED 0
+#define EKEKO_PROPERTY_INT 1 /**< The value of the property is an integer */          //!< PROPERTY_INT
+#define EKEKO_PROPERTY_BOOL 2 /**< The value of the property is a boolean (Bool) */    //!< PROPERTY_BOOL
+#define EKEKO_PROPERTY_CHAR 3 /**< The value of the property is a char */              //!< PROPERTY_CHAR
+#define EKEKO_PROPERTY_FLOAT 4 /**< The value of the property is a float */             //!< PROPERTY_FLOAT
+#define EKEKO_PROPERTY_DOUBLE 5 /**< The value of the property is a double */            //!< PROPERTY_DOUBLE
+#define EKEKO_PROPERTY_SHORT 6 /**< The value of the property is a short */             //!< PROPERTY_SHORT
+#define EKEKO_PROPERTY_LONG 7 /**< The value of the property is a long */              //!< PROPERTY_LONG
+#define EKEKO_PROPERTY_RECTANGLE 8 /**< The value of the property is a rectangle */         //!< PROPERTY_RECTANGLE
+#define EKEKO_PROPERTY_POINTER 9 /**< The value of the property is a pointer (void *) */  //!< PROPERTY_POINTER
+#define EKEKO_PROPERTY_VALUE 10 /**< The value of the property is value */  //!< PROPERTY_VALUE
+#define EKEKO_PROPERTY_STRING 11 /**< The value of the property is a string (char *) */ //!< PROPERTY_STRING
+#define EKEKO_PROPERTY_OBJECT 12 /**< The value of the property is an Object */ //!< PROPERTY_OBJECT
+#define EKEKO_PROPERTY_LAST EKEKO_PROPERTY_OBJECT
 
 typedef int Ekeko_Value_Type;
 /**
@@ -70,31 +70,31 @@ int ekeko_value_register(const char *name, Ekeko_Value_Create create,
 
 static inline void ekeko_value_int_from(Ekeko_Value *v, int i)
 {
-	v->type = PROPERTY_INT;
+	v->type = EKEKO_PROPERTY_INT;
 	v->value.int_value = i;
 }
 
 static inline void ekeko_value_float_from(Ekeko_Value *v, float f)
 {
-	v->type = PROPERTY_FLOAT;
+	v->type = EKEKO_PROPERTY_FLOAT;
 	v->value.float_value = f;
 }
 
 static inline void ekeko_value_str_from(Ekeko_Value *v, char *str)
 {
-	v->type = PROPERTY_STRING;
+	v->type = EKEKO_PROPERTY_STRING;
 	v->value.string_value = str;
 }
 
 static inline void ekeko_value_rectangle_from(Ekeko_Value *v, Eina_Rectangle *rect)
 {
-	v->type = PROPERTY_RECTANGLE;
+	v->type = EKEKO_PROPERTY_RECTANGLE;
 	v->value.rect = *rect;
 }
 
 static inline void ekeko_value_rectangle_coords_from(Ekeko_Value *v, int x, int y, int w, int h)
 {
-	v->type = PROPERTY_RECTANGLE;
+	v->type = EKEKO_PROPERTY_RECTANGLE;
 	v->value.rect.x = x;
 	v->value.rect.y = y;
 	v->value.rect.w = w;
@@ -103,14 +103,14 @@ static inline void ekeko_value_rectangle_coords_from(Ekeko_Value *v, int x, int 
 
 static inline void ekeko_value_bool_from(Ekeko_Value *v, Eina_Bool b)
 {
-	v->type = PROPERTY_BOOL;
+	v->type = EKEKO_PROPERTY_BOOL;
 	v->value.bool_value = b;
 }
 
 
 static inline void ekeko_value_object_from(Ekeko_Value *v, Ekeko_Object *o)
 {
-	v->type = PROPERTY_OBJECT;
+	v->type = EKEKO_PROPERTY_OBJECT;
 	v->value.object = o;
 }
 
