@@ -1,0 +1,19 @@
+object_new = $loader.loadprim("nekeko@object_new",0);
+object_proto = {
+	property_value_get => $loader.loadprim("nekeko@object_property_value_get", 0)
+	property_value_set => $loader.loadprim("nekeko@object_property_value_set", 0)
+};
+
+// constructor
+ekeko_object = function() {
+    var o = $new(null);
+    $objsetproto(o, object_proto);
+    o.__inst = object_new();
+    return o;
+}
+
+// test
+var c = ekeko_object();
+c.property_value_set();
+c.property_value_get();
+
