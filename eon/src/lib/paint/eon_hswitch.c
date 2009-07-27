@@ -40,21 +40,6 @@ static void _dtor(void *hswitch)
 {
 
 }
-
-
-static Eina_Bool _appendable(void *instance, void *child)
-{
-	if (ekeko_type_instance_is_of(child, EON_TYPE_ANIMATION))
-	{
-		return EINA_TRUE;
-	}
-	else if (ekeko_type_instance_is_of(child, EON_TYPE_PAINT))
-	{
-		return EINA_TRUE;
-	}
-	else
-		return EINA_FALSE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -69,7 +54,7 @@ EAPI Ekeko_Type *eon_hswitch_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_HSWITCH, sizeof(Eon_Hswitch),
 				sizeof(Eon_Hswitch_Private), eon_transition_type_get(),
-				_ctor, _dtor, _appendable);
+				_ctor, _dtor, eon_transition_appendable);
 	}
 
 	return type;

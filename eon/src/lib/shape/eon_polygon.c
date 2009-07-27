@@ -104,7 +104,7 @@ static void _ctor(void *instance)
 	/* setup the limits */
 	prv->xmin = prv->ymin = INT_MAX;
 	prv->xmax = prv->ymax = INT_MIN;
-	ekeko_event_listener_add((Ekeko_Object *)p, EVENT_OBJECT_APPEND, _appended_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)p, EKEKO_EVENT_OBJECT_APPEND, _appended_cb, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *polygon)
@@ -135,7 +135,7 @@ EAPI Ekeko_Type *eon_polygon_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_POLYGON, sizeof(Eon_Polygon),
 				sizeof(Eon_Polygon_Private), eon_shape_type_get(),
-				_ctor, _dtor, _appendable);
+				_ctor, _dtor, eon_shape_appendable);
 	}
 
 	return type;

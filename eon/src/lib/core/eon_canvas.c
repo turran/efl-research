@@ -1,8 +1,19 @@
-/*
- * eon_canvas.c
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
  *
- *  Created on: 03-feb-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
 #include "eon_private.h"
@@ -479,7 +490,7 @@ static void _ctor(void *instance)
 	ekeko_event_listener_add((Ekeko_Object *)c, EON_CANVAS_H_CHANGED, _h_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)c, EON_CANVAS_MATRIX_CHANGED, _matrix_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)c, EKEKO_RENDERABLE_GEOMETRY_CHANGED, _geometry_change, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)c, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)c, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *canvas)
@@ -514,11 +525,11 @@ EAPI Ekeko_Type *eon_canvas_type_get(void)
 		type = ekeko_type_new(EON_TYPE_CANVAS, sizeof(Eon_Canvas),
 				sizeof(Eon_Canvas_Private), ekeko_canvas_type_get(),
 				_ctor, _dtor, _appendable);
-		EON_CANVAS_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, x));
-		EON_CANVAS_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, y));
-		EON_CANVAS_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, w));
-		EON_CANVAS_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, h));
-		EON_CANVAS_MATRIX = TYPE_PROP_SINGLE_ADD(type, "matrix", EON_PROPERTY_MATRIX, OFFSET(Eon_Canvas_Private, matrix));
+		EON_CANVAS_X = EKEKO_TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, x));
+		EON_CANVAS_Y = EKEKO_TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, y));
+		EON_CANVAS_W = EKEKO_TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, w));
+		EON_CANVAS_H = EKEKO_TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Canvas_Private, h));
+		EON_CANVAS_MATRIX = EKEKO_TYPE_PROP_SINGLE_ADD(type, "matrix", EON_PROPERTY_MATRIX, OFFSET(Eon_Canvas_Private, matrix));
 	}
 
 	return type;

@@ -1,6 +1,22 @@
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "Eon.h"
 #include "eon_private.h"
-
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -59,11 +75,11 @@ static void _value_set(Ekeko_Value *v, Etch_Animation_Keyframe *k)
 	switch (v->type)
 	{
 		/* basic types */
-		case PROPERTY_INT:
+		case EKEKO_PROPERTY_INT:
 		etch_animation_keyframe_value_set(k, v->value.int_value);
 		break;
 
-		case PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_FLOAT:
 		etch_animation_keyframe_value_set(k, v->value.float_value);
 		break;
 
@@ -98,12 +114,12 @@ static void _callback_set(Ekeko_Value_Type vtype, Etch_Data_Type *dtype, Eon_Ani
 	switch (vtype)
 	{
 		/* basic types */
-		case PROPERTY_INT:
+		case EKEKO_PROPERTY_INT:
 		*dtype = ETCH_INT32;
 		*cb = _animation_int32_callback;
 		break;
 
-		case PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_FLOAT:
 		*dtype = ETCH_FLOAT;
 		*cb = _animation_float_callback;
 		break;

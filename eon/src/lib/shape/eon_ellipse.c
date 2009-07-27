@@ -163,10 +163,10 @@ EAPI Ekeko_Type *eon_ellipse_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_CIRCLE, sizeof(Eon_Ellipse),
 				sizeof(Eon_Ellipse_Private), eon_shape_type_get(),
-				_ctor, _dtor, _appendable);
-		EON_CIRCLE_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Ellipse_Private, x));
-		EON_CIRCLE_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Ellipse_Private, y));
-		EON_CIRCLE_RADIUS = TYPE_PROP_SINGLE_ADD(type, "radius", PROPERTY_INT, OFFSET(Eon_Ellipse_Private, radius));
+				_ctor, _dtor, eon_shape_appendable);
+		EON_CIRCLE_X = EKEKO_TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Ellipse_Private, x));
+		EON_CIRCLE_Y = EKEKO_TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Ellipse_Private, y));
+		EON_CIRCLE_RADIUS = EKEKO_TYPE_PROP_SINGLE_ADD(type, "radius", EKEKO_PROPERTY_INT, OFFSET(Eon_Ellipse_Private, radius));
 	}
 
 	return type;

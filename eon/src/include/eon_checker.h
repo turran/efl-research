@@ -5,31 +5,31 @@
  *      Author: jl
  */
 
-#ifndef EON_SQPATTERN_H_
-#define EON_SQPATTERN_H_
+#ifndef EON_CHECKER_H_
+#define EON_CHECKER_H_
 /*============================================================================*
  *                                 Events                                     *
  *============================================================================*/
-#define EON_SQPATTERN_SW_CHANGED "swChanged"
-#define EON_SQPATTERN_SH_CHANGED "shChanged"
+#define EON_CHECKER_SW_CHANGED "swChanged"
+#define EON_CHECKER_SH_CHANGED "shChanged"
 /*============================================================================*
  *                               Properties                                   *
  *============================================================================*/
-extern Ekeko_Property_Id EON_SQPATTERN_SW;
-extern Ekeko_Property_Id EON_SQPATTERN_SH;
+extern Ekeko_Property_Id EON_CHECKER_SW;
+extern Ekeko_Property_Id EON_CHECKER_SH;
 /*============================================================================*
  *                                 Class                                      *
  *============================================================================*/
-typedef struct _Eon_Sqpattern_Private Eon_Sqpattern_Private;
-struct _Eon_Sqpattern
+typedef struct _Eon_Checker_Private Eon_Checker_Private;
+struct _Eon_Checker
 {
 	Eon_Paint parent;
-	Eon_Sqpattern_Private *private;
+	Eon_Checker_Private *private;
 };
 /*============================================================================*
  *                                Functions                                   *
  *============================================================================*/
-EAPI Ekeko_Type *eon_sqpattern_type_get(void);
-EAPI Eon_Sqpattern * eon_sqpattern_new(void);
+EAPI Ekeko_Type *eon_checker_type_get(void);
+EAPI Eon_Checker * eon_checker_new(void);
 
-#endif /* EON_SQPATTERN_H_ */
+#endif /* EON_CHECKER_H_ */

@@ -188,10 +188,10 @@ EAPI Ekeko_Type *eon_square_type_get(void)
 		type = ekeko_type_new(EON_TYPE_SQUARE, sizeof(Eon_Square),
 				sizeof(Eon_Square_Private), eon_shape_type_get(),
 				_ctor, _dtor, NULL);
-		EON_SQUARE_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, x));
-		EON_SQUARE_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, y));
-		EON_SQUARE_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, w));
-		EON_SQUARE_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, h));
+		EON_SQUARE_X = EKEKO_TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, x));
+		EON_SQUARE_Y = EKEKO_TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, y));
+		EON_SQUARE_W = EKEKO_TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, w));
+		EON_SQUARE_H = EKEKO_TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Square_Private, h));
 #if 0
 	ekeko_event_listener_add((Ekeko_Object *)i, EON_PAINT_X_CHANGED, _geometry_calc, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)i, EON_PAINT_Y_CHANGED, _geometry_calc, EINA_FALSE, NULL);

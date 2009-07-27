@@ -1,8 +1,19 @@
-/*
- * eon_engine.c
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
  *
- *  Created on: 03-feb-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
 #include "eon_private.h"
@@ -103,7 +114,7 @@ Eon_Engine * eon_engine_get(const char *name)
 void eon_engine_ref(Eon_Engine *e, Eon_Document *d)
 {
 	/* register the needed callbacks */
-	ekeko_event_listener_add((Ekeko_Object *)d, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, e);
+	ekeko_event_listener_add((Ekeko_Object *)d, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, e);
 }
 
 void eon_engine_unref(Eon_Engine *e, Eon_Document *d)
@@ -232,7 +243,7 @@ EAPI void eon_engine_fade_delete(Eon_Engine *e, void *engine_data)
 
 EAPI void * eon_engine_sqpattern_create(Eon_Engine *e, Eon_Paint *p)
 {
-	return e->sqpattern_create((Eon_Sqpattern *)p);
+	return e->sqpattern_create((Eon_Checker *)p);
 }
 
 EAPI Eina_Bool eon_engine_sqpattern_setup(Eon_Engine *e, void *engine_data, Eon_Shape *s)

@@ -1,8 +1,19 @@
-/*
- * eon_animation.c
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
  *
- *  Created on: 09-feb-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
 #include "eon_private.h"
@@ -258,7 +269,7 @@ static void _ctor(void *instance)
 	a->private = prv = ekeko_type_instance_private_get(eon_animation_type_get(), instance);
 	/* default values */
 	prv->repeat = 1;
-	ekeko_event_listener_add((Ekeko_Object *)a, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)a, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)a, EON_ANIMATION_END_CHANGED, _end_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)a, EON_ANIMATION_BEGIN_CHANGED, _begin_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)a, EON_ANIMATION_PROPERTY_CHANGED, _prop_change, EINA_FALSE, NULL);
@@ -312,9 +323,9 @@ EAPI Ekeko_Type *eon_animation_type_get(void)
 		type = ekeko_type_new(EON_TYPE_ANIMATION, sizeof(Eon_Animation),
 				sizeof(Eon_Animation_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
-		EON_ANIMATION_PROPERTY = TYPE_PROP_SINGLE_ADD(type, "name", PROPERTY_STRING, OFFSET(Eon_Animation_Private, name));
-		EON_ANIMATION_REPEAT = TYPE_PROP_SINGLE_ADD(type, "repeat", PROPERTY_INT, OFFSET(Eon_Animation_Private, repeat));
-		EON_ANIMATION_BEGIN = TYPE_PROP_SINGLE_ADD(type, "begin", EON_PROPERTY_TRIGGER, OFFSET(Eon_Animation_Private, begin));
+		EON_ANIMATION_PROPERTY = EKEKO_TYPE_PROP_SINGLE_ADD(type, "name", EKEKO_PROPERTY_STRING, OFFSET(Eon_Animation_Private, name));
+		EON_ANIMATION_REPEAT = EKEKO_TYPE_PROP_SINGLE_ADD(type, "repeat", EKEKO_PROPERTY_INT, OFFSET(Eon_Animation_Private, repeat));
+		EON_ANIMATION_BEGIN = EKEKO_TYPE_PROP_SINGLE_ADD(type, "begin", EON_PROPERTY_TRIGGER, OFFSET(Eon_Animation_Private, begin));
 	}
 
 	return type;

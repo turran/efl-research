@@ -1,8 +1,19 @@
-/*
- * eon_animation.c
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
  *
- *  Created on: 09-feb-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
 #include "eon_private.h"
@@ -117,7 +128,7 @@ static void _ctor(void *instance)
 
 	k = (Eon_Animation*) instance;
 	k->private = prv = ekeko_type_instance_private_get(eon_animation_key_type_get(), instance);
-	ekeko_event_listener_add((Ekeko_Object *)k, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)k, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)k, EON_ANIMATION_KEY_START_CHANGED, _start_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)k, EON_ANIMATION_KEY_VALUE_CHANGED, _value_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)k, EON_ANIMATION_KEY_CALC_CHANGED, _calc_change, EINA_FALSE, NULL);
@@ -147,9 +158,9 @@ EAPI Ekeko_Type *eon_animation_key_type_get(void)
 		type = ekeko_type_new(EON_TYPE_ANIMATION_KEY, sizeof(Eon_Animation_Key),
 				sizeof(Eon_Animation_Key_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
-		EON_ANIMATION_KEY_START = TYPE_PROP_SINGLE_ADD(type, "start", EON_PROPERTY_CLOCK, OFFSET(Eon_Animation_Key_Private, start));
-		EON_ANIMATION_KEY_CALC = TYPE_PROP_SINGLE_ADD(type, "calc", PROPERTY_INT, OFFSET(Eon_Animation_Key_Private, calc));
-		EON_ANIMATION_KEY_VALUE = TYPE_PROP_SINGLE_ADD(type, "value", PROPERTY_VALUE, OFFSET(Eon_Animation_Key_Private, value));
+		EON_ANIMATION_KEY_START = EKEKO_TYPE_PROP_SINGLE_ADD(type, "start", EON_PROPERTY_CLOCK, OFFSET(Eon_Animation_Key_Private, start));
+		EON_ANIMATION_KEY_CALC = EKEKO_TYPE_PROP_SINGLE_ADD(type, "calc", EKEKO_PROPERTY_INT, OFFSET(Eon_Animation_Key_Private, calc));
+		EON_ANIMATION_KEY_VALUE = EKEKO_TYPE_PROP_SINGLE_ADD(type, "value", EKEKO_PROPERTY_VALUE, OFFSET(Eon_Animation_Key_Private, value));
 	}
 
 	return type;

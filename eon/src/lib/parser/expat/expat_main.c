@@ -8,5 +8,7 @@
 
 void parser_expat_init(void)
 {
+	XML_Parser *p;
 
+	p = XML_ParserCreate(NULL);
 }

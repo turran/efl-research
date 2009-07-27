@@ -89,15 +89,6 @@ static void _dtor(void *image)
 {
 
 }
-
-static Eina_Bool _appendable(void *instance, void *child)
-{
-	if (!ekeko_type_instance_is_of(child, EON_TYPE_ANIMATION))
-	{
-		return EINA_FALSE;
-	}
-	return EINA_TRUE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -140,11 +131,11 @@ EAPI Ekeko_Type *eon_image_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_IMAGE, sizeof(Eon_Image),
 				sizeof(Eon_Image_Private), eon_paint_type_get(),
-				_ctor, _dtor, _appendable);
-		EON_IMAGE_FILE = TYPE_PROP_DOUBLE_ADD(type, "file", PROPERTY_STRING,
+				_ctor, _dtor, eon_paint_appendable);
+		EON_IMAGE_FILE = EKEKO_TYPE_PROP_DOUBLE_ADD(type, "file", EKEKO_PROPERTY_STRING,
 				OFFSET(Eon_Image_Private, file.curr), OFFSET(Eon_Image_Private, file.prev),
 				OFFSET(Eon_Image_Private, file.changed));
-		EON_IMAGE_LOADED = TYPE_PROP_SINGLE_ADD(type, "loaded", PROPERTY_BOOL, OFFSET(Eon_Image_Private, src.loaded));
+		EON_IMAGE_LOADED = EKEKO_TYPE_PROP_SINGLE_ADD(type, "loaded", EKEKO_PROPERTY_BOOL, OFFSET(Eon_Image_Private, src.loaded));
 	}
 
 	return type;

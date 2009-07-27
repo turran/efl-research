@@ -14,4 +14,4 @@ eon_image.c \
 eon_transition.c \
 eon_hswitch.c \
 eon_fade.c \
-eon_sqpattern.c
+eon_checker.c

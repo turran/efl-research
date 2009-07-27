@@ -188,12 +188,12 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 	/* properties with simple values */
 	switch (type)
 	{
-		case PROPERTY_INT:
+		case EKEKO_PROPERTY_INT:
 		ekeko_value_int_from(&v, strtol(name, NULL, 0));
 		ekeko_object_property_value_set(o, attr, &v);
 		break;
 
-		case PROPERTY_VALUE:
+		case EKEKO_PROPERTY_VALUE:
 		{
 			if (ekeko_type_instance_is_of(o, "Eon_Animation_Key"))
 			{
@@ -233,7 +233,7 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 				else if (ekeko_type_instance_is_of(o, "Eon_Animation_Matrix"))
 				{
 					/* in case of animmatrix, this is handled differently */
-					vtype = PROPERTY_FLOAT;
+					vtype = EKEKO_PROPERTY_FLOAT;
 				}
 				object_attribute_set(o, vtype, attr, name);
 			}
@@ -241,21 +241,21 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 		}
 		return;
 
-		case PROPERTY_FLOAT:
+		case EKEKO_PROPERTY_FLOAT:
 		ekeko_value_float_from(&v, strtof(name, NULL));
 		ekeko_object_property_value_set(o, attr, &v);
 		break;
 
-		case PROPERTY_BOOL:
-		case PROPERTY_CHAR:
-		case PROPERTY_DOUBLE:
-		case PROPERTY_SHORT:
-		case PROPERTY_LONG:
-		case PROPERTY_RECTANGLE:
-		case PROPERTY_POINTER:
+		case EKEKO_PROPERTY_BOOL:
+		case EKEKO_PROPERTY_CHAR:
+		case EKEKO_PROPERTY_DOUBLE:
+		case EKEKO_PROPERTY_SHORT:
+		case EKEKO_PROPERTY_LONG:
+		case EKEKO_PROPERTY_RECTANGLE:
+		case EKEKO_PROPERTY_POINTER:
 		return;
 
-		case PROPERTY_OBJECT:
+		case EKEKO_PROPERTY_OBJECT:
 		{
 			Ekeko_Object *oid;
 			char *tmp = strdup(name);
@@ -282,7 +282,7 @@ void object_attribute_set(Ekeko_Object *o, Ekeko_Value_Type type, char *attr, ch
 		}
 		return;
 
-		case PROPERTY_STRING:
+		case EKEKO_PROPERTY_STRING:
 		{
 			/* FIXME remove "Eon_Image" */
 			if (ekeko_type_instance_is_of(o, "Eon_Image") && !strcmp(attr, "file"))
@@ -372,7 +372,7 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	}
 	else if (!strcmp(tag, "sqpattern"))
 	{
-		o = (Ekeko_Object *)eon_sqpattern_new();
+		o = (Ekeko_Object *)eon_checker_new();
 		ekeko_object_child_append(parent, o);
 	}
 	else if (!strcmp(tag, "poly"))
@@ -407,7 +407,7 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 		{
 			return NULL;
 		}
-		object_attribute_set(o, PROPERTY_STRING, "name", value);
+		object_attribute_set(o, EKEKO_PROPERTY_STRING, "name", value);
 	}
 	else if (!strcmp(tag, "key"))
 	{

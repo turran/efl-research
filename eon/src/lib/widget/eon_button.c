@@ -54,7 +54,7 @@ Ekeko_Type *eon_button_type_get(void)
 		type = ekeko_type_new(EON_TYPE_BUTTON, sizeof(Eon_Button),
 				sizeof(Eon_Button_Private), ekeko_object_type_get(), _ctor,
 				_dtor, _appendable);
-		EON_BUTTON_LABEL = TYPE_PROP_SINGLE_ADD(type, "label", PROPERTY_STRING, OFFSET(Eon_Button_Private, label));
+		EON_BUTTON_LABEL = EKEKO_TYPE_PROP_SINGLE_ADD(type, "label", EKEKO_PROPERTY_STRING, OFFSET(Eon_Button_Private, label));
 	}
 	return type;
 }

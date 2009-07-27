@@ -44,7 +44,7 @@ static void _ctor(void *instance)
 
 	t = (Eon_Transition *) instance;
 	t->private = prv = ekeko_type_instance_private_get(eon_transition_type_get(), instance);
-	ekeko_event_listener_add((Ekeko_Object *)t, EVENT_OBJECT_APPEND, _child_appended_cb, EINA_TRUE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)t, EKEKO_EVENT_OBJECT_APPEND, _child_appended_cb, EINA_TRUE, NULL);
 }
 
 static void _dtor(void *hswitch)
@@ -54,7 +54,7 @@ static void _dtor(void *hswitch)
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
-Eina_Bool eon_transition_get(Eon_Transition *t, Eon_Paint **p1, Eon_Paint **p2, float *step)
+Eina_Bool eon_transition_paint_get(Eon_Transition *t, Eon_Paint **p1, Eon_Paint **p2, float *step)
 {
 	Eon_Transition_Private *prv = PRIVATE(t);
 	int num;
@@ -73,6 +73,14 @@ Eina_Bool eon_transition_get(Eon_Transition *t, Eon_Paint **p1, Eon_Paint **p2, 
 
 	return EINA_TRUE;
 }
+
+Eina_Bool eon_transition_appendable(Ekeko_Object *t, Ekeko_Object *child)
+{
+	if (ekeko_type_instance_is_of(child, EON_TYPE_PAINT))
+		return EINA_TRUE;
+	else
+		return eon_paint_appendable(t, child);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -87,7 +95,7 @@ EAPI Ekeko_Type *eon_transition_type_get(void)
 		type = ekeko_type_new(EON_TYPE_TRANSITION, sizeof(Eon_Transition),
 				sizeof(Eon_Transition_Private), eon_paint_type_get(),
 				_ctor, _dtor, NULL);
-		EON_TRANSITION_STEP = TYPE_PROP_SINGLE_ADD(type, "step", PROPERTY_FLOAT, OFFSET(Eon_Transition_Private, step));
+		EON_TRANSITION_STEP = EKEKO_TYPE_PROP_SINGLE_ADD(type, "step", EKEKO_PROPERTY_FLOAT, OFFSET(Eon_Transition_Private, step));
 	}
 
 	return type;

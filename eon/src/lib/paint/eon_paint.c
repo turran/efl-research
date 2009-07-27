@@ -69,7 +69,7 @@ static void _ctor(void *instance)
 	enesim_matrix_identity(&prv->matrix);
 	enesim_matrix_inverse(&prv->matrix, &prv->inverse);
 	ekeko_event_listener_add((Ekeko_Object *)p, EON_PAINT_MATRIX_CHANGED, _matrix_change, EINA_FALSE, NULL);
-	ekeko_event_listener_add((Ekeko_Object *)p, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)p, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 }
 
 static void _dtor(void *paint)
@@ -128,6 +128,14 @@ Eina_Bool eon_paint_setup(Eon_Paint *p, Eon_Shape *s)
 	eng = eon_document_engine_get(d);
 	return p->setup(eng, prv->engine_data, s);
 }
+
+Eina_Bool eon_paint_appendable(Ekeko_Object *p, Ekeko_Object *child)
+{
+	if (!ekeko_type_instance_is_of(child, EON_TYPE_ANIMATION))
+		return EINA_FALSE;
+	else
+		return EINA_TRUE;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -147,12 +155,12 @@ EAPI Ekeko_Type *eon_paint_type_get(void)
 		type = ekeko_type_new(EON_TYPE_PAINT, sizeof(Eon_Paint),
 				sizeof(Eon_Paint_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
-		EON_PAINT_MATRIX = TYPE_PROP_SINGLE_ADD(type, "matrix", EON_PROPERTY_MATRIX, OFFSET(Eon_Paint_Private, matrix));
-		EON_PAINT_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, x));
-		EON_PAINT_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, y));
-		EON_PAINT_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, w));
-		EON_PAINT_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, h));
-		EON_PAINT_COORDSPACE = TYPE_PROP_SINGLE_ADD(type, "coordspace", PROPERTY_INT, OFFSET(Eon_Paint_Private, coordspace));
+		EON_PAINT_MATRIX = EKEKO_TYPE_PROP_SINGLE_ADD(type, "matrix", EON_PROPERTY_MATRIX, OFFSET(Eon_Paint_Private, matrix));
+		EON_PAINT_X = EKEKO_TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, x));
+		EON_PAINT_Y = EKEKO_TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, y));
+		EON_PAINT_W = EKEKO_TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, w));
+		EON_PAINT_H = EKEKO_TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Paint_Private, h));
+		EON_PAINT_COORDSPACE = EKEKO_TYPE_PROP_SINGLE_ADD(type, "coordspace", EKEKO_PROPERTY_INT, OFFSET(Eon_Paint_Private, coordspace));
 	}
 
 	return type;

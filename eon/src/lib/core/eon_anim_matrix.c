@@ -1,6 +1,22 @@
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "Eon.h"
 #include "eon_private.h"
-
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
@@ -35,7 +51,7 @@ static void _animation_matrix_callback(Eon_Animation *a, const char *prop,
 
 static void _value_set(Ekeko_Value *v, Etch_Animation_Keyframe *k)
 {
-	if (v->type == PROPERTY_FLOAT)
+	if (v->type == EKEKO_PROPERTY_FLOAT)
 	{
 #if 0
 		Enesim_Matrix *m = v->value.pointer_value;
@@ -89,7 +105,7 @@ EAPI Ekeko_Type *eon_animation_matrix_type_get(void)
 		type = ekeko_type_new(EON_TYPE_ANIMATION_MATRIX, sizeof(Eon_Animation_Matrix),
 				sizeof(Eon_Animation_Matrix_Private), eon_animation_type_get(),
 				_ctor, _dtor, NULL);
-		EON_ANIMATION_MATRIX_TYPE = TYPE_PROP_SINGLE_ADD(type, "type", PROPERTY_INT, OFFSET(Eon_Animation_Matrix_Private, type));
+		EON_ANIMATION_MATRIX_TYPE = EKEKO_TYPE_PROP_SINGLE_ADD(type, "type", EKEKO_PROPERTY_INT, OFFSET(Eon_Animation_Matrix_Private, type));
 	}
 	return type;
 }

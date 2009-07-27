@@ -53,10 +53,10 @@ EAPI Ekeko_Type *eon_filter_type_get(void)
 		type = ekeko_type_new(EON_TYPE_FILTER, sizeof(Eon_Filter),
 				sizeof(Eon_Filter_Private), ekeko_object_type_get(),
 				_ctor, _dtor, NULL);
-		EON_FILTER_X = TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, x));
-		EON_FILTER_Y = TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, y));
-		EON_FILTER_W = TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, w));
-		EON_FILTER_H = TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, h));
+		EON_FILTER_X = EKEKO_TYPE_PROP_SINGLE_ADD(type, "x", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, x));
+		EON_FILTER_Y = EKEKO_TYPE_PROP_SINGLE_ADD(type, "y", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, y));
+		EON_FILTER_W = EKEKO_TYPE_PROP_SINGLE_ADD(type, "w", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, w));
+		EON_FILTER_H = EKEKO_TYPE_PROP_SINGLE_ADD(type, "h", EON_PROPERTY_COORD, OFFSET(Eon_Filter_Private, h));
 	}
 
 	return type;

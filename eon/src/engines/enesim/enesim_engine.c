@@ -113,7 +113,7 @@ Eina_Bool hswitch_setup(void *data, Eon_Shape *s)
 	float step;
 	int dw, dh;
 
-	if (!eon_transition_get((Eon_Transition *)hs, &p1, &p2, &step))
+	if (!eon_transition_paint_get((Eon_Transition *)hs, &p1, &p2, &step))
 		return EINA_FALSE;
 	if (!eon_paint_setup(p1, s))
 		return EINA_FALSE;
@@ -161,7 +161,7 @@ static Eina_Bool fade_setup(void *data, Eon_Shape *s)
 	float step;
 	int dw, dh;
 
-	if (!eon_transition_get((Eon_Transition *)f, &p1, &p2, &step))
+	if (!eon_transition_paint_get((Eon_Transition *)f, &p1, &p2, &step))
 		return EINA_FALSE;
 	if (!eon_paint_setup(p1, s))
 		return EINA_FALSE;
@@ -187,7 +187,7 @@ static void fade_delete(void *data)
 /*============================================================================*
  *                                 Sqpattern                                  *
  *============================================================================*/
-void * sqpattern_create(Eon_Sqpattern *sq)
+void * sqpattern_create(Eon_Checker *sq)
 {
 	Paint *p;
 
@@ -201,14 +201,14 @@ void * sqpattern_create(Eon_Sqpattern *sq)
 Eina_Bool sqpattern_setup(void *data, Eon_Shape *s)
 {
 	Paint *p = data;
-	Eon_Sqpattern *sq = (Eon_Sqpattern *)p->p;
+	Eon_Checker *sq = (Eon_Checker *)p->p;
 	int dx, dy;
 
 	paint_coords_get(p->p, s, &dx, &dy, NULL, NULL);
 
 	enesim_renderer_origin_set(p->r, dx, dy);
-	enesim_renderer_sqpattern_color1_set(p->r, eon_sqpattern_color1_get(sq));
-	enesim_renderer_sqpattern_color2_set(p->r, eon_sqpattern_color2_get(sq));
+	enesim_renderer_sqpattern_color1_set(p->r, eon_checker_color1_get(sq));
+	enesim_renderer_sqpattern_color2_set(p->r, eon_checker_color2_get(sq));
 	enesim_renderer_sqpattern_size_set(p->r, 20, 20);
 	return EINA_TRUE;
 }

@@ -1,4 +1,12 @@
-Eon
+Eon:
+Eon is a canvas and toolkit library
+
+Features:
+- Shapes
+- Paint objects
+- Animation system
+- XML Parser
+- Different backend support
 
 Core Dependencies:
 eina-0

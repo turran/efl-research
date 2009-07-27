@@ -1,8 +1,19 @@
-/*
- * eon_document.c
+/* EON - Canvas and Toolkit library
+ * Copyright (C) 2008-2009 Jorge Luis Zapata
  *
- *  Created on: 03-feb-2009
- *      Author: jl
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Eon.h"
 #include "eon_private.h"
@@ -116,7 +127,7 @@ static void _ctor(void *instance)
 	/* the id system */
 	prv->ids = 	eina_hash_string_superfast_new(NULL);
 	/* the event listeners */
-	ekeko_event_listener_add((Ekeko_Object *)dc, EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)dc, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EKEKO_EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
 }
 
@@ -166,8 +177,8 @@ Ekeko_Type *eon_document_type_get(void)
 		type = ekeko_type_new(EON_TYPE_DOCUMENT, sizeof(Eon_Document),
 				sizeof(Eon_Document_Private), ekeko_object_type_get(), _ctor,
 				_dtor, _appendable);
-		TYPE_PROP_SINGLE_ADD(type, "engine", PROPERTY_STRING, OFFSET(Eon_Document_Private, engine.name));
-		EON_DOCUMENT_SIZE = TYPE_PROP_SINGLE_ADD(type, "size", PROPERTY_RECTANGLE, OFFSET(Eon_Document_Private, size));
+		EKEKO_TYPE_PROP_SINGLE_ADD(type, "engine", EKEKO_PROPERTY_STRING, OFFSET(Eon_Document_Private, engine.name));
+		EON_DOCUMENT_SIZE = EKEKO_TYPE_PROP_SINGLE_ADD(type, "size", EKEKO_PROPERTY_RECTANGLE, OFFSET(Eon_Document_Private, size));
 	}
 
 	return type;

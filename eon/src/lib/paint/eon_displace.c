@@ -67,8 +67,8 @@ EAPI Ekeko_Type *eon_displace_type_get(void)
 		type = ekeko_type_new(EON_TYPE_FILTER, sizeof(Eon_Displace),
 				sizeof(Eon_Displace_Private), eon_filter_type_get(),
 				_ctor, _dtor, _appendable);
-		EON_DISPLACE_SRC = TYPE_PROP_SINGLE_ADD(type, "src", PROPERTY_OBJECT, OFFSET(Eon_Displace_Private, src));
-		EON_DISPLACE_MAP = TYPE_PROP_SINGLE_ADD(type, "map", PROPERTY_OBJECT, OFFSET(Eon_Displace_Private, map));
+		EON_DISPLACE_SRC = EKEKO_TYPE_PROP_SINGLE_ADD(type, "src", EKEKO_PROPERTY_OBJECT, OFFSET(Eon_Displace_Private, src));
+		EON_DISPLACE_MAP = EKEKO_TYPE_PROP_SINGLE_ADD(type, "map", EKEKO_PROPERTY_OBJECT, OFFSET(Eon_Displace_Private, map));
 	}
 
 	return type;

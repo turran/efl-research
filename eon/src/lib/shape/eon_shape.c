@@ -131,7 +131,7 @@ static void _ctor(void *instance)
 	prv->rop = ENESIM_BLEND;
 	/* the default color, useful for pixel_color operations */
 	prv->color = 0xffffffff;
-	ekeko_event_listener_add((Ekeko_Object *)s, EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
+	ekeko_event_listener_add((Ekeko_Object *)s, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_COLOR_CHANGED, _color_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_ROP_CHANGED, _rop_change, EINA_FALSE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)s, EON_SHAPE_FILTER_CHANGED, _filter_change, EINA_FALSE, NULL);
@@ -191,6 +191,15 @@ void eon_shape_change(Eon_Shape *s)
 	ekeko_renderable_geometry_get((Ekeko_Renderable *)s, &geom);
 	ekeko_canvas_damage_add((Ekeko_Canvas *)parent, &geom);
 }
+
+Eina_Bool eon_shape_appendable(void *instance, void *child)
+{
+	if (!ekeko_type_instance_is_of(child, EON_TYPE_ANIMATION))
+	{
+		return EINA_FALSE;
+	}
+	return EINA_TRUE;
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -208,10 +217,10 @@ EAPI Ekeko_Type *eon_shape_type_get(void)
 		type = ekeko_type_new(EON_TYPE_SHAPE, sizeof(Eon_Shape),
 				sizeof(Eon_Shape_Private), ekeko_renderable_type_get(),
 				_ctor, _dtor, NULL);
-		EON_SHAPE_COLOR = TYPE_PROP_SINGLE_ADD(type, "color", EON_PROPERTY_COLOR, OFFSET(Eon_Shape_Private, color));
-		EON_SHAPE_ROP = TYPE_PROP_SINGLE_ADD(type, "rop", PROPERTY_INT, OFFSET(Eon_Shape_Private, rop));
-		EON_SHAPE_FILTER = TYPE_PROP_SINGLE_ADD(type, "filter", PROPERTY_OBJECT, OFFSET(Eon_Shape_Private, filter));
-		EON_SHAPE_FILL = TYPE_PROP_SINGLE_ADD(type, "fill", PROPERTY_OBJECT, OFFSET(Eon_Shape_Private, fill));
+		EON_SHAPE_COLOR = EKEKO_TYPE_PROP_SINGLE_ADD(type, "color", EON_PROPERTY_COLOR, OFFSET(Eon_Shape_Private, color));
+		EON_SHAPE_ROP = EKEKO_TYPE_PROP_SINGLE_ADD(type, "rop", EKEKO_PROPERTY_INT, OFFSET(Eon_Shape_Private, rop));
+		EON_SHAPE_FILTER = EKEKO_TYPE_PROP_SINGLE_ADD(type, "filter", EKEKO_PROPERTY_OBJECT, OFFSET(Eon_Shape_Private, filter));
+		EON_SHAPE_FILL = EKEKO_TYPE_PROP_SINGLE_ADD(type, "fill", EKEKO_PROPERTY_OBJECT, OFFSET(Eon_Shape_Private, fill));
 	}
 
 	return type;

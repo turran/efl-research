@@ -41,7 +41,7 @@
 #define EON_TYPE_TRANSITION "Eon_Transition"
 #define EON_TYPE_HSWITCH "Eon_Hswitch"
 #define EON_TYPE_FADE "Eon_Fade"
-#define EON_TYPE_SQPATTERN "Eon_Sqpattern"
+#define EON_TYPE_CHECKER "Eon_Sqpattern"
 
 #define EON_TYPE_FILTER "Eon_Filter"
 #define EON_TYPE_FILTER_EFFECT "Eon_Filter_Effect"
@@ -84,6 +84,7 @@ Eon_Canvas * eon_shape_canvas_get(Eon_Shape *s);
 void * eon_shape_engine_data_get(Eon_Shape *s);
 void eon_shape_engine_data_set(Eon_Shape *s, void *engine_data);
 void eon_shape_change(Eon_Shape *s);
+Eina_Bool eon_shape_appendable(void *instance, void *child);
 
 /* Coord */
 void eon_coord_change(const Ekeko_Object *o, Eon_Coord *dst, Eon_Coord *curr,
@@ -96,6 +97,11 @@ void eon_coord_length_change(const Ekeko_Object *o, Eon_Coord *dst, Eon_Coord *c
 /* Paint */
 void * eon_paint_engine_data_get(Eon_Paint *p);
 Eon_Canvas * eon_paint_canvas_get(Eon_Paint *p);
+Eina_Bool eon_paint_appendable(Ekeko_Object *p, Ekeko_Object *child);
+
+/* Transition */
+Eina_Bool eon_transition_appendable(Ekeko_Object *t, Ekeko_Object *child);
+Eina_Bool eon_transition_paint_get(Eon_Transition *t, Eon_Paint **p1, Eon_Paint **p2, float *step);
 
 /* Image */
 Eina_Bool eon_image_loaded(Eon_Image *i);

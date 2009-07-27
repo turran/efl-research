@@ -58,15 +58,6 @@ static void _dtor(void *rect)
 {
 
 }
-
-static Eina_Bool _appendable(void *instance, void *child)
-{
-	if (!ekeko_type_instance_is_of(child, EON_TYPE_ANIMATION))
-	{
-		return EINA_FALSE;
-	}
-	return EINA_TRUE;
-}
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
@@ -87,7 +78,7 @@ EAPI Ekeko_Type *eon_rect_type_get(void)
 	{
 		type = ekeko_type_new(EON_TYPE_RECT, sizeof(Eon_Rect),
 				sizeof(Eon_Rect_Private), eon_square_type_get(),
-				_ctor, _dtor, _appendable);
+				_ctor, _dtor, eon_shape_appendable);
 	}
 
 	return type;

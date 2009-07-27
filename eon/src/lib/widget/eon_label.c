@@ -38,7 +38,7 @@ Type *label_type_get(void)
 	{
 		label_type = type_new(TYPE_NAME, sizeof(Label), sizeof(Label_Private),
 				widget_type_get(), label_ctor, label_dtor, NULL);
-		TYPE_PROP_SINGLE_ADD(label_type, "text", PROPERTY_STRING, OFFSET(Label_Private, text));
+		EKEKO_TYPE_PROP_SINGLE_ADD(label_type, "text", EKEKO_PROPERTY_STRING, OFFSET(Label_Private, text));
 	}
 
 	return label_type;

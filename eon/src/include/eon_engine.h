@@ -50,7 +50,7 @@ struct _Eon_Engine
 	Eina_Bool (*fade_setup)(void *i, Eon_Shape *s);
 	void (*fade_delete)(void *i);
 	/* sqpattern callbacks */
-	void * (*sqpattern_create)(Eon_Sqpattern *i);
+	void * (*sqpattern_create)(Eon_Checker *i);
 	Eina_Bool (*sqpattern_setup)(void *i, Eon_Shape *s);
 	void (*sqpattern_delete)(void *i);
 	/* debug */
