@@ -349,3 +349,9 @@ Ekeko_Object * eon_parser_circle_new(Ekeko_Object *p)
 {
 	return eon_parser_shape_new(p, eon_circle_type_get);
 }
+
+Ekeko_Object * eon_parser_script_new(Ekeko_Object *p)
+{
+	return eon_script_new();
+}
+

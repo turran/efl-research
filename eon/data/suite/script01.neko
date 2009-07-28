@@ -1,0 +1,4 @@
+$exports.click_cb = function()
+{
+	$print("Your object was clicked!!!\n");
+}

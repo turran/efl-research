@@ -50,6 +50,13 @@ static void _add_callback(callback cb, char *value, char *attr, void *data)
 }
 
 
+static void _event_callback(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	printf("EVENT CALLBACK %s!!!\n", (char *)data);
+	/* call the function from the VM */
+	eon_document_script_execute(doc, (char *)data);
+}
+
 static void _object_id_get(char *value, char *attr, void *data)
 {
 	printf("called\n");
@@ -317,7 +324,17 @@ void attributes_set(void *value, void *data)
 	//printf("[PARSER] Setting attribute %s\n", (char *)n->key);
 	prop = ekeko_object_property_get(o, n->key);
 	if (!prop)
-		return;
+	{
+		if (strncmp(n->key, "on", 2))
+			return;
+		/* handle the onXXX event types */
+		else
+		{
+			printf("registering event %s\n", (char *)n->key + 2);
+			ekeko_event_listener_add(o, n->key + 2, _event_callback, EINA_FALSE, strdup(n->value));
+			return;
+		}
+	}
 	/* in case the object is an animation skip the prop attribute
 	 * as it is already set
 	 */
@@ -347,11 +364,16 @@ Ekeko_Object * tag_create(char *tag, EXML *exml, Ekeko_Object *parent)
 	{
 		o = (Ekeko_Object *)eon_canvas_new((Eon_Canvas *)parent);
 	}
-	if (!strcmp(tag, "rect"))
+	else if (!strcmp(tag, "script"))
+	{
+		o = eon_parser_script_new(parent);
+		ekeko_object_child_append(parent, o);
+	}
+	else if (!strcmp(tag, "rect"))
 	{
 		o = eon_parser_rect_new(parent);
 	}
-	if (!strcmp(tag, "circle"))
+	else if (!strcmp(tag, "circle"))
 	{
 		o = eon_parser_circle_new(parent);
 	}

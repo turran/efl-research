@@ -18,6 +18,7 @@ eon_canvas.c \
 eon_clock.c \
 eon_coord.c \
 eon_external.c \
+eon_script.c \
 eon_engine.c \
 eon_main.c \
 eon_value.c \

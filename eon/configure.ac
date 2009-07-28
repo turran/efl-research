@@ -103,6 +103,20 @@ PKG_CHECK_MODULES(ENESIM, [enesim >= 0.0.1])
 PKG_CHECK_MODULES(EMAGE, [emage >= 0.0.1])
 PKG_CHECK_MODULES(ETCH, [etch >= 0.0.1])
 ################################################################################
+##                               Scripting                                    ##
+################################################################################
+## Neko 
+NEKO_LIBS=
+AC_CHECK_LIB(neko, val_callEx, 
+             [ AC_CHECK_HEADERS(neko.h neko_vm.h, have_neko="yes", have_neko="no") ],
+             have_neko="yes")
+if test "x$have_neko" = "xyes"; then
+	NEKO_LIBS=-lneko
+	AC_DEFINE(BUILD_SCRIPT_NEKO, [1], [Build support for NekoVM scripts])
+fi
+AM_CONDITIONAL(BUILD_SCRIPT_NEKO, test "x$have_neko" = "xyes")
+AC_SUBST(NEKO_LIBS)
+################################################################################
 ##                                Parsers                                     ##
 ################################################################################
 ## Expat
@@ -115,6 +129,7 @@ if test "x$have_expat" = "xyes"; then
 	AC_DEFINE(BUILD_PARSER_EXPAT, [1], [Build support for Expat parser])
 fi
 AM_CONDITIONAL(BUILD_PARSER_EXPAT, test "x$have_expat" = "xyes")
+AC_SUBST(EXPAT_LIBS)
 
 ## EXML
 PKG_CHECK_MODULES(EXML, [exml >= 0.1.1], [have_exml="yes"], [have_exml="no"])
@@ -176,6 +191,8 @@ src/lib/parser/Makefile
 src/lib/parser/exml/Makefile
 src/lib/parser/expat/Makefile
 src/lib/parser/common/Makefile
+src/lib/script/Makefile
+src/lib/script/neko/Makefile
 src/include/Makefile
 src/engines/Makefile
 src/engines/sdl/Makefile
@@ -203,6 +220,9 @@ echo
 echo "Parsers:"
 echo "  Expat Parser................................: $have_expat"
 echo "  EXML Parser.................................: $have_exml"
+echo
+echo "Scripts:"
+echo "  NekoVM......................................: $have_neko"
 echo
 echo "Now type 'make' ('gmake' on some systems) to compile $PACKAGE,"
 echo "and then afterwards as root (or the user who will install this), type"

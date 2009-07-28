@@ -44,6 +44,7 @@ EAPI int eon_init(void)
 		eon_value_init();
 		eon_engine_init();
 		eon_parser_init();
+		eon_script_init();
 		/* create the Emage idler */
 		_idler = ecore_idle_enterer_add(_emage_idler_cb, NULL);
 done:
@@ -54,6 +55,7 @@ EAPI int eon_shutdown(void)
 {
 	if (_count != 1) goto done;
 		ecore_idle_enterer_del(_idler);
+		eon_script_shutdown();
 		eon_parser_shutdown();
 		eon_engine_shutdown();
 		eon_value_shutdown();

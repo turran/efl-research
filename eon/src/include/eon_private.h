@@ -30,6 +30,7 @@
 #define EON_TYPE_ANIMATION_BASIC "Eon_Animation_Basic"
 #define EON_TYPE_ANIMATION_MATRIX "Eon_Animation_Matrix"
 #define EON_TYPE_EXTERNAL "Eon_External"
+#define EON_TYPE_SCRIPT "Eon_Script"
 
 #define EON_TYPE_SHAPE "Eon_Shape"
 #define EON_TYPE_RECT "Eon_Rect"
@@ -75,6 +76,9 @@ void eon_value_shutdown(void);
 /* Document */
 Eon_Engine * eon_document_engine_get(Eon_Document *d);
 Etch * eon_document_etch_get(Eon_Document *d);
+void eon_document_script_execute(Eon_Document *d, const char *fname);
+void eon_document_script_unload(Eon_Document *d, const char *file);
+void eon_document_script_load(Eon_Document *d, const char *file);
 
 /* Canvas */
 Eon_Document * eon_canvas_document_get(Eon_Canvas *c);

@@ -39,6 +39,11 @@ struct _Eon_Document_Private
 	Eina_Hash *ids;
 	Etch *etch;
 	Ecore_Timer *anim_cb;
+	/* each document might have a VM, only one VM type per document */
+	struct {
+		Eon_Script_Module *sm;
+		void *data;
+	} vm;
 };
 
 /* Called whenever an object changes it's id */
@@ -125,7 +130,7 @@ static void _ctor(void *instance)
 	etch_timer_fps_set(prv->etch, 30);
 	prv->anim_cb = ecore_timer_add(1.0f/30.0f, _animation_cb, dc);
 	/* the id system */
-	prv->ids = 	eina_hash_string_superfast_new(NULL);
+	prv->ids = eina_hash_string_superfast_new(NULL);
 	/* the event listeners */
 	ekeko_event_listener_add((Ekeko_Object *)dc, EKEKO_EVENT_OBJECT_APPEND, _child_append_cb, EINA_TRUE, NULL);
 	ekeko_event_listener_add((Ekeko_Object *)dc, EKEKO_EVENT_PROP_MODIFY, _prop_modify_cb, EINA_FALSE, NULL);
@@ -163,6 +168,31 @@ Etch * eon_document_etch_get(Eon_Document *d)
 	prv = PRIVATE(d);
 	return prv->etch;
 }
+
+void eon_document_script_execute(Eon_Document *d, const char *fname)
+{
+	Eon_Document_Private *prv;
+	
+	prv = PRIVATE(d);
+	if (!prv->vm.sm || !prv->vm.sm->execute)
+		return;
+	prv->vm.sm->execute(prv->vm.data, fname);
+}
+
+void eon_document_script_unload(Eon_Document *d, const char *file)
+{
+
+}
+
+void eon_document_script_load(Eon_Document *d, const char *file)
+{
+	Eon_Document_Private *prv;
+
+	prv = PRIVATE(d);
+	if (!prv->vm.sm)
+		return;
+	prv->vm.sm->load(prv->vm.data, file);
+}
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -187,12 +217,22 @@ Ekeko_Type *eon_document_type_get(void)
 EAPI Eon_Document * eon_document_new(const char *engine, int w, int h, const char *options)
 {
 	Eon_Document *d;
+	Eon_Document_Private *prv;
 	Eon_Canvas *c;
 	Ekeko_Value v;
 
 	d = ekeko_type_instance_new(eon_document_type_get());
-	ekeko_value_str_from(&v, engine);
-	ekeko_object_property_value_set((Ekeko_Object *)d, "engine", &v);
+	if (!d)
+		return NULL;
+
+	prv = PRIVATE(d);
+	/* the gfx engine */
+	prv->engine.backend = eon_engine_get(engine);
+	eon_engine_ref(prv->engine.backend, d);
+	/* the script engine */
+	prv->vm.sm = eon_script_get("neko");
+	/* FIXME only initializa whenever we have a script element */
+	prv->vm.data = prv->vm.sm->init();
 	/* the main canvas */
 	c = ekeko_type_instance_new(eon_canvas_type_get());
 	ekeko_object_child_append((Ekeko_Object *)d, (Ekeko_Object *)c);

@@ -1,4 +1,4 @@
-SUBDIRS = core paint shape parser
+SUBDIRS = core paint shape parser script
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -19,6 +19,7 @@ core/libeon_core.la \
 paint/libeon_paint.la \
 shape/libeon_shape.la \
 parser/libeon_parser.la \
+script/libeon_script.la \
 $(top_builddir)/src/engines/enesim/libeon_engine_enesim.la
 
 if BUILD_ENGINE_SDL
@@ -29,7 +30,8 @@ libeon_la_DEPENDENCIES = $(top_builddir)/src/engines/enesim/libeon_engine_enesim
 core/libeon_core.la \
 paint/libeon_paint.la \
 shape/libeon_shape.la \
-parser/libeon_parser.la
+parser/libeon_parser.la \
+script/libeon_script.la
 
 if BUILD_ENGINE_SDL
 libeon_la_DEPENDENCIES += $(top_builddir)/src/engines/sdl/libeon_engine_sdl.la
