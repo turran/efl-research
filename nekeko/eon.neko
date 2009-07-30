@@ -1,0 +1,16 @@
+color_proto = {
+	__value_set => $loader.loadprim("neon@color_value_set", 1)
+	__value_get => $loader.loadprim("neon@color_value_get", 1)
+};
+
+$exports.color = function(v)
+{
+	var o = $new(null);
+	$objsetproto(o, color_proto);
+	if ($typeof(v) == $tint)
+		o.val = v;
+	// handle all the possible string cases, here or at the .c file?
+	else if ($typeof(v) == $tstring)
+		o.val = 0xffffffff;
+	return o;
+}

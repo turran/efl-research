@@ -1,10 +1,12 @@
 var ekeko = $loader.loadmodule("ekeko", $loader)
+var eon = $loader.loadmodule("eon", $loader)
 
 // test
 var c = ekeko.object();
+var color = eon.color(0xff00ff00ff);
 $print(c);
 $print("\n");
-c.property_value_set("id", "chau");
+c.property_value_set("id", color);
 d = c.property_value_get("id");
 $print(d);
 

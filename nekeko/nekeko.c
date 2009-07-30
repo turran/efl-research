@@ -118,6 +118,24 @@ static value object_property_value_set(value prop, value v)
 		ekeko_value_str_from(&ev, val_string(v));
 		break;
 
+		case VAL_OBJECT:
+		/* get the mandatory __set_value */
+		{
+			value extval;
+
+			printf("Passed argument is an object!!!\n");
+			extval = val_field(v, val_id("__value_set"));
+			printf("1 %d\n", val_type(extval));
+			if (!extval)
+				return val_false;
+			if (!val_is_function(extval) || val_fun_nargs(extval) != 1)
+		                return val_false;
+			printf("Value backend found!!!!\n");
+			return val_call1(extval, v);
+
+		}
+		break;
+
 		default:
 		break;
 	}
