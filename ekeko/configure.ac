@@ -55,7 +55,6 @@ ekeko.pc
 src/Makefile
 src/lib/Makefile
 src/include/Makefile
-examples/Makefile
 ],[
 ])
 
