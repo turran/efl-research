@@ -1,0 +1,29 @@
+object_new = $loader.loadprim("nekeko@object_new", 0);
+object_proto = {
+	property_value_get => $loader.loadprim("nekeko@object_property_value_get", 1)
+	property_value_set => $loader.loadprim("nekeko@object_property_value_set", 2)
+	parent_get => $loader.loadprim("nekeko@object_parent_get", 0)
+	next => $loader.loadprim("nekeko@object_next", 0)
+	__get => function(i) {
+		var f = $loader.loadprim("nekeko@object_child_get_at", 1);
+		return $exports.object_external(f(i));
+	}
+	__string => $loader.loadprim("nekeko@object_print", 0)
+};
+
+// the class of the object
+$exports.object_external = function(data) {
+	var o = $new(null);
+	$objsetproto(o, object_proto);
+	// check that the type is an ekeko_object
+	o.__inst = data;
+	return o;
+}
+
+// constructor
+$exports.object = function() {
+	var o = $new(null);
+	$objsetproto(o, object_proto);
+	o.__inst = object_new();
+	return o;
+}

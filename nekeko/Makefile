@@ -11,9 +11,10 @@ nekeko.ndll: $(nekeko_ndll_OBJS)
 	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) -shared $(nekeko_ndll_OBJS) -o $@
 
 nekeko_n_SRCS = nekeko.neko
-nekeko_n_OBJS = $(nekeko_n_SRCS:.neko=.n)
-nekeko.n: $(nekeko_n_OBJS)
+#nekeko_n_OBJS = $(nekeko_n_SRCS:.neko=.n)
+nekeko.n: $(nekeko_n_SRCS)
 	$(RM) $@
+	nekoc $< 
 
 .neko.n:
 	nekoc $< $@

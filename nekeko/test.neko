@@ -1,0 +1,10 @@
+var ekeko = $loader.loadmodule("ekeko", $loader)
+
+// test
+var c = ekeko.object();
+$print(c);
+$print("\n");
+c.property_value_set("id", "chau");
+d = c.property_value_get("id");
+$print(d);
+
