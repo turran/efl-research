@@ -24,7 +24,7 @@ typedef struct _Eon_Script_Module
 	void * (*init)(void);
 	void (*shutdown)(void *data);
 	Eina_Bool (*load)(void *data, const char *file);
-	Eina_Bool (*execute)(void *data, const char *fname);
+	Eina_Bool (*execute)(void *data, const char *fname, Ekeko_Object *ref);
 } Eon_Script_Module;
 /*============================================================================*
  *                                Functions                                   *

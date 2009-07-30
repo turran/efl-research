@@ -169,14 +169,14 @@ Etch * eon_document_etch_get(Eon_Document *d)
 	return prv->etch;
 }
 
-void eon_document_script_execute(Eon_Document *d, const char *fname)
+void eon_document_script_execute(Eon_Document *d, const char *fname, Ekeko_Object *o)
 {
 	Eon_Document_Private *prv;
 	
 	prv = PRIVATE(d);
 	if (!prv->vm.sm || !prv->vm.sm->execute)
 		return;
-	prv->vm.sm->execute(prv->vm.data, fname);
+	prv->vm.sm->execute(prv->vm.data, fname, o);
 }
 
 void eon_document_script_unload(Eon_Document *d, const char *file)

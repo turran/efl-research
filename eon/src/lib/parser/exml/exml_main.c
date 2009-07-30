@@ -54,7 +54,7 @@ static void _event_callback(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	printf("EVENT CALLBACK %s!!!\n", (char *)data);
 	/* call the function from the VM */
-	eon_document_script_execute(doc, (char *)data);
+	eon_document_script_execute(doc, (char *)data, o);
 }
 
 static void _object_id_get(char *value, char *attr, void *data)

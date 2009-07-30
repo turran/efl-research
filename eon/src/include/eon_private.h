@@ -76,7 +76,7 @@ void eon_value_shutdown(void);
 /* Document */
 Eon_Engine * eon_document_engine_get(Eon_Document *d);
 Etch * eon_document_etch_get(Eon_Document *d);
-void eon_document_script_execute(Eon_Document *d, const char *fname);
+void eon_document_script_execute(Eon_Document *d, const char *fname, Ekeko_Object *o);
 void eon_document_script_unload(Eon_Document *d, const char *file);
 void eon_document_script_load(Eon_Document *d, const char *file);
 

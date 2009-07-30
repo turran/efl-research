@@ -29,6 +29,9 @@ struct _Eon_External_Private
 		char *prev;
 		int changed;
 	} file;
+	// relative paths
+	char *img_prefix;
+	char *script_prefix;
 };
 
 static Eina_Hash *_parsers = NULL;
@@ -145,4 +148,14 @@ EAPI void eon_external_file_set(Eon_External *e, const char *file)
 
 	ekeko_value_str_from(&v, file);
 	ekeko_object_property_value_set((Ekeko_Object *)e, "file", &v);
+}
+
+EAPI void eon_external_image_prefix_set(Eon_External *e, const char *path)
+{
+
+}
+
+EAPI void eon_external_script_prefix_set(Eon_External *e, const char *path)
+{
+
 }
