@@ -24,23 +24,8 @@ static void ball_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 	Level *l = data;
 	Level_Private *prv = PRIVATE(l);
 
-	if (be->y <= 0)
-	{
-		ball_bounce_y(b);
-	}
-	else if (be->y + be->h >= prv->my)
-	{
-		ball_bounce_y(b);
-	}
-	if (be->x <= 0)
-	{
-		ball_bounce_x(b);
-	}
-	else if (be->x + be->w >= prv->mx)
-	{
-		ball_bounce_x(b);
-	}
-	else
+	/* inside playground */
+	if ((be->x > 0 && be->x + be->w < prv->mx) && (be->y > 0 && be->y + be->h < prv->my))
 	{
 		/* bar area */
 		if (be->y >= BLOCKH * MAXROWS)
@@ -51,79 +36,60 @@ static void ball_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 		/* blocks */
 		else
 		{
-			Block *block;
+			Block *block = NULL;
 			int row, column;
 
 			row = be->y / BLOCKH;
 			column = be->x / BLOCKW;
 			printf("Y = trying to find a block at %d %d!\n", row, column);
-			if (be->y == (row - 1) * BLOCKH)
+			if (be->y == row * BLOCKH)
 			{
+				printf("CASE 1\n");
 				block = prv->blocks[row - 1][column];
 			}
-			else if ((row + 1 < MAXROWS) && ((be->y + be->w) == (row + 1) * BLOCKH))
+			if ((row + 1 < MAXROWS) && ((be->y + be->w) == (row + 1) * BLOCKH))
 			{
+				printf("CASE 2\n");
 				block = prv->blocks[row + 1][column];
 			}
-			else
-				return;
 			if (block && block->base.hit)
 				block->base.hit((Obstacle *)block, b, EINA_TRUE);
-		}
-	}
-
-}
-
-#if 0
-static void ball_x(const Ekeko_Object *o, Ekeko_Event *e, void *data)
-{
-	Ball *b = (Ball *)o;
-	BallEvent *be = (BallEvent *)e;
-	Level *l = data;
-	Level_Private *prv = PRIVATE(l);
-
-	/* sides */
-	if (be->x <= 0)
-	{
-		ball_bounce_x(b);
-	}
-	else if (be->x + be->w >= prv->mx)
-	{
-		ball_bounce_x(b);
-	}
-	else
-	{
-		/* bar area */
-		if (be->y >= BLOCKH * MAXROWS)
-		{
-			return;
-		}
-		/* blocks */
-		else
-		{
-			Block *block;
-			int row, column;
-
-			row = be->y / BLOCKH;
-			column = be->x / BLOCKW;
-			printf("X = trying to find a block at %d %d!\n", row, column);
 
 			if (be->x == (column - 1) * BLOCKW)
 			{
+				printf("CASE 3\n");
 				block = prv->blocks[row][column - 1];
 			}
-			else if ((be->x + be->w) == (column + 1) * BLOCKW)
+			if ((be->x + be->w) == (column + 1) * BLOCKW)
 			{
+				printf("CASE 4\n");
 				block = prv->blocks[row][column + 1];
 			}
-			else
-				return;
 			if (block && block->base.hit)
 				block->base.hit((Obstacle *)block, b, EINA_FALSE);
 		}
 	}
+	/* borders */
+	else
+	{
+		if (be->y <= 0)
+		{
+			ball_bounce_y(b);
+		}
+		else if (be->y + be->h >= prv->my)
+		{
+			ball_bounce_y(b);
+		}
+		if (be->x <= 0)
+		{
+			ball_bounce_x(b);
+		}
+		else if (be->x + be->w >= prv->mx)
+		{
+			ball_bounce_x(b);
+		}
+	}
 }
-#endif
 
 static void _ctor(void *instance)
 {
@@ -220,8 +186,8 @@ Level * simplelevel(Eon_Canvas *c)
 	b = (Block *)normalblock_new(c, 10, 5);
 	level_block_add(l, b, 10, 5);
 
-	b = (Block *)normalblock_new(c, 10, 4);
-	level_block_add(l, b, 10, 4);
+	b = (Block *)normalblock_new(c, 10, 10);
+	level_block_add(l, b, 10, 10);
 
 	return l;
 }
