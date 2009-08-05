@@ -41,7 +41,7 @@ static void * neko_init(void)
 		return NULL;
 	}
 	printf("Bindings loaded correctly\n");
-	args[0] = alloc_string("/home/jl/c/efl-research/eon/src/lib/script/neko/ekeko.n");
+	args[0] = alloc_string("/usr/local/lib/neko/ekeko.n");
 	args[1] = loader;
 	ret = val_callEx(loader, val_field(loader, val_id("loadmodule")), args, 2, &exc);
 	if (exc != NULL)
@@ -54,6 +54,18 @@ static void * neko_init(void)
 	}
 	printf("File ekeko.n loaded correctly\n");
  	en->ekeko = ret;
+	args[0] = alloc_string("/usr/local/lib/neko/eon.n");
+	args[1] = loader;
+	ret = val_callEx(loader, val_field(loader, val_id("loadmodule")), args, 2, &exc);
+	if (exc != NULL)
+	{
+
+		buffer b = alloc_buffer(NULL);
+		val_buffer(b, exc);
+		printf("Uncaught exception - %s\n", val_string(buffer_to_string(b)));
+		return EINA_FALSE;
+	}
+	printf("File eon.n loaded correctly\n");
 
 	return en;
 }

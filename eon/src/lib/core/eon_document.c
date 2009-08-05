@@ -67,6 +67,7 @@ static int _idler_cb(void *data)
 	}
 	return 1;
 }
+
 static int _animation_cb(void *data)
 {
 	Eon_Document *doc = data;
