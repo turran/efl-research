@@ -11,6 +11,7 @@ struct _NormalBlock_Private
 {
 	// the color
 	Eon_Rect *r;
+	Eon_Paint *p;
 };
 
 static void hit(Obstacle *o, Ball *ball, Eina_Bool top)
@@ -68,6 +69,9 @@ NormalBlock *normalblock_new(Eon_Canvas *c, int row, int col)
 	NormalBlock *b;
 	NormalBlock_Private *prv;
 	Eon_Rect *r;
+	Eon_Image *i;
+	Eon_Coord coord;
+	Ekeko_Value v;
 
 	b = ekeko_type_instance_new(normalblock_type_get());
 	block_row_set(b, row);
@@ -78,8 +82,27 @@ NormalBlock *normalblock_new(Eon_Canvas *c, int row, int col)
 	eon_rect_y_set(r, row * BLOCKH);
 	eon_rect_w_set(r, BLOCKW);
 	eon_rect_h_set(r, BLOCKH);
-	eon_rect_color_set(r, 0xff000000);
+	eon_rect_color_set(r, 0xffee0000);
 	eon_rect_show(r);
+
+	i = eon_image_new();
+	ekeko_object_child_append(c, i);
+	eon_coord_set(&coord, 0, EON_COORD_RELATIVE);
+	eon_value_coord_from(&v, &coord);
+	ekeko_object_property_value_set(i, "x", &v);
+	ekeko_object_property_value_set(i, "y", &v);
+	eon_coord_set(&coord, 100, EON_COORD_RELATIVE);
+	ekeko_object_property_value_set(i, "w", &v);
+	ekeko_object_property_value_set(i, "h", &v);
+#if 0
+	/* FIXME implement this! */
+	eon_paint_x_set(i, 0);
+	eon_paint_y_set(i, 0);
+	eon_paint_w_set(i, BLOCKW);
+	eon_paint_h_set(i, BLOCKH);
+#endif
+	eon_image_file_set(i, "data/block.png");
+	eon_shape_fill_paint_set(r, (Eon_Paint *)i);
 
 	prv = PRIVATE(b);
 	prv->r = r;
