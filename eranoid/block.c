@@ -1,11 +1,13 @@
 #include "eranoid.h"
 
+#define PRIVATE(d) ((Block_Private *)((Block *)(d))->prv)
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
 struct _Block_Private
 {
-
+	int row;
+	int col;
 };
 
 static void _ctor(void *instance)
@@ -36,4 +38,26 @@ Ekeko_Type *block_type_get(void)
 	}
 
 	return type;
+}
+
+void block_position_get(Block *b, int *row, int *col)
+{
+	Block_Private *prv = PRIVATE(b);
+
+	if (row) *row = prv->row;
+	if (col) *col = prv->col;
+}
+
+void block_row_set(Block *b, int row)
+{
+	Block_Private *prv = PRIVATE(b);
+
+	prv->row = row;
+}
+
+void block_col_set(Block *b, int col)
+{
+	Block_Private *prv = PRIVATE(b);
+
+	prv->col = col;
 }

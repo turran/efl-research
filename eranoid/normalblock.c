@@ -17,11 +17,15 @@ static void hit(Obstacle *o, Ball *ball, Eina_Bool top)
 {
 	Block *b = (Block *)o;
 
+	printf("BALL hit on the normalblock\n");
 	if (top)
 		ball_bounce_y(ball);
 	else
 		ball_bounce_x(ball);
-	printf("HITTTTTTTTTTED\n");
+
+	ekeko_object_delete((Ekeko_Object *)o);
+	/* TODO remove the block from the grid */
+	/* TODO send a signal to the animation system?? :) */
 }
 
 
@@ -37,7 +41,10 @@ static void _ctor(void *instance)
 
 static void _dtor(void *instance)
 {
+	NormalBlock *b = instance;
+	NormalBlock_Private *prv = PRIVATE(b);
 
+	ekeko_object_delete((Ekeko_Object *)prv->r);
 }
 
 static Ekeko_Type *normalblock_type_get(void)
@@ -63,6 +70,9 @@ NormalBlock *normalblock_new(Eon_Canvas *c, int row, int col)
 	Eon_Rect *r;
 
 	b = ekeko_type_instance_new(normalblock_type_get());
+	block_row_set(b, row);
+	block_col_set(b, col);
+
 	r = eon_rect_new(c);
 	eon_rect_x_set(r, col * BLOCKW);
 	eon_rect_y_set(r, row * BLOCKH);

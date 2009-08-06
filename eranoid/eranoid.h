@@ -34,6 +34,43 @@ typedef struct _Bar Bar;
 typedef struct _Bar_Private Bar_Private;
 
 
+#define BALL_EVENT "BallEvent"
+
+struct _Ball
+{
+
+	Ekeko_Object base;
+	Ball_Private *prv;
+};
+
+typedef struct _BallEvent
+{
+	Ekeko_Event ev;
+	int x;
+	int y;
+	int w;
+	int h;
+} BallEvent;
+
+#define BALL_GOES_RIGHT(d)  (d & BALL_RIGHT)
+#define BALL_GOES_LEFT(d)   (~(d & BALL_RIGHT))
+#define BALL_GOES_TOP(d)    (d & BALL_TOP)
+#define BALL_GOES_BOTTOM(d) (~(d & BALL_TOP))
+
+typedef enum _BallDirection
+{
+	BALL_TOP = 0x01,
+	BALL_RIGHT = 0x10,
+} BallDirection;
+
+Ball * ball_new(Eon_Canvas *c);
+void ball_update(Ball *b);
+void ball_bounce_x(Ball *b);
+void ball_bounce_y(Ball *b);
+void ball_vel_set(Ball *b, float vel);
+void ball_pos_set(Ball *b, int x, int y);
+
+
 Ekeko_Type *obstacle_type_get(void);
 struct _Obstacle
 {
@@ -44,9 +81,12 @@ struct _Obstacle
 
 struct _Bar
 {
-	Obstacle bar;
+	Obstacle base;
 	Bar_Private *prv;
 };
+
+Bar * bar_new(Eon_Canvas *c);
+
 
 struct _Level
 {
@@ -71,31 +111,5 @@ struct _NormalBlock
 	NormalBlock_Private *prv;
 	// the color
 };
-
-#define BALL_EVENT "BallEvent"
-
-struct _Ball
-{
-
-	Ekeko_Object base;
-	Ball_Private *prv;
-};
-
-typedef struct _BallEvent
-{
-	Ekeko_Event ev;
-	int x;
-	int y;
-	int w;
-	int h;
-} BallEvent;
-
-Ball * ball_new(Eon_Canvas *c);
-void ball_update(Ball *b);
-void ball_bounce_x(Ball *b);
-void ball_bounce_y(Ball *b);
-void ball_vel_set(Ball *b, float vel);
-void ball_pos_set(Ball *b, int x, int y);
-
 
 #endif

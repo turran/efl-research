@@ -7,10 +7,11 @@ all: $(BINS)
 eranoid_SRCS = \
 main.c \
 ball.c \
+bar.c \
+block.c \
 level.c \
-obstacle.c \
 normalblock.c \
-block.c
+obstacle.c
 
 eranoid_OBJS = $(eranoid_SRCS:.c=.o)
 eranoid: $(eranoid_OBJS)
