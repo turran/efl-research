@@ -15,6 +15,7 @@
 #define ERANOID_BAR "Eranoid_Bar"
 #define ERANOID_BLOCK "Eranoid_Block"
 #define ERANOID_NORMALBLOCK "Eranoid_NormalBlock"
+#define ERANOID_DURABLEBLOCK "Eranoid_DurableBlock"
 
 typedef struct _Obstacle Obstacle;
 typedef struct _Obstacle_Private Obstacle_Private;
@@ -26,6 +27,8 @@ typedef struct _Block Block;
 typedef struct _Block_Private Block_Private;
 typedef struct _NormalBlock NormalBlock;
 typedef struct _NormalBlock_Private NormalBlock_Private;
+typedef struct _DurableBlock DurableBlock;
+typedef struct _DurableBlock_Private DurableBlock_Private;
 
 typedef struct _Ball Ball;
 typedef struct _Ball_Private Ball_Private;
@@ -109,7 +112,12 @@ struct _NormalBlock
 {
 	Block base;
 	NormalBlock_Private *prv;
-	// the color
+};
+
+struct _DurableBlock
+{
+	Block base;
+	DurableBlock_Private *prv;
 };
 
 #endif

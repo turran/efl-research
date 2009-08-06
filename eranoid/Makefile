@@ -9,6 +9,7 @@ main.c \
 ball.c \
 bar.c \
 block.c \
+durableblock.c \
 level.c \
 normalblock.c \
 obstacle.c

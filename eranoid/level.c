@@ -70,7 +70,8 @@ static void block_collision(Level *l, Ball *b, BallEvent *be)
 	//printf("Ball at %d %d (%dx%d)\n", be->x, be->y, be->w, be->h);
 	if (tb)
 	{
-		if ((be->y == (cornerrow + 1) * BLOCKH) || (be->y + be->h == cornerrow * BLOCKH))
+		/* top - bottom */
+		if ((be->y == (cornerrow + 1) * BLOCKH) || (be->y + be->h - 1 == (cornerrow) * BLOCKH))
 			if (tb->base.hit)
 			{
 				tb->base.hit((Obstacle *)tb, b, EINA_TRUE);
@@ -79,7 +80,8 @@ static void block_collision(Level *l, Ball *b, BallEvent *be)
 	}
 	if (lr)
 	{
-		if ((be->x == (cornercol + 1) * BLOCKW) || (be->x + be->w == cornercol * BLOCKW))
+		/* left - right */
+		if ((be->x == (cornercol + 1) * BLOCKW) || (be->x + be->w + 1 == cornercol * BLOCKW))
 			if (lr->base.hit)
 			{
 				lr->base.hit((Obstacle *)lr, b, EINA_FALSE);
@@ -87,12 +89,12 @@ static void block_collision(Level *l, Ball *b, BallEvent *be)
 	}
 	if (corner)
 	{
-		if (((be->y == (cornerrow + 1) * BLOCKH) || (be->y + be->h == cornerrow * BLOCKH)) && ((be->x == (cornercol + 1) * BLOCKW) || (be->x + be->w == cornercol * BLOCKW)))
+		if (((be->y == (cornerrow + 1) * BLOCKH) || (be->y + be->h - 1 == cornerrow * BLOCKH)) && ((be->x == (cornercol + 1) * BLOCKW) || (be->x + be->w + 1 == cornercol * BLOCKW)))
 			if (corner->base.hit)
 			{
 				printf("CORNER HITTTTED\n");
 				corner->base.hit((Obstacle *)corner, b, EINA_FALSE);
-				corner->base.hit((Obstacle *)corner, b, EINA_TRUE);
+				//corner->base.hit((Obstacle *)corner, b, EINA_TRUE);
 			}
 	}
 	/*
@@ -273,7 +275,7 @@ void level_load(const char *file, Level *l)
 
 }
 
-void level_generate(Level *l)
+void level_generate(Level *l, Eon_Canvas *c)
 {
 	int i, j;
 	long int r;
@@ -281,7 +283,9 @@ void level_generate(Level *l)
 	for (i = 0; i < MAXROWS; i++)
 		for(j = 0; j < MAXCOLS; j++)
 		{
-
+			Block *b;
+			b = (Block *)normalblock_new(c, i, j);
+			level_block_add(l, b, i, j);
 		}
 }
 
@@ -311,7 +315,13 @@ Level * simplelevel(Eon_Canvas *c)
 
 	l = level_new(c);
 	prv = PRIVATE(l);
-#if 1
+#if 0
+
+	b = (Block *)durableblock_new(c, 8, 2);
+	level_block_add(l, b, 8, 2);
+
+	b = (Block *)durableblock_new(c, 11, 9);
+	level_block_add(l, b, 11, 9);
 
 	b = (Block *)normalblock_new(c, 10, 5);
 	level_block_add(l, b, 10, 5);
@@ -321,6 +331,8 @@ Level * simplelevel(Eon_Canvas *c)
 
 	b = (Block *)normalblock_new(c, 3, 7);
 	level_block_add(l, b, 3, 7);
+#else
+	level_generate(l, c);
 #endif
 
 	return l;
