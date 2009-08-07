@@ -3,6 +3,8 @@
 	<name>eranoid</name>
 	<comment></comment>
 	<projects>
+		<project>ekeko</project>
+		<project>eon</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

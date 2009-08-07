@@ -19,15 +19,6 @@ int main(void)
 	c = eon_document_canvas_get(d);
 	eon_canvas_w_rel_set(c, 100);
 	eon_canvas_h_rel_set(c, 100);
-	/* background, should be part of the level */
-	bkg = eon_rect_new(c);
-	eon_rect_x_set(bkg, 0);
-	eon_rect_y_set(bkg, 0);
-	eon_rect_w_rel_set(bkg, 100);
-	eon_rect_h_rel_set(bkg, 100);
-	eon_rect_color_set(bkg, 0xffffffff);
-	eon_rect_rop_set(bkg, ENESIM_FILL);
-	eon_rect_show(bkg);
 
 	l = simplelevel(c);
 	level_start(l);

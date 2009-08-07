@@ -7,6 +7,13 @@ static Ekeko_Type *normalblock_type_get(void);
  *============================================================================*/
 #define PRIVATE(d) ((NormalBlock_Private *)((NormalBlock *)(d))->prv)
 
+static const int colors[4] = {
+		0xffff0000,
+		0xff00ff00,
+		0xff0000ff,
+		0xffffffff,
+};
+
 struct _NormalBlock_Private
 {
 	// the color
@@ -18,7 +25,6 @@ static void hit(Obstacle *o, Ball *ball, Eina_Bool top)
 {
 	Block *b = (Block *)o;
 
-	printf("BALL hit on the normalblock\n");
 	if (top)
 		ball_bounce_y(ball);
 	else
@@ -82,7 +88,8 @@ NormalBlock *normalblock_new(Eon_Canvas *c, int row, int col)
 	eon_rect_y_set(r, row * BLOCKH);
 	eon_rect_w_set(r, BLOCKW);
 	eon_rect_h_set(r, BLOCKH);
-	eon_rect_color_set(r, 0xffee0000);
+
+	eon_rect_color_set(r, colors[random() % 4]);
 	eon_rect_show(r);
 
 	i = eon_image_new();

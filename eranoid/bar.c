@@ -14,7 +14,29 @@ struct _Bar_Private
 
 static void hit(Obstacle *o, Ball *ball, Eina_Bool top)
 {
-	printf("Bar hitted\n");
+	int x, w, bx, bw;
+	float m;
+	int tb;
+
+	ball_geometry_get(ball, &bx, NULL, &bw, NULL);
+	ball_direction_get(ball, &tb, NULL);
+	bar_geometry_get(o, &x, NULL, &w, NULL);
+
+	if (bx <= x + (w / 2))
+		ball_direction_set(ball, tb, -1);
+	else
+		ball_direction_set(ball, tb, 1);
+
+	if (bx <= x || bx > + bw >= x + w)
+		m = 1;
+	else
+	{
+		int rx = bx + (bw / 2);
+		int diff = abs(rx - (x + w/2));
+
+		m = (float)diff / (w/2);
+	}
+	ball_slope_set(ball, m);
 	ball_bounce_y(ball);
 }
 
@@ -71,7 +93,7 @@ Bar * bar_new(Eon_Canvas *c)
 
 void bar_geometry_get(Bar *b, int *x, int *y, int *w, int *h)
 {
-	Bar_Private *prv = PRIVATE(b);;
+	Bar_Private *prv = PRIVATE(b);
 	Eon_Coord cx, cy, cw, ch;
 
 	eon_square_coords_get((Eon_Square *)prv->shape, &cx, &cy, &cw, &ch);
@@ -79,4 +101,12 @@ void bar_geometry_get(Bar *b, int *x, int *y, int *w, int *h)
 	if (y) *y = cy.final;
 	if (w) *w = cw.final;
 	if (h) *h = ch.final;
+}
+
+void bar_move(Bar *b, int x, int y)
+{
+	Bar_Private *prv = PRIVATE(b);
+
+	eon_rect_x_set(prv->shape, x);
+	eon_rect_y_set(prv->shape, y);
 }

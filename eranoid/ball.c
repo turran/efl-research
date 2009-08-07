@@ -130,7 +130,19 @@ void ball_bounce_y(Ball *b)
 	prv->iy = -prv->iy;
 }
 
-void ball_pos_set(Ball *b, int x, int y)
+void ball_geometry_get(Ball *b, int *x, int *y, int *w, int *h)
+{
+	Ball_Private *prv = PRIVATE(b);
+	Eon_Coord cx, cy, cw, ch;
+
+	eon_square_coords_get((Eon_Square *)prv->shape, &cx, &cy, &cw, &ch);
+	if (x) *x = cx.final;
+	if (y) *y = cy.final;
+	if (w) *w = cw.final;
+	if (h) *h = ch.final;
+}
+
+void ball_pos_get(Ball *b, int x, int y)
 {
 	Ball_Private *prv = PRIVATE(b);
 
@@ -146,6 +158,15 @@ void ball_direction_get(Ball *b, int *tb, int *lr)
 	if (lr) *lr = prv->ix;
 }
 
+void ball_direction_set(Ball *b, int tb, int lr)
+{
+	Ball_Private *prv = PRIVATE(b);
+
+	prv->iy = tb;
+	prv->ix = lr;
+}
+
+
 void ball_slope_set(Ball *b, float m)
 {
 	Ball_Private *prv = PRIVATE(b);
@@ -153,4 +174,5 @@ void ball_slope_set(Ball *b, float m)
 	if (m < 0) m = 0;
 	if (m > 1) m = 1;
 	prv->m = m;
+	prv->error = 1;
 }

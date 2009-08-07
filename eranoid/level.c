@@ -139,11 +139,10 @@ static void block_delete(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Level *l = (Level *)data;
 	Level_Private *prv = PRIVATE(l);
-	Block *b = o;
+	Block *b = (Block *)o;
 	int row, col;
 
 	block_position_get(b, &row, &col);
-	printf("BLOCK DELETED at %d %d!!!!!\n", row, col);
 	prv->blocks[row][col] = NULL;
 }
 
@@ -192,6 +191,23 @@ static void ball_change(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 		{
 			ball_bounce_x(b);
 		}
+	}
+}
+
+static void key_down(const Ekeko_Object *o, Ekeko_Event *e, void *data)
+{
+	Level *l = data;
+	Level_Private *prv = PRIVATE(data);
+	Eina_List *tmp;
+	Bar *b;
+
+	EINA_LIST_FOREACH(prv->bars, tmp, b)
+	{
+			int x, y, w;
+
+			bar_geometry_get(b, &x, &y, &w, NULL);
+			if (x + w + 2 <= prv->mx)
+				bar_move(b, x + 2, y);
 	}
 }
 
@@ -245,8 +261,19 @@ static Level * level_new(Eon_Canvas *c)
 	Level_Private *prv;
 	Ball *ball;
 	Bar *bar;
+	Eon_Rect *bkg;
 
 	l = ekeko_type_instance_new(level_type_get());
+	/* background, should be part of the level */
+	bkg = eon_rect_new(c);
+	eon_rect_x_set(bkg, 0);
+	eon_rect_y_set(bkg, 0);
+	eon_rect_w_rel_set(bkg, 100);
+	eon_rect_h_rel_set(bkg, 100);
+	eon_rect_color_set(bkg, 0xffffffff);
+	eon_rect_rop_set(bkg, ENESIM_FILL);
+	eon_rect_show(bkg);
+	ekeko_canvas_focus_set((Ekeko_Canvas *)c, (Ekeko_Renderable *)bkg);
 
 	ball = ball_new(c);
 	bar = bar_new(c);
@@ -256,9 +283,10 @@ static Level * level_new(Eon_Canvas *c)
 	prv->bars = eina_list_append(prv->bars, bar);
 
 	/* add the callbacks to the ball, whenever it moves */
-	//ekeko_event_listener_add((Ekeko_Object *)ball, BALL_EVENT_X, ball_x, EINA_FALSE, l);
+	ekeko_event_listener_add((Ekeko_Object *)bkg, EKEKO_EVENT_UI_KEY_DOWN, key_down, EINA_FALSE, l);
 	ekeko_event_listener_add((Ekeko_Object *)ball, BALL_EVENT, ball_change, EINA_FALSE, l);
-	ecore_timer_add(1.0f/50.0f, level_ticker, l);
+	ecore_timer_add(1.0f/80.0f, level_ticker, l);
+
 	//ecore_timer_add(1, level_ticker, l);
 
 	return l;
@@ -275,25 +303,6 @@ void level_load(const char *file, Level *l)
 
 }
 
-void level_generate(Level *l, Eon_Canvas *c)
-{
-	int i, j;
-	long int r;
-
-	for (i = 0; i < MAXROWS; i++)
-		for(j = 0; j < MAXCOLS; j++)
-		{
-			Block *b;
-			b = (Block *)normalblock_new(c, i, j);
-			level_block_add(l, b, i, j);
-		}
-}
-
-void level_start(Level *l)
-{
-
-}
-
 void level_block_add(Level *l, Block *b, int row, int col)
 {
 	Level_Private *prv = PRIVATE(l);
@@ -307,6 +316,46 @@ void level_block_add(Level *l, Block *b, int row, int col)
 	ekeko_event_listener_add((Ekeko_Object *)b, EKEKO_EVENT_OBJECT_DELETE, block_delete, EINA_FALSE, l);
 }
 
+void level_generate(Level *l, Eon_Canvas *c)
+{
+	int i, j;
+	long int r;
+
+	for (i = 0; i < MAXROWS; i++)
+		for(j = 0; j < MAXCOLS; j++)
+		{
+			Block *b;
+			int type;
+
+			type = random() % 6;
+			switch (type)
+			{
+				case 0:
+				break;
+
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				b = (Block *)normalblock_new(c, i, j);
+				level_block_add(l, b, i, j);
+				break;
+
+				case 5:
+				b = (Block *)durableblock_new(c, i, j);
+				level_block_add(l, b, i, j);
+				break;
+
+			}
+
+		}
+}
+
+void level_start(Level *l)
+{
+
+}
+
 Level * simplelevel(Eon_Canvas *c)
 {
 	Level *l;
@@ -315,7 +364,7 @@ Level * simplelevel(Eon_Canvas *c)
 
 	l = level_new(c);
 	prv = PRIVATE(l);
-#if 0
+#if 1
 
 	b = (Block *)durableblock_new(c, 8, 2);
 	level_block_add(l, b, 8, 2);

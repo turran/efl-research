@@ -72,6 +72,7 @@ void ball_bounce_x(Ball *b);
 void ball_bounce_y(Ball *b);
 void ball_vel_set(Ball *b, float vel);
 void ball_pos_set(Ball *b, int x, int y);
+void ball_slope_set(Ball *b, float m);
 
 
 Ekeko_Type *obstacle_type_get(void);
