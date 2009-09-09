@@ -33,10 +33,12 @@ static void _control_move(Control *cp, int dx, int dy)
 	}
 }
 
-Shape * circle_new(Eon_Canvas *canvas)
+Shape * circle_new(Scene *sc)
 {
 	Eon_Circle *c;
+	Eon_Canvas *canvas;
 
+	canvas = sc->canvas;
 	c = eon_circle_new(canvas);
 	eon_circle_radius_set(c, 30);
 	eon_circle_x_set(c, 50);
@@ -54,5 +56,5 @@ Shape * circle_new(Eon_Canvas *canvas)
 		enesim_matrix_scale(&m, 2, 2);
 		//eon_shape_matrix_set(c, &m);
 	}
-	return shape_new((Eon_Shape *)c, _control_move, _shape_move);
+	return shape_new((Eon_Shape *)c, sc, _control_move, _shape_move);
 }

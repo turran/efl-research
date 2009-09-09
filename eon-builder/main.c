@@ -19,8 +19,8 @@ int main(int argc, char **argv)
 
 	sc = scene_new(canvas);
 
-	rect_new(canvas);
-	circle_new(canvas);
+	rect_new(sc);
+	circle_new(sc);
 
 	eon_loop();
 	eon_shutdown();

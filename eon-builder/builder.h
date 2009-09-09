@@ -3,16 +3,18 @@
 
 #include <Eon.h>
 
+typedef struct _Scene Scene;
 typedef struct _Shape Shape;
 typedef struct _Control Control;
 
-enum Shape_State
+typedef enum Shape_State
 {
 	NONE,
 	SCALE,
 	ROTATE,
 	PROJECT,
-};
+	SHAPE_STATES,
+} Shape_State;
 
 typedef enum Control_Poisitions
 {
@@ -40,6 +42,7 @@ struct _Shape
 	/* callbacks */
 	Control_Move cmove;
 	Shape_Move smove;
+	Scene *sc;
 };
 
 struct _Control
@@ -49,19 +52,27 @@ struct _Control
 	Control_Position pos;
 };
 
-typedef struct _Scene
+struct _Scene
 {
+	Eon_Canvas *canvas;
 	Eon_Shape *sh;
 	Eina_List *selected;
-} Scene;
+};
 
 Scene * scene_new(Eon_Canvas *canvas);
+void scene_selected_remove(Scene *s, Shape *sh);
+void scene_selected_add(Scene *s, Shape *sh);
 
-Shape * shape_new(Eon_Shape *es, Control_Move cmove, Shape_Move smove);
+Shape * shape_new(Eon_Shape *es, Scene *sc, Control_Move cmove,
+		Shape_Move smove);
+void shape_state_set(Shape *s, Shape_State st);
 
-Control *control_new(Shape *ref, Control_Position pos);
+Control * control_new(Shape *ref, Control_Position pos);
 void control_show(Control *cp);
 void control_hide(Control *cp);
 void control_update(Control *cp);
+
+Shape * circle_new(Scene *sc);
+Shape * rect_new(Scene *sc);
 
 #endif

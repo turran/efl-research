@@ -41,14 +41,28 @@ static void _shape_move_cb(const Ekeko_Object *o, Ekeko_Event *e, void *data)
 {
 	Ekeko_Event_Mouse *ev = (Ekeko_Event_Mouse *)e;
 	Shape *s = (Shape *)data;
+	Eina_List *l;
 	int dx, dy;
 
 	dx = ev->screen.x - ev->screen.prev_x;
 	dy = ev->screen.y - ev->screen.prev_y;
 
-	/* TODO move every scene's selected object */
-	if (s->smove)
-		s->smove(s, dx, dy);
+	/* check the key modifiers */
+	/* just clear the selected objects */
+	//scene_selected_clear(s->sc);
+	if (s->state == NONE)
+		scene_selected_add(s->sc, s);
+
+	s->state = SCALE;
+	_shape_show(s);
+	/* move every scene's selected object */
+	for (l = s->sc->selected; l; l = eina_list_next(l))
+	{
+		Shape *sl = eina_list_data_get(l);
+
+		if (sl->smove)
+			sl->smove(sl, dx, dy);
+	}
 }
 
 static void _shape_down_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
@@ -64,25 +78,10 @@ static void _shape_up_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
 static void _shape_click_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
 {
 	Shape *s = data;
+	Shape_State st;
 
-	if (s->state == NONE)
-	{
-		s->state = SCALE;
-		_shape_show(s);
-	}
-	else if (s->state == SCALE)
-	{
-		s->state = ROTATE;
-	}
-	else if (s->state == ROTATE)
-	{
-		s->state = PROJECT;
-	}
-	else if (s->state == PROJECT)
-	{
-		s->state = NONE;
-		_shape_hide(s);
-	}
+	st = (s->state + 1) % SHAPE_STATES;
+	shape_state_set(s, st);
 }
 
 static void _shape_geom_cb(const Ekeko_Object *o, Ekeko_Event *e, void * data)
@@ -96,7 +95,36 @@ static void _shape_geom_cb(const Ekeko_Object *o, Ekeko_Event *e, void * data)
 	_shape_update_geom(s);
 }
 
-Shape * shape_new(Eon_Shape *es, Control_Move cmove, Shape_Move smove)
+void shape_state_set(Shape *s, Shape_State st)
+{
+	Shape_State prev;
+
+	prev = s->state;
+	s->state = st;
+	switch (st)
+	{
+		case SCALE:
+		case ROTATE:
+		case PROJECT:
+		if (prev == NONE)
+		{	
+			_shape_show(s);
+			scene_selected_add(s->sc, s);
+		}
+		break;
+
+		case NONE:
+		if (prev != NONE)
+		{
+			scene_selected_remove(s->sc, s);
+			_shape_hide(s);
+		}
+		break;
+	}
+}
+
+Shape * shape_new(Eon_Shape *es, Scene *sc, Control_Move cmove,
+		Shape_Move smove)
 {
 	Eon_Canvas *c;
 	Shape *s;
@@ -109,6 +137,7 @@ Shape * shape_new(Eon_Shape *es, Control_Move cmove, Shape_Move smove)
 	s->sh = es;
 	s->state = NONE;
 	s->transforming = EINA_FALSE;
+	s->sc = sc;
 
 	/* the border */
 	eon_shape_stroke_color_set(s->area, 0xff000000);
