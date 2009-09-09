@@ -1,0 +1,9 @@
+Eon Builder
+
+This should be the start of an eon editor. The feature it should have are:
++ Console
+  A console to actually do any task by command line, via a neko interpreter
++ Paint editor
++ Object editor (current view)
++ Timeline (start, stop, pause, etc)
++ Animation editor
