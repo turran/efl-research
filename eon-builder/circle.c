@@ -23,12 +23,14 @@ static void _control_move(Control *cp, int dx, int dy)
 	{
 		case TOP_LEFT:
 		case BOTTOM_LEFT:
-		eon_circle_radius_set(c, r - dx);
+		if (r - dx > 0)
+			eon_circle_radius_set(c, r - dx);
 		break;
 
 		case TOP_RIGHT:
 		case BOTTOM_RIGHT:
-		eon_circle_radius_set(c, r + dx);
+		if (r + dx > 0)
+			eon_circle_radius_set(c, r + dx);
 		break;
 	}
 }

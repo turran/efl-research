@@ -23,35 +23,56 @@ static void _control_move(Control *cp, int dx, int dy)
 	switch (cp->pos)
 	{
 		case TOP_MIDDLE:
-		eon_rect_w_set(r, w.final + dx);
+		if (h.final - dy > 0)
+		{
+			eon_rect_y_set(r, y.final + dy);
+			eon_rect_h_set(r, h.final - dy);
+		}
 		break;
 
 		case BOTTOM_MIDDLE:
-		eon_rect_h_set(r, h.final + dy);
+		if (h.final + dy > 0)
+			eon_rect_h_set(r, h.final + dy);
 		break;
 
 		case BOTTOM_LEFT:
-		eon_rect_x_set(r, x.final + dx);
-		eon_rect_h_set(r, h.final + dy);
-		eon_rect_w_set(r, w.final - dx);
+		if (h.final + dy > 0)
+			eon_rect_h_set(r, h.final + dy);
+		if (w.final - dx > 0)
+		{
+			eon_rect_x_set(r, x.final + dx);
+			eon_rect_w_set(r, w.final - dx);
+		}
 		break;
 
 		case BOTTOM_RIGHT:
-		eon_rect_w_set(r, w.final + dx);
-		eon_rect_h_set(r, h.final + dy);
+		if (w.final + dx > 0)
+			eon_rect_w_set(r, w.final + dx);
+		if (h.final + dy > 0)
+			eon_rect_h_set(r, h.final + dy);
 		break;
 
 		case TOP_RIGHT:
-		eon_rect_y_set(r, y.final + dy);
-		eon_rect_h_set(r, h.final - dy);
-		eon_rect_w_set(r, w.final + dx);
+		if (h.final - dy > 0)
+		{
+			eon_rect_y_set(r, y.final + dy);
+			eon_rect_h_set(r, h.final - dy);
+		}
+		if (w.final + dx > 0)
+			eon_rect_w_set(r, w.final + dx);
 		break;
 
 		case TOP_LEFT:
-		eon_rect_x_set(r, x.final + dx);
-		eon_rect_y_set(r, y.final + dy);
-		eon_rect_w_set(r, w.final - dx);
-		eon_rect_h_set(r, h.final - dy);
+		if (h.final - dy > 0)
+		{
+			eon_rect_y_set(r, y.final + dy);
+			eon_rect_h_set(r, h.final - dy);
+		}
+		if (w.final - dx > 0)
+		{
+			eon_rect_x_set(r, x.final + dx);
+			eon_rect_w_set(r, w.final - dx);
+		}
 		break;
 	}
 }
