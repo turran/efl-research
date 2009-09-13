@@ -2,6 +2,8 @@
 #define _BUILDER_H
 
 #include <Eon.h>
+#include <stdio.h>
+#include <math.h>
 
 typedef struct _Scene Scene;
 typedef struct _Shape Shape;
@@ -43,6 +45,7 @@ struct _Shape
 	Control_Move cmove;
 	Shape_Move smove;
 	Scene *sc;
+	float angle;
 };
 
 struct _Control

@@ -10,13 +10,35 @@ static void _control_move_cb(const Ekeko_Object *o, Ekeko_Event *e, void * data)
 	dx = ev->screen.x - ev->screen.prev_x;
 	dy = ev->screen.y - ev->screen.prev_y;
 
-	if (s->cmove)
-		s->cmove(cp, dx, dy);
+	if (s->state == SCALE)
+	{
+		if (s->cmove)
+			s->cmove(cp, dx, dy);
+	}
+	else if (s->state == ROTATE)
+	{
+		Enesim_Matrix m;
+		Enesim_Matrix tmp;
+
+		eon_shape_matrix_get(s->sh, &m);
+		switch (cp->pos)
+		{
+			case TOP_LEFT:
+			s->angle += (dx * (M_PI_4 / 10.0));
+			break;
+
+		}
+		printf("angle = %g\n", s->angle);
+		enesim_matrix_rotate(&tmp, s->angle);
+		//enesim_matrix_compose(&m, &m, &tmp);
+		eon_shape_matrix_set(s->sh, &tmp);
+	}
 }
 
 static void _control_down_cb(const Ekeko_Object *o, Ekeko_Event *e, void * data)
 {
 	Control *cp = data;
+	Shape *s = cp->ref;
 
 	ekeko_event_listener_add(o, EKEKO_EVENT_UI_MOUSE_MOVE, _control_move_cb, EINA_FALSE, cp);
 }

@@ -4,7 +4,7 @@ LIBS = `pkg-config --libs eon`
 BINS  = eon-builder
 all: $(BINS)
 
-SRCS = main.c rect.c circle.c scene.c shape.c control.c
+SRCS = main.c rect.c circle.c scene.c shape.c control.c paint.c
 OBJS = $(SRCS:.c=.o)
 eon-builder: $(OBJS)
 	$(RM) $@

@@ -45,7 +45,7 @@ Shape * circle_new(Scene *sc)
 	eon_circle_radius_set(c, 30);
 	eon_circle_x_set(c, 50);
 	eon_circle_y_set(c, 50);
-	eon_shape_color_set((Eon_Shape *)c, 0xaaff0000);
+	eon_shape_fill_color_set((Eon_Shape *)c, 0xaaff0000);
 	//eon_shape_stroke_color_set(c, 0xff000000);
 	//eon_shape_stroke_width_set(c, 2);
 	//eon_shape_draw_mode_set(c, ENESIM_SHAPE_DRAW_MODE_STROKE);
@@ -57,6 +57,10 @@ Shape * circle_new(Scene *sc)
 		//enesim_matrix_scale(&m, 0.5, 0.5);
 		enesim_matrix_scale(&m, 2, 2);
 		//eon_shape_matrix_set(c, &m);
+	}
+	{
+		//image_set(canvas, c);
+		checker_set(canvas, c);
 	}
 	return shape_new((Eon_Shape *)c, sc, _control_move, _shape_move);
 }

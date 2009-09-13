@@ -84,18 +84,26 @@ Shape * rect_new(Scene *sc)
 
 	canvas = sc->canvas;
 	r = eon_rect_new(canvas);
-	eon_rect_color_set(r, 0xaaff0000);
+	//eon_rect_color_set(r, 0xaaff0000);
 	eon_rect_x_set(r, 50);
 	eon_rect_y_set(r, 50);
 	eon_rect_w_set(r, 150);
 	eon_rect_h_set(r, 150);
+	eon_rect_corner_radius_set(r, 10);
+	eon_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_STROKE_FILL);
+	eon_shape_stroke_width_set(r, 2);
+	eon_shape_stroke_color_set(r, 0xff000000);
 	eon_rect_show(r);
 	{
 		Enesim_Matrix m;
 
-		//enesim_matrix_rotate(&m, 0.3);
+		enesim_matrix_rotate(&m, 0.3);
 		//enesim_matrix_scale(&m, 2, 2);
-		//eon_shape_matrix_set(r, &m);
+		eon_shape_matrix_set(r, &m);
+	}
+	{
+		image_set(canvas, r);
+		//checker_set(canvas, r);
 	}
 	return shape_new((Eon_Shape *)r, sc, _control_move, _shape_move);
 }

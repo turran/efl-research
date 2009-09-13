@@ -107,7 +107,7 @@ void shape_state_set(Shape *s, Shape_State st)
 		case ROTATE:
 		case PROJECT:
 		if (prev == NONE)
-		{	
+		{
 			_shape_show(s);
 			scene_selected_add(s->sc, s);
 		}
@@ -138,6 +138,7 @@ Shape * shape_new(Eon_Shape *es, Scene *sc, Control_Move cmove,
 	s->state = NONE;
 	s->transforming = EINA_FALSE;
 	s->sc = sc;
+	s->angle = 0;
 
 	/* the border */
 	eon_shape_stroke_color_set(s->area, 0xff000000);
