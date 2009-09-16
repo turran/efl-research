@@ -1,0 +1,12 @@
+This is a simple eon server
+
+Protocol:
+explanation       major     minor     ref     ref_to     data
+OBJECT ADD         0         0         0        0        s(Object class)
+OBJECT_DELETE      1         0         X        0        
+ ref: Object id
+OBJECT_APPEND
+OBJECT_REMOVE
+PROPERTY_CHANGE    2         X         X        0        dd(Value)
+ minor: Property id
+ ref: Object id
