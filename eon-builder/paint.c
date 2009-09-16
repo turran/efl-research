@@ -39,7 +39,8 @@ void image_set(Eon_Canvas *c, Eon_Shape *s)
 	Eon_Image *i;
 
 	i = eon_image_new();
-	eon_image_file_set(i, "/home/jl/code/efl/svn/trunk/PROTO/eon/data/tiger.png");
+	//eon_image_file_set(i, "/home/jl/code/efl/svn/trunk/PROTO/eon/data/tiger.png");
+	eon_image_file_set(i, "/home/jl/c/e/trunk/PROTO/eon/data/tiger.png");
 	_paint_set(i, c, s);
 }
 
