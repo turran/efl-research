@@ -1,20 +1,13 @@
-#include "builder.h"
-#include <stdio.h>
+#include <Eon.h>
+#include <gst/video/video.h>
 
-typedef struct _Builder
-{
-	Eon_Document *doc;
-	Eon_Canvas *canvas;
-} Builder;
-
-int main(int argc, char **argv)
+int main(void)
 {
 	Eon_Document *doc;
 	Eon_Canvas *canvas;
 	Eon_Rect *r;
-	Shape *s;
-	Scene *sc;
 
+	/* create the scene */
 	eon_init();
 	doc = eon_document_new("sdl", 640, 480, "resizable");
         canvas = eon_document_canvas_get(doc);
@@ -23,13 +16,10 @@ int main(int argc, char **argv)
 	eon_canvas_w_rel_set(canvas, 100);
 	eon_canvas_h_rel_set(canvas, 100);
 
-	sc = scene_new(canvas);
+	/* create the gst pipe */
+	gst_init();
+	
+	/* register the sink */
 
-	rect_new(sc);
-	circle_new(sc);
-
-	eon_loop();
 	eon_shutdown();
-
-	return 0;
 }

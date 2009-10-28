@@ -364,7 +364,7 @@ Level * simplelevel(Eon_Canvas *c)
 
 	l = level_new(c);
 	prv = PRIVATE(l);
-#if 1
+#if 0
 
 	b = (Block *)durableblock_new(c, 8, 2);
 	level_block_add(l, b, 8, 2);

@@ -1,6 +1,6 @@
 color_proto = {
-	__value_set => $loader.loadprim("neon@color_value_set", 1)
-	__value_get => $loader.loadprim("neon@color_value_get", 1)
+	__value_set => $loader.loadprim("neon@color_value_set", 3)
+	__value_get => $loader.loadprim("neon@color_value_get", 2)
 };
 
 $exports.color = function(v)

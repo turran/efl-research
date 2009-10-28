@@ -39,9 +39,11 @@ Shape * circle_new(Scene *sc)
 {
 	Eon_Circle *c;
 	Eon_Canvas *canvas;
+	Eon_Document *doc;
 
 	canvas = sc->canvas;
-	c = eon_circle_new(canvas);
+	doc = eon_canvas_document_get(canvas);
+	c = eon_circle_new(doc);
 	eon_circle_radius_set(c, 30);
 	eon_circle_x_set(c, 50);
 	eon_circle_y_set(c, 50);
@@ -60,7 +62,8 @@ Shape * circle_new(Scene *sc)
 	}
 	{
 		//image_set(canvas, c);
-		checker_set(canvas, c);
+		//checker_set(canvas, c);
 	}
-	return shape_new((Eon_Shape *)c, sc, _control_move, _shape_move);
+	//return shape_new((Eon_Shape *)c, sc, _control_move, _shape_move);
+	return NULL;
 }

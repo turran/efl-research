@@ -128,10 +128,10 @@ static value object_property_value_set(value prop, value v)
 			printf("1 %d\n", val_type(extval));
 			if (!extval)
 				return val_false;
-			if (!val_is_function(extval) || val_fun_nargs(extval) != 1)
+			if (!val_is_function(extval) || val_fun_nargs(extval) != 3)
 		                return val_false;
 			printf("Value backend found!!!!\n");
-			return val_call1(extval, v);
+			return val_call3(extval, t, prop, v);
 
 		}
 		break;

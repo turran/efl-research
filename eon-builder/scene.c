@@ -12,7 +12,7 @@ static void _scene_click_cb(const Ekeko_Object *o, Ekeko_Event *ev, void *data)
 	{
 		Shape *s = eina_list_data_get(l);
 
-		shape_state_set(s, NONE);
+		//shape_state_set(s, NONE);
 	}
 }
 
@@ -30,6 +30,7 @@ void scene_selected_add(Scene *s, Shape *sh)
 Scene * scene_new(Eon_Canvas *canvas)
 {
 	Eon_Rect *r;
+	Eon_Document *d;
 	Scene *sc;
 
 	sc = malloc(sizeof(Scene));
@@ -37,7 +38,9 @@ Scene * scene_new(Eon_Canvas *canvas)
 	sc->canvas = canvas;
 
 	/* TODO add an event listener on the background */
-	r = eon_rect_new(canvas);
+	d = eon_canvas_document_get(canvas);
+	r = eon_rect_new(d);
+	ekeko_object_child_append(canvas, r);
 	eon_rect_color_set(r, 0xffffffff);
 	eon_shape_draw_mode_set((Eon_Shape *)r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	eon_rect_x_rel_set(r, 0);

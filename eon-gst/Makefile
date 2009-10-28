@@ -1,11 +1,10 @@
-CFLAGS = -g `pkg-config --cflags eon`
-LIBS = `pkg-config --libs eon`
+CFLAGS = -g `pkg-config --cflags eon gstreamer-0.10`
+LIBS = `pkg-config --libs eon gstreamer-0.10`
 
-BINS  = eon-builder
+BINS  = eon-gst
 all: $(BINS)
 
-SRCS = main.c rect.c circle.c scene.c 
-#shape.c control.c paint.c
+SRCS = main.c
 OBJS = $(SRCS:.c=.o)
 eon-builder: $(OBJS)
 	$(RM) $@

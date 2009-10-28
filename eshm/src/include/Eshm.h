@@ -17,8 +17,7 @@ EAPI int eshm_shutdown(void);
 typedef struct _Eshm_Segment Eshm_Segment;
 
 EAPI Eshm_Segment * eshm_segment_new(const char *id, unsigned int size);
-EAPI Eshm_Segment * eshm_segment_get(const char *id);
-EAPI Eshm_Segment * eshm_segment_load(const char *id);
+EAPI Eshm_Segment * eshm_segment_get(const char *id, Eina_Bool create);
 EAPI Eina_Bool eshm_segment_lock(Eshm_Segment *s, Eina_Bool write);
 EAPI void eshm_segment_unlock(Eshm_Segment *s);
 EAPI int eshm_segment_header_set(Eshm_Segment *s, const char *signature, void *data);

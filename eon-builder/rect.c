@@ -8,7 +8,7 @@ static void _shape_move(Shape *s, int dx, int dy)
 	//eon_rect_x_get(r, &x);
 	//eon_rect_y_get(r, &y);
 	// FIX THIS
-	eon_square_coords_get((Eon_Square *)r, &x, &y, NULL, NULL);
+	eon_shape_square_coords_get((Eon_Shape_Square *)r, &x, &y, NULL, NULL);
 	eon_rect_x_set(r, x.final + dx);
 	eon_rect_y_set(r, y.final + dy);
 }
@@ -19,7 +19,7 @@ static void _control_move(Control *cp, int dx, int dy)
 	Eon_Coord x, y, w, h;
 
 	r = (Eon_Rect *)cp->ref->sh;
-	eon_square_coords_get((Eon_Square *)r, &x, &y, &w, &h);
+	eon_shape_square_coords_get((Eon_Shape_Square *)r, &x, &y, &w, &h);
 	switch (cp->pos)
 	{
 		case TOP_MIDDLE:
@@ -99,12 +99,13 @@ Shape * rect_new(Scene *sc)
 
 		enesim_matrix_rotate(&m, 0.3);
 		//enesim_matrix_scale(&m, 2, 2);
-		eon_shape_matrix_set(r, &m);
+		eon_paint_matrix_set(r, &m);
 	}
 	{
-		image_set(canvas, r);
+		//image_set(canvas, r);
 		//checker_set(canvas, r);
 	}
-	return shape_new((Eon_Shape *)r, sc, _control_move, _shape_move);
+	//return shape_new((Eon_Shape *)r, sc, _control_move, _shape_move);
+	return NULL;
 }
 
