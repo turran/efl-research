@@ -6,7 +6,7 @@ all: $(BINS)
 
 SRCS = main.c
 OBJS = $(SRCS:.c=.o)
-eon-builder: $(OBJS)
+eon-gst: $(OBJS)
 	$(RM) $@
 	$(CC) $(LIBS) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $@
 
