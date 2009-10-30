@@ -30,25 +30,39 @@ static void scene_create(void)
 	eon_shape_show(r);
 
 	{
-
 		ch = eon_checker_new(doc);
 		ekeko_object_child_append(canvas, ch);
 		eon_checker_color1_set(ch, 0xff00ff00);
 		eon_checker_color2_set(ch, 0xaa00aa00);
-		eon_paint_square_x_rel_set(ch, 50);
-		eon_paint_square_y_rel_set(ch, 50);
+		eon_paint_square_x_rel_set(ch, 0);
+		eon_paint_square_y_rel_set(ch, 0);
 		eon_paint_square_w_rel_set(ch, 50);
 		eon_paint_square_h_rel_set(ch, 50);
-		ekeko_renderable_show((Ekeko_Renderable *)ch);
+		//ekeko_renderable_show((Ekeko_Renderable *)ch);
 	}
+
 	
 	b = eon_buffer_new(doc);
 	ekeko_object_child_append(canvas, b);
-	eon_paint_square_x_rel_set(b, 10);
-	eon_paint_square_y_rel_set(b, 10);
-	eon_paint_square_w_rel_set(b, 25);
-	eon_paint_square_h_rel_set(b, 25);
-	ekeko_renderable_show((Ekeko_Renderable *)b);
+	eon_paint_square_x_rel_set(b, 0);
+	eon_paint_square_y_rel_set(b, 0);
+	eon_paint_square_w_rel_set(b, 100);
+	eon_paint_square_h_rel_set(b, 100);
+	//ekeko_renderable_show((Ekeko_Renderable *)b);
+
+	r = eon_rect_new(doc);
+	ekeko_object_child_append(canvas, r);
+	eon_rect_x_rel_set(r, 25);
+	eon_rect_y_rel_set(r, 25);
+	eon_rect_w_rel_set(r, 50);
+	eon_rect_h_rel_set(r, 50);
+	eon_rect_corner_radius_set(r, 30);
+	eon_shape_stroke_width_set(r, 2);
+	eon_shape_stroke_color_set(r, 0xff000000);
+	eon_shape_fill_paint_set(r, b);
+	//eon_shape_fill_paint_set(r, ch);
+	//eon_shape_draw_mode_set(r, 0);
+	eon_shape_show(r);
 }
 
 static void _read(void *data, void *buf, unsigned int nbyte)
@@ -123,6 +137,7 @@ static GstElement * pipe_create(char *uri)
 		caps = gst_caps_from_string("video/x-raw-rgb,bpp=32,alpha_mask=0x000000ff,red_mask=0x0000ff00,green_mask=0x00ff0000,blue_mask=0xff000000");
 		g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
 
+		g_object_set(G_OBJECT(sink), "qos", FALSE, NULL);
 		g_object_set(G_OBJECT(sink), "sync", TRUE, NULL);
 		g_object_set(G_OBJECT(sink), "signal-handoffs", TRUE, NULL);
 		g_signal_connect(G_OBJECT(sink), "handoff", G_CALLBACK(_handoff), p);
