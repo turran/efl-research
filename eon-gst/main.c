@@ -8,12 +8,30 @@ Eon_Buffer *b;
 
 typedef Eon_Paint * (*paint_get)(void);
 
+static Eon_Paint * fade_get(paint_get pg)
+{
+	Eon_Fade *f;
+
+	f = eon_fade_new(doc);
+	//ekeko_object_child_append(canvas, f);
+	eon_paint_square_x_rel_set(f, 0);
+	eon_paint_square_y_rel_set(f, 0);
+	eon_paint_square_w_rel_set(f, 100);
+	eon_paint_square_h_rel_set(f, 100);
+	eon_transition_step_set(f, 0.5);
+
+	ekeko_object_child_append(f, b);
+	ekeko_object_child_append(f, pg());
+
+	return (Eon_Paint *)f;
+}
+
 static Eon_Paint * stripes_get(void)
 {
 	Eon_Stripes *s;
 
 	s = eon_stripes_new(doc);
-	ekeko_object_child_append(canvas, s);
+	//ekeko_object_child_append(canvas, s);
 	eon_stripes_color1_set(s, 0xaaaa0000);
 	eon_stripes_color2_set(s, 0x55005500);
 	eon_paint_square_x_rel_set(s, 0);
@@ -29,7 +47,7 @@ static Eon_Paint * checker_get(void)
 	Eon_Checker *ch;
 
 	ch = eon_checker_new(doc);
-	ekeko_object_child_append(canvas, ch);
+	//ekeko_object_child_append(canvas, ch);
 	eon_checker_color1_set(ch, 0x55005500);
 	eon_checker_color2_set(ch, 0x33003300);
 	eon_paint_square_x_rel_set(ch, 0);
@@ -46,7 +64,7 @@ static Eon_Paint * compound_get(paint_get pg)
 	Eon_Compound_Layer *cl;
 
 	c = eon_compound_new(doc);
-	ekeko_object_child_append(canvas, c);
+	//ekeko_object_child_append(canvas, c);
 	eon_paint_square_x_rel_set(c, 0);
 	eon_paint_square_y_rel_set(c, 0);
 	eon_paint_square_w_rel_set(c, 100);
@@ -56,12 +74,11 @@ static Eon_Paint * compound_get(paint_get pg)
 	ekeko_object_child_append(c, cl);
 	eon_compound_layer_rop_set(cl, ENESIM_FILL);
 	eon_compound_layer_paint_set(cl, b);
-#if 0
+
 	cl = eon_compound_layer_new(doc);
 	ekeko_object_child_append(c, cl);
 	eon_compound_layer_rop_set(cl, ENESIM_BLEND);
 	eon_compound_layer_paint_set(cl, pg());
-#endif
 
 	return (Eon_Paint *)c;
 }
@@ -89,7 +106,7 @@ static void scene_create(void)
 	eon_shape_show(r);
 
 	b = eon_buffer_new(doc);
-	ekeko_object_child_append(canvas, b);
+	//ekeko_object_child_append(canvas, b);
 	eon_paint_square_x_rel_set(b, 0);
 	eon_paint_square_y_rel_set(b, 0);
 	eon_paint_square_w_rel_set(b, 100);
@@ -106,7 +123,8 @@ static void scene_create(void)
 	eon_shape_stroke_width_set(r, 2);
 	eon_shape_stroke_color_set(r, 0xff000000);
 	//eon_shape_fill_paint_set(r, compound_get(checker_get));
-	eon_shape_fill_paint_set(r, b);
+	//eon_shape_fill_paint_set(r, b);
+	eon_shape_fill_paint_set(r, fade_get(checker_get));
 	eon_shape_show(r);
 #if 0
 	{
