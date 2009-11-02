@@ -8,48 +8,63 @@ Eon_Buffer *b;
 
 typedef Eon_Paint * (*paint_get)(void);
 
+static Eon_Paint * stripes_get(void)
+{
+	Eon_Stripes *s;
 
-Eon_Paint * checker_get(void)
+	s = eon_stripes_new(doc);
+	ekeko_object_child_append(canvas, s);
+	eon_stripes_color1_set(s, 0xaaaa0000);
+	eon_stripes_color2_set(s, 0x55005500);
+	eon_paint_square_x_rel_set(s, 0);
+	eon_paint_square_y_rel_set(s, 0);
+	eon_paint_square_w_rel_set(s, 100);
+	eon_paint_square_h_rel_set(s, 100);
+
+	return (Eon_Paint *)s;
+}
+
+static Eon_Paint * checker_get(void)
 {
 	Eon_Checker *ch;
 
 	ch = eon_checker_new(doc);
-	ekeko_object_child_append(ch, canvas);
-	eon_checker_color1_set(ch, 0xff00ff00);
-	eon_checker_color2_set(ch, 0xaa00aa00);
+	ekeko_object_child_append(canvas, ch);
+	eon_checker_color1_set(ch, 0x55005500);
+	eon_checker_color2_set(ch, 0x33003300);
 	eon_paint_square_x_rel_set(ch, 0);
 	eon_paint_square_y_rel_set(ch, 0);
 	eon_paint_square_w_rel_set(ch, 100);
 	eon_paint_square_h_rel_set(ch, 100);
 
-	return ch;
+	return (Eon_Paint *)ch;
 }
 
-Eon_Paint * compound_get(paint_get pg)
+static Eon_Paint * compound_get(paint_get pg)
 {
 	Eon_Compound *c;
 	Eon_Compound_Layer *cl;
 
 	c = eon_compound_new(doc);
-	ekeko_object_child_append(canvas, b);
-	eon_paint_square_x_rel_set(b, 0);
-	eon_paint_square_y_rel_set(b, 0);
-	eon_paint_square_w_rel_set(b, 100);
-	eon_paint_square_h_rel_set(b, 100);
+	ekeko_object_child_append(canvas, c);
+	eon_paint_square_x_rel_set(c, 0);
+	eon_paint_square_y_rel_set(c, 0);
+	eon_paint_square_w_rel_set(c, 100);
+	eon_paint_square_h_rel_set(c, 100);
 
 	cl = eon_compound_layer_new(doc);
 	ekeko_object_child_append(c, cl);
 	eon_compound_layer_rop_set(cl, ENESIM_FILL);
 	eon_compound_layer_paint_set(cl, b);
-
+#if 0
 	cl = eon_compound_layer_new(doc);
 	ekeko_object_child_append(c, cl);
 	eon_compound_layer_rop_set(cl, ENESIM_BLEND);
 	eon_compound_layer_paint_set(cl, pg());
+#endif
 
-	return c;
+	return (Eon_Paint *)c;
 }
-
 
 /* create the eon scene */
 static void scene_create(void)
@@ -90,7 +105,7 @@ static void scene_create(void)
 	eon_rect_corner_radius_set(r, 30);
 	eon_shape_stroke_width_set(r, 2);
 	eon_shape_stroke_color_set(r, 0xff000000);
-	eon_shape_fill_paint_set(r, checker_get());
+	//eon_shape_fill_paint_set(r, compound_get(checker_get));
 	eon_shape_fill_paint_set(r, b);
 	eon_shape_show(r);
 #if 0
@@ -104,7 +119,7 @@ static void scene_create(void)
 		eon_circle_y_rel_set(c, 10);
 		eon_shape_stroke_width_set(c, 2);
 		eon_shape_stroke_color_set(c, 0xff000000);
-		eon_shape_fill_paint_set(c, b);
+		eon_shape_fill_paint_set(c, stripes_get());
 		eon_shape_show(c);
 	}
 #endif
