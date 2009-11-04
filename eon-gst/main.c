@@ -122,9 +122,9 @@ static void scene_create(void)
 	eon_rect_corner_radius_set(r, 30);
 	eon_shape_stroke_width_set(r, 2);
 	eon_shape_stroke_color_set(r, 0xff000000);
-	//eon_shape_fill_paint_set(r, compound_get(checker_get));
+	eon_shape_fill_paint_set(r, compound_get(checker_get));
 	//eon_shape_fill_paint_set(r, b);
-	eon_shape_fill_paint_set(r, fade_get(checker_get));
+	//eon_shape_fill_paint_set(r, fade_get(checker_get));
 	eon_shape_show(r);
 #if 0
 	{
