@@ -12,12 +12,14 @@ static void scene_create(void)
 	Eon_Rect *r;
 
 	doc = eon_document_new("sdl", 640, 480, "resizable");
-        canvas = eon_document_canvas_get(doc);
 
-	eon_canvas_x_rel_set(canvas, 0);
-	eon_canvas_y_rel_set(canvas, 0);
-	eon_canvas_w_rel_set(canvas, 100);
-	eon_canvas_h_rel_set(canvas, 100);
+	canvas = eon_canvas_new(doc);
+	ekeko_object_child_append(doc, canvas);
+	printf("1\n");
+	eon_paint_square_x_rel_set(canvas, 0);
+	eon_paint_square_y_rel_set(canvas, 0);
+	eon_paint_square_w_rel_set(canvas, 100);
+	eon_paint_square_h_rel_set(canvas, 100);
 
 	r = eon_rect_new(doc);
 	eon_rect_x_rel_set(r, 0);
