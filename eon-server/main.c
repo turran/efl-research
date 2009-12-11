@@ -97,7 +97,7 @@ int main(void)
 	eon_canvas_h_rel_set(canvas, 100);
 
 	r = eon_rect_new(canvas);
-	eon_rect_color_set(r, 0xffffffff);
+	eon_rect_fill_color_set(r, 0xffffffff);
 	eon_shape_draw_mode_set((Eon_Shape *)r, ENESIM_SHAPE_DRAW_MODE_FILL);
 	eon_rect_x_rel_set(r, 0);
 	eon_rect_y_rel_set(r, 0);
