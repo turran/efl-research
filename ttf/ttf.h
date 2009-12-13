@@ -62,6 +62,7 @@ typedef struct ttf_directory
 typedef struct _Font
 {
 	FILE *f;
+	/* TODO we need the desired encoding */
 	ttf_directory cmap;
 	ttf_directory glyf;
 } Font;
@@ -90,10 +91,8 @@ static inline uint8_t get_8(Font *f)
 	return ch;
 }
 
-
 /* API */
 Font * ttf_fopen(const char *file);
 int ttf_font_glyph_index_get(Font *f, char ch);
-
 
 #endif

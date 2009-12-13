@@ -84,6 +84,14 @@ static void ttf_cmap_format_read(Font *f, ttf_cmap_format *fmt)
 	fmt->language = get_16(f);
 }
 
+static void ttf_cmap_format_dump(ttf_cmap_format *fmt)
+{
+	printf("* ttf cmap format\n");
+	printf("format %d\n", fmt->format);
+	printf("length %d\n", fmt->length);
+	printf("language %d\n", fmt->language);
+}
+
 static void ttf_cmap_format_index_get(Font *f, ttf_cmap_format *fmt, char ch)
 {
 
@@ -120,6 +128,7 @@ int ttf_glyph_index_get(Font *f, uint32_t ch)
 		fsetpos(f->f, &table);
 		fseek(f->f, sub.offset, SEEK_CUR);
 		ttf_cmap_format_read(f, &fmt);
+		ttf_cmap_format_dump(&fmt);
 		fsetpos(f->f, &prev);
 	}
 	fsetpos(f->f, &curr);
