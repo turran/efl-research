@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 		ttf_font_glyph_render(Font *f, int gid, Enesim_Surface *s);
 	}
 #endif
-	index = ttf_glyph_index_get(f, 32);
+	index = ttf_glyph_get(f, 32);
 
 	return 0;
 }

@@ -1,14 +1,5 @@
 #include "ttf.h"
 
-typedef enum ttf_cmap_format_id
-{
-	TTF_FORMAT_2  = 2,
-	TTF_FORMAT_4  = 4,
-	TTF_FORMAT_8  = 8,
-	TTF_FORMAT_10 = 10,
-	TTF_FOTMAT_12 = 12,
-} ttf_cmap_format_id;
-
 typedef struct ttf_cmap
 {
 	uint16 version;

@@ -4,7 +4,7 @@ LIBS = `pkg-config --libs enesim`
 BINS  = ttf
 all: $(BINS)
 
-ttf_SRCS = main.c ttf.c ttf_cmap.c ttf_interp.c
+ttf_SRCS = main.c ttf.c
 ttf_OBJS = $(ttf_SRCS:.c=.o)
 ttf: $(ttf_OBJS)
 	$(RM) $@
