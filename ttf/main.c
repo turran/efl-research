@@ -43,9 +43,15 @@ typedef struct ttf_glyph
 int main(int argc, char **argv)
 {
 	Font *f;
+	Glyph g;
 	int index;
-	
+	int ch = 0x6e;
+
+	ch = 0x6a;
 	f = ttf_fopen(argv[1]);
+	index = ttf_glyph_index_get(f, ch);
+	printf("index for char %d is %d\n", ch, index);
+	ttf_glyph_info_get(f, index, &g);
 	/* TODO write a simple text */
 	/* foreach char get the glyph index, load it and render it */
 #if 0
@@ -55,7 +61,6 @@ int main(int argc, char **argv)
 		ttf_font_glyph_render(Font *f, int gid, Enesim_Surface *s);
 	}
 #endif
-	index = ttf_glyph_get(f, 32);
 
 	return 0;
 }

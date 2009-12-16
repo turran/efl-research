@@ -52,6 +52,7 @@ struct _Font
 	} cmap;
 	ttf_directory head;
 	ttf_directory glyf;
+	ttf_directory loca;
 };
 
 static void ttf_directory_dump(ttf_directory *dir)
@@ -75,7 +76,6 @@ static void ttf_directory_read(char *ptr, ttf_directory *dir)
 	dir->offset = get_32(ptr);
 	ptr += 4;
 	dir->length = get_32(ptr);
-	ttf_directory_dump(dir);
 }
 
 static Eina_Bool ttf_magic_check(char *ptr)
@@ -111,6 +111,8 @@ static void ttf_tables_setup(Font *f)
 			f->cmap.dir = dir;
 		if (dir.tag == TTFTAG_GLYF)
 			f->glyf = dir;
+		if (dir.tag == TTFTAG_LOCA)
+			f->loca = dir;
 		ptr += 16;
 	}
 }
@@ -150,32 +152,64 @@ static int ttf_cmap_rate(uint16 pid, uint16 specpid)
 	}
 	return 0;
 }
-/* 
-UInt16  	format  	Format number is set to 4  	 
-UInt16 	length 	Length of subtable in bytes 	 
-UInt16 	language 	Language code for this encoding subtable, or zero if language-independent 	 
-UInt16 	segCountX2 	2 * segCount 	 
-UInt16 	searchRange 	2 * (2**FLOOR(log2(segCount))) 	 
-UInt16 	entrySelector 	log2(searchRange/2) 	 
-UInt16 	rangeShift 	(2 * segCount) - searchRange 	 
-UInt16 	endCode[segCount] 	Ending character code for each segment, last = 0xFFFF. 	
-UInt16 	reservedPad 	This value should be zero 	
-UInt16 	startCode[segCount] 	Starting character code for each segment 	
-UInt16 	idDelta[segCount] 	Delta for all character codes in segment 	 
-UInt16 	idRangeOffset[segCount] 	Offset in bytes to glyph indexArray, or 0 	 
-UInt16 	glyphIndexArray[variable] 	Glyph index array
-*/
-static int ttf_cmap_glyph_get_4(Font *f, char ch)
+
+static int ttf_cmap_glyph_get_4(Font *f, short int ch)
 {
-	/* startcode <= ch <= endcode */
+	int nsegs;
+	char *ptr = f->bytes + f->cmap.dir.offset + f->cmap.off;
+	int segcountx2;
+	int i;
+	uint16 *start, *end, *range, *delta;
+
+	ptr += 6;
+	segcountx2 = get_16(ptr);
+	nsegs = segcountx2 >> 1;
+
+	ptr += 8;
+	end = (uint16 *)ptr;
+	start = (uint16 *)(ptr + segcountx2 + 2);
+	delta = (uint16 *)(ptr + (segcountx2 * 2) + 2);
+	range = (uint16 *)(ptr + (segcountx2 * 3) + 2);
+	
+	for (i = 0; i < nsegs; i++)
+	{
+		unsigned short int sv, ev, rv, dv;
+
+		sv = get_16(start + i);
+		if (sv == 0xffffff)
+			return 0;
+
+		ev = get_16(end + i);
+
+		/* startcode <= ch <= endcode */
+		if (ch > ev || ch < sv)
+			continue;
+
+		rv = get_16(range + i);
+		dv = get_16(delta + i);
+		/* if range offset is not 0, the mapping relies on indexarray */
+		if (rv != 0)
+		{
+			unsigned int idx;
+
+			idx = (rv / 2) + (ch - sv);
+			printf("rv = %d\n", rv);
+			return get_16(range + i + idx);
+		}
+		else
+		{
+			return ((ch + dv) % 65536);
+		}
+	}
+	return 0;
 }
 
 static void ttf_head_setup(Font *f)
 {
 	char *ptr = f->bytes + f->head.offset;
 
-	printf("%08x\n", get_32(ptr + 12));
-	f->longoff = get_16(ptr + 48);
+	f->longoff = get_16(ptr + 50);
+	printf("Long offsets = %d\n", f->longoff);
 }
 
 static void ttf_cmap_setup(Font *f)
@@ -264,7 +298,7 @@ void ttf_close(Font *f)
 	free(f);
 }
 
-int ttf_glyph_get(Font *f, char ch)
+int ttf_glyph_index_get(Font *f, int ch)
 {
 	int idx = 0;
 
@@ -283,4 +317,65 @@ int ttf_glyph_get(Font *f, char ch)
 		break;
 	}
 	return idx;
+}
+
+void ttf_glyph_info_get(Font *f, int idx, Glyph *g)
+{
+	char *ptr;
+	uint32 off;
+	int ncontours;
+	uint16 *contours;
+
+	/* get the glyph offset based on index */
+	ptr = f->bytes + f->loca.offset;
+	if (f->longoff)
+		off = get_32(ptr + (idx * 4));
+	else
+		off = get_16(ptr + (idx * 2)) << 1;
+	/* check that offset is inside the file */
+	if (f->glyf.offset + off >= f->size)
+		return;
+
+	/* get the glyph from the glyf table */
+	ptr = f->bytes + f->glyf.offset + off;
+	printf("xyMin %d %d - xyMax %d %d\n", get_16(ptr + 2), get_16(ptr + 4), get_16(ptr + 6), get_16(ptr + 8));
+	ncontours = get_16(ptr);
+	ptr += 10;
+	contours = ptr; 
+	if (ncontours > 0)
+	{
+		int i;
+		char *coordinates;
+		char *instructions;
+		size_t ilength;
+		int j = 0;
+		int vlp;
+
+		instructions = ptr + (2 * ncontours);
+		ilength = get_16(instructions);
+		coordinates = instructions + ilength + 2;
+		vlp = get_16(contours + ncontours - 1);
+		for (i = 0; i < ncontours; i++)
+		{
+			int lp;
+
+			/* new contour */
+			lp = get_16(contours + i);
+			printf("lp = %d of %d\n", lp, vlp);
+			for (; j < lp; j++)
+			{
+				/* send coordinates */
+				printf("x = %d y = %d (%d)\n",
+					get_8(coordinates + j + 1 + vlp),
+					get_8(coordinates + j + 2 + vlp + vlp),
+					get_8(coordinates + j));
+			}
+		}
+	}
+	else
+	{
+
+	}
+	printf("Getting glyph info for index %d\n", idx);
+	printf("contours = %d\n", ncontours);
 }

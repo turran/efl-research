@@ -49,6 +49,7 @@
 #define TTFTAG_CMAP TTFTAG('c', 'm', 'a', 'p')
 #define TTFTAG_GLYF TTFTAG('g', 'l', 'y', 'f')
 #define TTFTAG_HEAD TTFTAG('h', 'e', 'a', 'd')
+#define TTFTAG_LOCA TTFTAG('l', 'o', 'c', 'a')
 
 typedef struct ttf_directory
 {
@@ -85,8 +86,14 @@ static inline uint8_t get_8(char *bytes)
 /* API */
 typedef struct _Font Font;
 
+typedef struct _Glyph
+{
+
+} Glyph;
+
 Font * ttf_fopen(const char *file);
-int ttf_glyph_get(Font *f, char ch);
+int ttf_glyph_index_get(Font *f, int ch);
+void ttf_glyph_info_get(Font *f, int index, Glyph *g);
 //void ttf_glyph_render(Font *f, int glyph);
 
 #endif
