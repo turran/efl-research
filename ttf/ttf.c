@@ -9,6 +9,16 @@ typedef enum ttf_platform_id
 	TTF_PLATFORM_IDS,
 } ttf_platform_id;
 
+typedef enum ttf_outline_flags
+{
+	TTF_OUTLINE_ON_CURVE = (1 << 1),
+	TTF_OUTLINE_X_SHORT  = (1 << 2),
+	TTF_OUTLINE_Y_SHORT  = (1 << 3),
+	TTF_OUTLINE_REPEAT   = (1 << 4),
+	TTF_OUTLINE_X_SAME   = (1 << 5),
+	TTF_OUTLINE_Y_SAME   = (1 << 6),
+} ttf_outline_flags;
+
 typedef enum ttf_format_id
 {
 	TTF_FORMAT_2  = 2,
@@ -44,7 +54,7 @@ struct _Font
 	size_t size;
 
 	Eina_Bool longoff;
-	
+
 	struct {
 		ttf_format_id fmt;
 		ssize_t off;
@@ -142,7 +152,6 @@ static int ttf_cmap_rate(uint16 pid, uint16 specpid)
 
 			default:
 			break;
-			
 		}
 		break;
 
@@ -170,7 +179,7 @@ static int ttf_cmap_glyph_get_4(Font *f, short int ch)
 	start = (uint16 *)(ptr + segcountx2 + 2);
 	delta = (uint16 *)(ptr + (segcountx2 * 2) + 2);
 	range = (uint16 *)(ptr + (segcountx2 * 3) + 2);
-	
+
 	for (i = 0; i < nsegs; i++)
 	{
 		unsigned short int sv, ev, rv, dv;
@@ -319,6 +328,38 @@ int ttf_glyph_index_get(Font *f, int ch)
 	return idx;
 }
 
+static int ttf_glyph_xcoord_len(char *flags, int num)
+{
+	int i;
+	int len = 0;
+	int repeat = 0;
+
+	for (i = 0; i < num; i++)
+	{
+		unsigned char f = get_8(flags);
+		int inc = 2;
+
+		printf("v 0x%02x\n", f);
+		if (f & TTF_OUTLINE_X_SHORT)
+			inc = 1;
+		len += inc;
+
+		if (f & TTF_OUTLINE_REPEAT)
+		{
+			int repeat;
+
+			flags++;
+			i++;
+
+			repeat = get_8(flags);
+			printf("repeating %d times\n", repeat);
+			len += inc * repeat;
+		}
+		flags++;
+	}
+	return len;
+}
+
 void ttf_glyph_info_get(Font *f, int idx, Glyph *g)
 {
 	char *ptr;
@@ -341,20 +382,26 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g)
 	printf("xyMin %d %d - xyMax %d %d\n", get_16(ptr + 2), get_16(ptr + 4), get_16(ptr + 6), get_16(ptr + 8));
 	ncontours = get_16(ptr);
 	ptr += 10;
-	contours = ptr; 
+	contours = ptr;
 	if (ncontours > 0)
 	{
 		int i;
-		char *coordinates;
+		char *coords;
 		char *instructions;
 		size_t ilength;
 		int j = 0;
 		int vlp;
+		int xlen;
 
 		instructions = ptr + (2 * ncontours);
 		ilength = get_16(instructions);
-		coordinates = instructions + ilength + 2;
+		instructions += 2;
+
+		coords = instructions + ilength;
 		vlp = get_16(contours + ncontours - 1);
+
+		xlen = ttf_glyph_xcoord_len(coords, vlp);
+		printf("len = %d\n", xlen);
 		for (i = 0; i < ncontours; i++)
 		{
 			int lp;
@@ -362,13 +409,10 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g)
 			/* new contour */
 			lp = get_16(contours + i);
 			printf("lp = %d of %d\n", lp, vlp);
+			/* flags */
 			for (; j < lp; j++)
 			{
 				/* send coordinates */
-				printf("x = %d y = %d (%d)\n",
-					get_8(coordinates + j + 1 + vlp),
-					get_8(coordinates + j + 2 + vlp + vlp),
-					get_8(coordinates + j));
 			}
 		}
 	}
