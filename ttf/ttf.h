@@ -51,6 +51,21 @@
 #define TTFTAG_HEAD TTFTAG('h', 'e', 'a', 'd')
 #define TTFTAG_LOCA TTFTAG('l', 'o', 'c', 'a')
 
+typedef enum ttf_op
+{
+	TTF_OP_MOVE_TO,
+	TTF_OP_LINE_TO,
+	TTF_OP_QUADRATIC_TO,
+	TTF_OP_CUBIC_TO,
+} ttf_op;
+
+typedef struct ttf_point
+{
+	short int x[4];
+	short int y[4];
+	ttf_op op;
+} ttf_point;
+
 typedef struct ttf_directory
 {
 	uint32 tag;
@@ -88,12 +103,15 @@ typedef struct _Font Font;
 
 typedef struct _Glyph
 {
-
+	int numcontours;
+	int numcoords;
 } Glyph;
+
+typedef void (*glyph_point_cb)(Glyph *g, ttf_point *p, void *data);
 
 Font * ttf_fopen(const char *file);
 int ttf_glyph_index_get(Font *f, int ch);
-void ttf_glyph_info_get(Font *f, int index, Glyph *g);
+void ttf_glyph_info_get(Font *f, int index, Glyph *g, glyph_point_cb cb, void *data);
 //void ttf_glyph_render(Font *f, int glyph);
 
 #endif

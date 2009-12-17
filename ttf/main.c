@@ -1,5 +1,7 @@
 #include "ttf.h"
+#include "Enesim.h"
 
+#if 0
 typedef struct ttf_header
 {
 	fixed version;
@@ -21,16 +23,6 @@ typedef struct ttf_header
 	int16 glyph_data_format;
 } ttf_header;
 
-typedef enum ttf_outline_flags
-{
-	CURVE    = 1 << 0,
-	X_SHORT  = 1 << 1,
-	Y_SHORT  = 1 << 2,
-	REPEAT   = 1 << 3,
-	PX_SHORT = 1 << 4,
-	PY_SHORT = 1 << 5,
-} ttf_outline_flags;
-
 typedef struct ttf_glyph
 {
 	int16 ncontours;
@@ -39,6 +31,35 @@ typedef struct ttf_glyph
 	fword xmax;
 	fword ymax;
 } ttf_glyph;
+#endif
+
+void cb(Glyph *g, ttf_point *p, void *data)
+{
+	Enesim_Renderer *r = data;
+	int i;
+
+	printf("Point received %d\n", p->op);
+	switch (p->op)
+	{
+		case TTF_OP_MOVE_TO:
+		enesim_renderer_path_move_to(r, p->x[0], p->y[0]);
+		break;
+
+		case TTF_OP_LINE_TO:
+		enesim_renderer_path_line_to(r, p->x[1], p->y[1]);
+		break;
+
+		case TTF_OP_QUADRATIC_TO:
+		enesim_renderer_path_quadratic_to(r, p->x[1], p->y[1],
+				p->x[2], p->y[2]);
+		break;
+
+		case TTF_OP_CUBIC_TO:
+		enesim_renderer_path_cubic_to(r, p->x[1], p->y[1],
+				p->x[2], p->y[2], p->x[3], p->y[3]);
+		break;
+	}
+}
 
 int main(int argc, char **argv)
 {
@@ -46,21 +67,24 @@ int main(int argc, char **argv)
 	Glyph g;
 	int index;
 	int ch = 0x6e;
+	Enesim_Surface *s;
+	Enesim_Renderer *r;
 
+
+	enesim_init();
 	ch = 0x6a;
 	f = ttf_fopen(argv[1]);
 	index = ttf_glyph_index_get(f, ch);
 	printf("index for char %d is %d\n", ch, index);
-	ttf_glyph_info_get(f, index, &g);
-	/* TODO write a simple text */
-	/* foreach char get the glyph index, load it and render it */
-#if 0
-	{
-		ttf_font_glyph_index_get(Font *f, char ch);
-		/* FIXME renderer get()? */
-		ttf_font_glyph_render(Font *f, int gid, Enesim_Surface *s);
-	}
-#endif
+
+	s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, 256, 256);
+	r = enesim_renderer_path_new();
+	ttf_glyph_info_get(f, index, &g, cb, r);
+	enesim_renderer_state_setup(r);
+	enesim_renderer_surface_draw(r, s, ENESIM_FILL, ENESIM_COLOR_FULL, NULL);
+	enesim_renderer_state_cleanup(r);
+
+	enesim_shutdown();
 
 	return 0;
 }
