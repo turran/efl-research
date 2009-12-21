@@ -38,7 +38,7 @@ void cb(Glyph *g, ttf_point *p, void *data)
 	Enesim_Renderer *r = data;
 	int i;
 
-	printf("Point received %d\n", p->op);
+	//printf("Point received %d\n", p->op);
 	switch (p->op)
 	{
 		case TTF_OP_MOVE_TO:
@@ -72,19 +72,33 @@ int main(int argc, char **argv)
 
 
 	enesim_init();
-	ch = 0x6a;
+	emage_init();
+
+	ch = 0x41;
 	f = ttf_fopen(argv[1]);
 	index = ttf_glyph_index_get(f, ch);
 	printf("index for char %d is %d\n", ch, index);
 
 	s = enesim_surface_new(ENESIM_FORMAT_ARGB8888, 256, 256);
 	r = enesim_renderer_path_new();
+	enesim_renderer_shape_draw_mode_set(r, ENESIM_SHAPE_DRAW_MODE_FILL);
+	enesim_renderer_shape_fill_color_set(r, 0xffff0000);
+	{
+		Enesim_Matrix m;
+
+		enesim_matrix_scale(&m, 5, 5);
+		enesim_renderer_transform_set(r, &m);
+	}
+
 	ttf_glyph_info_get(f, index, &g, cb, r);
+
 	enesim_renderer_state_setup(r);
 	enesim_renderer_surface_draw(r, s, ENESIM_FILL, ENESIM_COLOR_FULL, NULL);
 	enesim_renderer_state_cleanup(r);
+ 	emage_save("out.png", s, NULL);
 
 	enesim_shutdown();
+	emage_shutdown();
 
 	return 0;
 }

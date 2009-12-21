@@ -202,7 +202,6 @@ static int ttf_cmap_glyph_get_4(Font *f, short int ch)
 			unsigned int idx;
 
 			idx = (rv / 2) + (ch - sv);
-			printf("rv = %d\n", rv);
 			return get_16(range + i + idx);
 		}
 		else
@@ -330,34 +329,42 @@ int ttf_glyph_index_get(Font *f, int ch)
 
 static void ttf_glyph_offsets_get(char *flags, int num, int *flength, int *xlength)
 {
-	int i;
 	int len = 0;
 	int repeat = 0;
+	char *fend = flags + num;
 	char *fcurr = flags;
+	int inc = 0;
+	int i = 0;
 
-	for (i = 0; i < num; i++)
+	while (flags < fend)
 	{
 		unsigned char f = get_8(flags);
-		int inc = 2;
 
 		if (f & TTF_OUTLINE_X_SHORT)
 			inc = 1;
+		else if (!(f & TTF_OUTLINE_X_SAME))
+			inc = 2;
+		else
+			inc = 0;
+		flags++;
 		len += inc;
-
 		if (f & TTF_OUTLINE_REPEAT)
 		{
-			int repeat;
+			unsigned char repeat;
 
-			flags++;
+			printf("repeating at %02x %d\n", f, inc);
 			repeat = get_8(flags);
-			len += inc * repeat;
-			i += repeat;
+			flags++;
+			len += repeat * inc;
+			i += repeat + 1;
 		}
-		flags++;
+		i++;
 	}
 	/* TODO check that i is exactly num here, as the repeat might make it overflow */
 	*flength = flags - fcurr;
 	*xlength = len;
+	printf("num %d flength = %d xlength = %d %d\n", num, *flength, *xlength, i);
+	/* TODO we need to add 1, 28 instead of 29 on FreeMono.ttf */
 }
 
 void ttf_glyph_simple_process(Font *f, char *ptr, Glyph *g)
@@ -371,7 +378,6 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 	char *ptr;
 	uint32 off;
 	int ncontours;
-	uint16 *contours;
 
 	/* get the glyph offset based on index */
 	ptr = f->bytes + f->loca.offset;
@@ -381,14 +387,16 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 		off = get_16(ptr + (idx * 2)) << 1;
 	/* check that offset is inside the file */
 	if (f->glyf.offset + off >= f->size)
+	{
+		printf("The offset is outside the file\n");
 		return;
+	}
 
 	/* get the glyph from the glyf table */
 	ptr = f->bytes + f->glyf.offset + off;
 	printf("xyMin %hd %hd - xyMax %hd %hd\n", get_16(ptr + 2), get_16(ptr + 4), get_16(ptr + 6), get_16(ptr + 8));
 	ncontours = get_16(ptr);
 	ptr += 10;
-	contours = ptr;
 	if (ncontours > 0)
 	{
 		int i;
@@ -399,12 +407,14 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 		int j = 0;
 		int vlp;
 		int xlength, flength;
+		uint16 *contours;
 
-		instructions = ptr + (2 * ncontours);
+		contours = ptr;
+		instructions = contours + ncontours;
 		ilength = get_16(instructions);
 		instructions += 2;
 
-		vlp = get_16(contours + ncontours - 1);
+		vlp = get_16(contours + ncontours - 1) + 1;
 		if (!cb)
 			return;
 		/* TODO set the glyph information */
@@ -414,6 +424,8 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 		xptr = flags + flength;
 		yptr = xptr + xlength;
 		/* send the coord information */
+		printf("contours %d\n", ncontours);
+		printf("%d %d\n", xptr - flags, yptr - xptr);
 		for (i = 0; i < ncontours; i++)
 		{
 			Eina_Bool first = EINA_TRUE;
@@ -425,10 +437,9 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 			ttf_point point;
 
 			/* new contour */
-			lp = get_16(contours + i);
+			lp = get_16(contours + i) + 1;
 			for (; j < lp; j++)
 			{
-
 				if (frepeat)
 				{
 					frepeat--;
@@ -441,15 +452,17 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 				{
 
 					frepeat = get_8(flags);
+					flags++;
 				}
 parse_flags:
 				/* x */
 				if (f & TTF_OUTLINE_X_SHORT)
 				{
-					x = get_8(xptr);
+					if (f & TTF_OUTLINE_X_SAME)
+						x += get_8(xptr);
+					else
+						x -= get_8(xptr);
 					xptr++;
-					if (!(f & TTF_OUTLINE_X_SAME))
-						x = -x;
 				}
 				else
 				{
@@ -458,17 +471,19 @@ parse_flags:
 						short int delta;
 
 						delta = get_16(xptr);
-						x += delta;
 						xptr += 2;
+						//printf("%d %d\n", x + delta, x * 256 + delta);
+						x += delta;
 					}
 				}
 				/* y */
 				if (f & TTF_OUTLINE_Y_SHORT)
 				{
-					y = get_8(yptr);
+					if (f & TTF_OUTLINE_Y_SAME)
+						y += get_8(yptr);
+					else
+						y -= get_8(yptr);
 					yptr++;
-					if (!(f & TTF_OUTLINE_Y_SAME))
-						y = -y;
 				}
 				else
 				{
@@ -477,8 +492,8 @@ parse_flags:
 						short int delta;
 
 						delta = get_16(yptr);
-						y += delta;
 						yptr += 2;
+						y += delta;
 					}
 				}
 				if (first)
@@ -487,6 +502,7 @@ parse_flags:
 					first = EINA_FALSE;
 					point.op = -1;
 				}
+				printf("Point 0x%02x %d %d\n", f, x, y);
 				point.op++;
 				point.x[point.op] = x;
 				point.y[point.op] = y;
