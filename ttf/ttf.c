@@ -362,14 +362,126 @@ static void ttf_glyph_offsets_get(char *flags, int num, int *flength, int *xleng
 	*flength = flags - fcurr;
 	*xlength = len;
 	printf("num %d flength = %d xlength = %d %d\n", num, *flength, *xlength, i);
-	/* TODO we need to add 1, 28 instead of 29 on FreeMono.ttf */
 }
 
-void ttf_glyph_simple_process(Font *f, char *ptr, Glyph *g)
+void ttf_glyph_simple_process(Font *f, char *ptr, int ncontours, Glyph *g, glyph_point_cb cb, void *data)
 {
+	int i;
+	char *flags;
+	char *instructions;
+	char *xptr, *yptr;
+	size_t ilength;
+	int j = 0;
+	int vlp;
+	int xlength, flength;
+	uint16 *contours;
+	short int x = 0;
+	short int y = 0;
 
+	contours = ptr;
+	instructions = contours + ncontours;
+	ilength = get_16(instructions);
+	instructions += 2;
+
+	vlp = get_16(contours + ncontours - 1) + 1;
+	if (!cb)
+		return;
+	/* TODO set the glyph information */
+	/* set the coord pointers */
+	flags = instructions + ilength;
+	ttf_glyph_offsets_get(flags, vlp, &flength, &xlength);
+	xptr = flags + flength;
+	yptr = xptr + xlength;
+	/* send the coord information */
+	printf("contours %d\n", ncontours);
+	printf("%d %d\n", xptr - flags, yptr - xptr);
+	for (i = 0; i < ncontours; i++)
+	{
+		Eina_Bool first = EINA_TRUE;
+		int lp;
+		unsigned char f;
+		int frepeat = 0;
+		ttf_point point;
+
+		/* new contour */
+		lp = get_16(contours + i) + 1;
+		for (; j < lp; j++)
+		{
+			if (frepeat)
+			{
+				frepeat--;
+				goto parse_flags;
+			}
+			f = get_8(flags);
+			flags++;
+
+			if (f & TTF_OUTLINE_REPEAT)
+			{
+
+				frepeat = get_8(flags);
+				flags++;
+			}
+parse_flags:
+			/* x */
+			if (f & TTF_OUTLINE_X_SHORT)
+			{
+				if (f & TTF_OUTLINE_X_SAME)
+					x += get_8(xptr);
+				else
+					x -= get_8(xptr);
+				xptr++;
+			}
+			else
+			{
+				if (!(f & TTF_OUTLINE_X_SAME))
+				{
+					short int delta;
+
+					delta = get_16(xptr);
+					xptr += 2;
+					//printf("%d %d\n", x + delta, x * 256 + delta);
+					x += delta;
+				}
+			}
+			/* y */
+			if (f & TTF_OUTLINE_Y_SHORT)
+			{
+				if (f & TTF_OUTLINE_Y_SAME)
+					y += get_8(yptr);
+				else
+					y -= get_8(yptr);
+				yptr++;
+			}
+			else
+			{
+				if (!(f & TTF_OUTLINE_Y_SAME))
+				{
+					short int delta;
+
+					delta = get_16(yptr);
+					yptr += 2;
+					y += delta;
+				}
+			}
+			if (first)
+			{
+				/* TODO check first point and no ON_CURVE */
+				first = EINA_FALSE;
+				point.op = -1;
+			}
+			//printf("Point 0x%02x %d %d (%p %p)\n", f, x, y, xptr, yptr);
+			point.op++;
+			point.x[point.op] = x;
+			point.y[point.op] = y;
+			/* send coordinates */
+			if (f & TTF_OUTLINE_ON_CURVE)
+			{
+				cb(g, &point, data);
+				point.op = 0;
+			}
+		}
+	}
 }
-
 
 void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *data)
 {
@@ -397,121 +509,7 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 	ptr += 10;
 	if (ncontours > 0)
 	{
-		int i;
-		char *flags;
-		char *instructions;
-		char *xptr, *yptr;
-		size_t ilength;
-		int j = 0;
-		int vlp;
-		int xlength, flength;
-		uint16 *contours;
-		short int x = 0;
-		short int y = 0;
-
-		contours = ptr;
-		instructions = contours + ncontours;
-		ilength = get_16(instructions);
-		instructions += 2;
-
-		vlp = get_16(contours + ncontours - 1) + 1;
-		if (!cb)
-			return;
-		/* TODO set the glyph information */
-		/* set the coord pointers */
-		flags = instructions + ilength;
-		ttf_glyph_offsets_get(flags, vlp, &flength, &xlength);
-		xptr = flags + flength;
-		yptr = xptr + xlength;
-		/* send the coord information */
-		printf("contours %d\n", ncontours);
-		printf("%d %d\n", xptr - flags, yptr - xptr);
-		for (i = 0; i < ncontours; i++)
-		{
-			Eina_Bool first = EINA_TRUE;
-			int lp;
-			unsigned char f;
-			int frepeat = 0;
-			ttf_point point;
-
-			/* new contour */
-			lp = get_16(contours + i) + 1;
-			for (; j < lp; j++)
-			{
-				if (frepeat)
-				{
-					frepeat--;
-					goto parse_flags;
-				}
-				f = get_8(flags);
-				flags++;
-
-				if (f & TTF_OUTLINE_REPEAT)
-				{
-
-					frepeat = get_8(flags);
-					flags++;
-				}
-parse_flags:
-				/* x */
-				if (f & TTF_OUTLINE_X_SHORT)
-				{
-					if (f & TTF_OUTLINE_X_SAME)
-						x += get_8(xptr);
-					else
-						x -= get_8(xptr);
-					xptr++;
-				}
-				else
-				{
-					if (!(f & TTF_OUTLINE_X_SAME))
-					{
-						short int delta;
-
-						delta = get_16(xptr);
-						xptr += 2;
-						//printf("%d %d\n", x + delta, x * 256 + delta);
-						x += delta;
-					}
-				}
-				/* y */
-				if (f & TTF_OUTLINE_Y_SHORT)
-				{
-					if (f & TTF_OUTLINE_Y_SAME)
-						y += get_8(yptr);
-					else
-						y -= get_8(yptr);
-					yptr++;
-				}
-				else
-				{
-					if (!(f & TTF_OUTLINE_Y_SAME))
-					{
-						short int delta;
-
-						delta = get_16(yptr);
-						yptr += 2;
-						y += delta;
-					}
-				}
-				if (first)
-				{
-					/* TODO check first point and no ON_CURVE */
-					first = EINA_FALSE;
-					point.op = -1;
-				}
-				//printf("Point 0x%02x %d %d (%p %p)\n", f, x, y, xptr, yptr);
-				point.op++;
-				point.x[point.op] = x;
-				point.y[point.op] = y;
-				/* send coordinates */
-				if (f & TTF_OUTLINE_ON_CURVE)
-				{
-					cb(g, &point, data);
-					point.op = 0;
-				}
-			}
-		}
+		ttf_glyph_simple_process(f, ptr, ncontours, g, cb, data);
 	}
 	else
 	{

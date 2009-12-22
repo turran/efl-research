@@ -112,6 +112,5 @@ typedef void (*glyph_point_cb)(Glyph *g, ttf_point *p, void *data);
 Font * ttf_fopen(const char *file);
 int ttf_glyph_index_get(Font *f, int ch);
 void ttf_glyph_info_get(Font *f, int index, Glyph *g, glyph_point_cb cb, void *data);
-//void ttf_glyph_render(Font *f, int glyph);
 
 #endif
