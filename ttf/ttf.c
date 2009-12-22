@@ -331,12 +331,11 @@ static void ttf_glyph_offsets_get(char *flags, int num, int *flength, int *xleng
 {
 	int len = 0;
 	int repeat = 0;
-	char *fend = flags + num;
 	char *fcurr = flags;
 	int inc = 0;
 	int i = 0;
 
-	while (flags < fend)
+	while (i < num)
 	{
 		unsigned char f = get_8(flags);
 
@@ -352,11 +351,10 @@ static void ttf_glyph_offsets_get(char *flags, int num, int *flength, int *xleng
 		{
 			unsigned char repeat;
 
-			printf("repeating at %02x %d\n", f, inc);
 			repeat = get_8(flags);
 			flags++;
 			len += repeat * inc;
-			i += repeat + 1;
+			i += repeat;
 		}
 		i++;
 	}
@@ -408,6 +406,8 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 		int vlp;
 		int xlength, flength;
 		uint16 *contours;
+		short int x = 0;
+		short int y = 0;
 
 		contours = ptr;
 		instructions = contours + ncontours;
@@ -432,8 +432,6 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 			int lp;
 			unsigned char f;
 			int frepeat = 0;
-			short int x = 0;
-			short int y = 0;
 			ttf_point point;
 
 			/* new contour */
@@ -502,7 +500,7 @@ parse_flags:
 					first = EINA_FALSE;
 					point.op = -1;
 				}
-				printf("Point 0x%02x %d %d\n", f, x, y);
+				//printf("Point 0x%02x %d %d (%p %p)\n", f, x, y, xptr, yptr);
 				point.op++;
 				point.x[point.op] = x;
 				point.y[point.op] = y;

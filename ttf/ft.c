@@ -12,7 +12,8 @@ int main(void)
 	char ch = 0x41;
 
 	FT_Init_FreeType(&library);
-	FT_New_Face(library, "/usr/share/fonts/truetype/freefont/FreeSans.ttf", 0,  &face);
+	//FT_New_Face(library, "/usr/share/fonts/truetype/freefont/FreeSans.ttf", 0,  &face);
+	FT_New_Face(library, "/usr/share/fonts/truetype/freefont/FreeMono.ttf", 0,  &face);
 	index = FT_Get_Char_Index(face, ch);
 	FT_Load_Glyph(face, index, FT_LOAD_DEFAULT);
 
