@@ -56,13 +56,12 @@ typedef enum ttf_op
 	TTF_OP_MOVE_TO,
 	TTF_OP_LINE_TO,
 	TTF_OP_QUADRATIC_TO,
-	TTF_OP_CUBIC_TO,
 } ttf_op;
 
 typedef struct ttf_point
 {
-	short int x[4];
-	short int y[4];
+	short int x[5];
+	short int y[5];
 	ttf_op op;
 } ttf_point;
 
@@ -103,8 +102,7 @@ typedef struct _Font Font;
 
 typedef struct _Glyph
 {
-	int numcontours;
-	int numcoords;
+	Eina_Rectangle boundings;
 } Glyph;
 
 typedef void (*glyph_point_cb)(Glyph *g, ttf_point *p, void *data);

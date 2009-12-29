@@ -1,3 +1,8 @@
+/* TODO:
+ * - font hinting (use the hint table)
+ * - finish the vm
+ */
+
 #include "ttf.h"
 
 typedef enum ttf_platform_id
@@ -402,6 +407,7 @@ void ttf_glyph_simple_process(Font *f, char *ptr, int ncontours, Glyph *g, glyph
 		unsigned char f;
 		int frepeat = 0;
 		ttf_point point;
+		short int sx, sy;
 
 		/* new contour */
 		lp = get_16(contours + i) + 1;
@@ -468,8 +474,10 @@ parse_flags:
 				/* TODO check first point and no ON_CURVE */
 				first = EINA_FALSE;
 				point.op = -1;
+				sx = x;
+				sy = y;
 			}
-			//printf("Point 0x%02x %d %d (%p %p)\n", f, x, y, xptr, yptr);
+			printf("Point 0x%02x %d %d (%p %p) %d\n", f, x, y, xptr, yptr, point.op);
 			point.op++;
 			point.x[point.op] = x;
 			point.y[point.op] = y;
@@ -479,7 +487,31 @@ parse_flags:
 				cb(g, &point, data);
 				point.op = 0;
 			}
+			/* more than one consecutive off curve point */
+			else if (point.op == 2)
+			{
+				short int mx, my;
+				short int ex, ey;
+
+				ex = point.x[2];
+				ey = point.y[2];
+				mx = (point.x[1] + point.x[2]) / 2;
+				my = (point.y[1] + point.y[2]) / 2;
+				point.op = 2;
+				point.x[2] = mx;
+				point.y[2] = my;
+				cb(g, &point, data);
+				/* reset to a line to */
+				point.op = 1;
+				point.x[1] = ex;
+				point.y[1] = ey;
+			}
 		}
+		/* close the contour */
+		point.op++;
+		point.x[point.op] = sx;
+		point.y[point.op] = sy;
+		cb(g, &point, data);
 	}
 }
 
@@ -501,10 +533,12 @@ void ttf_glyph_info_get(Font *f, int idx, Glyph *g, glyph_point_cb cb, void *dat
 		printf("The offset is outside the file\n");
 		return;
 	}
-
 	/* get the glyph from the glyf table */
 	ptr = f->bytes + f->glyf.offset + off;
-	printf("xyMin %hd %hd - xyMax %hd %hd\n", get_16(ptr + 2), get_16(ptr + 4), get_16(ptr + 6), get_16(ptr + 8));
+	g->boundings.x = get_16(ptr + 2);
+	g->boundings.y = get_16(ptr + 4);
+	g->boundings.w = get_16(ptr + 6) - g->boundings.x + 1;
+	g->boundings.h = get_16(ptr + 8) - g->boundings.y + 1;
 	ncontours = get_16(ptr);
 	ptr += 10;
 	if (ncontours > 0)
