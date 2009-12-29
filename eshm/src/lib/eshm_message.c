@@ -1,7 +1,7 @@
 #include "Eshm.h"
 #include "eshm_private.h"
 /*============================================================================*
- *                                  Local                                     * 
+ *                                  Local                                     *
  *============================================================================*/
 Eet_Data_Descriptor_Class _eddc = {
 	.version = EET_DATA_DESCRIPTOR_CLASS_VERSION,
@@ -14,16 +14,16 @@ static Eshm_Message * _new(Eshm_Message_Type type)
 {
 	static int id = 0;
 	Eshm_Message *m;
-	
+
 	m = malloc(sizeof(Eshm_Message));
 	m->id = id;
 	m->type = type;
 	/* TODO this will cause an overflow sometime */
 	id++;
-	return m;	
+	return m;
 }
 /*============================================================================*
- *                                 Global                                     * 
+ *                                 Global                                     *
  *============================================================================*/
 inline Eshm_Message_Name eshm_message_name_get(Eshm_Message_Type t)
 {
@@ -54,7 +54,7 @@ void eshm_message_init(void)
 {
 	Eet_Data_Descriptor *edd;
 	/* create all the messages' data descriptors */
-	
+
 	/* segment new */
 	edd = eet_data_descriptor2_new(&_eddc);
 	_descriptors[ESHM_MSG_NAME_SEGMENT_NEW] = edd;
@@ -90,7 +90,7 @@ void eshm_message_init(void)
 void eshm_message_shutdown(void)
 {
 	int i;
-	
+
 	/* remove all the messages's data descriptors */
 	for (i = 0; i < ESHM_MSG_NAMES; i++)
 		eet_data_descriptor_free(_descriptors[i]);
@@ -110,12 +110,12 @@ Eshm_Error eshm_message_server_send(Eshm_Message_Type type, void *data, double t
 {
 	Eshm_Message *m;
 	void *body;
-	
+
 	m = _new(type);
 	body = eshm_message_encode(eshm_message_name_get(m->type), data, &m->size);
 	if (!body)
 		return ESHM_ERR_CODEC;
-	
+
 	return eshm_server_send(m, body, timeout, rdata);
 }
 
@@ -145,7 +145,7 @@ EAPI int eet_descriptor_new(Eet_Data_Descriptor_Class *c, const char *signature)
 {
 	Eet_Descriptor *eet;
 	char *tmp = signature;
-	
+
 	if (!signature)
 		return NULL;
 	eet = eet_descriptor2_new(c);
@@ -158,8 +158,8 @@ EAPI int eet_descriptor_new(Eet_Data_Descriptor_Class *c, const char *signature)
 		}
 		tmp++;
 	}
-	
-	return eet; 
+
+	return eet;
 }
 #endif
 

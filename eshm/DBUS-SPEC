@@ -2,7 +2,7 @@
 
 Specification
 ~~~~~~~~~~~~~
-Legend: 
+Legend:
 s = signal
 m = method
 
@@ -54,19 +54,19 @@ Blocks
 | app 1 |--------| daemon |--------| app 2 |
 +-------+        +--------+        +-------+
 
-The daemon is in charge of allocating the shm segments, manage them, load files 
-for further storing on the cache, etc. 
-What happens if we want to store data from other places (no file)? one option 
-could be to request the size of the element to be inserted into the cache, 
-the daemon returns the offset and you are free to write to it, using the 
+The daemon is in charge of allocating the shm segments, manage them, load files
+for further storing on the cache, etc.
+What happens if we want to store data from other places (no file)? one option
+could be to request the size of the element to be inserted into the cache,
+the daemon returns the offset and you are free to write to it, using the
 org.e.Writer interface?
 A cache isnt a specific version of a shm approach???
 
 Objects
 =======
-+ /org/e/cache/ 
++ /org/e/cache/
   Low level main cache daemon object, it should store the list of caches
-  an application requests. 
+  an application requests.
   IMPLEMENTS: cacheManager
 
 + /org/e/shm

@@ -39,10 +39,14 @@ static void _error_to_eina(Eshm_Error err)
  *                                   API                                      *
  *============================================================================*/
 /**
- * Creates a new segment
- * This function is a blocking function, it will block until the request is done
+ * Creates a new segment.
+ * This function is a blocking function, it will block until the request is
+ * done. In case of error the Eina error variable is set.
+ * @param id The unique identifier for this segment
+ * @param size The size in bytes of the segment
+ * @return The created segment or NULL if there was an error
  */
-EAPI Eshm_Segment * eshm_segment_new(const char *id, unsigned int size)
+EAPI Eshm_Segment * eshm_segment_new(const char *id, size_t size)
 {
 	Eshm_Segment *s;
 	Eshm_Message_Segment_New m;
@@ -73,9 +77,15 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, unsigned int size)
 	return s;
 }
 /**
- *
+ * Gets a previously created segment or creates it.
+ * This function is a blocking function, it will block until the request is
+ * done. In case of error the Eina error variable is set.
+ * @param id The unique identifier for this segment
+ * @param size The size in bytes of the segment
+ * @param create If EINA_TRUE it will create the segment if it is not created already
+ * @return The created segment or NULL if there was an error
  */
-EAPI Eshm_Segment * eshm_segment_get(const char *id, Eina_Bool create)
+EAPI Eshm_Segment * eshm_segment_get(const char *id, size_t size, Eina_Bool create)
 {
 	Eshm_Segment *s;
 	Eshm_Message_Segment_Get m;
@@ -89,7 +99,7 @@ EAPI Eshm_Segment * eshm_segment_get(const char *id, Eina_Bool create)
 	if (error)
 	{
 		if (!create && (error == ESHM_ERROR_NEXIST))
-			return eshm_segment_new(id);
+			return eshm_segment_new(id, size);
 		else
 		{
 			_error_to_eina(error);
@@ -113,7 +123,8 @@ EAPI Eshm_Segment * eshm_segment_get(const char *id, Eina_Bool create)
 	}
 }
 /**
- *
+ * Deletes a segment.
+ * @param s The segment to delete
  */
 EAPI void eshm_segment_delete(Eshm_Segment *s)
 {
@@ -126,11 +137,7 @@ EAPI void eshm_segment_delete(Eshm_Segment *s)
 	EINA_ERROR_PDBG("Segment with id \"%s\" deleted\n", s->id);
 }
 /**
- *  Locks the segment for read or write
- *
- * Writes the data into the segment, skipping the size of the header
- * Every client that has requested the same will be notified when the new
- * data has been written.
+ * Locks the segment for read or write
  */
 EAPI Eina_Bool eshm_segment_lock(Eshm_Segment *s, Eina_Bool write)
 {
@@ -174,15 +181,9 @@ EAPI void eshm_segment_unlock(Eshm_Segment *s)
 	EINA_ERROR_PDBG("Segment with id \"%s\" unlocked\n", s->id);
 }
 /**
- * Writes the header information into the segment. The signature is composed
- * of:
- */
-EAPI int eshm_segment_header_set(Eshm_Segment *s, const char *signature, void *data)
-{
-	assert(s);
-}
-/**
- *
+ * Gets the memory pointer associated with this segment
+ * @param s The segment to get the data from
+ * @return The memory pointer
  */
 EAPI void * eshm_segment_data_get(Eshm_Segment *s)
 {
@@ -193,7 +194,7 @@ EAPI void * eshm_segment_data_get(Eshm_Segment *s)
 	return s->data;
 }
 /**
- *
+ * Gets all the available segments registered on the server
  */
 EAPI Eina_Bool eshm_segment_all_get(void (*callback)(Eshm_Segment *s))
 {

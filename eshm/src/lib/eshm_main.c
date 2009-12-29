@@ -91,20 +91,20 @@ static int _timeout_cb(void *data)
 	return 0;
 }
 /*============================================================================*
- *                                 Global                                     * 
+ *                                 Global                                     *
  *============================================================================*/
 /**
  * Sends a message to the server
- * 
+ *
  * The message is encoded and then sent to the server, if the message needs
  * a reply this function will wait @timeout ms for it. The encoding and decoding
  * of the message is transparent.
- *  
+ *
  * @param mhdr A completely message to send to the server
  * @param timeout Number of ms to wait for the reply in case of needed
  * @param rhdr The reply will be stored here
  * @return
- * 
+ *
  * TODO the reply can be embedded on the header type itself?
  * TODO Encode the message with eet!!
  */
@@ -160,7 +160,7 @@ void eshm_common_shutdown(void)
 	ecore_shutdown();
 }
 /*============================================================================*
- *                                   API                                      * 
+ *                                   API                                      *
  *============================================================================*/
 int ESHM_ERROR_ACCESS;
 int ESHM_ERROR_EXIST;
@@ -168,7 +168,8 @@ int ESHM_ERROR_NEXIST;
 int ESHM_ERROR_CODEC;
 int ESHM_ERROR_TIMEOUT;
 /**
- *  Initialize the library
+ * Initialize the library
+ * @return The number of times the library has been initialized
  */
 EAPI int eshm_init(void)
 {
@@ -202,7 +203,7 @@ EAPI int eshm_init(void)
 /**
  * Shutdowns the library
  */
-EAPI int eshm_shutdown(void)
+EAPI void eshm_shutdown(void)
 {
 	if (!--_init)
 	{
@@ -211,5 +212,4 @@ EAPI int eshm_shutdown(void)
 		ecore_shutdown();
 		eina_shutdown();
 	}
-	return _init;
 }

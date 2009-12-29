@@ -28,7 +28,7 @@ typedef struct _Eshmd
 {
 	Eina_Hash *hash;
 	Eina_List *clients;
-	
+
 	Ecore_Con_Server *srv;
 	void *buffer;
 	int length;
@@ -38,10 +38,10 @@ Eshmd _eshmd;
 
 static key_t _key_new(void)
 {
-	static num; 	
+	static num;
 	char path[PATH_MAX];
 	char *tmp;
-	
+
 	/* get the tmp dir */
 	if (!(tmp = getenv("TMPDIR")))
 	{
@@ -58,9 +58,9 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	Eshm_Reply_Segment_New *rsn;
 	struct shmid_ds ds;
 	key_t key;
-	
+
 	EINA_ERROR_PINFO("Requesting a new segment with id %s\n", sn->id);
-	
+
 	/* check if the segment already exists on the hash of segments */
 	s = eina_hash_find(_eshmd.hash, sn->id);
 	if (s)
@@ -71,7 +71,7 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	/* create a new segment */
 	*reply = calloc(1, sizeof(Eshm_Reply_Segment_New));
 	rsn = *reply;
-	
+
 	key = _key_new();
 	rsn->shmid = shmget(key, sn->size, IPC_CREAT | 0);
 	if (rsn->shmid < 0)
@@ -82,15 +82,15 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	shmctl(rsn->shmid, IPC_STAT, &ds);
 	ds.shm_perm.mode = 0666;
 	shmctl(rsn->shmid, IPC_SET, &ds);
-		
+
 	s = calloc(1, sizeof(Eshmd_Segment));
 	s->shmid = rsn->shmid;
 	s->ref++;
 	s->owner = c;
 	eina_hash_add(_eshmd.hash, sn->id, s);
-	
+
 	EINA_ERROR_PINFO("New Segment created with id number %d\n", rsn->shmid);
-	
+
 	return ESHM_ERR_NONE;
 }
 
@@ -98,9 +98,9 @@ static Eshm_Error msg_segment_get(Ecore_Con_Client *c, Eshm_Message_Segment_Get 
 {
 	Eshmd_Segment *s;
 	Eshm_Reply_Segment_Get *rsn;
-	
+
 	EINA_ERROR_PINFO("Requesting segment of name %s\n", sn->id);
-	
+
 	/* check if the segment already exists on the hash of segments */
 	s = eina_hash_find(_eshmd.hash, sn->id);
 	if (!s)
@@ -127,7 +127,7 @@ static int msg_segment_delete(Ecore_Con_Client *c, Eshm_Message_Segment_Delete *
 static int msg_segment_lock(Ecore_Con_Client *c, Eshm_Message_Segment_Lock *m, void **reply)
 {
 	Eshmd_Segment *s;
-	
+
 	/* lock the segment */
 	EINA_ERROR_PINFO("Locking the segment with id %s\n", m->id);
 	s = eina_hash_find(_eshmd.hash, m->id);
@@ -151,7 +151,7 @@ int _client_add(void *data, int type, void *event)
 {
 	Ecore_Con_Event_Client_Add *e = event;
 	Eshmd_Client *c;
-	
+
 	EINA_ERROR_PDBG("Client added %p\n", e->client);
 	c = calloc(1, sizeof(Eshmd_Client));
 	ecore_con_client_data_set(e->client, c);
@@ -161,7 +161,7 @@ int _client_del(void *data, int type, void *event)
 {
 	Ecore_Con_Event_Client_Add *e = event;
 	Eshmd_Client *c;
-	
+
 	EINA_ERROR_PDBG("Client deleted %p\n", e->client);
 	c = ecore_con_client_data_get(e->client);
 	/* TODO unref all the segments */
@@ -190,7 +190,7 @@ int _client_data(void *data, int type, void *event)
 		_eshmd.length += cdata->size;
 		cdata->data = NULL;
 	}
-	if (_eshmd.length < sizeof(Eshm_Message)) 
+	if (_eshmd.length < sizeof(Eshm_Message))
 		return 0;
 	/* ok, we have at least a message header */
 	m = _eshmd.buffer;
@@ -199,7 +199,7 @@ int _client_data(void *data, int type, void *event)
 		return 0;
 	/* parse the header */
 	EINA_ERROR_PDBG("Message received of type %d with msg num %d of size %d\n", m->type, m->id, m->size);
-	
+
 	body = eshm_message_decode(eshm_message_name_get(m->type), (unsigned char *)m + sizeof(Eshm_Message), m->size);
 	if (!body)
 	{
@@ -233,14 +233,14 @@ shift:
 		Eshm_Reply r;
 		Eshm_Message_Name rname;
 		void *rbody;
-		
+
 		EINA_ERROR_PDBG("Sending reply\n");
 		r.id = m->id;
 		r.error = err;
 		eshm_message_reply_name_get(m->type, &rname);
 		EINA_ERROR_PDBG("Message encoded %d %d\n", rname, eshm_message_name_get(m->type));
 		if (reply)
-			rbody = eshm_message_encode(rname, reply, &r.size);	
+			rbody = eshm_message_encode(rname, reply, &r.size);
 		else
 			r.size = 0;
 		ecore_con_client_send(cdata->client, &r, sizeof(Eshm_Reply));
@@ -252,10 +252,10 @@ shift:
 	{
 		unsigned char *tmp;
 		unsigned int n_length;
-		
+
 		tmp = _eshmd.buffer;
 		n_length = _eshmd.length - m_length;
-		
+
 		_eshmd.buffer = malloc(n_length);
 		memcpy(_eshmd.buffer, tmp + m_length, n_length);
 		free(tmp);
