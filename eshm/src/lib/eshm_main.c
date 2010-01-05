@@ -8,6 +8,10 @@
 /*============================================================================*
  *                                  Local                                     * 
  *============================================================================*/
+#define ERR(...) EINA_LOG_DOM_ERR(_log_dom, __VA_ARGS__)
+#define WRN(...) EINA_LOG_DOM_WARN(_log_dom, __VA_ARGS__)
+#define DBG(...) EINA_LOG_DOM_DBG(_log_dom, __VA_ARGS__)
+
 typedef struct _Eshm
 {
 	Ecore_Con_Server *svr;
@@ -21,6 +25,7 @@ typedef struct _Eshm
 static Eshm _eshm;
 
 static int _init = 0;
+static int _log_dom = -1;
 
 static int _server_data(void *data, int type, void *event)
 {
@@ -30,7 +35,7 @@ static int _server_data(void *data, int type, void *event)
 
 	if (!_eshm.msg)
 	{
-		EINA_ERROR_PERR("How do we receive a reply with no msg first??\n");
+		ERR("How do we receive a reply with no msg first??\n");
 		return 0;
 	}
 	if (!_eshm.buffer)
@@ -179,15 +184,18 @@ EAPI int eshm_init(void)
 		ecore_init();
 		ecore_con_init();
 		eshm_message_init();
+		_log_dom = eina_log_domain_register("eshm", NULL);
+
 		/* try to connect to the daemon */
 		_eshm.svr = ecore_con_server_connect(ECORE_CON_LOCAL_USER, ESHMD_NAME, ESHMD_PORT, NULL);
 		if (!_eshm.svr)
 		{
-			EINA_ERROR_PERR("The server does not exist\n");
+			ERR("The server does not exist\n");
 			eshm_message_shutdown();
 			ecore_con_shutdown();
 			ecore_shutdown();
-			eina_error_shutdown();
+			eina_log_domain_unregister(_log_dom);
+			eina_shutdown();
 			return 0;
 		}
 		ecore_event_handler_add(ECORE_CON_EVENT_SERVER_DATA, _server_data, NULL);
@@ -210,6 +218,7 @@ EAPI void eshm_shutdown(void)
 		eshm_message_shutdown();
 		ecore_con_shutdown();
 		ecore_shutdown();
+		eina_log_domain_unregister(_log_dom);
 		eina_shutdown();
 	}
 }
