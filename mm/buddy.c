@@ -1,19 +1,29 @@
 #include "Eina.h"
 #include <stdio.h>
 
-typedef struct _Buddy_Area
+/*
+ * We wont store the block information on the block memory itself
+ * but on another malloc'd area. This is useful for managing
+ * memory which isnt as fast as the main memory (video memory, etc)
+ * 
+ */
+
+typedef struct _Block
 {
 	EINA_INLIST;
-	unsigned long *map;
-} Buddy_Area;
+	Eina_Bool available : 1;
+	unsigned short int order : 7; /* final order is order + min_order */
+} Block;
 
 typedef struct _Buddy
 {
 	void *heap; /* start address of the heap */
 	size_t size; /* total size in bytes of the heap */
-	size_t min_order; /* minimum size is 1 << min_order */
+	unsigned int min_order; /* minimum size is 1 << min_order */
+	unsigned int max_order; /* maximum size is 1 << max_order */
 	unsigned int num_order; /* number of orders */
-	Buddy_Area *areas;
+	Eina_Inlist **areas; /* one area per order */
+	Block *blocks; /* the allocated block information */
 } Buddy;
 
 /* get the minimum order greater or equal to size */
@@ -27,7 +37,16 @@ static inline unsigned int _get_order(Buddy *b, size_t size)
 	{
 		bytes += bytes;
 	}
-	printf("order for size %d is %d\n", size, i + b->min_order);
+	//printf("order for size %d is %d\n", size, i + b->min_order);
+	return i;
+}
+
+static inline void * _get_offset(Buddy *b, Block *block) 
+{
+	void *ret;
+
+	ret = (char *)b->heap + ((block - &b->blocks[0]) << b->min_order);
+	return ret;
 }
 
 static inline void _coalesce(Buddy *b)
@@ -50,7 +69,8 @@ static void *_init(const char *context, const char *options, va_list args)
 
 	size = va_arg(args, int);
 	min_order = va_arg(args, int);
-
+	/* the minimum order we support is 15 (32K) */
+	min_order = min_order < 15 ? 15 : min_order;
 	bytes = 1 << min_order;
 	for (i = 0; bytes <= size; i++)
 	{
@@ -58,17 +78,20 @@ static void *_init(const char *context, const char *options, va_list args)
 	}
 	if (!i)
 	{
-		printf("error\n");
 		return NULL;
 	}
 	b = malloc(sizeof(Buddy));
 	b->heap = (void *)context;
 	b->size = size;
 	b->min_order = min_order;
-	b->num_order = i - 1;
-	b->areas = calloc(sizeof(Buddy_Area) * b->num_order);
-
-	printf("size = %d, min_order = %d, max_order = %d\n", b->size, b->min_order, b->min_order + b->num_order);
+	b->max_order = min_order + i - 1;
+	b->num_order = i;
+	b->areas = calloc(b->num_order, sizeof(Eina_Inlist *));
+	b->blocks = calloc(1 << (b->num_order - 1), sizeof(Block));
+	/* setup the initial free area */
+	b->blocks[0].available = EINA_TRUE;
+	b->areas[b->num_order - 1] = EINA_INLIST_GET(&(b->blocks[0]));
+	
 	return b;
 }
 
@@ -76,24 +99,75 @@ static void _shutdown(void *data)
 {
 	Buddy *b = data;
 
+	free(b->blocks);
+	free(b->areas);
 	free(b);
 }
 
 static void _free(void *data, void *element)
 {
-	printf("free\n");
+	Buddy *b = data;
+	Block *block, *buddy;
+	unsigned int offset;
+	unsigned int index;
+
+	offset = element - b->heap;
+	index = offset >> b->min_order;
+
+	block = &b->blocks[index];
+	printf("free %x index = %d order = %d buddy = %d\n", offset, index, block->order, index ^ (1 << block->order));
+	buddy = &b->blocks[index ^ (1 << b->blocks[index].order)];
+	printf("buddy is available? %d\n", buddy->available);
+	/* get the buddy */
+	/* check if k == m or first block finish */
+	goto end;
+
+	/* merge two blocks */
+end:
+	/* add the block to the free list */
+	block->available = EINA_TRUE;
+	b->areas[block->order] = eina_inlist_append(b->areas[block->order], EINA_INLIST_GET(block));
 }
 
 static void *_alloc(void *data, unsigned int size)
 {
 	Buddy *b = data;
-	int order;
+	Block *block, *buddy;
+	int k, j;
 
-	order = _get_order(b, size);
-	/* get a free element on this order, if not go splitting until we find one */
-	
+	k = j = _get_order(b, size);
+	/* get a free list of order k where k <= j <= max_order */
+	while ((j < b->num_order) && !b->areas[j])
+	{
+		j++;
+	}
+	if (j + b->min_order > b->max_order)
+		return NULL;
 
-	return NULL;
+	/* get a free element on this order, if not, go splitting until we find one */
+found:
+	if (j == k)
+	{
+		void *ret;
+
+		block = EINA_INLIST_CONTAINER_GET(b->areas[j], Block);
+		block->available = EINA_FALSE;
+		block->order = j;
+		/* remove the block from the list */
+		b->areas[j] = eina_inlist_remove(b->areas[j], EINA_INLIST_GET(block));
+		ret = _get_offset(b, block);
+		return ret;
+	}
+	block = EINA_INLIST_CONTAINER_GET(b->areas[j], Block);
+	/* split */
+	b->areas[j] = eina_inlist_remove(b->areas[j], EINA_INLIST_GET(block));
+	j--;
+	b->areas[j] = eina_inlist_append(b->areas[j], EINA_INLIST_GET(block));
+	buddy = block + (1 << j);
+	buddy->order = j;
+	b->areas[j] = eina_inlist_append(b->areas[j], EINA_INLIST_GET(buddy));
+
+	goto found;
 }
 
 static void *_realloc(void *data, void *element, unsigned int size)
@@ -108,8 +182,25 @@ static void _garbage_collect(void *data)
 
 static void _statistics(void *data)
 {
-	printf("stats\n");
+	Buddy *b = data;
+	int i;
+
+	printf("Information:\n");
+	printf("size = %d, min_order = %d, max_order = %d, num_order = %d, num_blocks = %d (%dKB)\n", b->size, b->min_order, b->max_order, b->num_order, 1 << b->num_order, ((1 << (b->num_order)) * sizeof(Block)) / 1024);
+	printf("Area dumping:");
 	/* iterate over the free lists and dump the maps */
+	for (i = 0; i < b->num_order; i++)
+	{
+		Block *block;
+
+		printf("\n2^%d:", b->min_order + i);
+		EINA_INLIST_FOREACH(b->areas[i], block)
+		{
+			
+			printf(" %d", (block - &b->blocks[0]));
+		}
+	}
+	printf("\nBlocks dumping:\n");
 }
 
 static Eina_Mempool_Backend _backend = {
@@ -118,6 +209,7 @@ static Eina_Mempool_Backend _backend = {
 	.free = _free,
 	.alloc = _alloc,
 	.shutdown = _shutdown,
+	.statistics = _statistics,
 };
 
 void buddy_init(void)
