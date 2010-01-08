@@ -56,6 +56,7 @@ src/Makefile
 src/bin/Makefile
 src/include/Makefile
 src/lib/Makefile
+src/common/Makefile
 ])
 
 #####################################################################
