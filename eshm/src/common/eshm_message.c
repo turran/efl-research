@@ -49,7 +49,6 @@ inline Eina_Bool eshm_message_reply_name_get(Eshm_Message_Type t, Eshm_Message_N
 	return EINA_TRUE;
 }
 
-
 void eshm_message_init(void)
 {
 	Eet_Data_Descriptor *edd;
@@ -105,61 +104,3 @@ void * eshm_message_decode(Eshm_Message_Name name, const void *data, int size)
 {
 	return eet_data_descriptor_decode(_descriptors[name], data, size);
 }
-
-Eshm_Error eshm_message_server_send(Eshm_Message_Type type, void *data, double timeout, void **rdata)
-{
-	Eshm_Message *m;
-	void *body;
-
-	m = _new(type);
-	body = eshm_message_encode(eshm_message_name_get(m->type), data, &m->size);
-	if (!body)
-		return ESHM_ERR_CODEC;
-
-	return eshm_server_send(m, body, timeout, rdata);
-}
-
-#if 0
-#define EET_SIG_CHAR             'C'
-#define EET_SIG_SHORT            'S'
-#define EET_SIG_INT              'I'
-#define EET_SIG_LONG_LONG        'L'
-#define EET_SIG_FLOAT            'f'
-#define EET_SIG_DOUBLE           'D'
-#define EET_SIG_UCHAR            'c'
-#define EET_SIG_USHORT           's'
-#define EET_SIG_UINT             'i'
-#define EET_SIG_ULONG_LONG       'l'
-#define EET_SIG_STRING           'T'
-#define EET_SIG_INLINED_STRING   'N'
-
-#define EET_SIG_ARRAY_START   '['
-#define EET_SIG_ARRAY_END     ']'
-#define EET_SIG_LIST_START    '('
-#define EET_SIG_LIST_END      ')'
-#define EET_SIG_HASH_START    '{'
-#define EET_SIG_HASH_END      '}'
-
-
-EAPI int eet_descriptor_new(Eet_Data_Descriptor_Class *c, const char *signature)
-{
-	Eet_Descriptor *eet;
-	char *tmp = signature;
-
-	if (!signature)
-		return NULL;
-	eet = eet_descriptor2_new(c);
-	/* parse the signature */
-	while (*tmp)
-	{
-		switch (*tmp)
-		{
-			//case
-		}
-		tmp++;
-	}
-
-	return eet;
-}
-#endif
-

@@ -27,6 +27,12 @@ static Eshm _eshm;
 static int _init = 0;
 static int _log_dom = -1;
 
+static int _timeout_cb(void *data)
+{
+	printf("timer!!!\n");
+	return 0;
+}
+
 static int _server_data(void *data, int type, void *event)
 {
 	Ecore_Con_Event_Server_Data *e = event;
@@ -90,30 +96,8 @@ static int _server_data(void *data, int type, void *event)
 	return 0;
 }
 
-static int _timeout_cb(void *data)
-{
-	printf("timer!!!\n");
-	return 0;
-}
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-/**
- * Sends a message to the server
- *
- * The message is encoded and then sent to the server, if the message needs
- * a reply this function will wait @timeout ms for it. The encoding and decoding
- * of the message is transparent.
- *
- * @param mhdr A completely message to send to the server
- * @param timeout Number of ms to wait for the reply in case of needed
- * @param rhdr The reply will be stored here
- * @return
- *
- * TODO the reply can be embedded on the header type itself?
- * TODO Encode the message with eet!!
- */
-Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **rdata)
+
+static Eshm_Error _server_send(Eshm_Message *m, void *data, double timeout, void **rdata)
 {
 	Eshm_Error error;
 	Ecore_Timer *timer;
@@ -152,6 +136,38 @@ Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **
 
 	return error;
 }
+
+/*============================================================================*
+ *                                 Global                                     *
+ *============================================================================*/
+/**
+ * Sends a message to the server
+ *
+ * The message is encoded and then sent to the server, if the message needs
+ * a reply this function will wait @timeout ms for it. The encoding and decoding
+ * of the message is transparent.
+ *
+ * @param mhdr A completely message to send to the server
+ * @param timeout Number of ms to wait for the reply in case of needed
+ * @param rhdr The reply will be stored here
+ * @return
+ *
+ * TODO the reply can be embedded on the header type itself?
+ * TODO Encode the message with eet!!
+ */
+Eshm_Error eshm_message_server_send(Eshm_Message_Type type, void *data, double timeout, void **rdata)
+{
+	Eshm_Message *m;
+	void *body;
+
+	m = _new(type);
+	body = eshm_message_encode(eshm_message_name_get(m->type), data, &m->size);
+	if (!body)
+		return ESHM_ERR_CODEC;
+
+	return _server_send(m, body, timeout, rdata);
+}
+
 void eshm_common_init(void)
 {
 	ecore_init();
