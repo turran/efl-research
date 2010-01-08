@@ -106,7 +106,10 @@ static void _free(void *data, void *element)
 	unsigned int offset;
 	unsigned int index;
 
+	printf("feeing element %p\n", element);
 	offset = element - b->heap;
+	if (offset > b->size || offset < 0)
+		return;
 	index = offset >> b->min_order;
 	block = &b->blocks[index];
 
@@ -161,6 +164,7 @@ static void *_alloc(void *data, unsigned int size)
 		return NULL;
 
 	/* get a free element on this order, if not, go splitting until we find one */
+	printf("getting order %d (%d) for size %d\n", j, k, size);
 found:
 	if (j == k)
 	{
@@ -172,6 +176,7 @@ found:
 		/* remove the block from the list */
 		b->areas[j] = eina_inlist_remove(b->areas[j], EINA_INLIST_GET(block));
 		ret = _get_offset(b, block);
+
 		return ret;
 	}
 	block = EINA_INLIST_CONTAINER_GET(b->areas[j], Block);

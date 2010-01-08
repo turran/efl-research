@@ -17,14 +17,22 @@ size_t sizes[] = {
 
 void test(Eina_Mempool *mp)
 {
-	char *ptr;
+	char **ptr;
 	int i;
+	int count;
 
+	count = sizeof(sizes) / sizeof(size_t);
+	ptr = malloc(sizeof(char **) * count);
 	/* allocate chunks of memory, write data to them, then compare */
-	for (i = 0; i < sizeof(sizes); i++)
+	for (i = 0; i < count; i++)
 	{
-		ptr = eina_mempool_malloc(mp, 2048);
-		printf("ptr = %p\n", ptr);
+		ptr[i] = eina_mempool_malloc(mp, sizes[i]);
+		printf("ptr = %p %d\n", ptr[i], sizes[i]);
+	}
+	eina_mempool_statistics(mp);
+	for (i = count - 1; i >= 0; i--)
+	{
+		eina_mempool_free(mp, ptr[i]);
 	}
 }
 
