@@ -6,7 +6,7 @@
  * Add a buffer for the message received
  */
 /*============================================================================*
- *                                  Local                                     * 
+ *                                  Local                                     *
  *============================================================================*/
 #define ERR(...) EINA_LOG_DOM_ERR(_log_dom, __VA_ARGS__)
 #define WRN(...) EINA_LOG_DOM_WARN(_log_dom, __VA_ARGS__)
@@ -121,7 +121,7 @@ Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **
 
 	_eshm.msg = m;
 
-	EINA_ERROR_PDBG("Sending message of type %d and id %d\n", m->type, m->id);
+	DBG("Sending message of type %d and id %d\n", m->type, m->id);
 	ret = ecore_con_server_send(_eshm.svr, m, sizeof(Eshm_Message));
 	ret = ecore_con_server_send(_eshm.svr, data, m->size);
 
@@ -139,7 +139,7 @@ Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **
 	if (timeout)
 		ecore_timer_del(timer);
 
-	EINA_ERROR_PDBG("Finished lock reply of type %d\n", _eshm.reply->id);
+	DBG("Finished lock reply of type %d\n", _eshm.reply->id);
 
 	error = _eshm.reply->error;
 
