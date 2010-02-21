@@ -21,6 +21,7 @@ typedef struct _Eshmd_Segment
 	int ref;
 	Eina_Bool locked; /* TODO differentiate between a read lock and a write lock */
 	Ecore_Con_Client *owner;
+	size_t size;
 } Eshmd_Segment;
 
 typedef struct _Eshmd_Client
@@ -89,6 +90,7 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	shmctl(rsn->shmid, IPC_SET, &ds);
 
 	s = calloc(1, sizeof(Eshmd_Segment));
+	s->size = sn->size;
 	s->shmid = rsn->shmid;
 	s->ref++;
 	s->owner = c;
@@ -118,6 +120,7 @@ static Eshm_Error msg_segment_get(Ecore_Con_Client *c, Eshm_Message_Segment_Get 
 	*reply = calloc(1, sizeof(Eshm_Reply_Segment_New));
 	rsn = *reply;
 	rsn->shmid = s->shmid;
+	rsn->size = s->size;
 
 	return ESHM_ERR_NONE;
 }

@@ -9,6 +9,7 @@ struct _Eshm_Segment
 	void *data;
 	int shmid;
 	Eina_Bool locked;
+	size_t size;
 };
 
 static void _error_to_eina(Eshm_Error err)
@@ -70,6 +71,7 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, size_t size)
 	s->shmid = r->shmid;
 	s->id = strdup(id);
 	s->data = shmat(s->shmid, NULL, 0);
+	s->size = size;
 
 	free(r);
 
@@ -115,6 +117,7 @@ EAPI Eshm_Segment * eshm_segment_get(const char *id, size_t size, Eina_Bool crea
 		s = calloc(1, sizeof(Eshm_Segment));
 
 		s->shmid = r->shmid;
+		s->size = r->size;
 		s->id = strdup(id);
 		s->data = shmat(s->shmid, NULL, 0);
 
@@ -193,6 +196,17 @@ EAPI void * eshm_segment_data_get(Eshm_Segment *s)
 		return NULL;
 	return s->data;
 }
+
+/**
+ * Gets the size of a segment
+ * @param s The segment to get the size from
+ * @return The size of the sement
+ */
+EAPI size_t eshm_segment_size_get(Eshm_Segment *s)
+{
+	return s->size;
+}
+
 /**
  * Gets all the available segments registered on the server
  */

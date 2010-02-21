@@ -160,7 +160,7 @@ Eshm_Error eshm_message_server_send(Eshm_Message_Type type, void *data, double t
 	Eshm_Message *m;
 	void *body;
 
-	m = _new(type);
+	m = eshm_message_new(type);
 	body = eshm_message_encode(eshm_message_name_get(m->type), data, &m->size);
 	if (!body)
 		return ESHM_ERR_CODEC;
@@ -222,7 +222,6 @@ EAPI int eshm_init(void)
 		ESHM_ERROR_TIMEOUT = eina_error_msg_register("Timeout waiting for response");
 	}
 	return ++_init;
-
 }
 /**
  * Shutdowns the library

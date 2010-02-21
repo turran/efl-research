@@ -138,6 +138,7 @@ typedef struct _Eshm_Reply_Segment_New
 typedef struct _Eshm_Reply_Segment_Get
 {
 	int shmid;
+	size_t size;
 } Eshm_Reply_Segment_Get;
 
 /* eshmd_main.c */

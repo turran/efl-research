@@ -38,6 +38,7 @@ typedef struct _Eshm_Segment Eshm_Segment; /**< Segment opaque handler */
 
 EAPI Eshm_Segment * eshm_segment_new(const char *id, size_t size);
 EAPI Eshm_Segment * eshm_segment_get(const char *id, size_t size, Eina_Bool create);
+EAPI size_t eshm_segment_size_get(Eshm_Segment *s);
 EAPI Eina_Bool eshm_segment_lock(Eshm_Segment *s, Eina_Bool write);
 EAPI void eshm_segment_unlock(Eshm_Segment *s);
 EAPI void * eshm_segment_data_get(Eshm_Segment *s);
