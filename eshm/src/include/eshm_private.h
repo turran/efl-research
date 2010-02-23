@@ -15,6 +15,13 @@
 #include "Ecore.h"
 #include "Ecore_Con.h"
 
+#define ERR(...) EINA_LOG_DOM_ERR(eshm_log_dom, __VA_ARGS__)
+#define INF(...) EINA_LOG_DOM_INFO(eshm_log_dom, __VA_ARGS__)
+#define WRN(...) EINA_LOG_DOM_WARN(eshm_log_dom, __VA_ARGS__)
+#define DBG(...) EINA_LOG_DOM_DBG(eshm_log_dom, __VA_ARGS__)
+
+extern int eshm_log_dom;
+
 #define ESHMD_NAME "eshmd"
 #define ESHMD_PORT 0x1b
 
@@ -145,13 +152,35 @@ typedef struct _Eshm_Reply_Segment_Get
 Eshm_Error eshm_server_send(Eshm_Message *m, void *data, double timeout, void **rdata);
 
 /* eshmd_message.c */
-inline Eshm_Message_Name eshm_message_name_get(Eshm_Message_Type t);
-inline Eina_Bool eshm_message_reply_has(Eshm_Message_Type t);
-inline Eina_Bool eshm_message_reply_name_get(Eshm_Message_Type t, Eshm_Message_Name *n);
 void eshm_message_init(void);
 void eshm_message_shutdown(void);
 void * eshm_message_encode(Eshm_Message_Name name, const void *data, int *size);
 void * eshm_message_decode(Eshm_Message_Name name, const void *data, int size);
 Eshm_Error eshm_message_server_send(Eshm_Message_Type type, void *data, double timeout, void **rdata);
+
+static inline Eshm_Message_Name eshm_message_name_get(Eshm_Message_Type t)
+{
+	return (t & ~1) >> 1;
+}
+
+static inline Eina_Bool eshm_message_reply_has(Eshm_Message_Type t)
+{
+	if (t & ESHM_MSG_REPLY)
+		return EINA_TRUE;
+	else
+		return EINA_FALSE;
+}
+/**
+ * Given a message type return the name of the reply. Note that the reply's
+ * name is always the message plus one.
+ */
+static inline Eina_Bool eshm_message_reply_name_get(Eshm_Message_Type t, Eshm_Message_Name *n)
+{
+	if (eshm_message_reply_has(t) == EINA_FALSE)
+		return EINA_FALSE;
+	*n = eshm_message_name_get(t) + 1;
+	return EINA_TRUE;
+}
+
 
 #endif /*ESHM_PRIVATE_H_*/

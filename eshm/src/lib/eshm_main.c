@@ -8,9 +8,6 @@
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
-#define ERR(...) EINA_LOG_DOM_ERR(_log_dom, __VA_ARGS__)
-#define WRN(...) EINA_LOG_DOM_WARN(_log_dom, __VA_ARGS__)
-#define DBG(...) EINA_LOG_DOM_DBG(_log_dom, __VA_ARGS__)
 
 typedef struct _Eshm
 {
@@ -25,7 +22,6 @@ typedef struct _Eshm
 static Eshm _eshm;
 
 static int _init = 0;
-static int _log_dom = -1;
 
 static int _timeout_cb(void *data)
 {
@@ -105,7 +101,7 @@ static Eshm_Error _server_send(Eshm_Message *m, void *data, double timeout, void
 
 	_eshm.msg = m;
 
-	DBG("Sending message of type %d and id %d\n", m->type, m->id);
+	DBG("Sending message. type = %d id = %d size = %d", m->type, m->id, m->size);
 	ret = ecore_con_server_send(_eshm.svr, m, sizeof(Eshm_Message));
 	ret = ecore_con_server_send(_eshm.svr, data, m->size);
 
@@ -123,7 +119,7 @@ static Eshm_Error _server_send(Eshm_Message *m, void *data, double timeout, void
 	if (timeout)
 		ecore_timer_del(timer);
 
-	DBG("Finished lock reply of type %d\n", _eshm.reply->id);
+	DBG("Finished lock reply. type %d", _eshm.reply->id);
 
 	error = _eshm.reply->error;
 
@@ -140,6 +136,8 @@ static Eshm_Error _server_send(Eshm_Message *m, void *data, double timeout, void
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+int eshm_log_dom = -1;
+
 /**
  * Sends a message to the server
  *
@@ -161,6 +159,7 @@ Eshm_Error eshm_message_server_send(Eshm_Message_Type type, void *data, double t
 	void *body;
 
 	m = eshm_message_new(type);
+	DBG("Encoding message. type = %d", type);
 	body = eshm_message_encode(eshm_message_name_get(m->type), data, &m->size);
 	if (!body)
 		return ESHM_ERR_CODEC;
@@ -200,17 +199,17 @@ EAPI int eshm_init(void)
 		ecore_init();
 		ecore_con_init();
 		eshm_message_init();
-		_log_dom = eina_log_domain_register("eshm", NULL);
+		eshm_log_dom = eina_log_domain_register("eshm", NULL);
 
 		/* try to connect to the daemon */
 		_eshm.svr = ecore_con_server_connect(ECORE_CON_LOCAL_USER, ESHMD_NAME, ESHMD_PORT, NULL);
 		if (!_eshm.svr)
 		{
-			ERR("The server does not exist\n");
+			ERR("The server does not exist");
 			eshm_message_shutdown();
 			ecore_con_shutdown();
 			ecore_shutdown();
-			eina_log_domain_unregister(_log_dom);
+			eina_log_domain_unregister(eshm_log_dom);
 			eina_shutdown();
 			return 0;
 		}
@@ -233,7 +232,7 @@ EAPI void eshm_shutdown(void)
 		eshm_message_shutdown();
 		ecore_con_shutdown();
 		ecore_shutdown();
-		eina_log_domain_unregister(_log_dom);
+		eina_log_domain_unregister(eshm_log_dom);
 		eina_shutdown();
 	}
 }

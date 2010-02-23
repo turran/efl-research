@@ -62,7 +62,7 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, size_t size)
 	if (error)
 	{
 		_error_to_eina(error);
-		EINA_ERROR_PWARN("Unable to create new segment with id = %s\n", id);
+		WRN("Unable to create new segment with id = %s", id);
 		return NULL;
 	}
 	/* allocate the new segment and give it back to user */
@@ -75,7 +75,7 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, size_t size)
 
 	free(r);
 
-	EINA_ERROR_PDBG("New segment of id %s created with numeric id %d\n", s->id, r->shmid);
+	DBG("New segment of id %s created with numeric id %d", s->id, r->shmid);
 	return s;
 }
 /**
@@ -105,14 +105,14 @@ EAPI Eshm_Segment * eshm_segment_get(const char *id, size_t size, Eina_Bool crea
 		else
 		{
 			_error_to_eina(error);
-			EINA_ERROR_PWARN("Unable to request a segment with id = %s\n", id);
+			WRN("Unable to request a segment with id = %s", id);
 			return NULL;
 		}
 	}
 	else
 	{
 		/* allocate the new segment and give it back to user */
-		EINA_ERROR_PDBG("Requested segment id = %d\n", r->shmid);
+		DBG("Requested segment id = %d", r->shmid);
 
 		s = calloc(1, sizeof(Eshm_Segment));
 
@@ -137,7 +137,7 @@ EAPI void eshm_segment_delete(Eshm_Segment *s)
 	m.id = s->id;
 
 	eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_DELETE, &m, 0, NULL);
-	EINA_ERROR_PDBG("Segment with id \"%s\" deleted\n", s->id);
+	DBG("Segment with id \"%s\" deleted", s->id);
 }
 /**
  * Locks the segment for read or write
@@ -158,12 +158,12 @@ EAPI Eina_Bool eshm_segment_lock(Eshm_Segment *s, Eina_Bool write)
 	if (error)
 	{
 		_error_to_eina(error);
-		EINA_ERROR_PWARN("Unable to lock segment with id \"%s\"\n", s->id);
+		WRN("Unable to lock segment with id \"%s\"", s->id);
 		return EINA_FALSE;
 	}
 	else
 	{
-		EINA_ERROR_PDBG("Segment with id \"%s\" locked\n", s->id);
+		DBG("Segment with id \"%s\" locked", s->id);
 		s->locked = EINA_TRUE;
 		return EINA_TRUE;
 	}
@@ -181,7 +181,7 @@ EAPI void eshm_segment_unlock(Eshm_Segment *s)
 
 	m.id = s->id;
 	eshm_message_server_send(ESHM_MSG_TYPE_SEGMENT_UNLOCK, &m, 0, NULL);
-	EINA_ERROR_PDBG("Segment with id \"%s\" unlocked\n", s->id);
+	DBG("Segment with id \"%s\" unlocked\n", s->id);
 }
 /**
  * Gets the memory pointer associated with this segment

@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 		printf("Segment locked for writing\n");
 		/* write up some data */
 		data = eshm_segment_data_get(s);
-		strcpy(data, "test data");
+		if (data) strcpy(data, "test data");
 	}
 	eshm_segment_unlock(s);
 	ecore_main_loop_begin();

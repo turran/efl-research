@@ -3,11 +3,6 @@
 
 #include <getopt.h>
 
-#define ERR(...) EINA_LOG_DOM_ERR(_log_dom, __VA_ARGS__)
-#define INF(...) EINA_LOG_DOM_INFO(_log_dom, __VA_ARGS__)
-#define WRN(...) EINA_LOG_DOM_WARN(_log_dom, __VA_ARGS__)
-#define DBG(...) EINA_LOG_DOM_DBG(_log_dom, __VA_ARGS__)
-
 /* TODO
  * handle command line parameters, to daemonize or not, etc
  * Use eina error info/error handling
@@ -40,7 +35,7 @@ typedef struct _Eshmd
 } Eshmd;
 
 Eshmd _eshmd;
-static int _log_dom = -1;
+int eshm_log_dom = -1;
 
 static key_t _key_new(void)
 {
@@ -65,13 +60,13 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	struct shmid_ds ds;
 	key_t key;
 
-	INF("Requesting a new segment with id %s\n", sn->id);
+	INF("Requesting a new segment with id %s", sn->id);
 
 	/* check if the segment already exists on the hash of segments */
 	s = eina_hash_find(_eshmd.hash, sn->id);
 	if (s)
 	{
-		INF("Segment with id %s already exists\n", sn->id);
+		INF("Segment with id %s already exists", sn->id);
 		return ESHM_ERR_EXIST;
 	}
 	/* create a new segment */
@@ -82,7 +77,7 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	rsn->shmid = shmget(key, sn->size, IPC_CREAT | 0);
 	if (rsn->shmid < 0)
 	{
-		printf("error getting the segment of name %s [%s] with key %d\n", sn->id, strerror(errno), key);
+		ERR("error getting the segment of name %s [%s] with key %d", sn->id, strerror(errno), key);
 	}
 	/* set the permissions */
 	shmctl(rsn->shmid, IPC_STAT, &ds);
@@ -96,7 +91,7 @@ static Eshm_Error msg_segment_new(Ecore_Con_Client *c, Eshm_Message_Segment_New 
 	s->owner = c;
 	eina_hash_add(_eshmd.hash, sn->id, s);
 
-	INF("New Segment created with id number %d\n", rsn->shmid);
+	INF("New Segment created with id number %d", rsn->shmid);
 
 	return ESHM_ERR_NONE;
 }
@@ -106,13 +101,13 @@ static Eshm_Error msg_segment_get(Ecore_Con_Client *c, Eshm_Message_Segment_Get 
 	Eshmd_Segment *s;
 	Eshm_Reply_Segment_Get *rsn;
 
-	INF("Requesting segment of name %s\n", sn->id);
+	INF("Requesting segment of name %s", sn->id);
 
 	/* check if the segment already exists on the hash of segments */
 	s = eina_hash_find(_eshmd.hash, sn->id);
 	if (!s)
 	{
-		printf("Segment not found\n");
+		WRN("Segment not found");
 		return ESHM_ERR_NEXIST;
 	}
 	s->ref++;
@@ -137,7 +132,7 @@ static int msg_segment_lock(Ecore_Con_Client *c, Eshm_Message_Segment_Lock *m, v
 	Eshmd_Segment *s;
 
 	/* lock the segment */
-	INF("Locking the segment with id %s\n", m->id);
+	INF("Locking the segment with id %s", m->id);
 	s = eina_hash_find(_eshmd.hash, m->id);
 	if (!s)
 		return ESHM_ERR_NEXIST;
@@ -151,7 +146,7 @@ static int msg_segment_lock(Ecore_Con_Client *c, Eshm_Message_Segment_Lock *m, v
 static int msg_segment_unlock(Ecore_Con_Client *c, Eshm_Message_Segment_Unlock *m, void **reply)
 {
 	/* unlock the segment */
-	INF("Unlocking the segment with id %s\n", m->id);
+	INF("Unlocking the segment with id %s", m->id);
 	return ESHM_ERR_NONE;
 }
 
@@ -166,7 +161,7 @@ int _client_add(void *data, int type, void *event)
 	Ecore_Con_Event_Client_Add *e = event;
 	Eshmd_Client *c;
 
-	DBG("Client added %p\n", e->client);
+	DBG("Client added %p", e->client);
 	c = calloc(1, sizeof(Eshmd_Client));
 	ecore_con_client_data_set(e->client, c);
 }
@@ -176,7 +171,7 @@ int _client_del(void *data, int type, void *event)
 	Ecore_Con_Event_Client_Add *e = event;
 	Eshmd_Client *c;
 
-	DBG("Client deleted %p\n", e->client);
+	DBG("Client deleted %p", e->client);
 	c = ecore_con_client_data_get(e->client);
 	/* TODO unref all the segments */
 }
@@ -212,12 +207,12 @@ int _client_data(void *data, int type, void *event)
 	if (_eshmd.length < m_length)
 		return 0;
 	/* parse the header */
-	DBG("Message received of type %d with msg num %d of size %d\n", m->type, m->id, m->size);
+	DBG("Message received of type %d with msg num %d of size %d", m->type, m->id, m->size);
 
 	body = eshm_message_decode(eshm_message_name_get(m->type), (unsigned char *)m + sizeof(Eshm_Message), m->size);
 	if (!body)
 	{
-		ERR("Error Decoding\n");
+		ERR("Error Decoding");
 		/* TODO check if the message needed a reply and if so
 		 * send it the error number */
 		goto shift;
@@ -248,11 +243,11 @@ shift:
 		Eshm_Message_Name rname;
 		void *rbody;
 
-		DBG("Sending reply\n");
+		DBG("Sending reply");
 		r.id = m->id;
 		r.error = err;
 		eshm_message_reply_name_get(m->type, &rname);
-		DBG("Message encoded %d %d\n", rname, eshm_message_name_get(m->type));
+		DBG("Message encoded %d %d", rname, eshm_message_name_get(m->type));
 		if (reply)
 			rbody = eshm_message_encode(rname, reply, &r.size);
 		else
@@ -327,7 +322,7 @@ int main(int argc, char **argv)
 	ecore_init();
 	ecore_con_init();
 
-	_log_dom = eina_log_domain_register("eshmd", NULL);
+	eshm_log_dom = eina_log_domain_register("eshmd", NULL);
 
 	if (!debug)
 	{
@@ -341,7 +336,7 @@ int main(int argc, char **argv)
 	_eshmd.srv = ecore_con_server_add(ECORE_CON_LOCAL_USER, ESHMD_NAME, ESHMD_PORT, NULL);
 	if (!_eshmd.srv)
 	{
-		ERR("Can't create the server\n");
+		ERR("Can't create the server");
 		goto err_server;
 	}
 	_eshmd.hash = eina_hash_string_superfast_new(NULL);
