@@ -62,7 +62,7 @@ EAPI Eshm_Segment * eshm_segment_new(const char *id, size_t size)
 	if (error)
 	{
 		_error_to_eina(error);
-		WRN("Unable to create new segment with id = %s", id);
+		WRN("Unable to create new segment with id = %s [%s]", id, eina_error_msg_get(eina_error_get()));
 		return NULL;
 	}
 	/* allocate the new segment and give it back to user */
@@ -93,6 +93,11 @@ EAPI Eshm_Segment * eshm_segment_get(const char *id, size_t size, Eina_Bool crea
 	Eshm_Message_Segment_Get m;
 	Eshm_Reply_Segment_Get *r;
 	Eshm_Error error;
+
+	if (!id && !create)
+	{
+		return NULL;
+	}
 
 	m.id = id;
 
@@ -192,8 +197,6 @@ EAPI void * eshm_segment_data_get(Eshm_Segment *s)
 {
 	assert(s);
 
-	if (s->locked != EINA_TRUE)
-		return NULL;
 	return s->data;
 }
 

@@ -35,10 +35,12 @@ static int _server_data(void *data, int type, void *event)
 	Eshm_Message_Name rname;
 	unsigned int m_length;
 
+	if (e->server != _eshm.svr)
+		return ECORE_CALLBACK_RENEW;
 	if (!_eshm.msg)
 	{
 		ERR("How do we receive a reply with no msg first??\n");
-		return 0;
+		return ECORE_CALLBACK_RENEW;
 	}
 	if (!_eshm.buffer)
 	{
@@ -54,12 +56,12 @@ static int _server_data(void *data, int type, void *event)
 		e->data = NULL;
 	}
 	if (_eshm.length < sizeof(Eshm_Reply))
-		return 0;
+		return ECORE_CALLBACK_RENEW;
 
 	_eshm.reply = (Eshm_Reply *)_eshm.buffer;
 	m_length = sizeof(Eshm_Reply) + _eshm.reply->size;
 	if (_eshm.length < m_length)
-		return 0;
+		return ECORE_CALLBACK_RENEW;
 
 	/* ok we have a full message */
 	if (_eshm.reply->size)
@@ -89,7 +91,7 @@ static int _server_data(void *data, int type, void *event)
 		_eshm.buffer = NULL;
 	}
 
-	return 0;
+	return ECORE_CALLBACK_RENEW;
 }
 
 
