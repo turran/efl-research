@@ -35,6 +35,11 @@ class Doxygen:
                 if options.verbose:
                     print "Processing", f + ".xml"
                 self.processFile(parseString(fixXML(open(options.docs + f + ".xml", "r").read())))
+            groups = [node.attributes["refid"].value for node in xml.documentElement.getElementsByTagName("compound") if node.attributes["kind"].value == "group"]
+            for f in groups:
+                if options.verbose:
+                    print "Processing", f + ".xml"
+                self.processFile(parseString(fixXML(open(options.docs + f + ".xml", "r").read())))
             for c in xml.documentElement.getElementsByTagName("compound"):
                 registerGlobals(c)
         elif xml.documentElement.tagName == "doxygen":
@@ -47,6 +52,9 @@ class Doxygen:
                     self.files.append(DoxygenPage(c))
                 elif c.attributes["kind"].value == "dir":
                     registerDir(c)
+                elif c.attributes["kind"].value == "group":
+                    self.footer["group"] = True
+                    self.files.append(DoxygenGroup(c))
                 else:
                     raise SystemError, "Unrecognised compound type. (%s)" % (c.attributes["kind"].value, )
         else:
@@ -63,6 +71,8 @@ class Doxygen:
             files += DoxygenFilesPage().createFiles()
         if self.footer.has_key("globals"):
             files += DoxygenGlobalsPage().createFiles()
+        if self.footer.has_key("group"):
+            files += DoxygenGroupsPage().createFiles()
         return files + self.staticfiles
 
     def getFooter(self):
@@ -81,6 +91,8 @@ doxygen = Doxygen()
 
 from page import DoxygenPage
 from file import DoxygenFile
+from group import DoxygenGroup
+from groupspage import DoxygenGroupsPage
 from filespage import registerDir, DoxygenFilesPage
 from globalspage import registerGlobals, DoxygenGlobalsPage
 from member_function import DoxygenMemberFunction

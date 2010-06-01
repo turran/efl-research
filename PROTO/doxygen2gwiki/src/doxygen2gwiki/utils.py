@@ -1,3 +1,9 @@
+import re
+from string import capitalize
+
+def camelCase(value):
+    return "".join([capitalize(w) for w in re.split(re.compile("[\W_]*"), value)])
+
 def getText(nodelist):
     rc = ""
     for node in nodelist:

@@ -1,4 +1,4 @@
-from utils import getText, getDirectDescendents
+from utils import getText, getDirectDescendents, camelCase
 
 from options import options
 from member_function import DoxygenMemberFunction
@@ -8,6 +8,7 @@ from templates.FilePage import FilePage
 class DoxygenFile:
     def __init__(self, xml):
         self.id = xml.attributes["id"].value
+        print "file = %s" % camelCase(self.id)
         self.name = getText(xml.getElementsByTagName("compoundname")[0].childNodes)
         self.brief = convertLine(getDirectDescendents(xml, "briefdescription")[0], self)
         self.detailed = convertLine(getDirectDescendents(xml, "detaileddescription")[0], self)
@@ -16,7 +17,7 @@ class DoxygenFile:
         [x.getLines(l) for x in self.brief]
         registerFileBriefDescription(self.id, "".join(l).strip())
 
-        funcs = getDirectDescendents(xml, "sectiondef")
+        funcs = [n for n in getDirectDescendents(xml, "sectiondef") if n.getAttribute("kind") == "func"]
         if len(funcs) > 0:
             self.functions = [DoxygenMemberFunction(x) for x in getDirectDescendents(funcs[0], "memberdef")]
         else:

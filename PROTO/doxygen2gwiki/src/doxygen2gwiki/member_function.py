@@ -22,8 +22,9 @@ class DoxygenMemberFunction:
         self.params = []
         for p in xml.getElementsByTagName("param"):
             type = getText(p.getElementsByTagName("type")[0].childNodes)
-            declname = getText(p.getElementsByTagName("declname")[0].childNodes)
-            self.params.append((type, declname))
+            declname = p.getElementsByTagName("declname")
+            if len(declname) > 0:
+               self.params.append((type, getText(declname[0].childNodes)))
         self.type = getText(xml.getElementsByTagName("type")[0].childNodes)
 
     def __get_sig(self):
