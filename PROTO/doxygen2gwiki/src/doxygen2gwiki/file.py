@@ -7,8 +7,7 @@ from templates.FilePage import FilePage
 
 class DoxygenFile:
     def __init__(self, xml):
-        self.id = xml.attributes["id"].value
-        print "file = %s" % camelCase(self.id)
+        self.id = camelCase(xml.attributes["id"].value)
         self.name = getText(xml.getElementsByTagName("compoundname")[0].childNodes)
         self.brief = convertLine(getDirectDescendents(xml, "briefdescription")[0], self)
         self.detailed = convertLine(getDirectDescendents(xml, "detaileddescription")[0], self)

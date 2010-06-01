@@ -1,4 +1,4 @@
-from utils import getText
+from utils import getText, camelCase
 
 from options import options
 
@@ -10,7 +10,7 @@ files = []
 def registerDir(xml):
     dirname = getText(xml.getElementsByTagName("compoundname")[0].childNodes)
     for f in xml.getElementsByTagName("innerfile"):
-        files.append((dirname, f.attributes["refid"].value, getText(f.childNodes)))
+        files.append((dirname, camelCase(f.attributes["refid"].value), getText(f.childNodes)))
 
 def registerFileBriefDescription(file, desc):
     descriptions[file] = desc

@@ -1,4 +1,4 @@
-from utils import getText, getDirectDescendents
+from utils import getText, getDirectDescendents, camelCase
 
 from options import options
 from member_function import DoxygenMemberFunction
@@ -7,7 +7,7 @@ from templates.Group import Group
 
 class DoxygenGroup:
     def __init__(self, xml):
-        self.id = xml.attributes["id"].value
+        self.id = camelCase(xml.attributes["id"].value)
         self.name = getText(xml.getElementsByTagName("title")[0].childNodes)
 
         self.brief = convertLine(getDirectDescendents(xml, "briefdescription")[0], self)
