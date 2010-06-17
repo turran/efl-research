@@ -52,7 +52,6 @@ def main():
             if options.verbose:
                 print "Generating page for " + file
             text = unicode(code)
-            text += doxygen.getFooter()
 
             open(options.output + file, "w").write(text.encode("utf-8"))
         else:
@@ -62,8 +61,6 @@ def main():
     if options.prefix + ".wiki" not in files:
         file = options.prefix + ".wiki"
         files.append(file)
-
-        text = doxygen.getFooter()
 
         open(options.output + file, "w").write(text.encode("utf-8"))
 

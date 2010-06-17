@@ -2,7 +2,7 @@ from utils import getText
 
 from templates.Function import Function
 
-class DoxygenMemberFunction:
+class DoxygenTypedef:
     def __init__(self, xml):
         try:
             self.refid = xml.attributes["refid"].value
@@ -18,7 +18,7 @@ class DoxygenMemberFunction:
         [x.getLines(l) for x in convertLine(xml.getElementsByTagName("detaileddescription")[0], self)]
         self.detailed = "".join(l).strip()
 
-        self.link = self.brief.replace(' ', '_')
+	self.link = self.brief.replace(' ', '_')
         self.type = getText(xml.getElementsByTagName("type")[0].childNodes)
         self.argsstring = getText(xml.getElementsByTagName("argsstring")[0].childNodes)
         self.params = []

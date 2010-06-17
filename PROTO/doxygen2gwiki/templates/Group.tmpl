@@ -4,24 +4,29 @@
 #if len($labels) > 0
 #labels #for $l in $labels #$l #end for #
 #end if
+#sidebar ${prefix}_toc
 
 = $filename =
 
 $briefdescription
 
+#if len($groups) > 0
+== Groups ==
+
+#for $g in $groups
+  * [${prefix}_$g.id $g.name]
+#end for
+
+#end if
+
 #if len($functions) > 0
 == Functions ==
 
 #for $f in $functions
-#if $f.brief is not None
-[${prefix}_$ref#$f.brief.replace(' ', '_') $f.brief]
-{{{
-$f.sig
-}}}
-#end if
+ * `$f.type` [#$f.link $f.name] `$f.argsstring`
 #end for
-
 #end if
+
 == Detailed Description ==
 
 $briefdescription

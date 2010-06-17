@@ -1,0 +1,12 @@
+  * [${prefix} Main Page]
+#if len($groups) > 0
+  * [${prefix}_groups Modules]
+#for $g in $groups
+#set $str = ""
+#for $level in $range($g.level) * 2
+#set $str += " "
+#end for
+$str    * [${prefix}_$g.id $g.name] $groups_descriptions.get($g.id, "")
+#end for
+
+#end if

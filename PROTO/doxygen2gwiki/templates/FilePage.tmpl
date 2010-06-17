@@ -4,22 +4,32 @@
 #if len($labels) > 0
 #labels #for $l in $labels #$l #end for #
 #end if
+#sidebar ${prefix}_toc
 
 = $filename =
 
 $briefdescription
 
+#if len($typedefs) > 0
+== Typedefs ==
+
+#for $t in $typedefs
+#if $t.argsstring is not ''
+ * `$t.type` [#$t.link $t.name] `$t.argsstring`
+#else
+ * `$t.type` [#$t.link $t.name]
+#end if
+#end for
+#end if
+
 #if len($functions) > 0
 == Functions ==
 
 #for $f in $functions
-$f.sig
-#if $f.brief is not None
-  *$f.brief*
-#end if
+ * `$f.type` [#$f.link $f.name] `$f.argsstring`
 #end for
-
 #end if
+
 == Detailed Description ==
 
 $briefdescription

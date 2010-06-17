@@ -4,10 +4,13 @@
 #if len($labels) > 0
 #labels #for $l in $labels #$l #end for #
 #end if
-
-|| [${prefix}_groups Group List] || [${prefix}_globals Globals] ||
+#sidebar ${prefix}_toc
 
 Here is a list of all groups with brief descriptions:
 #for $g in $groups
-|| [${prefix}_$g.id $g.name] || $descriptions.get($g.id, "") ||
+#set $str = ""
+#for $level in $range($g.level) * 2
+#set $str += " "
+#end for
+$str  * [${prefix}_$g.id $g.name] $descriptions.get($g.id, "")'
 #end for

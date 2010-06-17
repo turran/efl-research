@@ -73,14 +73,8 @@ class Doxygen:
             files += DoxygenGlobalsPage().createFiles()
         if self.footer.has_key("group"):
             files += DoxygenGroupsPage().createFiles()
+        files += DoxygenTocPage().createFiles()
         return files + self.staticfiles
-
-    def getFooter(self):
-        footer = "---\n|| [%s Main Page]" % (options.prefix, )
-        if self.footer.has_key("file"):
-            footer += " || [%s_files Files]" % (options.prefix, )
-        footer += " ||\n"
-        return footer
 
     def copyFile(self, type, _from, _to):
         if options.output + _to not in [x[1] for x in self.staticfiles]:
@@ -93,6 +87,7 @@ from page import DoxygenPage
 from file import DoxygenFile
 from group import DoxygenGroup
 from groupspage import DoxygenGroupsPage
+from tocpage import DoxygenTocPage
 from filespage import registerDir, DoxygenFilesPage
 from globalspage import registerGlobals, DoxygenGlobalsPage
 from member_function import DoxygenMemberFunction

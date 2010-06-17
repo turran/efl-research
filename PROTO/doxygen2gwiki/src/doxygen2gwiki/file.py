@@ -21,7 +21,14 @@ class DoxygenFile:
             self.functions = [DoxygenMemberFunction(x) for x in getDirectDescendents(funcs[0], "memberdef")]
         else:
             self.functions = []
+        
+        typedefs = [n for n in getDirectDescendents(xml, "sectiondef") if n.getAttribute("kind") == "typedef"]
+        if len(typedefs) > 0:
+            self.typedefs = [DoxygenMemberFunction(x) for x in getDirectDescendents(typedefs[0], "memberdef")]
+        else:
+            self.typedefs = []
 
+        print "typedefs = %s" % len(typedefs)
         self.programlisting = ProgramListing(xml.getElementsByTagName("programlisting")[0], self)
 
     def createFiles(self):
@@ -31,7 +38,7 @@ class DoxygenFile:
         detailed = [""]
         for b in self.detailed:
             b.getLines(detailed)
-        return [("wiki", options.prefix + "_" + self.id, FilePage(searchList={"summary": "Documentation for the %s file" % (self.name, ), "labels": options.labels, "prefix": options.prefix, "filename": self.name, "briefdescription": "".join(brief).strip(), "detaileddescription": "".join(detailed).strip(), "functions": self.functions}))]
+        return [("wiki", options.prefix + "_" + self.id, FilePage(searchList={"summary": "Documentation for the %s file" % (self.name, ), "labels": options.labels, "prefix": options.prefix, "filename": self.name, "briefdescription": "".join(brief).strip(), "detaileddescription": "".join(detailed).strip(), "functions": self.functions, "typedefs": self.typedefs}))]
 
 from text_elements import convertLine, ProgramListing
 from filespage import registerFileBriefDescription
