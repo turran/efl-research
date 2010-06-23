@@ -1,5 +1,10 @@
 import re
+from options import options
 from string import capitalize
+
+def getPage(id):
+    print "%s %s %s" % (options.prefix, id, camelCase(options.prefix + id))
+    return camelCase(options.prefix + "_" + id)
 
 def camelCase(value):
     return "".join([capitalize(w) for w in re.split(re.compile("[\W_]*"), value)])

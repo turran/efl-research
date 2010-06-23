@@ -1,4 +1,4 @@
-from utils import getText, getDirectDescendents
+from utils import getPage, getText, getDirectDescendents
 from text_elements import convertLine
 
 from options import options
@@ -17,7 +17,7 @@ def registerGroup(group):
 
 class DoxygenGroupsPage:
     def __init__(self):
-        pass
+        self.page = getPage("groups") 
 
     def addSub(self, parent, level):
         flat.append(parent)
@@ -52,6 +52,4 @@ class DoxygenGroupsPage:
         
     def createFiles(self):
         self.forest()
-        return [("wiki", options.prefix + "_groups", GroupsPage(searchList={"summary": "A List of groups with brief descriptions.", "labels": options.labels, "prefix": options.prefix, "groups": flat, "descriptions": descriptions}))]
-
-from utils import getText
+        return [("wiki", self.page, GroupsPage(searchList={"summary": "A List of groups with brief descriptions.", "labels": options.labels, "prefix": options.prefix, "groups": flat, "descriptions": descriptions}))]

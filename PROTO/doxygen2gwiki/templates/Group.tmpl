@@ -4,36 +4,48 @@
 #if len($labels) > 0
 #labels #for $l in $labels #$l #end for #
 #end if
-#sidebar ${prefix}_toc
+#sidebar ${prefix}Toc
 
-= $filename =
+<wiki:toc max_depth="2"/>
 
 $briefdescription
 
 #if len($groups) > 0
-== Groups ==
+= Groups =
 
 #for $g in $groups
-  * [${prefix}_$g.id $g.name]
+  * [$g.page $g.name]
 #end for
 
 #end if
 
+#if len($typedefs) > 0
+= Typedefs =
+
+#for $t in $typedefs
+#if $t.argsstring is not ''
+ * `$t.type` [#$t.link $t.name] `$t.argsstring`
+#else
+ * `$t.type` [#$t.link $t.name]
+#end if
+#end for
+#end if
+
 #if len($functions) > 0
-== Functions ==
+= Functions =
 
 #for $f in $functions
  * `$f.type` [#$f.link $f.name] `$f.argsstring`
 #end for
 #end if
 
-== Detailed Description ==
+= Detailed Description =
 
 $briefdescription
 $detaileddescription
 
 #if len($functions) > 0
-== Function Documentation ==
+= Function Documentation =
 
 #for $f in $functions
 $f.doc

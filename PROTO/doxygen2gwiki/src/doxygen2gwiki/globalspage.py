@@ -1,4 +1,4 @@
-from utils import getText
+from utils import getPage, getText
 
 from options import options
 
@@ -14,10 +14,11 @@ def registerGlobals(xml):
 
 class DoxygenGlobalsPage:
     def __init__(self):
+        self.page = getPage("globals")
         pass
 
     def createFiles(self):
-        return [("wiki", options.prefix + "_globals", GlobalsPage(searchList={"summary": "A list of all functions, variables, defines, enums, and typedefs with links to the files they belong to.", "labels": options.labels, "prefix": options.prefix, "members": members}))]
+        return [("wiki", self.page, GlobalsPage(searchList={"summary": "A list of all functions, variables, defines, enums, and typedefs with links to the files they belong to.", "labels": options.labels, "prefix": options.prefix, "members": members}))]
 
 from utils import getText
 from doxygen import doxygen

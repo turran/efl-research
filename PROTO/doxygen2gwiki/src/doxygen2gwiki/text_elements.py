@@ -133,9 +133,9 @@ class Sect1:
         while parent is not None and not hasattr(parent, "pagename"):
             parent = parent.parent
         if parent is not None:
-            doxygen.addLink(xml.attributes["id"].value, parent.pagename)
+            doxygen.addLink(xml.attributes["id"].value, parent.pagename, None)
         else:
-            doxygen.addLink(xml.attributes["id"].value, None)
+            doxygen.addLink(xml.attributes["id"].value, None, None)
         self.text = convertLine(xml, self)
 
     def getLines(self, lines):
@@ -147,9 +147,9 @@ class Sect2:
         while parent is not None and not hasattr(parent, "pagename"):
             parent = parent.parent
         if parent is not None:
-            doxygen.addLink(xml.attributes["id"].value, parent.pagename)
+            doxygen.addLink(xml.attributes["id"].value, parent.pagename, None)
         else:
-            doxygen.addLink(xml.attributes["id"].value, None)
+            doxygen.addLink(xml.attributes["id"].value, None, None)
         self.text = convertLine(xml, self)
 
     def getLines(self, lines):
@@ -218,14 +218,11 @@ class Ref:
         self.text = convertLine(xml, self)
 
     def getLines(self, lines):
-        try:
-            ref = doxygen.links[self.ref]
-        except KeyError:
-            ref = None
+        ref = doxygen.getLink(self.ref)
         l = [""]
         [x.getLines(l) for x in self.text]
         if ref:
-            text = "[" + ref + " " + "".join(l) + "]"
+            text = "[" + ref.page + "#" + ref.anchor + " " + "".join(l) + "]"
         else:
             text = "".join(l)
         if len(lines[-1]) > 0 and lines[-1][-1] == "\n":
@@ -306,10 +303,7 @@ class TocItem:
         self.text = convertLine(xml, self)
 
     def getLines(self, lines):
-        try:
-            ref = doxygen.links[self.ref]
-        except KeyError:
-            ref = None
+        ref = doxygen.getLink(self.ref)
         l = [""]
         [x.getLines(l) for x in self.text]
         if ref:
@@ -329,13 +323,14 @@ class ProgramListing:
     def getLines(self, lines):
         if len(lines[-1]) == 0 or lines[-1][-1] != "\n":
             lines[-1] = lines[-1] + "\n"
+        lines.append("{{{\n")
         for l in self.code:
             [x.getLines(lines) for x in l]
             if len(lines[-1]) == 0 or lines[-1][-1] != "\n":
                 lines[-1] = lines[-1] + "\n"
         if len(lines[-1]) == 0 or lines[-1][-1] != "\n":
             lines[-1] = lines[-1] + "\n"
-        lines.append("\n")
+        lines.append("}}}\n")
 
 class Space:
     def __init__(self, xml, parent):
@@ -602,6 +597,14 @@ class Ring:
     def getLines(self, lines):
         lines[-1] = lines[-1] + self.letter
 
+class Type:
+    def __init__(self, xml, parent):
+        self.parent = parent
+        self.items = convertLine(xml, self)
+
+    def getLines(self, lines):
+        [x.getLines(lines) for x in self.items]
+
 elements = {
     "highlight": Highlight,
     "bold": Highlight,
@@ -648,7 +651,8 @@ elements = {
     "tilde": Tilde,
     "szlig": Szlig,
     "cedil": Cedil,
-    "ring": Ring
+    "ring": Ring,
+    "type": Type
 }
 
 from doxygen import doxygen

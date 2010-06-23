@@ -1,4 +1,4 @@
-from utils import getText, camelCase
+from utils import getPage, getText, camelCase
 
 from options import options
 
@@ -17,9 +17,10 @@ def registerFileBriefDescription(file, desc):
 
 class DoxygenFilesPage:
     def __init__(self):
+        self.page = getPage("files")
         pass
 
     def createFiles(self):
-        return [("wiki", options.prefix + "_files", FilesPage(searchList={"summary": "A List of files with brief descriptions.", "labels": options.labels, "prefix": options.prefix, "files": files, "descriptions": descriptions}))]
+        return [("wiki", self.page, FilesPage(searchList={"summary": "A List of files with brief descriptions.", "labels": options.labels, "prefix": options.prefix, "files": files, "descriptions": descriptions}))]
 
 from utils import getText

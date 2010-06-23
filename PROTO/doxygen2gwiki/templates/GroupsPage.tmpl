@@ -4,7 +4,7 @@
 #if len($labels) > 0
 #labels #for $l in $labels #$l #end for #
 #end if
-#sidebar ${prefix}_toc
+#sidebar ${prefix}Toc
 
 Here is a list of all groups with brief descriptions:
 #for $g in $groups
@@ -12,5 +12,5 @@ Here is a list of all groups with brief descriptions:
 #for $level in $range($g.level) * 2
 #set $str += " "
 #end for
-$str  * [${prefix}_$g.id $g.name] $descriptions.get($g.id, "")'
+$str  * [$g.page $g.name] $descriptions.get($g.id, "")
 #end for

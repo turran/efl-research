@@ -1,4 +1,4 @@
-from utils import getText
+from utils import getText, getPage
 
 from options import options
 from member_function import DoxygenMemberFunction
@@ -10,9 +10,9 @@ class DoxygenPage:
         if self.id == "indexpage":
             self.pagename = options.prefix
         else:
-            self.pagename = options.prefix + "_" + self.id
+            self.pagename = getPage(self.id)
 
-        doxygen.addLink(self.id, self.pagename)
+        doxygen.addLink(self.id, self.pagename, None)
 
         try:
             title = xml.getElementsByTagName("title")[0]

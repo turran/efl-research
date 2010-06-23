@@ -60,8 +60,14 @@ class Doxygen:
         else:
             raise SystemError, "Unrecognised root file node. (%s)" % (xml.documentElement.tagName, )
 
-    def addLink(self, refid, linkto):
-        self.links[refid] = linkto
+    def addLink(self, refid, page, anchor):
+        self.links[refid] = DoxygenLink(page, anchor)
+
+    def getLink(self, id):
+        try:
+            return self.links[id]
+        except KeyError:
+            return None
 
     def createFiles(self):
         files = []
@@ -83,6 +89,7 @@ class Doxygen:
 
 doxygen = Doxygen()
 
+from link import DoxygenLink
 from page import DoxygenPage
 from file import DoxygenFile
 from group import DoxygenGroup

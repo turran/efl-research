@@ -1,13 +1,16 @@
 from utils import getText
 
 from templates.Function import Function
+from doxygen import doxygen
+from text_elements import convertLine
 
 class DoxygenMemberFunction:
-    def __init__(self, xml):
+    def __init__(self, xml, parent):
         try:
             self.refid = xml.attributes["refid"].value
         except KeyError:
             self.refid = xml.attributes["id"].value
+
         self.name = getText(xml.getElementsByTagName("name")[0].childNodes)
 
         l = [""]
@@ -19,9 +22,16 @@ class DoxygenMemberFunction:
         self.detailed = "".join(l).strip()
 
         self.link = self.brief.replace(' ', '_')
-        self.type = getText(xml.getElementsByTagName("type")[0].childNodes)
+        doxygen.addLink(self.refid, parent.page, self.link)
+        
+        l = [""]
+        [x.getLines(l) for x in convertLine(xml.getElementsByTagName("type")[0], self)]
+        self.type = "".join(l).strip()
+        print "type ==== %s" % self.type
         self.argsstring = getText(xml.getElementsByTagName("argsstring")[0].childNodes)
         self.params = []
+        # detailed description -> parameterlist -> parametername
+        # simplesect (return)
         for p in xml.getElementsByTagName("param"):
             type = getText(p.getElementsByTagName("type")[0].childNodes)
             declname = p.getElementsByTagName("declname")
@@ -37,4 +47,3 @@ class DoxygenMemberFunction:
         return unicode(Function(searchList={"f": self}))
     doc = property(__get_doc)
 
-from text_elements import convertLine
